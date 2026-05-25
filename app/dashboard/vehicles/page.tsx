@@ -1,0 +1,116 @@
+import AdminHeader from "@/components/layout/AdminHeader";
+import AddVehicleTrigger from "@/components/vehicles/add/add-vehicle-trigger";
+import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
+import VehiclesInventory from "@/components/vehicles/vehicles-inventory";
+import {
+  computeVehicleStats,
+  type Vehicle,
+  type VehicleStatus,
+} from "@/lib/vehicles/types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
+import { authenticateUser } from "@/lib/vehicles/server/utils";
+
+function mapStatus(dbStatus: string): VehicleStatus {
+  switch (dbStatus) {
+    case "in_stock": return "In Stock";
+    case "needs_attention": return "Needs Attention";
+    case "sold":
+    case "loss": return "Marked Sold";
+    default: return "In Stock";
+  }
+}
+
+function daysSince(date: string | null | undefined): number {
+  if (!date) return 0;
+  return Math.floor(
+    (Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24),
+  );
+}
+
+function formatISO(date: string | null | undefined): string {
+  if (!date) return "";
+  return date.split("T")[0];
+}
+
+export default async function VehiclesPage() {
+  const auth = await authenticateUser();
+  const vehicles: Vehicle[] = [];
+
+  if (!auth.ok) {
+    console.warn("VehiclesPage: auth failed", auth.error);
+  } else {
+    const { dealershipId } = auth.user;
+    const supabase = await createClient();
+
+    const { data: rows, error } = await supabase
+      .from("vehicles")
+      .select("*, images:vehicle_images(storage_path, is_primary)")
+      .eq("dealership_id", dealershipId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.warn("VehiclesPage: query error", error.message);
+    } else if (rows) {
+      for (const row of rows) {
+        const r = row as Record<string, unknown>;
+        const images = r.images as { storage_path: string; is_primary: boolean }[] | undefined;
+        let imageUrl = "";
+        const sortedImages = [...(images ?? [])].sort(
+          (a, b) => Number(b.is_primary) - Number(a.is_primary),
+        );
+        if (sortedImages[0]) {
+          try {
+            const { data, error: signedError } = await supabase.storage
+              .from("vehicle-images")
+              .createSignedUrl(sortedImages[0].storage_path, 3600);
+            imageUrl = signedError || !data ? "" : data.signedUrl;
+          } catch {
+            imageUrl = "";
+          }
+        }
+
+        vehicles.push({
+          id: r.id as string,
+          image: imageUrl,
+          make: r.make as string,
+          model: r.model as string,
+          trim: (r.trim as string) ?? "",
+          year: r.year as number,
+          stockNumber: (r.stock_number as string) ?? "",
+          vin: r.vin as string,
+          mileage: (r.mileage as number) ?? 0,
+          price: Number(r.asking_price ?? 0),
+          cost: Number(r.acquisition_cost ?? 0),
+          daysInInventory: daysSince(r.acquisition_date as string),
+          status: mapStatus(r.status as string),
+          location: (r.lot_location as string) ?? "",
+          arrivalDate: formatISO(r.acquisition_date as string),
+        });
+      }
+    }
+  }
+
+  const stats = computeVehicleStats(vehicles);
+
+  return (
+    <div>
+      <AdminHeader />
+
+      <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
+    <div>
+          <h1 className="text-2xl font-bold text-white">Vehicles Inventory</h1>
+          <p className="mt-0.5 text-[12.5px] text-slate-500">
+            Manage your vehicle inventory, pricing, and status.
+          </p>
+        </div>
+        <AddVehicleTrigger />
+      </section>
+
+      <VehicleStatsCards stats={stats} />
+
+      <VehiclesInventory vehicles={vehicles} />
+    </div>
+  );
+}
