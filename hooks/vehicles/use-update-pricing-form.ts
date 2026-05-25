@@ -93,6 +93,11 @@ export function useUpdatePricingForm(
       const formData = new FormData();
       formData.set("payload", JSON.stringify(payload));
 
+      const photoFile = form.getValues("photoFile");
+      if (photoFile) {
+        formData.append("photo", photoFile);
+      }
+
       const result = await updatePricing(formData);
 
       if (result.success) {

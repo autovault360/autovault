@@ -36,6 +36,12 @@ const schema = z.object({
   odometerStatus: z.string().optional(),
   notes: z.string().max(500).optional(),
   removedImages: z.array(z.string()).optional(),
+  imageOrder: z.array(
+    z.discriminatedUnion("type", [
+      z.object({ type: z.literal("existing"), path: z.string() }),
+      z.object({ type: z.literal("new") }),
+    ]),
+  ).optional(),
 });
 
 export async function updateVehicle(formData: FormData) {
@@ -80,7 +86,7 @@ export async function updateVehicle(formData: FormData) {
         drivetrain: data.driveType,
         fuel_type: data.fuelType,
         lot_location: data.lotLocation,
-        acquisition_date: data.acquisitionDate,
+        acquisition_date: data.acquisitionDate || null,
         acquisition_cost: data.acquisitionCost,
         asking_price: data.askingPrice,
         market_value: data.marketValue,
@@ -91,7 +97,7 @@ export async function updateVehicle(formData: FormData) {
         title_number: data.titleNumber,
         license_plate: data.licensePlate,
         state: data.state,
-        expiration_date: data.expirationDate,
+        expiration_date: data.expirationDate || null,
         seller_auction: data.sellerAuction,
         purchase_type: data.purchaseType,
         odometer_status: data.odometerStatus,
@@ -99,7 +105,12 @@ export async function updateVehicle(formData: FormData) {
       })
       .eq("id", data.vehicleId);
 
-    if (updateError) throw new Error(updateError.message);
+    if (updateError) {
+      const message = updateError.message?.includes("uq_vehicle_vin")
+        ? "A vehicle with this VIN already exists in your dealership"
+        : updateError.message;
+      throw new Error(message);
+    }
 
     const removedImages = data.removedImages ?? [];
     if (removedImages.length > 0) {
@@ -117,7 +128,61 @@ export async function updateVehicle(formData: FormData) {
     }
 
     const photos = formData.getAll("photos") as File[];
-    if (photos.length > 0) {
+    const imageOrder = data.imageOrder ?? [];
+
+    if (imageOrder.length > 0) {
+      let newPhotoIndex = 0;
+      const uploadedNewPaths: string[] = [];
+
+      for (const entry of imageOrder) {
+        if (entry.type !== "new") continue;
+        const file = photos[newPhotoIndex++];
+        if (!file) continue;
+
+        const ext = file.name.split(".").pop();
+        const path = `${dealershipId}/${data.vehicleId}/photos/${Date.now()}-${newPhotoIndex}.${ext}`;
+        await uploadFile("vehicle-images", path, file);
+        uploadedNewPaths.push(path);
+      }
+
+      newPhotoIndex = 0;
+      const orderedPaths: string[] = [];
+      for (const entry of imageOrder) {
+        if (entry.type === "existing") {
+          orderedPaths.push(entry.path);
+        } else {
+          const path = uploadedNewPaths[newPhotoIndex++];
+          if (path) orderedPaths.push(path);
+        }
+      }
+
+      for (let i = 0; i < orderedPaths.length; i++) {
+        const path = orderedPaths[i];
+        const { data: existingImage } = await supabase
+          .from("vehicle_images")
+          .select("id")
+          .eq("vehicle_id", data.vehicleId)
+          .eq("storage_path", path)
+          .maybeSingle();
+
+        if (existingImage) {
+          const { error: orderError } = await supabase
+            .from("vehicle_images")
+            .update({ sort_order: i + 1, is_primary: i === 0 })
+            .eq("id", existingImage.id);
+          if (orderError) console.error("Failed to update image order:", orderError.message);
+        } else {
+          const { error: insertError } = await supabase.from("vehicle_images").insert({
+            vehicle_id: data.vehicleId,
+            dealership_id: dealershipId,
+            storage_path: path,
+            is_primary: i === 0,
+            sort_order: i,
+          });
+          if (insertError) console.error("Failed to insert image:", insertError.message);
+        }
+      }
+    } else if (photos.length > 0) {
       const { data: maxSort } = await supabase
         .from("vehicle_images")
         .select("sort_order")

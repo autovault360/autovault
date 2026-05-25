@@ -77,7 +77,7 @@ type DbVehicleRow = {
   status: string;
   created_at: string;
   updated_at: string;
-  images?: { storage_path: string; is_primary: boolean }[];
+  images?: { storage_path: string; is_primary: boolean; sort_order: number }[];
   expenses?: { total_cost: number; category: string; created_at: string }[];
   status_history?: { from_status: string | null; to_status: string; created_at: string; notes?: string }[];
   pricing_history?: { previous_price: number | null; new_price: number; reason: string; created_at: string }[];
@@ -85,10 +85,13 @@ type DbVehicleRow = {
 
 async function getImageUrls(
   supabase: SupabaseClient,
-  images: { storage_path: string; is_primary: boolean }[],
+  images: { storage_path: string; is_primary: boolean; sort_order: number }[],
 ): Promise<string[]> {
   const urls: string[] = [];
-  const sorted = [...images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary));
+  const sorted = [...images].sort((a, b) => {
+    if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
+    return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+  });
   for (const img of sorted) {
     try {
       const { data, error } = await supabase.storage
@@ -117,7 +120,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       .from("vehicles")
       .select(`
         *,
-        images:vehicle_images(storage_path, is_primary),
+        images:vehicle_images(storage_path, is_primary, sort_order),
         expenses:vehicle_expenses(total_cost, category, created_at),
         status_history(from_status, to_status, created_at, notes),
         pricing_history(previous_price, new_price, reason, created_at)
@@ -152,7 +155,10 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       ? (grossProfit / acquisitionCost) * 100
       : 0;
 
-    const sortedImages = [...(row.images ?? [])].sort((a, b) => Number(b.is_primary) - Number(a.is_primary));
+    const sortedImages = [...(row.images ?? [])].sort((a, b) => {
+      if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
+      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+    });
     const imageStoragePaths = sortedImages.map((img) => img.storage_path);
     const imagesWithUrls = await getImageUrls(supabase, sortedImages);
 

@@ -97,7 +97,12 @@ export async function addVehicle(
       .select("id")
       .single();
 
-    if (insertError) throw new Error(insertError.message);
+    if (insertError) {
+      const message = insertError.message?.includes("uq_vehicle_vin")
+        ? "A vehicle with this VIN already exists in your dealership"
+        : insertError.message;
+      throw new Error(message);
+    }
 
     const photos = formData.getAll("photos") as File[];
     for (let i = 0; i < photos.length; i++) {
@@ -111,7 +116,7 @@ export async function addVehicle(
         dealership_id: dealershipId,
         storage_path: path,
         is_primary: i === 0,
-        sort_order: i,
+        sort_order: i + 1,
       });
     }
 

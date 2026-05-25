@@ -5,9 +5,11 @@ import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import type { PhotoGalleryItem } from "@/components/vehicles/add/photo-gallery-upload";
 import { computeTotalInvested } from "@/lib/vehicles/actions/add-vehicle/defaults";
 import { validateFile } from "@/lib/vehicles/actions/utils";
 import { updateVehicle } from "@/lib/vehicles/server/update-vehicle";
+import { checkVinUniqueness } from "@/lib/vehicles/server/utils";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 
 const currencyField = z.coerce.number().min(0, "Must be 0 or greater");
@@ -45,18 +47,36 @@ const editVehicleSchema = z.object({
 
 type EditVehicleFormValues = z.infer<typeof editVehicleSchema>;
 
+type GalleryItem =
+  | { id: string; kind: "existing"; storagePath: string; url: string }
+  | { id: string; kind: "new"; file: File; url: string };
+
+function buildInitialGallery(vehicle: VehicleDetail): GalleryItem[] {
+  return vehicle.imageStoragePaths.map((path, i) => ({
+    id: path,
+    kind: "existing" as const,
+    storagePath: path,
+    url: vehicle.images[i] ?? "",
+  }));
+}
+
+function revokeNewGalleryUrls(items: GalleryItem[]) {
+  for (const item of items) {
+    if (item.kind === "new") URL.revokeObjectURL(item.url);
+  }
+}
+
 export function useEditVehicleForm(
   vehicle: VehicleDetail,
   open: boolean,
   onSuccess: () => void,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDuplicateVin, setIsDuplicateVin] = useState(false);
   const [shake, setShake] = useState(false);
-  const [newPhotos, setNewPhotos] = useState<File[]>([]);
-  const [newPhotoUrls, setNewPhotoUrls] = useState<string[]>([]);
-  const [removedPaths, setRemovedPaths] = useState<string[]>([]);
-  const removedPathsRef = useRef(removedPaths);
-  removedPathsRef.current = removedPaths;
+  const [gallery, setGallery] = useState<GalleryItem[]>(() => buildInitialGallery(vehicle));
+  const galleryRef = useRef(gallery);
+  galleryRef.current = gallery;
 
   const buildDefaults = useCallback((): EditVehicleFormValues => ({
     vin: vehicle.vin,
@@ -98,30 +118,30 @@ export function useEditVehicleForm(
   useEffect(() => {
     if (open) {
       form.reset(buildDefaults());
-      setNewPhotos([]);
-      setNewPhotoUrls([]);
-      setRemovedPaths([]);
+      setGallery(buildInitialGallery(vehicle));
+    } else {
+      revokeNewGalleryUrls(galleryRef.current);
+      setGallery([]);
     }
-  }, [open, form, buildDefaults]);
+  }, [open, form, buildDefaults, vehicle]);
 
   const acquisitionCost = form.watch("acquisitionCost");
   const reconditioningCost = form.watch("reconditioningCost");
   const make = form.watch("make");
+  const vin = form.watch("vin");
 
   const totalInvested = useMemo(
     () => computeTotalInvested(acquisitionCost ?? 0, reconditioningCost ?? 0),
     [acquisitionCost, reconditioningCost],
   );
 
-  const syncPhotoUrls = useCallback((files: File[]) => {
-    setNewPhotoUrls((prev) => {
-      prev.forEach((url) => URL.revokeObjectURL(url));
-      return files.map((file) => URL.createObjectURL(file));
-    });
-  }, []);
+  const galleryItems: PhotoGalleryItem[] = useMemo(
+    () => gallery.map(({ id, url }) => ({ id, url })),
+    [gallery],
+  );
 
   const addPhotos = useCallback((files: File[]) => {
-    const remaining = 20 - newPhotos.length;
+    const remaining = 20 - galleryRef.current.length;
     if (remaining <= 0) {
       toast.error("Maximum 20 photos allowed");
       return;
@@ -136,29 +156,76 @@ export function useEditVehicleForm(
       valid.push(file);
     }
     if (!valid.length) return;
-    const next = [...newPhotos, ...valid];
-    setNewPhotos(next);
-    syncPhotoUrls(next);
-  }, [newPhotos, syncPhotoUrls]);
 
-  const removeNewPhoto = useCallback((index: number) => {
-    const next = newPhotos.filter((_, i) => i !== index);
-    setNewPhotos(next);
-    syncPhotoUrls(next);
-  }, [newPhotos, syncPhotoUrls]);
-
-  const removeExistingImage = useCallback((storagePath: string) => {
-    setRemovedPaths((prev) => [...prev, storagePath]);
+    const newItems: GalleryItem[] = valid.map((file) => ({
+      id: `new-${crypto.randomUUID()}`,
+      kind: "new",
+      file,
+      url: URL.createObjectURL(file),
+    }));
+    setGallery((prev) => [...prev, ...newItems]);
   }, []);
 
-  const remainingExisting = vehicle.imageStoragePaths.filter(
-    (p) => !removedPaths.includes(p),
-  );
+  const removePhoto = useCallback((index: number) => {
+    setGallery((prev) => {
+      const item = prev[index];
+      if (item?.kind === "new") URL.revokeObjectURL(item.url);
+      return prev.filter((_, i) => i !== index);
+    });
+  }, []);
+
+  const reorderPhotos = useCallback((fromIndex: number, toIndex: number) => {
+    setGallery((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (vin.length !== 17) {
+      form.clearErrors("vin");
+      setIsDuplicateVin(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const { isDuplicate } = await checkVinUniqueness(vin, vehicle.id);
+        setIsDuplicateVin(isDuplicate);
+        if (isDuplicate) {
+          form.setError("vin", { message: "A vehicle with this VIN already exists" });
+        } else {
+          form.clearErrors("vin");
+        }
+      } catch {
+        // Server action catches duplicates on submit
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [vin, form, vehicle.id]);
 
   const onSubmit = form.handleSubmit(
     async (values) => {
       setIsSubmitting(true);
       try {
+        const currentGallery = galleryRef.current;
+        const removedImages = vehicle.imageStoragePaths.filter(
+          (path) => !currentGallery.some(
+            (item) => item.kind === "existing" && item.storagePath === path,
+          ),
+        );
+        const imageOrder = currentGallery.map((item) =>
+          item.kind === "existing"
+            ? { type: "existing" as const, path: item.storagePath }
+            : { type: "new" as const },
+        );
+        const newPhotos = currentGallery
+          .filter((item): item is Extract<GalleryItem, { kind: "new" }> => item.kind === "new")
+          .map((item) => item.file);
+
         const payload = {
           vehicleId: vehicle.id,
           vin: values.vin,
@@ -189,7 +256,8 @@ export function useEditVehicleForm(
           titleStatus: values.titleStatus ?? "",
           odometerStatus: values.odometerStatus ?? "",
           notes: values.notes ?? "",
-          removedImages: removedPathsRef.current,
+          removedImages,
+          imageOrder,
         };
 
         const formData = new FormData();
@@ -220,16 +288,13 @@ export function useEditVehicleForm(
     form,
     onSubmit,
     isSubmitting,
+    isDuplicateVin,
     shake,
     totalInvested,
     make,
-    newPhotos,
-    newPhotoUrls,
-    existingImages: vehicle.images,
-    existingPaths: vehicle.imageStoragePaths,
-    remainingExisting,
+    galleryItems,
     addPhotos,
-    removeNewPhoto,
-    removeExistingImage,
+    removePhoto,
+    reorderPhotos,
   };
 }

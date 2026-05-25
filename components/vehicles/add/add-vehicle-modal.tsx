@@ -56,6 +56,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
     form,
     onSubmit,
     isSubmitting,
+    isDuplicateVin,
     shake,
     isScanning,
     totalInvested,
@@ -64,6 +65,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
     make,
     addPhotos,
     removePhoto,
+    reorderPhotos,
     scanVin,
   } = useAddVehicleForm(open, () => onOpenChange(false));
 
@@ -101,6 +103,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           onChange={field.onChange}
                           onScan={scanVin}
                           isScanning={isScanning}
+                          disabled={isDuplicateVin}
                           aria-invalid={!!fieldState.error}
                         />
                       </FormControl>
@@ -319,10 +322,13 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                 headerRight={`${photos.length} / 20 Photos`}
               >
                 <PhotoGalleryUpload
-                  photos={photos}
-                  photoUrls={photoUrls}
+                  items={photos.map((photo, index) => ({
+                    id: `${photo.name}-${photo.size}-${index}`,
+                    url: photoUrls[index] ?? "",
+                  }))}
                   onAdd={addPhotos}
                   onRemove={removePhoto}
+                  onReorder={reorderPhotos}
                 />
               </FormSection>
 
@@ -699,6 +705,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
             submitLabel="Save Vehicle"
             submitClassName="bg-[#16a34a] hover:bg-[#15803d]"
             isSubmitting={isSubmitting}
+            disabled={isDuplicateVin}
             submitIcon={<Save className="mr-2 h-4 w-4" />}
             className="sticky bottom-0 bg-[#1a2332]"
             leftSlot={

@@ -11,6 +11,7 @@ type VinInputWithScanProps = {
   onChange: (value: string) => void;
   onScan: () => void;
   isScanning?: boolean;
+  disabled?: boolean;
   id?: string;
   "aria-invalid"?: boolean;
 };
@@ -20,6 +21,7 @@ export function VinInputWithScan({
   onChange,
   onScan,
   isScanning,
+  disabled,
   id,
   "aria-invalid": ariaInvalid,
 }: VinInputWithScanProps) {
@@ -38,7 +40,7 @@ export function VinInputWithScan({
         <Button
           type="button"
           onClick={onScan}
-          disabled={isScanning}
+          disabled={disabled || isScanning}
           className="h-8 shrink-0 rounded-none bg-[#2563eb] px-4 text-[12px] font-semibold text-white hover:bg-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isScanning ? (

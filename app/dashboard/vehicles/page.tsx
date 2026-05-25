@@ -45,7 +45,7 @@ export default async function VehiclesPage() {
 
     const { data: rows, error } = await supabase
       .from("vehicles")
-      .select("*, images:vehicle_images(storage_path, is_primary)")
+      .select("*, images:vehicle_images(storage_path, is_primary, sort_order)")
       .eq("dealership_id", dealershipId)
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
@@ -55,11 +55,12 @@ export default async function VehiclesPage() {
     } else if (rows) {
       for (const row of rows) {
         const r = row as Record<string, unknown>;
-        const images = r.images as { storage_path: string; is_primary: boolean }[] | undefined;
+        const images = r.images as { storage_path: string; is_primary: boolean; sort_order: number }[] | undefined;
         let imageUrl = "";
-        const sortedImages = [...(images ?? [])].sort(
-          (a, b) => Number(b.is_primary) - Number(a.is_primary),
-        );
+        const sortedImages = [...(images ?? [])].sort((a, b) => {
+          if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
+          return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+        });
         if (sortedImages[0]) {
           try {
             const { data, error: signedError } = await supabase.storage

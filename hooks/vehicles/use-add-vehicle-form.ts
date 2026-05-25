@@ -16,12 +16,14 @@ import {
   getAddVehicleSuccessMessage,
 } from "@/lib/vehicles/actions/add-vehicle/submit";
 import { addVehicle } from "@/lib/vehicles/server/add-vehicle";
+import { checkVinUniqueness } from "@/lib/vehicles/server/utils";
 import { decodeVin } from "@/lib/vehicles/actions/vin-decoder";
 import { validateFile } from "@/lib/vehicles/actions/utils";
 
 export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isDuplicateVin, setIsDuplicateVin] = useState(false);
   const [shake, setShake] = useState(false);
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
 
@@ -35,6 +37,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
   const reconditioningCost = form.watch("reconditioningCost");
   const photos = form.watch("photos");
   const make = form.watch("make");
+  const vin = form.watch("vin");
 
   const totalInvested = useMemo(
     () => computeTotalInvested(acquisitionCost, reconditioningCost),
@@ -53,6 +56,30 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
       photoUrls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [photoUrls]);
+
+  useEffect(() => {
+    if (vin.length !== 17) {
+      form.clearErrors("vin");
+      setIsDuplicateVin(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const { isDuplicate } = await checkVinUniqueness(vin);
+        setIsDuplicateVin(isDuplicate);
+        if (isDuplicate) {
+          form.setError("vin", { message: "A vehicle with this VIN already exists" });
+        } else {
+          form.clearErrors("vin");
+        }
+      } catch {
+        // Server action catches duplicates on submit
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [vin, form]);
 
   const syncPhotoUrls = useCallback((files: File[]) => {
     setPhotoUrls((prev) => {
@@ -101,6 +128,18 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
     [form, syncPhotoUrls],
   );
 
+  const reorderPhotos = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      const current = form.getValues("photos");
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      form.setValue("photos", next, { shouldDirty: true });
+      syncPhotoUrls(next);
+    },
+    [form, syncPhotoUrls],
+  );
+
   const scanVin = useCallback(async () => {
     const vin = form.getValues("vin");
     if (vin.length !== 17) {
@@ -114,11 +153,15 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
 
       if (decoded.year) form.setValue("year", decoded.year, { shouldDirty: true });
       if (decoded.make) form.setValue("make", decoded.make, { shouldDirty: true });
-      if (decoded.model) form.setValue("model", decoded.model, { shouldDirty: true });
       if (decoded.trim) form.setValue("trim", decoded.trim, { shouldDirty: true });
       if (decoded.bodyStyle) form.setValue("bodyStyle", decoded.bodyStyle, { shouldDirty: true });
       if (decoded.driveType) form.setValue("driveType", decoded.driveType, { shouldDirty: true });
       if (decoded.fuelType) form.setValue("fuelType", decoded.fuelType, { shouldDirty: true });
+
+      // Defer model so the Select options derived from make are rendered first
+      setTimeout(() => {
+        if (decoded.model) form.setValue("model", decoded.model, { shouldDirty: true });
+      }, 0);
 
       toast.success("VIN decoded successfully");
     } catch (err) {
@@ -199,6 +242,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
     onSubmit,
     isSubmitting,
     isScanning,
+    isDuplicateVin,
     shake,
     totalInvested,
     photoUrls,
@@ -206,6 +250,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
     make,
     addPhotos,
     removePhoto,
+    reorderPhotos,
     scanVin,
   };
 }

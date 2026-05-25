@@ -2,34 +2,41 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Camera, Plus, Upload, X } from "lucide-react";
+import { Camera, GripVertical, Plus, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+export type PhotoGalleryItem = {
+  id: string;
+  url: string;
+};
+
 type PhotoGalleryUploadProps = {
-  photos: File[];
-  photoUrls: string[];
+  items: PhotoGalleryItem[];
   onAdd: (files: File[]) => void;
   onRemove: (index: number) => void;
+  onReorder?: (fromIndex: number, toIndex: number) => void;
   maxPhotos?: number;
 };
 
 export function PhotoGalleryUpload({
-  photos,
-  photoUrls,
+  items,
   onAdd,
   onRemove,
+  onReorder,
   maxPhotos = 20,
 }: PhotoGalleryUploadProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = React.useState(false);
+  const [dragIndex, setDragIndex] = React.useState<number | null>(null);
+  const [dropTarget, setDropTarget] = React.useState<number | null>(null);
 
   const processFiles = (fileList: FileList | null) => {
     if (!fileList?.length) return;
     onAdd(Array.from(fileList));
   };
 
-  const remaining = maxPhotos - photos.length;
+  const remaining = maxPhotos - items.length;
 
   return (
     <div className="space-y-3">
@@ -81,21 +88,56 @@ export function PhotoGalleryUpload({
         }}
       />
 
-      {photos.length > 0 && (
+      {items.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {photos.map((photo, index) => (
+          {items.map((item, index) => (
             <div
-              key={`${photo.name}-${index}`}
-              className="relative h-16 w-16 overflow-hidden rounded-md border border-slate-600 bg-[#1a2332]"
+              key={item.id}
+              draggable={!!onReorder}
+              onDragStart={() => setDragIndex(index)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDropTarget(index);
+              }}
+              onDragLeave={() => setDropTarget(null)}
+              onDrop={() => {
+                if (dragIndex !== null && dragIndex !== index && onReorder) {
+                  onReorder(dragIndex, index);
+                }
+                setDragIndex(null);
+                setDropTarget(null);
+              }}
+              onDragEnd={() => {
+                setDragIndex(null);
+                setDropTarget(null);
+              }}
+              className={cn(
+                "relative h-16 w-16 overflow-hidden rounded-md border bg-[#1a2332] transition-shadow",
+                dragIndex === index ? "opacity-40 border-blue-400" : "border-slate-600",
+                dropTarget === index && dragIndex !== index
+                  ? "ring-2 ring-blue-400 border-blue-400"
+                  : "",
+                index === 0 ? "ring-1 ring-amber-500/50" : "",
+              )}
             >
-              {photoUrls[index] && (
+              {item.url && (
                 <Image
-                  src={photoUrls[index]}
-                  alt={photo.name}
+                  src={item.url}
+                  alt={`Photo ${index + 1}`}
                   fill
                   className="object-cover"
                   unoptimized
                 />
+              )}
+              {index === 0 && (
+                <span className="absolute left-0.5 top-0.5 rounded bg-amber-600 px-1 py-0.5 text-[7px] font-semibold leading-none text-white">
+                  Primary
+                </span>
+              )}
+              {onReorder && (
+                <div className="absolute bottom-0.5 left-0.5 rounded bg-black/60 p-0.5 text-slate-300">
+                  <GripVertical className="h-3 w-3" />
+                </div>
               )}
               <button
                 type="button"

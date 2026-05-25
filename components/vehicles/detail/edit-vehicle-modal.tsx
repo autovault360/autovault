@@ -1,6 +1,6 @@
 "use client";
 
-import { Car, Save, X, Plus } from "lucide-react";
+import { Car, Save } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -57,17 +57,14 @@ export default function EditVehicleModal({ vehicle, open, onOpenChange }: Props)
     form,
     onSubmit,
     isSubmitting,
+    isDuplicateVin,
     shake,
     totalInvested,
     make,
-    newPhotos,
-    newPhotoUrls,
-    existingImages,
-    existingPaths,
-    remainingExisting,
+    galleryItems,
     addPhotos,
-    removeNewPhoto,
-    removeExistingImage,
+    removePhoto,
+    reorderPhotos,
   } = useEditVehicleForm(vehicle, open, () => onOpenChange(false));
 
   const modelOptions = make ? (VEHICLE_MODELS[make] ?? []) : [];
@@ -305,38 +302,14 @@ export default function EditVehicleModal({ vehicle, open, onOpenChange }: Props)
               <FormSection
                 title="Vehicle Photos"
                 theme="dark"
-                headerRight={`${remainingExisting.length + newPhotos.length} / 20 Photos`}
+                headerRight={`${galleryItems.length} / 20 Photos`}
               >
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {vehicle.imageStoragePaths.map((path, i) => {
-                      if (!remainingExisting.includes(path)) return null;
-                      return (
-                        <div key={path} className="relative h-16 w-16 overflow-hidden rounded-md border border-slate-600 bg-[#1a2332]">
-                          <img src={existingImages[i]} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
-                          {i === 0 && (
-                            <span className="absolute left-0.5 top-0.5 rounded bg-blue-600 px-1 py-0.5 text-[7px] font-semibold leading-none text-white">
-                              Primary
-                            </span>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => removeExistingImage(path)}
-                            className="absolute top-0.5 right-0.5 rounded-full bg-black/60 p-0.5 text-white hover:bg-black/80"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <PhotoGalleryUpload
-                    photos={newPhotos}
-                    photoUrls={newPhotoUrls}
-                    onAdd={addPhotos}
-                    onRemove={removeNewPhoto}
-                  />
-                </div>
+                <PhotoGalleryUpload
+                  items={galleryItems}
+                  onAdd={addPhotos}
+                  onRemove={removePhoto}
+                  onReorder={reorderPhotos}
+                />
               </FormSection>
 
               <FormSection title="Stock & Location" theme="dark">
@@ -557,6 +530,7 @@ export default function EditVehicleModal({ vehicle, open, onOpenChange }: Props)
             submitLabel="Save Changes"
             submitClassName="bg-[#2563eb] hover:bg-[#1d4ed8]"
             isSubmitting={isSubmitting}
+            disabled={isDuplicateVin}
             submitIcon={<Save className="mr-2 h-4 w-4" />}
             className="sticky bottom-0 bg-[#1a2332]"
           />

@@ -23,14 +23,14 @@ const MAKE_ALIASES: Record<string, string> = {
 };
 
 const MODEL_ALIASES: Record<string, Record<string, string>> = {
-  bmw: { X5: "x5", X3: "x3" },
-  mercedes: { "E 350": "e350", "C 300": "c300", GLE: "gle" },
-  audi: { Q5: "q5", A4: "a4", Q7: "q7" },
-  toyota: { CAMRY: "camry", RAV4: "rav4" },
-  honda: { ACCORD: "accord", "CR-V": "cr_v" },
-  ford: { "F-150": "f150", EXPLORER: "explorer" },
-  chevrolet: { SILVERADO: "silverado", EQUINOX: "equinox" },
-  lexus: { "RX 350": "rx350", "ES 350": "es350" },
+  bmw: { X5: "x5", "X5 M": "x5", X3: "x3", "X3 M": "x3", "3": "3_series", "3 SERIES": "3_series" },
+  mercedes: { "E 350": "e350", E350: "e350", "C 300": "c300", C300: "c300", GLE: "gle", GLC: "c300", CLA: "c300" },
+  audi: { Q5: "q5", A4: "a4", Q7: "q7", Q3: "q5", A3: "a4", A5: "a4", A6: "a4" },
+  toyota: { CAMRY: "camry", RAV4: "rav4", COROLLA: "camry", HIGHLANDER: "rav4" },
+  honda: { ACCORD: "accord", "CR-V": "cr_v", CIVIC: "accord" },
+  ford: { "F-150": "f150", EXPLORER: "explorer", "MUSTANG": "explorer", "ESCAPE": "explorer" },
+  chevrolet: { SILVERADO: "silverado", EQUINOX: "equinox", TAHOE: "silverado", SUBURBAN: "silverado" },
+  lexus: { "RX 350": "rx350", "ES 350": "es350", "NX": "rx350" },
 };
 
 function normalizeMake(raw: string): string {
@@ -40,9 +40,16 @@ function normalizeMake(raw: string): string {
 
 function normalizeModel(make: string, raw: string): string {
   const cleaned = raw.trim();
+  if (!cleaned) return "";
   const makeModels = MODEL_ALIASES[make];
   if (makeModels) {
-    return makeModels[cleaned.toUpperCase()] ?? cleaned.toLowerCase().replace(/\s+/g, "_");
+    const upper = cleaned.toUpperCase();
+    if (makeModels[upper]) return makeModels[upper];
+    const sortedKeys = Object.keys(makeModels).sort((a, b) => b.length - a.length);
+    for (const key of sortedKeys) {
+      if (upper.startsWith(key)) return makeModels[key];
+    }
+    return cleaned.toLowerCase().replace(/\s+/g, "_");
   }
   return cleaned.toLowerCase().replace(/\s+/g, "_");
 }
@@ -99,11 +106,11 @@ export async function decodeVin(vin: string): Promise<VinDecodeResult> {
   }
 
   if (results.ErrorCode && results.ErrorCode !== "0") {
-    throw new Error(results.ErrorText || "Invalid VIN");
+    throw new Error("VIN is not correct");
   }
 
   if (results.VIN && results.VIN !== vin) {
-    throw new Error("VIN check digit mismatch");
+    throw new Error("VIN is not correct");
   }
 
   const rawMake = results.Make ?? "";

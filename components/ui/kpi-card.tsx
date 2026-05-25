@@ -72,7 +72,13 @@ function Sparkline({
           <stop offset="100%" stopColor={color} stopOpacity={0} />
         </linearGradient>
         <filter id={`spark-glow-${id}`} x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="0" stdDeviation="1" floodColor={color} floodOpacity="0.35" />
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
+          <feFlood floodColor={color} floodOpacity="0.35" result="color" />
+          <feComposite in="color" in2="blur" operator="in" result="shadow" />
+          <feMerge>
+            <feMergeNode in="shadow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
       </defs>
       <polygon points={fillPoints} fill={`url(#spark-fill-${id})`} />

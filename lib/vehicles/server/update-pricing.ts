@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authenticateUser, assertVehicleActive, type ActionResult } from "./utils";
+import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -60,6 +60,40 @@ export async function updatePricing(formData: FormData): Promise<ActionResult> {
       .eq("id", data.vehicleId);
 
     if (updateError) throw new Error(updateError.message);
+
+    const photoFile = formData.get("photo") as File | null;
+    if (photoFile) {
+      const { data: existingImages } = await supabase
+        .from("vehicle_images")
+        .select("storage_path")
+        .eq("vehicle_id", data.vehicleId)
+        .eq("dealership_id", dealershipId)
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true })
+        .limit(1);
+
+      const ext = photoFile.name.split(".").pop();
+      const path = `${dealershipId}/${data.vehicleId}/photos/primary.${ext}`;
+      await uploadFile("vehicle-images", path, photoFile);
+
+      if (existingImages && existingImages.length > 0) {
+        const oldPath = existingImages[0].storage_path;
+        await supabase.storage.from("vehicle-images").remove([oldPath]);
+        await supabase
+          .from("vehicle_images")
+          .update({ deleted_at: new Date().toISOString() })
+          .eq("vehicle_id", data.vehicleId)
+          .eq("storage_path", oldPath);
+      }
+
+      await supabase.from("vehicle_images").insert({
+        vehicle_id: data.vehicleId,
+        dealership_id: dealershipId,
+        storage_path: path,
+        is_primary: true,
+        sort_order: 1,
+      });
+    }
 
     const { error: historyError } = await supabase.from("pricing_history").insert({
       vehicle_id: data.vehicleId,

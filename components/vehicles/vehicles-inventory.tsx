@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -9,6 +9,8 @@ import {
   Pencil,
   MoreHorizontal,
   X,
+  Eye,
+  Loader2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +34,8 @@ import {
 } from "@/lib/vehicles/types";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import { Button } from "../ui/button";
+import EditVehicleModal from "@/components/vehicles/detail/edit-vehicle-modal";
+import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 
 type VehiclesInventoryProps = {
   vehicles: Vehicle[];
@@ -43,6 +47,37 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
   const [model, setModel] = useState("all");
   const [status, setStatus] = useState("all");
   const [location, setLocation] = useState("all");
+  const [activePopover, setActivePopover] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingVehicle, setEditingVehicle] = useState<VehicleDetail | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const popoverRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!editingId) {
+      setEditingVehicle(null);
+      return;
+    }
+    setEditLoading(true);
+    fetch(`/api/vehicles/${editingId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setEditingVehicle(data);
+        setEditLoading(false);
+      })
+      .catch(() => setEditLoading(false));
+  }, [editingId]);
+
+  useEffect(() => {
+    if (!activePopover) return;
+    const handler = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setActivePopover(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [activePopover]);
 
   const makes = useMemo(
     () => [...new Set(vehicles.map((v) => v.make))].sort(),
@@ -83,6 +118,64 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       );
     });
   }, [vehicles, search, make, model, status, location]);
+
+  const exportToCSV = () => {
+    const headers = [
+      "Vehicle",
+      "Stock #",
+      "VIN",
+      "Year",
+      "Mileage",
+      "Price",
+      "Cost",
+      "Days in Inventory",
+      "Status",
+      "Location",
+      "Image URL",
+    ];
+
+    const rows = filtered.map((v) => [
+      getVehicleName(v),
+      v.stockNumber,
+      v.vin,
+      String(v.year),
+      formatMileage(v.mileage),
+      formatCurrency(v.price),
+      formatCurrency(v.cost),
+      String(v.daysInInventory),
+      v.status,
+      v.location,
+      v.image,
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) =>
+        row
+          .map((cell) => {
+            const str = String(cell);
+            if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+              return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+          })
+          .join(","),
+      ),
+    ].join("\n");
+
+    const blob = new Blob([`\uFEFF${csvContent}`], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `vehicles-export-${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const columns: Column<Vehicle>[] = [
     {
@@ -199,20 +292,46 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       headerClassName: "text-right",
       cell: (v) => (
         <div className="flex items-center justify-end gap-1.5">
-          <Link
-            href={`/dashboard/vehicles/${v.id}`}
-            className="grid h-7 w-7 place-items-center rounded-md bg-blue-600 text-white transition hover:bg-blue-500"
-            aria-label="Edit vehicle"
-          >
-            <Pencil className="h-3 w-3" />
-          </Link>
           <button
             type="button"
-            className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-slate-800/60 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
-            aria-label="More actions"
+            onClick={() => { setEditingId(v.id); setActivePopover(null); }}
+            className="grid h-7 w-7 place-items-center rounded-md bg-blue-600 text-white transition hover:bg-blue-500"
+            aria-label="Edit vehicle"
+            disabled={editLoading && editingId === v.id}
           >
-            <MoreHorizontal className="h-3.5 w-3.5" />
+            {editLoading && editingId === v.id ? (
+              <Loader2 className="h-3 w-3 animate-spin" />
+            ) : (
+              <Pencil className="h-3 w-3" />
+            )}
           </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() =>
+                setActivePopover(activePopover === v.id ? null : v.id)
+              }
+              className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-slate-800/60 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+              aria-label="More actions"
+            >
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            </button>
+            {activePopover === v.id && (
+              <div
+                ref={popoverRef}
+                className="absolute right-0 top-full z-50 mt-1 w-32 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
+              >
+                <Link
+                  href={`/dashboard/vehicles/${v.id}`}
+                  onClick={() => setActivePopover(null)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-slate-800"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  View
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       ),
     },
@@ -314,6 +433,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
           <Button
             variant="outline"
             theme="dark"
+            onClick={exportToCSV}
           >
             <Download className="h-3.5 w-3.5" />
             Export
@@ -330,6 +450,19 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
         addPagination
         emptyMessage="No vehicles match your filters."
       />
+
+      {editingVehicle && (
+        <EditVehicleModal
+          vehicle={editingVehicle}
+          open={!!editingVehicle}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditingVehicle(null);
+              setEditingId(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -137,11 +137,29 @@ export async function uploadFile(
 ): Promise<string> {
   const supabase = await createClient();
 
+  let body: Blob | ArrayBuffer = file;
+  let contentType = file.type;
+
+  if (bucket === "vehicle-images") {
+    try {
+      const sharp = (await import("sharp")).default;
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const optimized = await sharp(buffer)
+        .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 80, mozjpeg: true })
+        .toBuffer();
+      body = new Blob([new Uint8Array(optimized)], { type: "image/jpeg" });
+      contentType = "image/jpeg";
+    } catch {
+      console.warn("Image optimization failed, uploading original");
+    }
+  }
+
   const { error } = await supabase.storage
     .from(bucket)
-    .upload(storagePath, file, {
+    .upload(storagePath, body, {
       upsert: true,
-      contentType: file.type,
+      contentType,
     });
 
   if (error) {
@@ -167,6 +185,38 @@ export async function getSignedUrl(
   }
 
   return data.signedUrl;
+}
+
+export async function checkVinUniqueness(
+  vin: string,
+  excludeVehicleId?: string,
+): Promise<{ isDuplicate: boolean }> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { isDuplicate: false };
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("dealership_id")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+
+  if (!profile?.dealership_id) return { isDuplicate: false };
+
+  let query = supabase
+    .from("vehicles")
+    .select("id")
+    .eq("dealership_id", profile.dealership_id)
+    .eq("vin", vin)
+    .is("deleted_at", null);
+
+  if (excludeVehicleId) {
+    query = query.neq("id", excludeVehicleId);
+  }
+
+  const { data } = await query.maybeSingle();
+  return { isDuplicate: !!data };
 }
 
 export async function rollbackVehicle(
