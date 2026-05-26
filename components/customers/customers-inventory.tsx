@@ -326,7 +326,7 @@ export default function CustomersInventory({
         </button>
       </div>
 
-      <div className="p-0">
+      <div className="py-3.5">
         <DataTable
           columns={columns}
           data={filtered}
