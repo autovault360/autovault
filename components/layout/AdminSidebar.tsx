@@ -58,7 +58,7 @@ const navGroups = [
         color: "text-blue-500",
       },
       {
-        href: "#",
+        href: "/dashboard/sales-reps",
         label: "Sales Reps",
         icon: Users,
         color: "text-emerald-500",
