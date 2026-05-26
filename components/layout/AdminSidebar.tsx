@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useNProgressRouter } from "@/hooks/use-nprogress-router";
 import {
   LayoutDashboard,
   Users,
@@ -70,7 +71,7 @@ const navGroups = [
         color: "text-green-500",
       },
       { href: "#", label: "Expenses", icon: DollarSign, color: "text-red-500" },
-      { href: "#", label: "Customers", icon: User, color: "text-purple-500" },
+      { href: "/dashboard/customers", label: "Customers", icon: User, color: "text-purple-500" },
     ],
   },
   {
@@ -115,6 +116,7 @@ const navGroups = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useNProgressRouter();
   const [activeProfile, setActiveProfile] = useState(0);
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const REGULAR_THUMBS = 5;
@@ -9,29 +9,45 @@ const REGULAR_THUMBS = 5;
 export default function VehicleGallery({
   images,
   alt,
+  onUploadClick,
 }: {
   images: string[];
   alt: string;
+  onUploadClick?: () => void;
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const extraCount = Math.max(0, images.length - REGULAR_THUMBS);
+  const validImages = images.filter(Boolean);
+  const extraCount = Math.max(0, validImages.length - REGULAR_THUMBS);
 
   function prev() {
-    setActiveIndex((i) => (i > 0 ? i - 1 : images.length - 1));
+    setActiveIndex((i) => (i > 0 ? i - 1 : validImages.length - 1));
   }
 
   function next() {
-    setActiveIndex((i) => (i < images.length - 1 ? i + 1 : 0));
+    setActiveIndex((i) => (i < validImages.length - 1 ? i + 1 : 0));
   }
+  const currentImage = validImages[activeIndex] ?? validImages[0];
 
   return (
     <div className="space-y-2">
       <div className="overflow-hidden rounded-md border border-slate-800">
-        <img
-          src={images[activeIndex] ?? images[0]}
-          alt={alt}
-          className="h-[350px] w-full object-cover"
-        />
+        {!currentImage ? (
+          <button
+            type="button"
+            onClick={onUploadClick}
+            className="flex h-[350px] w-full flex-col items-center justify-center gap-2 text-slate-500 transition hover:text-slate-300 cursor-pointer"
+          >
+            <Camera className="h-10 w-10" />
+            <span className="text-sm font-medium">No Image Upload</span>
+            <span className="text-xs">Click to upload</span>
+          </button>
+        ) : (
+          <img
+            src={currentImage}
+            alt={alt}
+            className="h-[350px] w-full object-cover"
+          />
+        )}
       </div>
 
       <div className="flex items-center gap-1">
@@ -46,7 +62,7 @@ export default function VehicleGallery({
 
         <div className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto">
           {Array.from({ length: REGULAR_THUMBS }).map((_, i) => {
-            const image = images[i];
+            const image = validImages[i];
             if (!image) return null;
 
             return (
@@ -70,7 +86,7 @@ export default function VehicleGallery({
             );
           })}
 
-          {images[REGULAR_THUMBS] && (
+          {validImages[REGULAR_THUMBS] && (
             <button
               type="button"
               onClick={() => setActiveIndex(REGULAR_THUMBS)}
@@ -82,7 +98,7 @@ export default function VehicleGallery({
               )}
             >
               <img
-                src={images[REGULAR_THUMBS]}
+                src={validImages[REGULAR_THUMBS]}
                 alt={`${alt} view ${REGULAR_THUMBS + 1}`}
                 className="h-full w-full object-cover"
               />

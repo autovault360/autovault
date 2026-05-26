@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 
+function displayValue(value: React.ReactNode): React.ReactNode {
+  if (value === "" || value === null || value === undefined || value === 0)
+    return "—";
+  return value;
+}
+
 export function DetailRow({
   label,
   value,
@@ -18,7 +24,7 @@ export function DetailRow({
     >
       <span className="shrink-0 text-[10.5px] text-slate-500">{label}</span>
       <span className="text-right text-[11px] font-medium text-white">
-        {value}
+        {displayValue(value)}
       </span>
     </div>
   );

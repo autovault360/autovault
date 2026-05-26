@@ -5,6 +5,7 @@ import type {
   VehicleExpense,
   ActivityLogEntry,
 } from "./detail-types";
+import { formatField } from "./types";
 import { authenticateUser } from "./server/utils";
 
 function mapStatus(dbStatus: string): "In Stock" | "Needs Attention" | "Marked Sold" {
@@ -77,7 +78,7 @@ type DbVehicleRow = {
   status: string;
   created_at: string;
   updated_at: string;
-  images?: { storage_path: string; is_primary: boolean; sort_order: number }[];
+  images?: { storage_path: string; is_primary: boolean; sort_order: number; deleted_at?: string | null }[];
   expenses?: { total_cost: number; category: string; created_at: string }[];
   status_history?: { from_status: string | null; to_status: string; created_at: string; notes?: string }[];
   pricing_history?: { previous_price: number | null; new_price: number; reason: string; created_at: string }[];
@@ -86,8 +87,9 @@ type DbVehicleRow = {
 async function getImageUrls(
   supabase: SupabaseClient,
   images: { storage_path: string; is_primary: boolean; sort_order: number }[],
-): Promise<string[]> {
+): Promise<{ urls: string[]; paths: string[] }> {
   const urls: string[] = [];
+  const paths: string[] = [];
   const sorted = [...images].sort((a, b) => {
     if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
     return (a.sort_order ?? 0) - (b.sort_order ?? 0);
@@ -97,12 +99,15 @@ async function getImageUrls(
       const { data, error } = await supabase.storage
         .from("vehicle-images")
         .createSignedUrl(img.storage_path, 3600);
-      urls.push(error || !data ? "" : data.signedUrl);
+      if (!error && data?.signedUrl) {
+        urls.push(data.signedUrl);
+        paths.push(img.storage_path);
+      }
     } catch {
-      urls.push("");
+      // Skip orphaned records where storage file no longer exists
     }
   }
-  return urls;
+  return { urls, paths };
 }
 
 export async function getVehicleDetail(id: string): Promise<VehicleDetail | null> {
@@ -120,7 +125,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       .from("vehicles")
       .select(`
         *,
-        images:vehicle_images(storage_path, is_primary, sort_order),
+        images:vehicle_images(storage_path, is_primary, sort_order, deleted_at),
         expenses:vehicle_expenses(total_cost, category, created_at),
         status_history(from_status, to_status, created_at, notes),
         pricing_history(previous_price, new_price, reason, created_at)
@@ -155,12 +160,15 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       ? (grossProfit / acquisitionCost) * 100
       : 0;
 
-    const sortedImages = [...(row.images ?? [])].sort((a, b) => {
+    const activeImages = (row.images ?? []).filter((img) => !img.deleted_at);
+    const sortedImages = [...activeImages].sort((a, b) => {
       if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
       return (a.sort_order ?? 0) - (b.sort_order ?? 0);
     });
-    const imageStoragePaths = sortedImages.map((img) => img.storage_path);
-    const imagesWithUrls = await getImageUrls(supabase, sortedImages);
+    const { urls: imagesWithUrls, paths: imageStoragePaths } = await getImageUrls(
+      supabase,
+      sortedImages,
+    );
 
     const expenses: VehicleExpense[] = (row.expenses ?? []).map((e) => ({
       label: e.category ? `${e.category} - ${formatDate(e.created_at)}` : formatDate(e.created_at),
@@ -287,7 +295,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       totalReconditioning,
       grossProfit,
       grossProfitPct,
-      displayTitle: `${row.year} ${row.make} ${row.model}${row.trim ? " " + row.trim : ""}`,
+      displayTitle: `${row.year} ${formatField("make", row.make)} ${formatField("model", row.model, row.make)}${row.trim ? " " + row.trim : ""}`,
     };
   } catch {
     return null;

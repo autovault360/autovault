@@ -50,9 +50,10 @@ type Props = {
   vehicle: VehicleDetail;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  triggerUpload?: number | undefined;
 };
 
-export default function EditVehicleModal({ vehicle, open, onOpenChange }: Props) {
+export default function EditVehicleModal({ vehicle, open, onOpenChange, triggerUpload }: Props) {
   const {
     form,
     onSubmit,
@@ -305,6 +306,7 @@ export default function EditVehicleModal({ vehicle, open, onOpenChange }: Props)
                 headerRight={`${galleryItems.length} / 20 Photos`}
               >
                 <PhotoGalleryUpload
+                  autoTrigger={triggerUpload}
                   items={galleryItems}
                   onAdd={addPhotos}
                   onRemove={removePhoto}

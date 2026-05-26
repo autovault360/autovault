@@ -1,3 +1,15 @@
+import {
+  BODY_STYLES,
+  DRIVE_TYPES,
+  EXTERIOR_COLORS,
+  FUEL_TYPES,
+  INTERIOR_COLORS,
+  LOT_LOCATIONS,
+  TITLE_STATUSES,
+  VEHICLE_MAKES,
+  VEHICLE_MODELS,
+} from "@/lib/vehicles/actions/add-vehicle/options";
+
 export type VehicleStatus = "In Stock" | "Needs Attention" | "Marked Sold";
 
 export type Vehicle = {
@@ -36,7 +48,37 @@ export function formatCurrencyDecimal(value: number): string {
 }
 
 export function formatMileage(value: number): string {
+  if (value === 0) return "—";
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+const OPTION_MAP: Record<
+  string,
+  readonly { value: string; label: string }[]
+> = {
+  bodyStyle: BODY_STYLES,
+  drivetrain: DRIVE_TYPES,
+  exteriorColor: EXTERIOR_COLORS,
+  interiorColor: INTERIOR_COLORS,
+  fuelType: FUEL_TYPES,
+  location: LOT_LOCATIONS,
+  titleStatus: TITLE_STATUSES,
+};
+
+export function formatField(field: string, value: string, make?: string): string {
+  const options = OPTION_MAP[field];
+  if (options) {
+    return options.find((o) => o.value === value)?.label ?? value;
+  }
+  if (field === "make") {
+    return VEHICLE_MAKES.find((o) => o.value === value)?.label ?? value;
+  }
+  if (field === "model" && make) {
+    return (
+      VEHICLE_MODELS[make]?.find((o) => o.value === value)?.label ?? value
+    );
+  }
+  return value;
 }
 
 export function getDaysColor(days: number): string {
@@ -57,7 +99,7 @@ export function getStatusStyle(status: VehicleStatus): string {
 }
 
 export function getVehicleName(vehicle: Vehicle): string {
-  return `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+  return `${vehicle.year} ${formatField("make", vehicle.make)} ${formatField("model", vehicle.model, vehicle.make)}`;
 }
 
 export function isNewArrivalThisMonth(vehicle: Vehicle): boolean {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -71,6 +72,7 @@ export function useEditVehicleForm(
   open: boolean,
   onSuccess: () => void,
 ) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDuplicateVin, setIsDuplicateVin] = useState(false);
   const [shake, setShake] = useState(false);
@@ -270,6 +272,7 @@ export function useEditVehicleForm(
 
         if (result.success) {
           toast.success("Vehicle updated successfully");
+          router.refresh();
           onSuccess();
         } else {
           toast.error(result.error ?? "Failed to update vehicle");

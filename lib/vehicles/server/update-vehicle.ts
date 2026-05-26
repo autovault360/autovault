@@ -44,6 +44,29 @@ const schema = z.object({
   ).optional(),
 });
 
+async function softDeleteVehicleImages(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  vehicleId: string,
+  storagePaths: string[],
+) {
+  if (!storagePaths.length) return;
+
+  const { error: storageError } = await supabase.storage
+    .from("vehicle-images")
+    .remove(storagePaths);
+  if (storageError) console.error("Failed to remove images from storage:", storageError.message);
+
+  for (const path of storagePaths) {
+    const { error } = await supabase
+      .from("vehicle_images")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("vehicle_id", vehicleId)
+      .eq("storage_path", path)
+      .is("deleted_at", null);
+    if (error) throw new Error(`Failed to remove image records: ${error.message}`);
+  }
+}
+
 export async function updateVehicle(formData: FormData) {
   try {
     const auth = await authenticateUser();
@@ -112,21 +135,6 @@ export async function updateVehicle(formData: FormData) {
       throw new Error(message);
     }
 
-    const removedImages = data.removedImages ?? [];
-    if (removedImages.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from("vehicle-images")
-        .remove(removedImages);
-      if (storageError) console.error("Failed to remove images from storage:", storageError.message);
-
-      const { error: dbError } = await supabase
-        .from("vehicle_images")
-        .delete()
-        .eq("vehicle_id", data.vehicleId)
-        .in("storage_path", removedImages);
-      if (dbError) console.error("Failed to remove image records:", dbError.message);
-    }
-
     const photos = formData.getAll("photos") as File[];
     const imageOrder = data.imageOrder ?? [];
 
@@ -156,6 +164,19 @@ export async function updateVehicle(formData: FormData) {
         }
       }
 
+      const keepSet = new Set(orderedPaths);
+      const { data: activeImages } = await supabase
+        .from("vehicle_images")
+        .select("storage_path")
+        .eq("vehicle_id", data.vehicleId)
+        .is("deleted_at", null);
+
+      const pathsToRemove = (activeImages ?? [])
+        .map((row) => row.storage_path)
+        .filter((path) => !keepSet.has(path));
+
+      await softDeleteVehicleImages(supabase, data.vehicleId, pathsToRemove);
+
       for (let i = 0; i < orderedPaths.length; i++) {
         const path = orderedPaths[i];
         const { data: existingImage } = await supabase
@@ -163,14 +184,15 @@ export async function updateVehicle(formData: FormData) {
           .select("id")
           .eq("vehicle_id", data.vehicleId)
           .eq("storage_path", path)
+          .is("deleted_at", null)
           .maybeSingle();
 
         if (existingImage) {
           const { error: orderError } = await supabase
             .from("vehicle_images")
-            .update({ sort_order: i + 1, is_primary: i === 0 })
+            .update({ sort_order: i, is_primary: i === 0 })
             .eq("id", existingImage.id);
-          if (orderError) console.error("Failed to update image order:", orderError.message);
+          if (orderError) throw new Error(`Failed to update image order: ${orderError.message}`);
         } else {
           const { error: insertError } = await supabase.from("vehicle_images").insert({
             vehicle_id: data.vehicleId,
@@ -179,32 +201,37 @@ export async function updateVehicle(formData: FormData) {
             is_primary: i === 0,
             sort_order: i,
           });
-          if (insertError) console.error("Failed to insert image:", insertError.message);
+          if (insertError) throw new Error(`Failed to insert image: ${insertError.message}`);
         }
       }
-    } else if (photos.length > 0) {
-      const { data: maxSort } = await supabase
-        .from("vehicle_images")
-        .select("sort_order")
-        .eq("vehicle_id", data.vehicleId)
-        .order("sort_order", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    } else {
+      const removedImages = data.removedImages ?? [];
+      if (removedImages.length > 0) {
+        await softDeleteVehicleImages(supabase, data.vehicleId, removedImages);
+      } else if (photos.length > 0) {
+        const { data: maxSort } = await supabase
+          .from("vehicle_images")
+          .select("sort_order")
+          .eq("vehicle_id", data.vehicleId)
+          .order("sort_order", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      let nextSort = (maxSort?.sort_order ?? -1) + 1;
-      for (let i = 0; i < photos.length; i++) {
-        const ext = photos[i].name.split(".").pop();
-        const path = `${dealershipId}/${data.vehicleId}/photos/${nextSort}.${ext}`;
-        await uploadFile("vehicle-images", path, photos[i]);
+        let nextSort = (maxSort?.sort_order ?? -1) + 1;
+        for (let i = 0; i < photos.length; i++) {
+          const ext = photos[i].name.split(".").pop();
+          const path = `${dealershipId}/${data.vehicleId}/photos/${nextSort}.${ext}`;
+          await uploadFile("vehicle-images", path, photos[i]);
 
-        await supabase.from("vehicle_images").insert({
-          vehicle_id: data.vehicleId,
-          dealership_id: dealershipId,
-          storage_path: path,
-          is_primary: false,
-          sort_order: nextSort,
-        });
-        nextSort++;
+          await supabase.from("vehicle_images").insert({
+            vehicle_id: data.vehicleId,
+            dealership_id: dealershipId,
+            storage_path: path,
+            is_primary: false,
+            sort_order: nextSort,
+          });
+          nextSort++;
+        }
       }
     }
 
@@ -219,6 +246,7 @@ export async function updateVehicle(formData: FormData) {
     if (auditError) console.error("audit_logs insert failed:", auditError.message);
 
     revalidatePath("/dashboard/vehicles");
+    revalidatePath(`/dashboard/vehicles/${data.vehicleId}`);
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

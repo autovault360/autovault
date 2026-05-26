@@ -92,20 +92,6 @@ export async function markAsLoss(formData: FormData): Promise<ActionResult> {
 
     if (lossError) throw new Error(lossError.message);
 
-    await supabase
-      .from("vehicles")
-      .update({ status: "loss" })
-      .eq("id", data.vehicleId);
-
-    await supabase.from("status_history").insert({
-      vehicle_id: data.vehicleId,
-      dealership_id: dealershipId,
-      from_status: "in_stock",
-      to_status: "loss",
-      notes: data.explanation.substring(0, 200),
-      changed_by: userId,
-    });
-
     const { error: auditError } = await supabase.from("audit_logs").insert({
       dealership_id: dealershipId,
       entity_type: "vehicles",
@@ -117,6 +103,7 @@ export async function markAsLoss(formData: FormData): Promise<ActionResult> {
     if (auditError) console.error("audit_logs insert failed:", auditError.message);
 
     revalidatePath("/dashboard/vehicles");
+    revalidatePath(`/dashboard/vehicles/${data.vehicleId}`);
     return { success: true };
   } catch (err) {
     if (uploadedPaths.length > 0) {

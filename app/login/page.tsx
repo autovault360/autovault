@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useNProgressRouter } from "@/hooks/use-nprogress-router";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -20,7 +20,7 @@ import Footer from "@/components/layout/footer";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const router = useNProgressRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");

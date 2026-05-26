@@ -8,6 +8,9 @@ import {
   Tag,
   PieChart,
   TrendingDown,
+  Users,
+  UserPlus,
+  Handshake,
   type LucideIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -20,7 +23,10 @@ export type KPIIconName =
   | "dollar-sign"
   | "tag"
   | "pie-chart"
-  | "trending-down";
+  | "trending-down"
+  | "users"
+  | "user-plus"
+  | "handshake";
 
 const iconMap: Record<KPIIconName, LucideIcon> = {
   car: Car,
@@ -30,6 +36,9 @@ const iconMap: Record<KPIIconName, LucideIcon> = {
   tag: Tag,
   "pie-chart": PieChart,
   "trending-down": TrendingDown,
+  users: Users,
+  "user-plus": UserPlus,
+  handshake: Handshake,
 };
 
 export type KPICardData = {
@@ -105,12 +114,24 @@ function Sparkline({
   );
 }
 
-export function KPICard({ data }: { data: KPICardData }) {
+export function KPICard({
+  data,
+  showSparkline = true,
+  showLink = true,
+  deltaColor = "green",
+  className,
+}: {
+  data: KPICardData;
+  showSparkline?: boolean;
+  showLink?: boolean;
+  deltaColor?: "green" | "red";
+  className?: string;
+}) {
   const Icon = iconMap[data.icon];
   const sparkId = data.label.replace(/\s+/g, "-").toLowerCase();
 
   return (
-    <Card className="flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none">
+    <Card className={cn("flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none", className)}>
       <div className="flex items-start gap-2.5">
         <div
           className={cn(
@@ -129,17 +150,28 @@ export function KPICard({ data }: { data: KPICardData }) {
             <div className="text-[10.5px] text-slate-500">{data.unit}</div>
           )}
           {data.delta && (
-            <div className="text-[10.5px] text-emerald-400">{data.delta}</div>
+            <div
+              className={cn(
+                "text-[10.5px]",
+                deltaColor === "red" ? "text-red-400" : "text-emerald-400",
+              )}
+            >
+              {data.delta}
+            </div>
           )}
         </div>
       </div>
-      <Sparkline color={data.sparkColor} points={data.sparkPoints} id={sparkId} />
-      <button
-        type="button"
-        className="mt-auto -mx-3 -mb-3 rounded-b-sm border-t border-slate-700 bg-transparent py-2.5 text-center text-[11.5px] font-medium text-blue-400"
-      >
-        {data.link} →
-      </button>
+      {showSparkline && (
+        <Sparkline color={data.sparkColor} points={data.sparkPoints} id={sparkId} />
+      )}
+      {showLink && (
+        <button
+          type="button"
+          className="mt-auto -mx-3 -mb-3 rounded-b-sm border-t border-slate-700 bg-transparent py-2.5 text-center text-[11.5px] font-medium text-blue-400"
+        >
+          {data.link} →
+        </button>
+      )}
     </Card>
   );
 }

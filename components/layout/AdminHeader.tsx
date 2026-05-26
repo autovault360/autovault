@@ -6,7 +6,11 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export default function AdminHeader() {
+export default function AdminHeader({
+  onAddCustomer,
+}: {
+  onAddCustomer?: () => void;
+}) {
   return (
     <header className="mb-3.5 flex justify-between items-center gap-3 border-b border-slate-800 pb-3.5 xl:gap-4">
       <div className="relative max-w-100 w-full">
@@ -24,7 +28,7 @@ export default function AdminHeader() {
           <QA icon={Camera} label="Scan VIN" ring="bg-emerald-500/20 text-emerald-400" />
           <QA icon={Upload} label="Upload Expense" ring="bg-red-500/20 text-red-400" />
           <QA icon={Check} label="Mark Vehicle Sold" ring="bg-emerald-500/20 text-emerald-400" />
-          <QA icon={Plus} label="Add Customer" ring="bg-purple-500/20 text-purple-400" />
+          <QA icon={Plus} label="Add Customer" ring="bg-purple-500/20 text-purple-400" onClick={onAddCustomer} />
         </div>
       </div>
 
@@ -46,9 +50,13 @@ export default function AdminHeader() {
   );
 }
 
-function QA({ icon: Icon, label, ring }: { icon: any; label: string; ring: string }) {
+function QA({ icon: Icon, label, ring, onClick }: { icon: React.ComponentType<{ className?: string }>; label: string; ring: string; onClick?: () => void }) {
   return (
-    <button className="flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-800 bg-[#0e1626] px-2.5 py-1.5 text-[11.5px] text-slate-300 transition hover:border-slate-700">
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-800 bg-[#0e1626] px-2.5 py-1.5 text-[11.5px] text-slate-300 transition hover:border-slate-700"
+    >
       <span className={cn("grid h-5 w-5 place-items-center rounded-md", ring)}><Icon className="h-3 w-3" /></span>
       {label}
     </button>

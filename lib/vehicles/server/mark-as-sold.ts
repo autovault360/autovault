@@ -59,6 +59,19 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
 
     if (existingCustomer) {
       customerId = existingCustomer.id;
+      await supabase
+        .from("customers")
+        .update({
+          name: data.customerName,
+          email: data.email || null,
+          address: data.address,
+          address2: data.address2 || null,
+          city: data.city,
+          state: data.state,
+          zip: data.zipCode,
+          status: "customer",
+        })
+        .eq("id", customerId);
     } else {
       const { data: newCustomer, error: customerError } = await supabase
         .from("customers")
@@ -69,9 +82,11 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
           phone: data.phoneNumber,
           email: data.email || null,
           address: data.address,
+          address2: data.address2 || null,
           city: data.city,
           state: data.state,
           zip: data.zipCode,
+          status: "customer",
           created_by: userId,
         })
         .select("id")
@@ -162,6 +177,7 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
     if (auditError) console.error("audit_logs insert failed:", auditError.message);
 
     revalidatePath("/dashboard/vehicles");
+    revalidatePath("/dashboard/customers");
     return { success: true };
   } catch (err) {
     if (uploadedPaths.length > 0) {

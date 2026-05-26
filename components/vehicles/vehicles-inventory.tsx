@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
+  formatField,
   formatMileage,
   getDaysColor,
   getStatusStyle,
@@ -144,7 +145,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       formatCurrency(v.cost),
       String(v.daysInInventory),
       v.status,
-      v.location,
+      formatField("location", v.location),
       v.image,
     ]);
 
@@ -188,12 +189,18 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
           href={`/dashboard/vehicles/${v.id}`}
           className="flex items-center gap-2.5 transition hover:opacity-80"
         >
-          <img
-            src={v.image}
-            alt={getVehicleName(v)}
-            className="h-9 w-14 shrink-0 rounded-md object-cover"
-            loading="lazy"
-          />
+          {v.image ? (
+            <img
+              src={v.image}
+              alt={getVehicleName(v)}
+              className="h-9 w-14 shrink-0 rounded-md object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-9 w-14 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[9px] text-slate-500">
+              No Photo
+            </div>
+          )}
           <div className="min-w-0">
             <div className="truncate font-semibold text-white">
               {getVehicleName(v)}
@@ -284,7 +291,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       key: "location",
       header: "Location",
       sortable: true,
-      cell: (v) => <span className="text-slate-400">{v.location}</span>,
+      cell: (v) => <span className="text-slate-400">{formatField("location", v.location)}</span>,
     },
     {
       key: "actions",

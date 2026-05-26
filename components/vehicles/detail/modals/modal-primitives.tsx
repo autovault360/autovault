@@ -29,7 +29,7 @@ import {
   isPdfFile,
   validateFile,
 } from "@/lib/vehicles/actions/utils";
-import { formatMileage, getStatusStyle } from "@/lib/vehicles/types";
+import { formatField, formatMileage, getStatusStyle } from "@/lib/vehicles/types";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import {
   getFooterBorderClass,
@@ -267,7 +267,7 @@ export function VehicleSummaryBlock({
           label="Mileage"
           value={`${formatMileage(vehicle.mileage)} mi`}
         />
-        <ReadOnlyField label="Location" value={vehicle.location} />
+        <ReadOnlyField label="Location" value={formatField("location", vehicle.location)} />
         <div>
           <FieldLabel label="Status" />
           <div className="flex h-10 items-center">

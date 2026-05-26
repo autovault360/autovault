@@ -276,8 +276,9 @@ export default function MarkAsLossModal({
             </FormSection>
 
             <InfoBanner>
-              Once saved, this vehicle will be marked as LOSS and removed from
-              active inventory. This action can be reversed if needed.
+              This records a loss event against this vehicle for financial
+              tracking. The vehicle's inventory status will not change —
+              losses can be recorded multiple times.
             </InfoBanner>
           </ModalBody>
 

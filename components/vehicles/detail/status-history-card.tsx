@@ -3,7 +3,7 @@ import {
   DetailCardHead,
 } from "@/components/vehicles/detail/detail-card";
 import { DetailRow } from "@/components/vehicles/detail/detail-row";
-import { formatCurrency, getStatusStyle } from "@/lib/vehicles/types";
+import { formatCurrency, formatField, getStatusStyle } from "@/lib/vehicles/types";
 import { cn } from "@/lib/utils";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 
@@ -42,7 +42,7 @@ export default function StatusHistoryCard({
           label="Acquisition Cost"
           value={formatCurrency(vehicle.acquisitionCost)}
         />
-        <DetailRow label="Title Status" value={vehicle.titleStatus} />
+        <DetailRow label="Title Status" value={formatField("titleStatus", vehicle.titleStatus)} />
         <DetailRow label="Last Updated" value={vehicle.lastUpdated} />
       </div>
     </DetailCard>
