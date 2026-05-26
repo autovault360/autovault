@@ -1,10 +1,15 @@
 import SalesRepsPageContent from "@/components/sales-reps/sales-reps-page-content";
-import { computeSalesRepStats } from "@/lib/sales-reps/server/compute-sales-rep-stats";
-import { getSalesRepsList } from "@/lib/sales-reps/server/get-sales-reps-list";
+import { getSalesRepsDashboard } from "@/lib/sales-reps/server/get-sales-reps-dashboard";
 
 export default async function SalesRepsPage() {
-  const salesReps = await getSalesRepsList();
-  const stats = await computeSalesRepStats(salesReps);
+  const data = await getSalesRepsDashboard("this_month");
 
-  return <SalesRepsPageContent salesReps={salesReps} stats={stats} />;
+  return (
+    <SalesRepsPageContent
+      initialSalesReps={data.salesReps}
+      initialStats={data.stats}
+      initialError={data.error}
+      initialPeriod="this_month"
+    />
+  );
 }

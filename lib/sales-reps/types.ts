@@ -4,6 +4,12 @@ export type SalesRepPerformanceStatus =
   | "needs_attention"
   | "below_target";
 
+export type SalesRepPeriod =
+  | "this_month"
+  | "last_month"
+  | "this_quarter"
+  | "ytd";
+
 export type SalesRepListItem = {
   id: string;
   fullName: string;
@@ -44,10 +50,29 @@ export type SalesRepStats = {
   commissionsPaidMtd: number;
   commissionsPaidMtdDelta: string;
   commissionsPaidMtdDeltaColor: "green" | "red";
+  commissionsPaidMtdSparkPoints: string;
   totalCommissionsYtd: number;
   totalCommissionsYtdDelta: string;
   totalCommissionsYtdDeltaColor: "green" | "red";
+  totalCommissionsYtdSparkPoints: string;
 };
+
+export type SalesRepDashboardData = {
+  salesReps: SalesRepListItem[];
+  stats: SalesRepStats;
+  error?: string;
+};
+
+export const SALES_REP_PERIODS: SalesRepPeriod[] = [
+  "this_month",
+  "last_month",
+  "this_quarter",
+  "ytd",
+];
+
+export function isSalesRepPeriod(value: string): value is SalesRepPeriod {
+  return SALES_REP_PERIODS.includes(value as SalesRepPeriod);
+}
 
 export function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -123,17 +148,18 @@ export function getGoalBarColorByStatus(
 export function formatMetricDelta(
   current: number,
   previous: number,
+  comparisonLabel = "last month",
 ): { text: string; color: "green" | "red" } {
   if (previous === 0 && current === 0) {
-    return { text: "0% vs last month", color: "green" };
+    return { text: `0% vs ${comparisonLabel}`, color: "green" };
   }
   if (previous === 0) {
-    return { text: "↑ 100% vs last month", color: "green" };
+    return { text: `↑ 100% vs ${comparisonLabel}`, color: "green" };
   }
   const pct = ((current - previous) / previous) * 100;
   const arrow = pct >= 0 ? "↑" : "↓";
   return {
-    text: `${arrow} ${Math.abs(pct).toFixed(1)}% vs last month`,
+    text: `${arrow} ${Math.abs(pct).toFixed(1)}% vs ${comparisonLabel}`,
     color: pct >= 0 ? "green" : "red",
   };
 }

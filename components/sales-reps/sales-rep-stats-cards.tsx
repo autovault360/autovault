@@ -16,7 +16,7 @@ function buildCards(stats: SalesRepStats) {
       delta: stats.commissionsPaidMtdDelta,
       link: "View Commissions",
       sparkColor: "#10b981",
-      sparkPoints: "0,38 55,26 110,30 165,18 220,10",
+      sparkPoints: stats.commissionsPaidMtdSparkPoints,
       deltaColor: stats.commissionsPaidMtdDeltaColor,
     },
     {
@@ -27,7 +27,7 @@ function buildCards(stats: SalesRepStats) {
       delta: stats.totalCommissionsYtdDelta,
       link: "View YTD Report",
       sparkColor: "#a855f7",
-      sparkPoints: "0,40 55,32 110,26 165,18 220,8",
+      sparkPoints: stats.totalCommissionsYtdSparkPoints,
       deltaColor: stats.totalCommissionsYtdDeltaColor,
     },
   ];

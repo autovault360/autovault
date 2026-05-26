@@ -1,18 +1,64 @@
 "use client";
 
-import { Suspense } from "react";
+import { useCallback, useState, useTransition } from "react";
+import { AlertCircle } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AddSalesRepTrigger from "@/components/sales-reps/add-sales-rep-trigger";
 import SalesRepStatsCards from "@/components/sales-reps/sales-rep-stats-cards";
 import SalesRepsInventory from "@/components/sales-reps/sales-reps-inventory";
-import type { SalesRepListItem, SalesRepStats } from "@/lib/sales-reps/types";
+import {
+  SalesRepStatsSkeleton,
+  SalesRepsTableSkeleton,
+} from "@/components/sales-reps/sales-reps-skeleton";
+import type {
+  SalesRepDashboardData,
+  SalesRepListItem,
+  SalesRepPeriod,
+  SalesRepStats,
+} from "@/lib/sales-reps/types";
 
 type Props = {
-  salesReps: SalesRepListItem[];
-  stats: SalesRepStats;
+  initialSalesReps: SalesRepListItem[];
+  initialStats: SalesRepStats;
+  initialError?: string;
+  initialPeriod: SalesRepPeriod;
 };
 
-export default function SalesRepsPageContent({ salesReps, stats }: Props) {
+export default function SalesRepsPageContent({
+  initialSalesReps,
+  initialStats,
+  initialError,
+  initialPeriod,
+}: Props) {
+  const [salesReps, setSalesReps] = useState(initialSalesReps);
+  const [stats, setStats] = useState(initialStats);
+  const [error, setError] = useState(initialError);
+  const [period, setPeriod] = useState<SalesRepPeriod>(initialPeriod);
+  const [isPending, startTransition] = useTransition();
+
+  const handlePeriodChange = useCallback((nextPeriod: SalesRepPeriod) => {
+    setPeriod(nextPeriod);
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/sales-reps?period=${nextPeriod}`);
+        const data = (await response.json()) as SalesRepDashboardData & {
+          error?: string;
+        };
+
+        if (!response.ok) {
+          setError(data.error ?? "Unable to load sales rep data.");
+          return;
+        }
+
+        setSalesReps(data.salesReps);
+        setStats(data.stats);
+        setError(undefined);
+      } catch {
+        setError("Unable to load sales rep data. Please try again.");
+      }
+    });
+  }, []);
+
   return (
     <div className="relative">
       <AdminHeader />
@@ -27,11 +73,29 @@ export default function SalesRepsPageContent({ salesReps, stats }: Props) {
         <AddSalesRepTrigger />
       </section>
 
-      <SalesRepStatsCards stats={stats} />
+      {error && (
+        <div className="mb-3.5 flex items-center gap-2 rounded-sm border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-[12px] text-red-300">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
-      <Suspense fallback={null}>
-        <SalesRepsInventory salesReps={salesReps} />
-      </Suspense>
+      {isPending ? (
+        <SalesRepStatsSkeleton />
+      ) : (
+        <SalesRepStatsCards stats={stats} />
+      )}
+
+      {isPending ? (
+        <SalesRepsTableSkeleton />
+      ) : (
+        <SalesRepsInventory
+          salesReps={salesReps}
+          period={period}
+          onPeriodChange={handlePeriodChange}
+          isLoading={isPending}
+        />
+      )}
     </div>
   );
 }

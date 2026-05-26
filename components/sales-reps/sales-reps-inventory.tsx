@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, Download } from "lucide-react";
+import { Search, Download, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   InputGroup,
@@ -21,6 +21,7 @@ import MetricCell from "@/components/sales-reps/metric-cell";
 import GoalProgressCell from "@/components/sales-reps/goal-progress-cell";
 import SalesRepStatusBadge from "@/components/sales-reps/sales-rep-status-badge";
 import SalesRepRowActions from "@/components/sales-reps/sales-rep-row-actions";
+import { downloadSalesRepsCsv } from "@/lib/sales-reps/export-sales-reps";
 import {
   SALES_REP_STATUSES,
   formatCurrency,
@@ -28,13 +29,17 @@ import {
   formatSalesRepStatus,
   getSalesRepInitials,
   type SalesRepListItem,
+  type SalesRepPeriod,
 } from "@/lib/sales-reps/types";
 
 type Props = {
   salesReps: SalesRepListItem[];
+  period: SalesRepPeriod;
+  onPeriodChange: (period: SalesRepPeriod) => void;
+  isLoading?: boolean;
 };
 
-const PERIOD_OPTIONS = [
+const PERIOD_OPTIONS: { value: SalesRepPeriod; label: string }[] = [
   { value: "this_month", label: "This Month" },
   { value: "last_month", label: "Last Month" },
   { value: "this_quarter", label: "This Quarter" },
@@ -51,9 +56,13 @@ const TABLE_WRAPPER_CLASS =
   "[&_tbody_tr:hover]:bg-slate-800/25 " +
   "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800 [&>div>div:last-child]:bg-[#0a101c]/30";
 
-export default function SalesRepsInventory({ salesReps }: Props) {
+export default function SalesRepsInventory({
+  salesReps,
+  period,
+  onPeriodChange,
+  isLoading = false,
+}: Props) {
   const [search, setSearch] = useState("");
-  const [periodFilter, setPeriodFilter] = useState("this_month");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const filtered = useMemo(() => {
@@ -218,9 +227,14 @@ export default function SalesRepsInventory({ salesReps }: Props) {
     },
   ];
 
+  const handleExport = () => {
+    if (filtered.length === 0) return;
+    downloadSalesRepsCsv(filtered);
+  };
+
   return (
-    <div>
-      <div className="flex flex-wrap items-center gap-2.5">
+    <Card className="overflow-hidden rounded-sm border border-slate-700 bg-transparent shadow-none">
+      <div className="flex flex-wrap items-center gap-2.5 border-b border-slate-800/80 p-3.5">
         <InputGroup theme="dark" className="max-w-sm flex-1 sm:flex-none">
           <InputGroupAddon>
             <Search className="h-3.5 w-3.5 text-slate-500" />
@@ -230,15 +244,17 @@ export default function SalesRepsInventory({ salesReps }: Props) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="text-[12px] text-slate-200 placeholder:text-slate-500"
+            disabled={isLoading}
           />
         </InputGroup>
 
         <FilterSelect
-          value={periodFilter}
-          onChange={setPeriodFilter}
+          value={period}
+          onChange={(value) => onPeriodChange(value as SalesRepPeriod)}
           placeholder="This Month"
           options={PERIOD_OPTIONS}
           className="w-[140px]"
+          disabled={isLoading}
         />
 
         <FilterSelect
@@ -253,28 +269,50 @@ export default function SalesRepsInventory({ salesReps }: Props) {
             })),
           ]}
           className="w-[150px]"
+          disabled={isLoading}
         />
 
         <button
           type="button"
-          className="ml-auto flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-3 text-[11.5px] font-medium text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/40 hover:text-slate-200"
+          onClick={handleExport}
+          disabled={isLoading || filtered.length === 0}
+          className="ml-auto flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-3 text-[11.5px] font-medium text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/40 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Download className="h-3.5 w-3.5" />
           Export
         </button>
       </div>
 
-      <div className={`py-3.5 ${TABLE_WRAPPER_CLASS}`}>
-        <DataTable
-          columns={columns}
-          data={filtered}
-          rowKey="id"
-          pageSize={10}
-          addPagination
-          emptyMessage="No sales reps found."
-          paginationSummaryLabel="sales reps"
-        />
+      <div className={`px-3.5 py-3.5 ${TABLE_WRAPPER_CLASS}`}>
+        {salesReps.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filtered}
+            rowKey="id"
+            pageSize={10}
+            addPagination
+            emptyMessage="No sales reps match your filters."
+            paginationSummaryLabel="sales reps"
+          />
+        )}
       </div>
+    </Card>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-sm border border-slate-800 bg-[#0a101c]/40 px-6 py-16 text-center">
+      <div className="mb-3 grid h-12 w-12 place-items-center rounded-full bg-slate-800/80">
+        <Users className="h-6 w-6 text-slate-500" />
+      </div>
+      <p className="text-[13px] font-medium text-white">No sales reps found</p>
+      <p className="mt-1 max-w-sm text-[12px] text-slate-500">
+        Add team members with a sales rep, manager, or owner role to start
+        tracking performance metrics here.
+      </p>
     </div>
   );
 }
@@ -285,15 +323,17 @@ function FilterSelect({
   placeholder,
   options,
   className,
+  disabled,
 }: {
   value: string;
   onChange: (v: string) => void;
   placeholder: string;
   options: { value: string; label: string }[];
   className?: string;
+  disabled?: boolean;
 }) {
   return (
-    <Select value={value} onValueChange={onChange}>
+    <Select value={value} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger theme="dark" className={`h-9 text-[11.5px] ${className ?? ""}`}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
