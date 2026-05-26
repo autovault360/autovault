@@ -50,6 +50,14 @@ export type VehicleDetailExtras = {
   dateAcquired: string;
   acquisitionCost: number;
   titleStatus: string;
+  titleNumber: string;
+  licensePlate: string;
+  state: string;
+  expirationDate: string;
+  sellerAuction: string;
+  purchaseType: string;
+  odometerStatus: string;
+  wholesalePrice: number;
   lastUpdated: string;
   notes: string;
   comparables: VehicleComparable[];

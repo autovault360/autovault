@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export type AuthUser = {
   userId: string;
@@ -131,7 +131,7 @@ export async function assertVehicleActive(
 }
 
 export async function uploadFile(
-  bucket: "vehicle-images" | "vehicle-documents",
+  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
   storagePath: string,
   file: File,
 ): Promise<string> {
@@ -155,7 +155,8 @@ export async function uploadFile(
     }
   }
 
-  const { error } = await supabase.storage
+  const storageClient = createServiceClient();
+  const { error } = await storageClient.storage
     .from(bucket)
     .upload(storagePath, body, {
       upsert: true,
@@ -170,7 +171,7 @@ export async function uploadFile(
 }
 
 export async function getSignedUrl(
-  bucket: "vehicle-images" | "vehicle-documents",
+  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
   storagePath: string,
   expiresInSeconds: number = 3600,
 ): Promise<string> {

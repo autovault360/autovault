@@ -54,6 +54,6 @@ export function getSuccessMessage(action: VehicleActionType): string {
     case "mark-as-sold":
       return "Vehicle marked as sold successfully.";
     case "mark-as-loss":
-      return "Vehicle marked as loss successfully.";
+      return "Loss recorded successfully.";
   }
 }

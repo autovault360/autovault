@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -66,11 +67,22 @@ function revokeNewGalleryUrls(items: GalleryItem[]) {
   }
 }
 
+async function fetchVehicleDetail(id: string): Promise<VehicleDetail | null> {
+  try {
+    const res = await fetch(`/api/vehicles/${id}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    return (await res.json()) as VehicleDetail;
+  } catch {
+    return null;
+  }
+}
+
 export function useEditVehicleForm(
   vehicle: VehicleDetail,
   open: boolean,
-  onSuccess: () => void,
+  onSuccess: (updatedVehicle?: VehicleDetail) => void,
 ) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDuplicateVin, setIsDuplicateVin] = useState(false);
   const [shake, setShake] = useState(false);
@@ -92,19 +104,19 @@ export function useEditVehicleForm(
     stockNumber: vehicle.stockNumber || "",
     lotLocation: vehicle.location || "",
     acquisitionDate: vehicle.arrivalDate || "",
-    titleNumber: "",
-    licensePlate: "",
-    state: "",
-    expirationDate: "",
-    sellerAuction: "",
-    purchaseType: "",
+    titleNumber: vehicle.titleNumber || "",
+    licensePlate: vehicle.licensePlate || "",
+    state: vehicle.state || "",
+    expirationDate: vehicle.expirationDate || "",
+    sellerAuction: vehicle.sellerAuction || "",
+    purchaseType: vehicle.purchaseType || "",
     acquisitionCost: vehicle.cost,
     askingPrice: vehicle.price,
     marketValue: vehicle.marketValue,
-    wholesalePrice: 0,
+    wholesalePrice: vehicle.wholesalePrice ?? 0,
     reconditioningCost: vehicle.totalReconditioning,
     titleStatus: vehicle.titleStatus || "",
-    odometerStatus: "",
+    odometerStatus: vehicle.odometerStatus || "",
     fuelType: vehicle.fuelType || "",
     notes: vehicle.notes || "",
   }), [vehicle]);
@@ -270,7 +282,9 @@ export function useEditVehicleForm(
 
         if (result.success) {
           toast.success("Vehicle updated successfully");
-          onSuccess();
+          const updatedVehicle = await fetchVehicleDetail(vehicle.id);
+          router.refresh();
+          onSuccess(updatedVehicle ?? undefined);
         } else {
           toast.error(result.error ?? "Failed to update vehicle");
         }

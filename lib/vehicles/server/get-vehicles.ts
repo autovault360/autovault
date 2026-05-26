@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { formatField } from "../types";
 import { authenticateUser, getSignedUrl } from "./utils";
 
 export type VehicleFilters = {
@@ -150,7 +151,7 @@ export async function getVehicleById(id: string) {
     totalInvested,
     grossProfit,
     grossProfitPct,
-    displayTitle: `${vehicleRow.year} ${vehicleRow.make} ${vehicleRow.model}`,
+    displayTitle: `${vehicleRow.year} ${formatField("make", vehicleRow.make)} ${formatField("model", vehicleRow.model, vehicleRow.make)}`,
     _docUrls: { buyerIdFrontUrl },
   };
 }

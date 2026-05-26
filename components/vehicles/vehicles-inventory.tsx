@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
+  formatField,
   formatMileage,
   getDaysColor,
   getStatusStyle,
@@ -144,7 +145,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       formatCurrency(v.cost),
       String(v.daysInInventory),
       v.status,
-      v.location,
+      formatField("location", v.location),
       v.image,
     ]);
 
@@ -188,12 +189,18 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
           href={`/dashboard/vehicles/${v.id}`}
           className="flex items-center gap-2.5 transition hover:opacity-80"
         >
-          <img
-            src={v.image}
-            alt={getVehicleName(v)}
-            className="h-9 w-14 shrink-0 rounded-md object-cover"
-            loading="lazy"
-          />
+          {v.image ? (
+            <img
+              src={v.image}
+              alt={getVehicleName(v)}
+              className="h-9 w-14 shrink-0 rounded-md object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-9 w-14 shrink-0 items-center justify-center rounded-md bg-slate-800 text-[9px] text-slate-500">
+              No Photo
+            </div>
+          )}
           <div className="min-w-0">
             <div className="truncate font-semibold text-white">
               {getVehicleName(v)}
@@ -284,7 +291,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
       key: "location",
       header: "Location",
       sortable: true,
-      cell: (v) => <span className="text-slate-400">{v.location}</span>,
+      cell: (v) => <span className="text-slate-400">{formatField("location", v.location)}</span>,
     },
     {
       key: "actions",
@@ -295,14 +302,14 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
           <button
             type="button"
             onClick={() => { setEditingId(v.id); setActivePopover(null); }}
-            className="grid h-7 w-7 place-items-center rounded-md bg-blue-600 text-white transition hover:bg-blue-500"
+            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit vehicle"
             disabled={editLoading && editingId === v.id}
           >
             {editLoading && editingId === v.id ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Pencil className="h-3 w-3" />
+              <Pencil className="h-3.5 w-3.5" />
             )}
           </button>
           <div className="relative">
@@ -311,7 +318,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
               onClick={() =>
                 setActivePopover(activePopover === v.id ? null : v.id)
               }
-              className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-slate-800/60 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
               aria-label="More actions"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
@@ -461,6 +468,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
               setEditingId(null);
             }
           }}
+          onVehicleUpdated={setEditingVehicle}
         />
       )}
     </div>

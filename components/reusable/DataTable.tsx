@@ -33,6 +33,9 @@ interface DataTableProps<T> {
   addPagination?: boolean;
   enableSelection?: boolean;
   emptyMessage?: string;
+  onRowClick?: (row: T) => void;
+  activeRowKey?: string | number | null;
+  paginationSummaryLabel?: string;
 }
 
 function getPaginationRange(
@@ -64,6 +67,9 @@ export default function DataTable<T extends Record<string, unknown>>({
   addPagination = false,
   enableSelection = false,
   emptyMessage = "No data available.",
+  onRowClick,
+  activeRowKey = null,
+  paginationSummaryLabel = "items",
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -217,12 +223,18 @@ export default function DataTable<T extends Record<string, unknown>>({
             ) : (
               pageData.map((row) => {
                 const key = row[rowKey] as string | number;
+                const isActive = activeRowKey != null && activeRowKey === key;
                 return (
                   <tr
                     key={key}
+                    onClick={() => onRowClick?.(row as T)}
                     className={cn(
-                      "border-b border-slate-800/60 transition last:border-0 hover:bg-slate-800/20",
-                      selectedKeys.has(key) && "bg-slate-800/30",
+                      "border-b border-slate-800/60 transition last:border-0",
+                      onRowClick && "cursor-pointer",
+                      isActive
+                        ? "bg-blue-500/10 hover:bg-blue-500/10"
+                        : "hover:bg-slate-800/20",
+                      selectedKeys.has(key) && !isActive && "bg-slate-800/30",
                     )}
                   >
                     {enableSelection && (
@@ -257,7 +269,15 @@ export default function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {(addPagination || enableSelection) && (
-        <div className="mt-4 border-t border-slate-800 py-3 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-0 border-t border-slate-800 px-3 py-3 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {addPagination && sortedData.length > 0 && (
+            <span className="text-[10.5px] text-slate-500">
+              Showing {safePageIndex * pageSize + 1} to{" "}
+              {Math.min((safePageIndex + 1) * pageSize, sortedData.length)} of{" "}
+              {sortedData.length.toLocaleString()} {paginationSummaryLabel}
+            </span>
+          )}
+
           {enableSelection && (
             <span className="flex-1 text-xs text-muted-foreground">
               {table.getSelectedRowModel().rows.length} of{" "}

@@ -175,6 +175,36 @@
   }
 }
 
+/* NProgress bar */
+#nprogress {
+  pointer-events: none;
+}
+
+#nprogress .bar {
+  background: #4bc43b;
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+}
+
+#nprogress .peg {
+  display: block;
+  position: absolute;
+  right: 0;
+  width: 100px;
+  height: 100%;
+  box-shadow: 0 0 10px #4bc43b, 0 0 5px #4bc43b;
+  opacity: 1;
+  transform: rotate(3deg) translate(0, -4px);
+}
+
+#nprogress .spinner {
+  display: none;
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-4px); }

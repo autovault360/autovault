@@ -4,16 +4,26 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Pencil, Printer } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getStatusStyle } from "@/lib/vehicles/types";
+import { formatField, getStatusStyle } from "@/lib/vehicles/types";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import EditVehicleModal from "@/components/vehicles/detail/edit-vehicle-modal";
 
 export default function VehicleDetailHeader({
   vehicle,
+  editOpen: externalEditOpen,
+  onEditOpenChange,
+  onVehicleUpdated,
+  photoUploadTrigger,
 }: {
   vehicle: VehicleDetail;
+  editOpen?: boolean;
+  onEditOpenChange?: (open: boolean) => void;
+  onVehicleUpdated?: (vehicle: VehicleDetail) => void;
+  photoUploadTrigger?: number | undefined;
 }) {
-  const [editOpen, setEditOpen] = useState(false);
+  const [internalEditOpen, setInternalEditOpen] = useState(false);
+  const editOpen = externalEditOpen ?? internalEditOpen;
+  const setEditOpen = onEditOpenChange ?? setInternalEditOpen;
 
   return (
     <>
@@ -41,7 +51,7 @@ export default function VehicleDetailHeader({
                 {vehicle.status}
               </span>
               <span className="rounded-md bg-blue-500/15 px-2 py-0.5 text-[10px] font-semibold text-blue-400">
-                {vehicle.location}
+                {formatField("location", vehicle.location)}
               </span>
             </div>
             <p className="mt-1 text-[12.5px] text-slate-500">
@@ -76,6 +86,8 @@ export default function VehicleDetailHeader({
         vehicle={vehicle}
         open={editOpen}
         onOpenChange={setEditOpen}
+        onVehicleUpdated={onVehicleUpdated}
+        triggerUpload={photoUploadTrigger}
       />
     </>
   );

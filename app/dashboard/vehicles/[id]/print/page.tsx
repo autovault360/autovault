@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getVehicleDetail } from "@/lib/vehicles/get-vehicle-detail";
-import { formatCurrency, formatMileage } from "@/lib/vehicles/types";
+import { formatCurrency, formatField, formatMileage } from "@/lib/vehicles/types";
 import PrintButton from "./print-button";
 
 type Props = {
@@ -14,7 +14,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
         {label}
       </span>
       <span className="text-[11px] font-medium text-gray-900 text-right">
-        {value ?? "—"}
+        {value === "" || value === null || value === undefined ? "—" : value}
       </span>
     </div>
   );
@@ -89,18 +89,36 @@ export default async function VehiclePrintPage({ params }: Props) {
           <Section title="Vehicle Information">
             <div className="print-grid">
               <Row label="Year" value={vehicle.year} />
-              <Row label="Make" value={vehicle.make} />
-              <Row label="Model" value={vehicle.model} />
+              <Row label="Make" value={formatField("make", vehicle.make)} />
+              <Row
+                label="Model"
+                value={formatField("model", vehicle.model, vehicle.make)}
+              />
               <Row label="Trim" value={vehicle.trim} />
-              <Row label="Body Style" value={vehicle.bodyStyle} />
-              <Row label="Exterior Color" value={vehicle.exteriorColor} />
-              <Row label="Interior Color" value={vehicle.interiorColor} />
+              <Row
+                label="Body Style"
+                value={formatField("bodyStyle", vehicle.bodyStyle)}
+              />
+              <Row
+                label="Exterior Color"
+                value={formatField("exteriorColor", vehicle.exteriorColor)}
+              />
+              <Row
+                label="Interior Color"
+                value={formatField("interiorColor", vehicle.interiorColor)}
+              />
               <Row label="Doors" value={vehicle.doors} />
-              <Row label="Drivetrain" value={vehicle.drivetrain} />
+              <Row
+                label="Drivetrain"
+                value={formatField("drivetrain", vehicle.drivetrain)}
+              />
               <Row label="Mileage" value={formatMileage(vehicle.mileage)} />
               <Row label="Engine" value={vehicle.engine} />
               <Row label="Transmission" value={vehicle.transmission} />
-              <Row label="Fuel Type" value={vehicle.fuelType} />
+              <Row
+                label="Fuel Type"
+                value={formatField("fuelType", vehicle.fuelType)}
+              />
               <Row label="MPG" value={vehicle.mpg} />
             </div>
           </Section>
@@ -108,10 +126,16 @@ export default async function VehiclePrintPage({ params }: Props) {
           {/* Location & Status */}
           <Section title="Location & Status">
             <div className="print-grid">
-              <Row label="Lot Location" value={vehicle.location} />
+              <Row
+                label="Lot Location"
+                value={formatField("location", vehicle.location)}
+              />
               <Row label="Days in Inventory" value={vehicle.daysInInventory} />
               <Row label="Date Acquired" value={vehicle.dateAcquired} />
-              <Row label="Title Status" value={vehicle.titleStatus} />
+              <Row
+                label="Title Status"
+                value={formatField("titleStatus", vehicle.titleStatus)}
+              />
               <Row label="Last Updated" value={vehicle.lastUpdated} />
             </div>
           </Section>

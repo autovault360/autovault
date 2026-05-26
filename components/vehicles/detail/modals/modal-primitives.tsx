@@ -29,7 +29,7 @@ import {
   isPdfFile,
   validateFile,
 } from "@/lib/vehicles/actions/utils";
-import { formatMileage, getStatusStyle } from "@/lib/vehicles/types";
+import { formatField, formatMileage, getStatusStyle } from "@/lib/vehicles/types";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import {
   getFooterBorderClass,
@@ -90,12 +90,14 @@ export function ModalHeader({
   iconClassName,
   title,
   subtitle,
+  titleExtra,
   onClose,
 }: {
   icon: React.ReactNode;
   iconClassName?: string;
   title: string;
   subtitle: string;
+  titleExtra?: React.ReactNode;
   onClose: () => void;
 }) {
   const theme = useModalTheme();
@@ -116,14 +118,17 @@ export function ModalHeader({
           {icon}
         </div>
         <div>
-          <h2
-            className={cn(
-              "text-[17px] font-bold",
-              theme === "dark" ? "text-slate-100" : "text-gray-900",
-            )}
-          >
-            {title}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2
+              className={cn(
+                "text-[17px] font-bold",
+                theme === "dark" ? "text-slate-100" : "text-gray-900",
+              )}
+            >
+              {title}
+            </h2>
+            {titleExtra}
+          </div>
           <p
             className={cn(
               "mt-0.5 text-[12.5px]",
@@ -267,7 +272,7 @@ export function VehicleSummaryBlock({
           label="Mileage"
           value={`${formatMileage(vehicle.mileage)} mi`}
         />
-        <ReadOnlyField label="Location" value={vehicle.location} />
+        <ReadOnlyField label="Location" value={formatField("location", vehicle.location)} />
         <div>
           <FieldLabel label="Status" />
           <div className="flex h-10 items-center">

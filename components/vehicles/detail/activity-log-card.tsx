@@ -6,84 +6,49 @@ import {
   DollarSign,
   Receipt,
   CheckCircle,
+  AlertCircle,
+  History,
   type LucideIcon,
 } from "lucide-react";
 import {
   DetailCard,
   DetailCardHead,
-  DetailCardFooter,
 } from "@/components/vehicles/detail/detail-card";
+import { DetailRow } from "@/components/vehicles/detail/detail-row";
 import { cn } from "@/lib/utils";
+import { formatDetailValue } from "@/lib/vehicles/types";
 import type { ActivityLogEntry } from "@/lib/vehicles/detail-types";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  VehicleActionDialog,
+  ModalHeader,
+  ModalBody,
+} from "@/components/vehicles/detail/modals/modal-primitives";
 
 const iconMap: Record<string, LucideIcon> = {
   car: Car,
   "dollar-sign": DollarSign,
   receipt: Receipt,
   "check-circle": CheckCircle,
+  "alert-circle": AlertCircle,
 };
 
-const colorStyles: Record<
-  string,
-  { bg: string; ring: string; icon: string }
-> = {
-  emerald: {
-    bg: "bg-emerald-500/20",
-    ring: "bg-emerald-500/30",
-    icon: "text-emerald-400",
-  },
-  blue: {
-    bg: "bg-blue-500/20",
-    ring: "bg-blue-500/30",
-    icon: "text-blue-400",
-  },
-  orange: {
-    bg: "bg-orange-500/20",
-    ring: "bg-orange-500/30",
-    icon: "text-orange-400",
-  },
-  purple: {
-    bg: "bg-purple-500/20",
-    ring: "bg-purple-500/30",
-    icon: "text-purple-400",
-  },
-  red: {
-    bg: "bg-red-500/20",
-    ring: "bg-red-500/30",
-    icon: "text-red-400",
-  },
+const colorMap: Record<string, string> = {
+  emerald: "bg-emerald-500",
+  blue: "bg-blue-500",
+  orange: "bg-orange-500",
+  purple: "bg-purple-500",
+  red: "bg-red-500",
 };
 
-function TimelineIcon({ entry }: { entry: ActivityLogEntry }) {
-  const Icon = iconMap[entry.icon] ?? Car;
-  const styles = colorStyles[entry.color] ?? colorStyles.emerald;
+const colorToIconBg: Record<string, string> = {
+  emerald: "bg-emerald-500/15 text-emerald-400",
+  blue: "bg-blue-500/15 text-blue-400",
+  orange: "bg-orange-500/15 text-orange-400",
+  purple: "bg-purple-500/15 text-purple-400",
+  red: "bg-red-500/15 text-red-400",
+};
 
-  return (
-    <div className="relative flex h-8 w-8 shrink-0 items-center justify-center">
-      <div
-        className={cn(
-          "absolute h-8 w-8 rounded-full animate-pulse",
-          styles.ring,
-        )}
-      />
-      <div
-        className={cn(
-          "relative grid h-7 w-7 place-items-center rounded-full",
-          styles.bg,
-        )}
-      >
-        <Icon className={cn("h-3.5 w-3.5", styles.icon)} />
-      </div>
-    </div>
-  );
-}
-
-function DetailModal({
+function ActivityDetailModal({
   entry,
   open,
   onOpenChange,
@@ -94,22 +59,21 @@ function DetailModal({
 }) {
   if (!entry) return null;
 
+  const Icon = iconMap[entry.icon] ?? History;
   const hasDetails = entry.details && Object.keys(entry.details).length > 0;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn(
-        "gap-0 overflow-hidden border-0 bg-[#0f1621] p-0 text-slate-100 shadow-xl ring-0",
-        hasDetails
-          ? "w-[min(560px,calc(100vw-2rem))] sm:max-w-[560px]"
-          : "w-[min(480px,calc(100vw-2rem))] sm:max-w-[480px]",
-      )}>
-        <DialogTitle className="sr-only">Activity Details</DialogTitle>
-        <div className="flex items-center justify-between border-b border-slate-700 px-5 py-4">
-          <h2 className="text-[15px] font-bold text-slate-100">{entry.title}</h2>
-        </div>
+    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="md">
+      <ModalHeader
+        icon={<Icon className="h-4 w-4 text-white" />}
+        iconClassName={colorToIconBg[entry.color] ?? "bg-blue-500/15 text-blue-400"}
+        title={entry.title}
+        subtitle={entry.timestamp}
+        onClose={() => onOpenChange(false)}
+      />
+      <ModalBody>
         {hasDetails ? (
-          <div className="max-h-[65vh] space-y-0 overflow-y-auto px-5 py-4">
+          <div className="divide-y divide-slate-100">
             {Object.entries(entry.details!).map(([key, value]) => {
               const formattedKey = key
                 .replace(/_/g, " ")
@@ -126,16 +90,16 @@ function DetailModal({
                         key.toLowerCase().includes("loss") ||
                         key.toLowerCase().includes("total"))
                     ? `$${value.toLocaleString()}`
-                    : String(value);
+                    : formatDetailValue(key, value, entry.details);
               return (
                 <div
                   key={key}
-                  className="flex items-start justify-between gap-4 border-b border-slate-800 py-2.5 last:border-0"
+                  className="flex items-start justify-between gap-4 py-2.5"
                 >
-                  <span className="shrink-0 text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                  <span className="shrink-0 text-[11px] font-medium uppercase tracking-wider text-gray-500">
                     {formattedKey}
                   </span>
-                  <span className="text-right text-[12.5px] font-medium text-slate-200">
+                  <span className="text-right text-[12.5px] font-medium text-gray-900">
                     {formattedValue}
                   </span>
                 </div>
@@ -143,12 +107,12 @@ function DetailModal({
             })}
           </div>
         ) : (
-          <div className="px-5 py-6 text-center text-[12.5px] text-slate-400">
+          <p className="py-4 text-center text-[12.5px] text-gray-400">
             No additional details available.
-          </div>
+          </p>
         )}
-      </DialogContent>
-    </Dialog>
+      </ModalBody>
+    </VehicleActionDialog>
   );
 }
 
@@ -159,54 +123,55 @@ export default function ActivityLogCard({
 }) {
   const [selectedEntry, setSelectedEntry] = useState<ActivityLogEntry | null>(null);
 
+  if (entries.length === 0) {
+    return (
+      <DetailCard>
+        <DetailCardHead title="ACTIVITY LOG" />
+        <p className="py-6 text-center text-[11.5px] text-slate-500">
+          No recent activity yet.
+        </p>
+      </DetailCard>
+    );
+  }
+
   return (
     <>
-      <DetailCard className="h-full min-h-0">
-        <DetailCardHead
-          title="ACTIVITY LOG"
-          action={
-            <button
-              type="button"
-              className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
-            >
-              View Full History →
-            </button>
-          }
-        />
-        <div className="space-y-4">
-          {entries.map((entry, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setSelectedEntry(entry)}
-              className="flex w-full gap-2.5 text-left transition hover:opacity-80"
-            >
-              <div className="flex flex-col items-center">
-                <TimelineIcon entry={entry} />
-                {i < entries.length - 1 && (
-                  <div className="mt-1 w-px flex-1 bg-slate-800" />
-                )}
-              </div>
-              <div className="min-w-0 flex-1 pb-0.5">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="text-[11.5px] font-semibold text-white">
-                    {entry.title}
+      <DetailCard>
+        <DetailCardHead title="ACTIVITY LOG" />
+        <div className="max-h-[320px] space-y-0.5 overflow-y-auto">
+          {entries.map((entry, i) => {
+            const dotColor = colorMap[entry.color] ?? "bg-blue-500";
+            const Icon = iconMap[entry.icon] ?? History;
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setSelectedEntry(entry)}
+                className="group flex w-full items-center gap-3 rounded-sm px-1 py-1.5 text-left transition hover:bg-slate-800/50"
+              >
+                <div className={cn("h-6 w-6 shrink-0 rounded-full flex items-center justify-center", colorToIconBg[entry.color] ?? "bg-blue-500/15 text-blue-400")}>
+                  <Icon className="h-3 w-3" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[11.5px] font-semibold text-white">
+                      {entry.title}
+                    </span>
                   </div>
-                  <div className="shrink-0 text-[9.5px] text-slate-500">
+                  <div className="mt-0.5 text-[9.5px] text-slate-500">
                     {entry.timestamp}
                   </div>
+                  <p className="mt-0.5 truncate text-[10.5px] leading-relaxed text-slate-400">
+                    {entry.description}
+                  </p>
                 </div>
-                <div className="mt-0.5 text-[10.5px] leading-relaxed text-slate-400">
-                  {entry.description}
-                </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
-        <DetailCardFooter label="View Full History" />
       </DetailCard>
 
-      <DetailModal
+      <ActivityDetailModal
         entry={selectedEntry}
         open={selectedEntry !== null}
         onOpenChange={(open) => {

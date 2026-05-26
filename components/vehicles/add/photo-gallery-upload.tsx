@@ -17,6 +17,7 @@ type PhotoGalleryUploadProps = {
   onRemove: (index: number) => void;
   onReorder?: (fromIndex: number, toIndex: number) => void;
   maxPhotos?: number;
+  autoTrigger?: number | undefined;
 };
 
 export function PhotoGalleryUpload({
@@ -25,8 +26,17 @@ export function PhotoGalleryUpload({
   onRemove,
   onReorder,
   maxPhotos = 20,
+  autoTrigger,
 }: PhotoGalleryUploadProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (autoTrigger && autoTrigger > 0) {
+      const id = setTimeout(() => inputRef.current?.click(), 0);
+      return () => clearTimeout(id);
+    }
+  }, [autoTrigger]);
+
   const [dragOver, setDragOver] = React.useState(false);
   const [dragIndex, setDragIndex] = React.useState<number | null>(null);
   const [dropTarget, setDropTarget] = React.useState<number | null>(null);
