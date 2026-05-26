@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
-import AddSalesRepTrigger from "@/components/sales-reps/add-sales-rep-trigger";
+import AddSalesRepTrigger from "@/components/sales-reps/add/add-sales-rep-trigger";
+import AddSalesRepModal from "@/components/sales-reps/add/add-sales-rep-modal";
 import SalesRepStatsCards from "@/components/sales-reps/sales-rep-stats-cards";
 import SalesRepsInventory from "@/components/sales-reps/sales-reps-inventory";
 import {
@@ -18,23 +20,33 @@ import type {
 } from "@/lib/sales-reps/types";
 
 type Props = {
-  initialSalesReps: SalesRepListItem[];
-  initialStats: SalesRepStats;
-  initialError?: string;
-  initialPeriod: SalesRepPeriod;
+  salesReps: SalesRepListItem[];
+  stats: SalesRepStats;
+  loadError?: string;
 };
 
 export default function SalesRepsPageContent({
-  initialSalesReps,
-  initialStats,
-  initialError,
-  initialPeriod,
+  salesReps: initialSalesReps,
+  stats: initialStats,
+  loadError,
 }: Props) {
+  const router = useRouter();
+  const [addOpen, setAddOpen] = useState(false);
   const [salesReps, setSalesReps] = useState(initialSalesReps);
   const [stats, setStats] = useState(initialStats);
-  const [error, setError] = useState(initialError);
-  const [period, setPeriod] = useState<SalesRepPeriod>(initialPeriod);
+  const [error, setError] = useState(loadError);
+  const [period, setPeriod] = useState<SalesRepPeriod>("this_month");
   const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setSalesReps(initialSalesReps);
+    setStats(initialStats);
+    setError(loadError);
+  }, [initialSalesReps, initialStats, loadError]);
+
+  const handleRepSaved = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const handlePeriodChange = useCallback((nextPeriod: SalesRepPeriod) => {
     setPeriod(nextPeriod);
@@ -70,7 +82,7 @@ export default function SalesRepsPageContent({
             Track performance, manage goals, and view individual rep metrics.
           </p>
         </div>
-        <AddSalesRepTrigger />
+        <AddSalesRepTrigger onClick={() => setAddOpen(true)} />
       </section>
 
       {error && (
@@ -96,6 +108,12 @@ export default function SalesRepsPageContent({
           isLoading={isPending}
         />
       )}
+
+      <AddSalesRepModal
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        onSaved={handleRepSaved}
+      />
     </div>
   );
 }

@@ -14,7 +14,11 @@ export type SalesRepListItem = {
   id: string;
   fullName: string;
   email: string;
+  phone: string;
+  imageUrl: string | null;
   isActive: boolean;
+  commissionRate: number;
+  monthlyGoal: number;
   unitsSold: number;
   unitsSoldDelta: string;
   unitsSoldDeltaColor: "green" | "red";

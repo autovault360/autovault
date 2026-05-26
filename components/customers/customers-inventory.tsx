@@ -200,55 +200,66 @@ export default function CustomersInventory({
       key: "actions",
       header: "",
       cell: (row) => (
-        <div className="relative">
+        <div className="flex items-center justify-end gap-1.5">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
-              setActivePopover(activePopover === row.id ? null : row.id);
+              setEditLoadingId(row.id);
+              fetch(`/api/customers/${row.id}`)
+                .then((r) => {
+                  if (!r.ok) throw new Error("Failed to load customer");
+                  return r.json();
+                })
+                .then((d) => onEdit(d))
+                .catch(() => toast.error("Could not load customer for editing"))
+                .finally(() => setEditLoadingId(null));
             }}
-            className="rounded p-1 text-slate-500 hover:bg-slate-800 hover:text-white"
+            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+            aria-label="Edit customer"
+            disabled={editLoadingId === row.id}
           >
-            <MoreHorizontal className="h-4 w-4" />
+            {editLoadingId === row.id ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Pencil className="h-3.5 w-3.5" />
+            )}
           </button>
-          {activePopover === row.id && (
-            <div
-              ref={popoverRef}
-              className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-[#0e1626] py-1 shadow-xl"
+          <div className="relative">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActivePopover(activePopover === row.id ? null : row.id);
+              }}
+              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
+              aria-label="More actions"
             >
-              <ActionItem
-                icon={editLoadingId === row.id ? Loader2 : Pencil}
-                label="Edit Customer"
-                onClick={() => {
-                  setActivePopover(null);
-                  setEditLoadingId(row.id);
-                  fetch(`/api/customers/${row.id}`)
-                    .then((r) => {
-                      if (!r.ok) throw new Error("Failed to load customer");
-                      return r.json();
-                    })
-                    .then((d) => onEdit(d))
-                    .catch(() => toast.error("Could not load customer for editing"))
-                    .finally(() => setEditLoadingId(null));
-                }}
-              />
-              <ActionItem
-                icon={MessageSquare}
-                label="Add Note"
-                onClick={() => {
-                  setActivePopover(null);
-                  onAddNote?.(row);
-                }}
-              />
-            </div>
-          )}
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            </button>
+            {activePopover === row.id && (
+              <div
+                ref={popoverRef}
+                className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-[#0e1626] py-1 shadow-xl"
+              >
+                <ActionItem
+                  icon={MessageSquare}
+                  label="Add Note"
+                  onClick={() => {
+                    setActivePopover(null);
+                    onAddNote?.(row);
+                  }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       ),
     },
   ];
 
   return (
-    <Card className="overflow-hidden rounded-sm bg-transparent shadow-none">
+    <div>
       <div className="flex flex-wrap items-center gap-2">
         <InputGroup theme="dark" className="max-w-sm">
           <InputGroupAddon>
@@ -261,59 +272,58 @@ export default function CustomersInventory({
             className="text-[12px] text-slate-200 placeholder:text-slate-500"
           />
         </InputGroup>
-          <FilterSelect
-            value={statusFilter}
-            onChange={setStatusFilter}
-            placeholder="All Status"
-            options={[
-              { value: "all", label: "All Status" },
-              ...CUSTOMER_STATUSES.map((s) => ({
-                value: s,
-                label: formatCustomerStatus(s),
-              })),
-            ]}
-          />
-          <FilterSelect
-            value={repFilter}
-            onChange={setRepFilter}
-            placeholder="All Sales Reps"
-            options={[
-              { value: "all", label: "All Sales Reps" },
-              ...salesReps.map((r) => ({ value: r.id, label: r.fullName })),
-            ]}
-          />
-          <FilterSelect
-            value={typeFilter}
-            onChange={setTypeFilter}
-            placeholder="All Customer Types"
-            options={[
-              { value: "all", label: "All Customer Types" },
-              ...CUSTOMER_TYPES.map((t) => ({
-                value: t,
-                label: formatCustomerType(t),
-              })),
-            ]}
-          />
-          <FilterSelect
-            value={sourceFilter}
-            onChange={setSourceFilter}
-            placeholder="All Sources"
-            options={[
-              { value: "all", label: "All Sources" },
-              ...CUSTOMER_SOURCES.map((s) => ({
-                value: s,
-                label: formatCustomerSource(s),
-              })),
-            ]}
-          />
-          <button
-            type="button"
-            className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 text-[11.5px] text-slate-400 hover:border-slate-600"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            More Filters
-          </button>
-
+        <FilterSelect
+          value={statusFilter}
+          onChange={setStatusFilter}
+          placeholder="All Status"
+          options={[
+            { value: "all", label: "All Status" },
+            ...CUSTOMER_STATUSES.map((s) => ({
+              value: s,
+              label: formatCustomerStatus(s),
+            })),
+          ]}
+        />
+        <FilterSelect
+          value={repFilter}
+          onChange={setRepFilter}
+          placeholder="All Sales Reps"
+          options={[
+            { value: "all", label: "All Sales Reps" },
+            ...salesReps.map((r) => ({ value: r.id, label: r.fullName })),
+          ]}
+        />
+        <FilterSelect
+          value={typeFilter}
+          onChange={setTypeFilter}
+          placeholder="All Customer Types"
+          options={[
+            { value: "all", label: "All Customer Types" },
+            ...CUSTOMER_TYPES.map((t) => ({
+              value: t,
+              label: formatCustomerType(t),
+            })),
+          ]}
+        />
+        <FilterSelect
+          value={sourceFilter}
+          onChange={setSourceFilter}
+          placeholder="All Sources"
+          options={[
+            { value: "all", label: "All Sources" },
+            ...CUSTOMER_SOURCES.map((s) => ({
+              value: s,
+              label: formatCustomerSource(s),
+            })),
+          ]}
+        />
+        <button
+          type="button"
+          className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 text-[11.5px] text-slate-400 hover:border-slate-600"
+        >
+          <SlidersHorizontal className="h-3.5 w-3.5" />
+          More Filters
+        </button>
       </div>
 
       <div className="p-0">
@@ -329,7 +339,7 @@ export default function CustomersInventory({
           paginationSummaryLabel="customers"
         />
       </div>
-    </Card>
+    </div>
   );
 }
 

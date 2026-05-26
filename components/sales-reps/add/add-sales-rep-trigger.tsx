@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 export default function AddSalesRepTrigger({
   onClick,
 }: {
-  onClick?: () => void;
+  onClick: () => void;
 }) {
   return (
     <Button

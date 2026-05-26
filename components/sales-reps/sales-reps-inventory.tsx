@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import MetricCell from "@/components/sales-reps/metric-cell";
 import GoalProgressCell from "@/components/sales-reps/goal-progress-cell";
@@ -86,6 +86,7 @@ export default function SalesRepsInventory({
       cell: (row) => (
         <div className="flex min-w-[180px] items-center gap-3">
           <Avatar className="h-9 w-9 shrink-0 ring-1 ring-slate-700/80">
+            {row.imageUrl && <AvatarImage src={row.imageUrl} alt={row.fullName} />}
             <AvatarFallback className="bg-blue-500/15 text-[11px] font-semibold text-blue-400">
               {getSalesRepInitials(row.fullName)}
             </AvatarFallback>
@@ -233,8 +234,8 @@ export default function SalesRepsInventory({
   };
 
   return (
-    <Card className="overflow-hidden rounded-sm border border-slate-700 bg-transparent shadow-none">
-      <div className="flex flex-wrap items-center gap-2.5 border-b border-slate-800/80 p-3.5">
+    <div>
+      <div className="flex flex-wrap items-center gap-2">
         <InputGroup theme="dark" className="max-w-sm flex-1 sm:flex-none">
           <InputGroupAddon>
             <Search className="h-3.5 w-3.5 text-slate-500" />
@@ -283,7 +284,7 @@ export default function SalesRepsInventory({
         </button>
       </div>
 
-      <div className={`px-3.5 py-3.5 ${TABLE_WRAPPER_CLASS}`}>
+      <div className={`py-3.5 ${TABLE_WRAPPER_CLASS}`}>
         {salesReps.length === 0 ? (
           <EmptyState />
         ) : (
@@ -298,7 +299,7 @@ export default function SalesRepsInventory({
           />
         )}
       </div>
-    </Card>
+    </div>
   );
 }
 

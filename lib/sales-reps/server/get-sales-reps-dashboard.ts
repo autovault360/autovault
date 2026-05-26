@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { authenticateUser } from "@/lib/vehicles/server/utils";
 import type {
   SalesRepDashboardData,
   SalesRepPeriod,
@@ -17,14 +18,12 @@ import {
 } from "./date-ranges";
 import {
   buildRepListItem,
-  COMMISSION_RATE,
+  computeCommissionForDeals,
   resolveRepId,
-  sumDealMetrics,
   type RawCustomer,
   type RawDeal,
   type RawUser,
 } from "./metrics";
-import { authenticateUser } from "./utils";
 
 type DealRow = {
   sale_date: string;
@@ -34,6 +33,25 @@ type DealRow = {
   customer: { sales_rep_id: string | null } | { sales_rep_id: string | null }[] | null;
   vehicle: { total_invested: number } | { total_invested: number }[] | null;
 };
+
+type UserRow = {
+  id: string;
+  full_name: string | null;
+  email: string;
+  phone?: string | null;
+  is_active: boolean;
+  commission_rate?: number | null;
+  monthly_goal?: number | null;
+  image_url?: string | null;
+};
+
+function isMissingColumnError(message: string): boolean {
+  return (
+    message.includes("does not exist") ||
+    message.includes("Could not find") ||
+    message.includes("column")
+  );
+}
 
 function unwrapJoin<T>(value: T | T[] | null): T | null {
   if (value == null) return null;
@@ -66,6 +84,72 @@ function mapDealRow(row: DealRow): RawDeal {
     sales_rep_id: customer?.sales_rep_id ?? null,
     total_invested: Number(vehicle?.total_invested ?? 0),
   };
+}
+
+function normalizeUser(row: UserRow): RawUser {
+  return {
+    id: row.id,
+    full_name: row.full_name ?? "",
+    email: row.email,
+    is_active: row.is_active,
+    phone: row.phone ?? null,
+    commission_rate: row.commission_rate ?? null,
+    monthly_goal: row.monthly_goal ?? null,
+    image_url: row.image_url ?? null,
+  };
+}
+
+async function fetchSalesRepUsers(
+  dealershipId: string,
+): Promise<{ users: RawUser[]; error: string | null }> {
+  const supabase = await createClient();
+
+  const extended = await supabase
+    .from("users")
+    .select(
+      "id, full_name, email, phone, is_active, commission_rate, monthly_goal, image_url",
+    )
+    .eq("dealership_id", dealershipId)
+    .in("role", ["owner", "manager", "sales_rep"])
+    .order("full_name");
+
+  if (!extended.error) {
+    return {
+      users: (extended.data ?? []).map((row) => normalizeUser(row as UserRow)),
+      error: null,
+    };
+  }
+
+  if (isMissingColumnError(extended.error.message)) {
+    console.warn(
+      "getSalesRepsDashboard: profile columns missing, using base user fields. Apply migration 00013.",
+    );
+    const basic = await supabase
+      .from("users")
+      .select("id, full_name, email, is_active")
+      .eq("dealership_id", dealershipId)
+      .in("role", ["owner", "manager", "sales_rep"])
+      .order("full_name");
+
+    if (basic.error) {
+      return { users: [], error: basic.error.message };
+    }
+
+    return {
+      users: (basic.data ?? []).map((row) =>
+        normalizeUser({
+          ...(row as UserRow),
+          phone: null,
+          commission_rate: null,
+          monthly_goal: null,
+          image_url: null,
+        }),
+      ),
+      error: null,
+    };
+  }
+
+  return { users: [], error: extended.error.message };
 }
 
 function computeStatsFromDeals(
@@ -105,10 +189,10 @@ function computeStatsFromDeals(
     inRange(d.sale_date, prevYtdStart, prevYtdEnd),
   );
 
-  const commissionsPaidMtd = sumDealMetrics(mtdDeals).commission;
-  const commissionsPaidPrevMtd = sumDealMetrics(prevMtdDeals).commission;
-  const totalCommissionsYtd = sumDealMetrics(ytdDeals).commission;
-  const totalCommissionsPrevYtd = sumDealMetrics(prevYtdDeals).commission;
+  const commissionsPaidMtd = computeCommissionForDeals(mtdDeals, users);
+  const commissionsPaidPrevMtd = computeCommissionForDeals(prevMtdDeals, users);
+  const totalCommissionsYtd = computeCommissionForDeals(ytdDeals, users);
+  const totalCommissionsPrevYtd = computeCommissionForDeals(prevYtdDeals, users);
 
   const mtdDelta = formatMetricDelta(
     commissionsPaidMtd,
@@ -123,9 +207,10 @@ function computeStatsFromDeals(
 
   const trendKeys = getTrendMonthKeys(5, now);
   const commissionTrend = trendKeys.map((key) =>
-    sumDealMetrics(
+    computeCommissionForDeals(
       repDeals.filter((d) => monthKey(d.sale_date) === key),
-    ).commission,
+      users,
+    ),
   );
 
   return {
@@ -145,13 +230,9 @@ function computeStatsFromDeals(
 async function fetchDashboardRaw(dealershipId: string) {
   const supabase = await createClient();
 
-  const [usersResult, dealsResult, customersResult] = await Promise.all([
-    supabase
-      .from("users")
-      .select("id, full_name, email, is_active")
-      .eq("dealership_id", dealershipId)
-      .in("role", ["owner", "manager", "sales_rep"])
-      .order("full_name"),
+  const usersResult = await fetchSalesRepUsers(dealershipId);
+
+  const [dealsResult, customersResult] = await Promise.all([
     supabase
       .from("deals")
       .select(
@@ -171,8 +252,8 @@ async function fetchDashboardRaw(dealershipId: string) {
   ]);
 
   return {
-    users: (usersResult.data ?? []) as RawUser[],
-    usersError: usersResult.error?.message,
+    users: usersResult.users,
+    usersError: usersResult.error,
     deals: ((dealsResult.data ?? []) as unknown as DealRow[]).map(mapDealRow),
     dealsError: dealsResult.error?.message,
     customers: (customersResult.data ?? []) as RawCustomer[],
@@ -180,11 +261,27 @@ async function fetchDashboardRaw(dealershipId: string) {
   };
 }
 
+async function signUserImage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  storagePath: string,
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.storage
+      .from("user-images")
+      .createSignedUrl(storagePath, 3600);
+    if (error || !data?.signedUrl) return null;
+    return data.signedUrl;
+  } catch {
+    return null;
+  }
+}
+
 export async function getSalesRepsDashboard(
   period: SalesRepPeriod = "this_month",
 ): Promise<SalesRepDashboardData> {
   const auth = await authenticateUser();
   if (!auth.ok) {
+    console.warn("getSalesRepsDashboard: auth failed", auth.error);
     return {
       salesReps: [],
       stats: emptyStats(),
@@ -214,6 +311,7 @@ export async function getSalesRepsDashboard(
     console.warn("getSalesRepsDashboard customers:", raw.customersError);
   }
 
+  const supabase = await createClient();
   const dealsByRep = new Map<string, RawDeal[]>();
   for (const user of raw.users) {
     dealsByRep.set(user.id, []);
@@ -225,15 +323,24 @@ export async function getSalesRepsDashboard(
     dealsByRep.get(repId)!.push(deal);
   }
 
-  const salesReps = raw.users.map((user) =>
-    buildRepListItem(
-      user,
-      dealsByRep.get(user.id) ?? [],
-      raw.customers,
-      periodRange,
-      comparisonRange,
-      now,
-    ),
+  const salesReps = await Promise.all(
+    raw.users.map(async (user) => {
+      let imageUrl: string | null = null;
+      if (user.image_url) {
+        imageUrl = await signUserImage(supabase, user.image_url);
+      }
+
+      const item = buildRepListItem(
+        user,
+        dealsByRep.get(user.id) ?? [],
+        raw.customers,
+        periodRange,
+        comparisonRange,
+        now,
+      );
+
+      return { ...item, imageUrl };
+    }),
   );
 
   const stats = computeStatsFromDeals(raw.deals, raw.users, now);
@@ -241,10 +348,7 @@ export async function getSalesRepsDashboard(
   return { salesReps, stats };
 }
 
-/** @deprecated Use getSalesRepsDashboard instead */
 export async function getSalesRepsList(period?: SalesRepPeriod) {
   const data = await getSalesRepsDashboard(period);
   return data.salesReps;
 }
-
-export { COMMISSION_RATE };

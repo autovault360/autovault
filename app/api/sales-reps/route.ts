@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSalesRepsDashboard } from "@/lib/sales-reps/server/get-sales-reps-dashboard";
 import { isSalesRepPeriod } from "@/lib/sales-reps/types";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const periodParam = request.nextUrl.searchParams.get("period") ?? "this_month";
   const period = isSalesRepPeriod(periodParam) ? periodParam : "this_month";

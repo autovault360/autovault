@@ -6,10 +6,9 @@ export default async function SalesRepsPage() {
 
   return (
     <SalesRepsPageContent
-      initialSalesReps={data.salesReps}
-      initialStats={data.stats}
-      initialError={data.error}
-      initialPeriod="this_month"
+      salesReps={data.salesReps}
+      stats={data.stats}
+      loadError={data.error}
     />
   );
 }

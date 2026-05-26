@@ -131,7 +131,7 @@ export async function assertVehicleActive(
 }
 
 export async function uploadFile(
-  bucket: "vehicle-images" | "vehicle-documents" | "customer-images",
+  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
   storagePath: string,
   file: File,
 ): Promise<string> {
@@ -171,7 +171,7 @@ export async function uploadFile(
 }
 
 export async function getSignedUrl(
-  bucket: "vehicle-images" | "vehicle-documents" | "customer-images",
+  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
   storagePath: string,
   expiresInSeconds: number = 3600,
 ): Promise<string> {

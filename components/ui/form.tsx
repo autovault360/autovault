@@ -204,17 +204,19 @@ export function FormSection({
     >
       <div
         className={cn(
-          "absolute -top-[11px] left-4 right-4 flex max-w-[calc(100%-2rem)] items-center gap-3 px-1.5",
+          "shrink-0 flex items-center gap-3 px-1.5",
           theme === "dark" ? "bg-[#0f1621]" : "bg-white",
         )}
       >
         <span
           className={cn(
-            "shrink-0 text-[11px] font-bold tracking-[0.12em] uppercase",
+            "shrink-0 inline-flex absolute -top-[10px] left-4 right-4 text-[11px] font-bold tracking-[0.12em] uppercase px-1.5 py-0.5 rounded-sm",
             theme === "dark" ? "text-blue-400" : "text-[#2563eb]",
           )}
         >
-          {title}
+          <span className="inline bg-[#0f1621] px-2">
+            {title}
+          </span>
         </span>
         {headerRight && (
           <span className="ml-auto text-[10px] text-slate-400">{headerRight}</span>

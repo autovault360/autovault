@@ -33,23 +33,25 @@ export type RawUser = {
   full_name: string;
   email: string;
   is_active: boolean;
+  commission_rate?: number | null;
+  monthly_goal?: number | null;
+  image_url?: string | null;
+  phone?: string | null;
 };
 
-export type PeriodMetrics = {
-  units: number;
-  grossProfit: number;
-  netProfit: number;
-  totalSales: number;
-  avgGross: number;
-  commission: number;
-  conversionRate: number;
-};
+export function getCommissionRate(user: RawUser): number {
+  const rate = Number(user.commission_rate);
+  return Number.isFinite(rate) && rate >= 0 ? rate : COMMISSION_RATE;
+}
 
 export function resolveRepId(deal: RawDeal): string | null {
   return deal.sales_rep_id ?? deal.created_by;
 }
 
-export function sumDealMetrics(deals: RawDeal[]): Omit<PeriodMetrics, "conversionRate"> {
+export function sumDealMetrics(
+  deals: RawDeal[],
+  commissionRate: number = COMMISSION_RATE,
+): Omit<PeriodMetrics, "conversionRate"> {
   let grossProfit = 0;
   let netProfit = 0;
   let totalSales = 0;
@@ -65,9 +67,28 @@ export function sumDealMetrics(deals: RawDeal[]): Omit<PeriodMetrics, "conversio
 
   const units = deals.length;
   const avgGross = units > 0 ? grossProfit / units : 0;
-  const commission = grossProfit * COMMISSION_RATE;
+  const commission = grossProfit * commissionRate;
 
   return { units, grossProfit, netProfit, totalSales, avgGross, commission };
+}
+
+export function computeCommissionForDeals(
+  deals: RawDeal[],
+  users: RawUser[],
+): number {
+  const rateByRep = new Map(users.map((u) => [u.id, getCommissionRate(u)]));
+  let total = 0;
+
+  for (const deal of deals) {
+    const repId = resolveRepId(deal);
+    if (!repId) continue;
+    const rate = rateByRep.get(repId) ?? COMMISSION_RATE;
+    const invested = Number(deal.total_invested ?? 0);
+    const price = Number(deal.total_price_otd ?? 0);
+    total += (price - invested) * rate;
+  }
+
+  return total;
 }
 
 export function computeConversionRate(
@@ -85,11 +106,27 @@ export function computeConversionRate(
   return closed > 0 ? Math.min(100, closed * 10) : 0;
 }
 
+export type PeriodMetrics = {
+  units: number;
+  grossProfit: number;
+  netProfit: number;
+  totalSales: number;
+  avgGross: number;
+  commission: number;
+  conversionRate: number;
+};
+
 export function computeGoalAmount(
   repDeals: RawDeal[],
   periodSales: number,
   now: Date,
+  storedMonthlyGoal?: number | null,
 ): number {
+  const stored = Number(storedMonthlyGoal ?? 0);
+  if (stored > 0) {
+    return Math.round(stored);
+  }
+
   const trendKeys = getTrendMonthKeys(3, now);
   const monthlySales = trendKeys.map((key) =>
     repDeals
@@ -131,8 +168,9 @@ export function buildRepListItem(
     inRange(d.sale_date, comparison.start, comparison.end),
   );
 
-  const current = sumDealMetrics(periodDeals);
-  const previous = sumDealMetrics(comparisonDeals);
+  const commissionRate = getCommissionRate(user);
+  const current = sumDealMetrics(periodDeals, commissionRate);
+  const previous = sumDealMetrics(comparisonDeals, commissionRate);
 
   const conversionRate = computeConversionRate(user.id, periodDeals, customers);
   const prevConversion = computeConversionRate(
@@ -141,7 +179,12 @@ export function buildRepListItem(
     customers,
   );
 
-  const goalAmount = computeGoalAmount(allRepDeals, current.totalSales, now);
+  const goalAmount = computeGoalAmount(
+    allRepDeals,
+    current.totalSales,
+    now,
+    user.monthly_goal,
+  );
   const goalProgress =
     goalAmount > 0 ? Math.round((current.totalSales / goalAmount) * 100) : 0;
 
@@ -152,21 +195,25 @@ export function buildRepListItem(
   const grossTrend = trendKeys.map((key) =>
     sumDealMetrics(
       allRepDeals.filter((d) => monthKey(d.sale_date) === key),
+      commissionRate,
     ).grossProfit,
   );
   const salesTrend = trendKeys.map((key) =>
     sumDealMetrics(
       allRepDeals.filter((d) => monthKey(d.sale_date) === key),
+      commissionRate,
     ).totalSales,
   );
   const netTrend = trendKeys.map((key) =>
     sumDealMetrics(
       allRepDeals.filter((d) => monthKey(d.sale_date) === key),
+      commissionRate,
     ).netProfit,
   );
   const avgTrend = trendKeys.map((key) => {
     const metrics = sumDealMetrics(
       allRepDeals.filter((d) => monthKey(d.sale_date) === key),
+      commissionRate,
     );
     return metrics.avgGross;
   });
@@ -199,7 +246,11 @@ export function buildRepListItem(
     id: user.id,
     fullName: user.full_name || "Unknown",
     email: user.email,
+    phone: user.phone ?? "",
+    imageUrl: user.image_url ?? null,
     isActive: user.is_active,
+    commissionRate: getCommissionRate(user) * 100,
+    monthlyGoal: Number(user.monthly_goal ?? DEFAULT_MONTHLY_GOAL),
     unitsSold: current.units,
     unitsSoldDelta: unitsDelta.text,
     unitsSoldDeltaColor: unitsDelta.color,

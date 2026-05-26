@@ -302,14 +302,14 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
           <button
             type="button"
             onClick={() => { setEditingId(v.id); setActivePopover(null); }}
-            className="grid h-7 w-7 place-items-center rounded-md bg-blue-600 text-white transition hover:bg-blue-500"
+            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit vehicle"
             disabled={editLoading && editingId === v.id}
           >
             {editLoading && editingId === v.id ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Pencil className="h-3 w-3" />
+              <Pencil className="h-3.5 w-3.5" />
             )}
           </button>
           <div className="relative">
@@ -318,7 +318,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
               onClick={() =>
                 setActivePopover(activePopover === v.id ? null : v.id)
               }
-              className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-slate-800/60 text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
               aria-label="More actions"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
