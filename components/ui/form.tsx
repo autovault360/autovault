@@ -214,7 +214,10 @@ export function FormSection({
             theme === "dark" ? "text-blue-400" : "text-[#2563eb]",
           )}
         >
-          <span className="inline bg-[#0f1621] px-2">
+          <span className={cn(
+            "inline px-2",
+            theme === "dark" ? "bg-[#0f1621]" : "bg-white",
+          )}>
             {title}
           </span>
         </span>
