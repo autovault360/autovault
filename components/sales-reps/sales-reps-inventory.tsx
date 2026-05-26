@@ -219,8 +219,8 @@ export default function SalesRepsInventory({ salesReps }: Props) {
   ];
 
   return (
-    <Card className="overflow-hidden rounded-sm border border-slate-700 bg-transparent shadow-none">
-      <div className="flex flex-wrap items-center gap-2.5 border-b border-slate-800/80 p-3.5">
+    <div>
+      <div className="flex flex-wrap items-center gap-2.5">
         <InputGroup theme="dark" className="max-w-sm flex-1 sm:flex-none">
           <InputGroupAddon>
             <Search className="h-3.5 w-3.5 text-slate-500" />
@@ -264,7 +264,7 @@ export default function SalesRepsInventory({ salesReps }: Props) {
         </button>
       </div>
 
-      <div className={`px-3.5 py-3.5 ${TABLE_WRAPPER_CLASS}`}>
+      <div className={`py-3.5 ${TABLE_WRAPPER_CLASS}`}>
         <DataTable
           columns={columns}
           data={filtered}
@@ -275,7 +275,7 @@ export default function SalesRepsInventory({ salesReps }: Props) {
           paginationSummaryLabel="sales reps"
         />
       </div>
-    </Card>
+    </div>
   );
 }
 

@@ -74,6 +74,16 @@ type DbVehicleRow = {
   asking_price: number | null;
   market_value: number | null;
   title_status: string | null;
+  title_number: string | null;
+  license_plate: string | null;
+  state: string | null;
+  expiration_date: string | null;
+  seller_auction: string | null;
+  purchase_type: string | null;
+  odometer_status: string | null;
+  wholesale_price: number | null;
+  reconditioning_cost: number | null;
+  total_invested: number | null;
   notes: string | null;
   status: string;
   created_at: string;
@@ -233,6 +243,9 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
           case "REPAIR_ADDED":
             description = `${details.repair_category ?? "Repair"}: $${Number(details.total_cost ?? 0).toLocaleString()}`;
             break;
+          case "VEHICLE_UPDATED":
+            description = `${formatField("make", (details.make as string) ?? "")} ${formatField("model", (details.model as string) ?? "", details.make as string)} (${details.year ?? ""})`;
+            break;
           default:
             description = JSON.stringify(details).slice(0, 100);
         }
@@ -288,6 +301,14 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       dateAcquired: formatDate(row.acquisition_date),
       acquisitionCost,
       titleStatus: row.title_status ?? "",
+      titleNumber: row.title_number ?? "",
+      licensePlate: row.license_plate ?? "",
+      state: row.state ?? "",
+      expirationDate: formatISO(row.expiration_date),
+      sellerAuction: row.seller_auction ?? "",
+      purchaseType: row.purchase_type ?? "",
+      odometerStatus: row.odometer_status ?? "",
+      wholesalePrice: row.wholesale_price ?? 0,
       lastUpdated: formatDate(row.updated_at),
       notes: row.notes ?? "",
       comparables: [],

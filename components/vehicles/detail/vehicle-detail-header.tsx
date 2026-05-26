@@ -12,11 +12,13 @@ export default function VehicleDetailHeader({
   vehicle,
   editOpen: externalEditOpen,
   onEditOpenChange,
+  onVehicleUpdated,
   photoUploadTrigger,
 }: {
   vehicle: VehicleDetail;
   editOpen?: boolean;
   onEditOpenChange?: (open: boolean) => void;
+  onVehicleUpdated?: (vehicle: VehicleDetail) => void;
   photoUploadTrigger?: number | undefined;
 }) {
   const [internalEditOpen, setInternalEditOpen] = useState(false);
@@ -84,6 +86,7 @@ export default function VehicleDetailHeader({
         vehicle={vehicle}
         open={editOpen}
         onOpenChange={setEditOpen}
+        onVehicleUpdated={onVehicleUpdated}
         triggerUpload={photoUploadTrigger}
       />
     </>

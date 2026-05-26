@@ -50,10 +50,17 @@ type Props = {
   vehicle: VehicleDetail;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onVehicleUpdated?: (vehicle: VehicleDetail) => void;
   triggerUpload?: number | undefined;
 };
 
-export default function EditVehicleModal({ vehicle, open, onOpenChange, triggerUpload }: Props) {
+export default function EditVehicleModal({
+  vehicle,
+  open,
+  onOpenChange,
+  onVehicleUpdated,
+  triggerUpload,
+}: Props) {
   const {
     form,
     onSubmit,
@@ -66,7 +73,10 @@ export default function EditVehicleModal({ vehicle, open, onOpenChange, triggerU
     addPhotos,
     removePhoto,
     reorderPhotos,
-  } = useEditVehicleForm(vehicle, open, () => onOpenChange(false));
+  } = useEditVehicleForm(vehicle, open, (updatedVehicle) => {
+    if (updatedVehicle) onVehicleUpdated?.(updatedVehicle);
+    onOpenChange(false);
+  });
 
   const modelOptions = make ? (VEHICLE_MODELS[make] ?? []) : [];
 

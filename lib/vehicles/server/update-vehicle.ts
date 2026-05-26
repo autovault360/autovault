@@ -93,7 +93,7 @@ export async function updateVehicle(formData: FormData) {
     const reconditioningCost = data.reconditioningCost ?? 0;
     const totalInvested = data.acquisitionCost + reconditioningCost;
 
-    const { error: updateError } = await supabase
+    const { data: updatedRow, error: updateError } = await supabase
       .from("vehicles")
       .update({
         vin: data.vin,
@@ -116,23 +116,30 @@ export async function updateVehicle(formData: FormData) {
         wholesale_price: data.wholesalePrice,
         reconditioning_cost: reconditioningCost,
         total_invested: totalInvested,
-        title_status: data.titleStatus,
-        title_number: data.titleNumber,
-        license_plate: data.licensePlate,
-        state: data.state,
+        title_status: data.titleStatus || null,
+        title_number: data.titleNumber || null,
+        license_plate: data.licensePlate || null,
+        state: data.state || null,
         expiration_date: data.expirationDate || null,
-        seller_auction: data.sellerAuction,
-        purchase_type: data.purchaseType,
-        odometer_status: data.odometerStatus,
-        notes: data.notes,
+        seller_auction: data.sellerAuction || null,
+        purchase_type: data.purchaseType || null,
+        odometer_status: data.odometerStatus || null,
+        notes: data.notes || null,
       })
-      .eq("id", data.vehicleId);
+      .eq("id", data.vehicleId)
+      .eq("dealership_id", dealershipId)
+      .select("id")
+      .single();
 
     if (updateError) {
       const message = updateError.message?.includes("uq_vehicle_vin")
         ? "A vehicle with this VIN already exists in your dealership"
         : updateError.message;
       throw new Error(message);
+    }
+
+    if (!updatedRow) {
+      throw new Error("Vehicle not found or update was not permitted");
     }
 
     const photos = formData.getAll("photos") as File[];

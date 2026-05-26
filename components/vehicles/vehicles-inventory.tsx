@@ -468,6 +468,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
               setEditingId(null);
             }
           }}
+          onVehicleUpdated={setEditingVehicle}
         />
       )}
     </div>

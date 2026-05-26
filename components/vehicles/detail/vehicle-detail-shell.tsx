@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import AdminHeader from "@/components/layout/AdminHeader";
 import VehicleDetailHeader from "@/components/vehicles/detail/vehicle-detail-header";
@@ -15,12 +15,17 @@ import ComparablesCard from "@/components/vehicles/detail/comparables-card";
 import NotesCard from "@/components/vehicles/detail/notes-card";
 
 export default function VehicleDetailShell({
-  vehicle,
+  vehicle: initialVehicle,
 }: {
   vehicle: VehicleDetail;
 }) {
+  const [vehicle, setVehicle] = useState(initialVehicle);
   const [editOpen, setEditOpen] = useState(false);
   const [triggerUpload, setTriggerUpload] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    setVehicle(initialVehicle);
+  }, [initialVehicle]);
 
   const handleEditOpenChange = useCallback((open: boolean) => {
     setEditOpen(open);
@@ -39,6 +44,7 @@ export default function VehicleDetailShell({
         vehicle={vehicle}
         editOpen={editOpen}
         onEditOpenChange={handleEditOpenChange}
+        onVehicleUpdated={setVehicle}
         photoUploadTrigger={triggerUpload}
       />
 
