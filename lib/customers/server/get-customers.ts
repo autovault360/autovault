@@ -1,10 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { getSignedUrl } from "@/lib/vehicles/server/utils";
 import type {
   CustomerListItem,
   CustomerSource,
   CustomerStatus,
   CustomerType,
 } from "../types";
+import { computeLastActivity } from "./activity";
 import { authenticateUser } from "./utils";
 
 type DealRow = {
@@ -30,6 +32,7 @@ type CustomerRow = {
   name: string;
   phone: string | null;
   email: string | null;
+  image_url: string | null;
   type: CustomerType;
   status: CustomerStatus;
   source: CustomerSource | null;
@@ -42,66 +45,7 @@ type CustomerRow = {
   communications: CommRow[];
 };
 
-function computeLastActivity(row: CustomerRow): {
-  date: string;
-  label: string;
-} {
-  const candidates: { date: string; label: string; ts: number }[] = [];
-
-  if (row.updated_at) {
-    candidates.push({
-      date: row.updated_at,
-      label: "Profile updated",
-      ts: new Date(row.updated_at).getTime(),
-    });
-  }
-
-  for (const deal of row.deals ?? []) {
-    if (deal.deleted_at) continue;
-    candidates.push({
-      date: deal.sale_date,
-      label: "Purchased vehicle",
-      ts: new Date(deal.sale_date).getTime(),
-    });
-  }
-
-  for (const comm of row.communications ?? []) {
-    if (comm.deleted_at) continue;
-    const label =
-      comm.type === "email"
-        ? "Email sent"
-        : comm.type === "call"
-          ? "Phone call"
-          : comm.type === "sms"
-            ? "SMS sent"
-            : comm.type === "meeting"
-              ? "Meeting"
-              : "Inquiry submitted";
-    candidates.push({
-      date: comm.occurred_at,
-      label,
-      ts: new Date(comm.occurred_at).getTime(),
-    });
-  }
-
-  for (const note of row.notes ?? []) {
-    if (note.deleted_at) continue;
-    candidates.push({
-      date: note.created_at,
-      label: "Note added",
-      ts: new Date(note.created_at).getTime(),
-    });
-  }
-
-  if (candidates.length === 0) {
-    return { date: row.created_at, label: "Customer created" };
-  }
-
-  candidates.sort((a, b) => b.ts - a.ts);
-  return { date: candidates[0].date, label: candidates[0].label };
-}
-
-function mapCustomerRow(row: CustomerRow): CustomerListItem {
+function mapCustomerRow(row: CustomerRow, imageUrl: string | null): CustomerListItem {
   const activeDeals = (row.deals ?? []).filter((d) => !d.deleted_at);
   const lifetimeValue = activeDeals.reduce(
     (sum, d) => sum + Number(d.total_collected ?? 0),
@@ -118,6 +62,7 @@ function mapCustomerRow(row: CustomerRow): CustomerListItem {
     name: row.name,
     phone: row.phone ?? "",
     email: row.email ?? "",
+    imageUrl,
     type: row.type,
     status: row.status,
     source: row.source,
@@ -141,7 +86,7 @@ export async function getCustomers(): Promise<CustomerListItem[]> {
     .from("customers")
     .select(
       `
-      id, name, phone, email, type, status, source, sales_rep_id,
+      id, name, phone, email, image_url, type, status, source, sales_rep_id,
       created_at, updated_at,
       sales_rep:users!sales_rep_id(full_name),
       deals(id, total_collected, sale_date, deleted_at),
@@ -158,7 +103,22 @@ export async function getCustomers(): Promise<CustomerListItem[]> {
     return [];
   }
 
-  return ((data ?? []) as unknown as CustomerRow[]).map(mapCustomerRow);
+  const rows = (data ?? []) as unknown as CustomerRow[];
+  const customers: CustomerListItem[] = [];
+
+  for (const row of rows) {
+    let imageUrl: string | null = null;
+    if (row.image_url) {
+      try {
+        imageUrl = await getSignedUrl("customer-images", row.image_url);
+      } catch {
+        imageUrl = null;
+      }
+    }
+    customers.push(mapCustomerRow(row, imageUrl));
+  }
+
+  return customers;
 }
 
 export async function getSalesReps(): Promise<

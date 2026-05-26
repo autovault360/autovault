@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   Search,
   SlidersHorizontal,
   MoreHorizontal,
   Pencil,
   MessageSquare,
-  Handshake,
+  Loader2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
@@ -23,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import type {
   CustomerDetail,
@@ -49,6 +50,7 @@ type Props = {
   selectedId: string | null;
   onSelect: (row: CustomerListItem) => void;
   onEdit: (detail: CustomerDetail) => void;
+  onAddNote?: (row: CustomerListItem) => void;
   onRequestAdd?: () => void;
 };
 
@@ -58,6 +60,7 @@ export default function CustomersInventory({
   selectedId,
   onSelect,
   onEdit,
+  onAddNote,
   onRequestAdd,
 }: Props) {
   const searchParams = useSearchParams();
@@ -67,6 +70,7 @@ export default function CustomersInventory({
   const [typeFilter, setTypeFilter] = useState("all");
   const [sourceFilter, setSourceFilter] = useState("all");
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  const [editLoadingId, setEditLoadingId] = useState<string | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -111,6 +115,9 @@ export default function CustomersInventory({
       cell: (row) => (
         <div className="flex items-center gap-2.5">
           <Avatar className="h-8 w-8 ring-1 ring-slate-700">
+            {row.imageUrl && (
+              <AvatarImage src={row.imageUrl} alt={row.name} className="object-cover" />
+            )}
             <AvatarFallback className="bg-blue-500/15 text-[10px] text-blue-400">
               {getCustomerInitials(row.name)}
             </AvatarFallback>
@@ -210,14 +217,19 @@ export default function CustomersInventory({
               className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-[#0e1626] py-1 shadow-xl"
             >
               <ActionItem
-                icon={Pencil}
+                icon={editLoadingId === row.id ? Loader2 : Pencil}
                 label="Edit Customer"
                 onClick={() => {
                   setActivePopover(null);
-                  onSelect(row);
+                  setEditLoadingId(row.id);
                   fetch(`/api/customers/${row.id}`)
-                    .then((r) => r.json())
-                    .then((d) => onEdit(d));
+                    .then((r) => {
+                      if (!r.ok) throw new Error("Failed to load customer");
+                      return r.json();
+                    })
+                    .then((d) => onEdit(d))
+                    .catch(() => toast.error("Could not load customer for editing"))
+                    .finally(() => setEditLoadingId(null));
                 }}
               />
               <ActionItem
@@ -225,14 +237,8 @@ export default function CustomersInventory({
                 label="Add Note"
                 onClick={() => {
                   setActivePopover(null);
-                  onSelect(row);
+                  onAddNote?.(row);
                 }}
-              />
-              <ActionItem
-                icon={Handshake}
-                label="Create Deal"
-                onClick={() => setActivePopover(null)}
-                disabled
               />
             </div>
           )}
@@ -279,9 +285,9 @@ export default function CustomersInventory({
           <FilterSelect
             value={typeFilter}
             onChange={setTypeFilter}
-            placeholder="All Deal Types"
+            placeholder="All Customer Types"
             options={[
-              { value: "all", label: "All Deal Types" },
+              { value: "all", label: "All Customer Types" },
               ...CUSTOMER_TYPES.map((t) => ({
                 value: t,
                 label: formatCustomerType(t),

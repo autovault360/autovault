@@ -5,6 +5,8 @@ import {
   FUEL_TYPES,
   INTERIOR_COLORS,
   LOT_LOCATIONS,
+  ODOMETER_STATUSES,
+  PURCHASE_TYPES,
   TITLE_STATUSES,
   VEHICLE_MAKES,
   VEHICLE_MODELS,
@@ -63,7 +65,44 @@ const OPTION_MAP: Record<
   fuelType: FUEL_TYPES,
   location: LOT_LOCATIONS,
   titleStatus: TITLE_STATUSES,
+  purchaseType: PURCHASE_TYPES,
+  odometerStatus: ODOMETER_STATUSES,
 };
+
+const SNAKE_TO_FIELD: Record<string, string> = {
+  make: "make",
+  model: "model",
+  body_style: "bodyStyle",
+  exterior_color: "exteriorColor",
+  interior_color: "interiorColor",
+  drivetrain: "drivetrain",
+  fuel_type: "fuelType",
+  lot_location: "location",
+  location: "location",
+  title_status: "titleStatus",
+  purchase_type: "purchaseType",
+  odometer_status: "odometerStatus",
+};
+
+export function formatDetailValue(
+  key: string,
+  value: unknown,
+  allDetails?: Record<string, unknown> | null,
+): string {
+  if (value === null || value === undefined) return "—";
+  const fieldName = SNAKE_TO_FIELD[key];
+  if (fieldName && typeof value === "string") {
+    if (fieldName === "model") {
+      const makeValue = allDetails?.make as string | undefined;
+      return formatField("model", value, makeValue);
+    }
+    if (fieldName === "make") {
+      return formatField("make", value);
+    }
+    return formatField(fieldName, value);
+  }
+  return String(value);
+}
 
 export function formatField(field: string, value: string, make?: string): string {
   const options = OPTION_MAP[field];

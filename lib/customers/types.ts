@@ -19,6 +19,7 @@ export type CustomerListItem = {
   name: string;
   phone: string;
   email: string;
+  imageUrl: string | null;
   type: CustomerType;
   status: CustomerStatus;
   source: CustomerSource | null;
@@ -111,6 +112,7 @@ export type CustomerDetail = {
   name: string;
   phone: string;
   email: string;
+  imageUrl: string | null;
   type: CustomerType;
   status: CustomerStatus;
   source: CustomerSource | null;

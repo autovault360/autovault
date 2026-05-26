@@ -87,10 +87,17 @@ export async function computeCustomerStats(): Promise<CustomerStats> {
     (c) => c.status === "active_deal",
   ).length;
 
-  const activeDealsPrev = allCustomers.filter((c) => {
-    if (c.status !== "active_deal") return false;
-    return inRange(c.created_at as string, prevStart, prevEnd);
-  }).length;
+  const activeDealsMtd = allCustomers.filter(
+    (c) =>
+      c.status === "active_deal" &&
+      inRange(c.created_at as string, curStart, curEnd),
+  ).length;
+
+  const activeDealsPrev = allCustomers.filter(
+    (c) =>
+      c.status === "active_deal" &&
+      inRange(c.created_at as string, prevStart, prevEnd),
+  ).length;
 
   const totalSalesMtd = allDeals
     .filter((d) => inRange(d.sale_date as string, curStart, curEnd))
@@ -107,7 +114,7 @@ export async function computeCustomerStats(): Promise<CustomerStats> {
 
   const totalDelta = formatDelta(totalCustomers, totalCustomersPrev);
   const newDelta = formatDelta(newCustomersMtd, newCustomersPrev);
-  const activeDelta = formatDelta(activeDeals, activeDealsPrev);
+  const activeDelta = formatDelta(activeDealsMtd, activeDealsPrev);
   const salesDelta = formatCurrencyDelta(totalSalesMtd, totalSalesPrev);
 
   return {

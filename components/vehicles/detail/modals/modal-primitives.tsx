@@ -90,12 +90,14 @@ export function ModalHeader({
   iconClassName,
   title,
   subtitle,
+  titleExtra,
   onClose,
 }: {
   icon: React.ReactNode;
   iconClassName?: string;
   title: string;
   subtitle: string;
+  titleExtra?: React.ReactNode;
   onClose: () => void;
 }) {
   const theme = useModalTheme();
@@ -116,14 +118,17 @@ export function ModalHeader({
           {icon}
         </div>
         <div>
-          <h2
-            className={cn(
-              "text-[17px] font-bold",
-              theme === "dark" ? "text-slate-100" : "text-gray-900",
-            )}
-          >
-            {title}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2
+              className={cn(
+                "text-[17px] font-bold",
+                theme === "dark" ? "text-slate-100" : "text-gray-900",
+              )}
+            >
+              {title}
+            </h2>
+            {titleExtra}
+          </div>
           <p
             className={cn(
               "mt-0.5 text-[12.5px]",

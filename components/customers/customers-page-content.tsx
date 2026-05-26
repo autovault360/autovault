@@ -28,12 +28,27 @@ export default function CustomersPageContent({
   const [addOpen, setAddOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editCustomer, setEditCustomer] = useState<CustomerDetail | null>(null);
+  const [detailRefreshKey, setDetailRefreshKey] = useState(0);
+  const [detailInitialTab, setDetailInitialTab] = useState<
+    "overview" | "deals" | "communications" | "notes" | "documents"
+  >("overview");
 
   const selectedItem =
     customers.find((c) => c.id === selectedId) ?? null;
 
+  const handleCustomerSaved = useCallback(() => {
+    setDetailRefreshKey((key) => key + 1);
+  }, []);
+
   const handleSelect = useCallback((row: CustomerListItem) => {
+    setDetailInitialTab("overview");
     setSelectedId((prev) => (prev === row.id ? null : row.id));
+  }, []);
+
+  const handleAddNote = useCallback((row: CustomerListItem) => {
+    setDetailInitialTab("notes");
+    setSelectedId(row.id);
+    setDetailRefreshKey((key) => key + 1);
   }, []);
 
   const handleEdit = useCallback((detail: CustomerDetail) => {
@@ -65,6 +80,7 @@ export default function CustomersPageContent({
               selectedId={selectedId}
               onSelect={handleSelect}
               onEdit={handleEdit}
+              onAddNote={handleAddNote}
               onRequestAdd={() => setAddOpen(true)}
             />
           </Suspense>
@@ -74,6 +90,9 @@ export default function CustomersPageContent({
           <CustomerDetailPanel
             customerId={selectedId}
             listItem={selectedItem}
+            refreshKey={detailRefreshKey}
+            initialTab={detailInitialTab}
+            onListRefresh={handleCustomerSaved}
             onClose={() => setSelectedId(null)}
             onEdit={handleEdit}
           />
@@ -84,6 +103,7 @@ export default function CustomersPageContent({
         open={addOpen}
         onOpenChange={setAddOpen}
         salesReps={salesReps}
+        onSaved={handleCustomerSaved}
       />
       {editCustomer && (
         <AddCustomerModal
@@ -91,6 +111,7 @@ export default function CustomersPageContent({
           onOpenChange={(open) => !open && setEditCustomer(null)}
           salesReps={salesReps}
           editCustomer={editCustomer}
+          onSaved={handleCustomerSaved}
         />
       )}
     </div>

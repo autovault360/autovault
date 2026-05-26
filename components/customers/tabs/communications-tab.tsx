@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,10 +26,13 @@ import {
 export default function CommunicationsTab({
   customer,
   onRefresh,
+  onListRefresh,
 }: {
   customer: CustomerDetail;
   onRefresh: () => void;
+  onListRefresh?: () => void;
 }) {
+  const router = useRouter();
   const [type, setType] = useState<CommunicationType>("email");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
@@ -47,7 +51,9 @@ export default function CommunicationsTab({
         toast.success("Communication logged");
         setSubject("");
         setBody("");
+        router.refresh();
         onRefresh();
+        onListRefresh?.();
       } else {
         toast.error(result.error);
       }

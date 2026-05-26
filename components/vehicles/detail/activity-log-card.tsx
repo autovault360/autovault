@@ -14,6 +14,7 @@ import {
   DetailCardFooter,
 } from "@/components/vehicles/detail/detail-card";
 import { cn } from "@/lib/utils";
+import { formatDetailValue } from "@/lib/vehicles/types";
 import type { ActivityLogEntry } from "@/lib/vehicles/detail-types";
 import {
   Dialog,
@@ -126,7 +127,7 @@ function DetailModal({
                         key.toLowerCase().includes("loss") ||
                         key.toLowerCase().includes("total"))
                     ? `$${value.toLocaleString()}`
-                    : String(value);
+                    : formatDetailValue(key, value, entry.details);
               return (
                 <div
                   key={key}

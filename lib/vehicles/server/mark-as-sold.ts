@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { phoneRegex, zipRegex } from "@/lib/shared/phone";
 import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
 import { revalidatePath } from "next/cache";
 
@@ -9,13 +10,16 @@ const schema = z.object({
   vehicleId: z.string().uuid(),
   customerType: z.string(),
   customerName: z.string().min(1),
-  phoneNumber: z.string().regex(/^\(\d{3}\)\s\d{3}-\d{4}$/),
+  phoneNumber: z
+    .string()
+    .min(1, "Phone number is required")
+    .regex(phoneRegex, "Enter a valid phone number: (XXX) XXX-XXXX"),
   email: z.string().email().optional().or(z.literal("")),
   address: z.string().min(1),
   address2: z.string().optional(),
   city: z.string().min(1),
   state: z.string().min(1),
-  zipCode: z.string().regex(/^\d{5}(-\d{4})?$/),
+  zipCode: z.string().regex(zipRegex, "Enter a valid ZIP code"),
   saleDate: z.string().min(1),
   totalPriceOtd: z.coerce.number().positive(),
   salesTaxAmount: z.coerce.number().default(0),
@@ -48,12 +52,16 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
     const activeError = await assertVehicleActive(supabase, data.vehicleId, dealershipId);
     if (activeError) return { success: false, error: activeError };
 
-    const { data: existingCustomer } = await supabase
+    const { data: existingCustomers } = await supabase
       .from("customers")
       .select("id")
       .eq("phone", data.phoneNumber)
       .eq("dealership_id", dealershipId)
-      .maybeSingle();
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const existingCustomer = existingCustomers?.[0] ?? null;
 
     let customerId: string;
 

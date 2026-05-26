@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { formatField } from "@/lib/vehicles/types";
 import type {
@@ -8,16 +9,18 @@ import type {
   CustomerStatus,
   CustomerType,
 } from "../types";
+import { computeLastActivity } from "./activity";
 import { authenticateUser } from "./utils";
 
 async function signedUrl(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  supabase: SupabaseClient,
   path: string | null,
+  bucket: "vehicle-documents" | "customer-images" = "vehicle-documents",
 ): Promise<string> {
   if (!path) return "";
   try {
     const { data, error } = await supabase.storage
-      .from("vehicle-documents")
+      .from(bucket)
       .createSignedUrl(path, 3600);
     return error || !data ? "" : data.signedUrl;
   } catch {
@@ -39,7 +42,7 @@ export async function getCustomerDetail(
       `
       id, name, phone, email, type, status, source, sales_rep_id,
       address, address2, city, state, zip,
-      date_of_birth, drivers_license_number,
+      date_of_birth, drivers_license_number, image_url,
       created_at, updated_at,
       sales_rep:users!sales_rep_id(full_name)
     `,
@@ -98,13 +101,6 @@ export async function getCustomerDetail(
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  const { data: auditRows } = await supabase
-    .from("audit_logs")
-    .select("id, action, new_values, created_at")
-    .eq("dealership_id", auth.user.dealershipId)
-    .order("created_at", { ascending: false })
-    .limit(50);
-
   type VehicleJoin = {
     stock_number: string | null;
     year: number;
@@ -144,11 +140,24 @@ export async function getCustomerDetail(
     stockNumber: d.stockNumber,
     vehicleName: d.vehicleName,
     saleDate: d.saleDate,
-    salePrice: d.totalPriceOtd,
+    salePrice: d.totalCollected,
     grossProfit: d.grossProfit,
   }));
 
   const lifetimeValue = deals.reduce((sum, d) => sum + d.totalCollected, 0);
+
+  const dealVehicleIds = deals.map((d) => d.vehicleId);
+  const auditQuery = supabase
+    .from("audit_logs")
+    .select("id, action, new_values, created_at")
+    .eq("dealership_id", auth.user.dealershipId)
+    .eq("action", "MARKED_SOLD")
+    .order("created_at", { ascending: false })
+    .limit(20);
+
+  const { data: auditRows } = dealVehicleIds.length > 0
+    ? await auditQuery.in("entity_id", dealVehicleIds)
+    : { data: [] };
 
   const notes = (noteRows ?? []).map((n) => {
     const note = n as Record<string, unknown>;
@@ -255,13 +264,11 @@ export async function getCustomerDetail(
   for (const audit of auditRows ?? []) {
     const a = audit as Record<string, unknown>;
     const newValues = a.new_values as Record<string, unknown> | null;
-    if (newValues?.customer_name !== customerName) continue;
-    if (a.action !== "MARKED_SOLD") continue;
     activityTimeline.push({
       id: `audit-${a.id}`,
       type: "audit",
       title: "Vehicle purchased",
-      description: `Sold at ${Number(newValues.sale_price ?? 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
+      description: `Sold at ${Number(newValues?.sale_price ?? 0).toLocaleString("en-US", { style: "currency", currency: "USD" })}`,
       occurredAt: a.created_at as string,
       icon: "car",
     });
@@ -274,18 +281,45 @@ export async function getCustomerDetail(
   const salesRep = r.sales_rep as { full_name: string } | null;
   const status = r.status as CustomerStatus;
 
-  let lastActivityDate = r.updated_at as string;
-  let lastActivityLabel = "Profile updated";
-  if (activityTimeline.length > 0) {
-    lastActivityDate = activityTimeline[0].occurredAt;
-    lastActivityLabel = activityTimeline[0].title;
-  }
+  const lastActivity = computeLastActivity({
+    updated_at: r.updated_at as string,
+    created_at: r.created_at as string,
+    deals: (dealRows ?? []).map((d) => {
+      const deal = d as Record<string, unknown>;
+      return {
+        sale_date: deal.sale_date as string,
+        deleted_at: null,
+      };
+    }),
+    notes: (noteRows ?? []).map((n) => {
+      const note = n as Record<string, unknown>;
+      return {
+        created_at: note.created_at as string,
+        deleted_at: null,
+      };
+    }),
+    communications: (commRows ?? []).map((c) => {
+      const comm = c as Record<string, unknown>;
+      return {
+        occurred_at: comm.occurred_at as string,
+        type: comm.type as string,
+        deleted_at: null,
+      };
+    }),
+  });
+
+  const imageSignedUrl = await signedUrl(
+    supabase,
+    r.image_url as string | null,
+    "customer-images",
+  );
 
   return {
     id: r.id as string,
     name: customerName,
     phone: (r.phone as string) ?? "",
     email: (r.email as string) ?? "",
+    imageUrl: imageSignedUrl || null,
     type: r.type as CustomerType,
     status,
     source: (r.source as CustomerSource) ?? null,
@@ -303,8 +337,8 @@ export async function getCustomerDetail(
     vehicleCount: deals.length,
     activeDealsCount: status === "active_deal" ? 1 : 0,
     totalDealsCount: deals.length,
-    lastActivityDate: lastActivityDate.split("T")[0],
-    lastActivityLabel,
+    lastActivityDate: lastActivity.date.split("T")[0],
+    lastActivityLabel: lastActivity.label,
     purchaseHistory,
     deals: deals.map(({ buyerIdFront: _a, buyerIdBack: _b, driversLicense: _c, otherDoc: _d, createdAt: _e, ...rest }) => rest),
     notes,

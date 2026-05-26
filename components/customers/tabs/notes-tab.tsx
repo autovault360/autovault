@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,10 +12,13 @@ import { formatDisplayDate, type CustomerDetail } from "@/lib/customers/types";
 export default function NotesTab({
   customer,
   onRefresh,
+  onListRefresh,
 }: {
   customer: CustomerDetail;
   onRefresh: () => void;
+  onListRefresh?: () => void;
 }) {
+  const router = useRouter();
   const [body, setBody] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -28,7 +32,9 @@ export default function NotesTab({
       if (result.success) {
         toast.success("Note added");
         setBody("");
+        router.refresh();
         onRefresh();
+        onListRefresh?.();
       } else {
         toast.error(result.error);
       }

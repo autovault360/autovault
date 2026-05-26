@@ -1,12 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import {
   formatCurrency,
+  formatCustomerSource,
+  formatCustomerStatus,
+  formatCustomerType,
   formatDisplayDate,
   formatLocation,
   type CustomerDetail,
 } from "@/lib/customers/types";
 import ActivityTimeline from "../activity-timeline";
+import CustomerStatusBadge from "../customer-status-badge";
 
 export default function OverviewTab({
   customer,
@@ -21,6 +26,33 @@ export default function OverviewTab({
 
   return (
     <div className="space-y-4">
+      <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+        <h4 className="mb-3 text-[11px] font-semibold text-white">Profile</h4>
+        <div className="mb-3 flex items-center gap-3">
+          {customer.imageUrl ? (
+            <div className="relative h-12 w-12 overflow-hidden rounded-full border border-slate-700">
+              <Image
+                src={customer.imageUrl}
+                alt={customer.name}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          ) : null}
+          <div className="space-y-1">
+            <CustomerStatusBadge status={customer.status} />
+            <p className="text-[11px] text-slate-400">
+              {formatCustomerType(customer.type)}
+              {customer.source && ` • ${formatCustomerSource(customer.source)}`}
+            </p>
+            <p className="text-[11px] text-slate-400">
+              Sales Rep: {customer.salesRepName}
+            </p>
+          </div>
+        </div>
+      </section>
+
       <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
         <h4 className="mb-3 text-[11px] font-semibold text-white">
           Contact Information
@@ -49,6 +81,11 @@ export default function OverviewTab({
             label="Driver's License"
             value={customer.driversLicenseNumber || "—"}
           />
+          <InfoItem
+            label="Status"
+            value={formatCustomerStatus(customer.status)}
+          />
+          <InfoItem label="Source" value={formatCustomerSource(customer.source)} />
         </dl>
       </section>
 
@@ -79,7 +116,7 @@ export default function OverviewTab({
                   <th className="pb-2 pr-2 font-medium">Stock #</th>
                   <th className="pb-2 pr-2 font-medium">Vehicle</th>
                   <th className="pb-2 pr-2 font-medium">Sale Date</th>
-                  <th className="pb-2 pr-2 font-medium">Sale Price</th>
+                  <th className="pb-2 pr-2 font-medium">Collected</th>
                   <th className="pb-2 font-medium">Gross Profit</th>
                 </tr>
               </thead>
@@ -107,7 +144,7 @@ export default function OverviewTab({
               </tbody>
             </table>
           </div>
-          {customer.purchaseHistory.length > 0 && onViewDeals && (
+          {onViewDeals && (
             <button
               type="button"
               onClick={onViewDeals}

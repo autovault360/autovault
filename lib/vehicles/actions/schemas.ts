@@ -1,11 +1,8 @@
+import { phoneRegex, zipRegex } from "@/lib/shared/phone";
 import { z } from "zod";
 import { validateFile } from "./utils";
 
 const currencyField = z.coerce.number().min(0, "Must be 0 or greater");
-
-const phoneRegex = /^\(\d{3}\) \d{3}-\d{4}$/;
-
-const zipRegex = /^\d{5}(-\d{4})?$/;
 
 export const updatePricingSchema = z.object({
   currentAskingPrice: currencyField,

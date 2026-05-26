@@ -222,7 +222,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       if (details) {
         switch (a.action) {
           case "INSERT":
-            description = `VIN: ${details.vin ?? "N/A"} — ${details.make ?? ""} ${details.model ?? ""}`;
+            description = `VIN: ${details.vin ?? "N/A"} — ${formatField("make", (details.make as string) ?? "")} ${formatField("model", (details.model as string) ?? "", details.make as string)}`;
             break;
           case "MARKED_SOLD":
             description = `Sold to ${details.customer_name ?? "N/A"} for $${Number(details.sale_price ?? 0).toLocaleString()}`;
