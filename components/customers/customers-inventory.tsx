@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import NProgress from "nprogress";
 import { toast } from "sonner";
 import {
@@ -11,6 +11,7 @@ import {
   Loader2,
   MoreHorizontal,
   MessageSquare,
+  User,
 } from "lucide-react";
 import {
   InputGroup,
@@ -63,6 +64,7 @@ export default function CustomersInventory({
   onAddNote,
   onRequestAdd,
 }: Props) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -246,6 +248,15 @@ export default function CustomersInventory({
                 ref={popoverRef}
                 className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-[#0e1626] py-1 shadow-xl"
               >
+                <ActionItem
+                  icon={User}
+                  label="View Profile"
+                  onClick={() => {
+                    setActivePopover(null);
+                    NProgress.start();
+                    router.push(`/dashboard/customers/${row.id}`);
+                  }}
+                />
                 <ActionItem
                   icon={MessageSquare}
                   label="Add Note"

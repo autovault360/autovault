@@ -115,7 +115,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
             <InfoLine icon={Mail} text={detail.customer.email} />
             <InfoLine icon={MapPin} text={detail.customer.address} />
             <DetailOutlineButton
-              href="/dashboard/customers"
+              href={`/dashboard/customers/${detail.customer.id}?from=deal-jacket&dealJacketId=${detail.id}`}
               label="View Customer Profile"
             />
           </DetailCardBody>

@@ -63,6 +63,7 @@ export async function createCustomer(
     }
 
     revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${row.id}`);
     return { success: true, customerId: row.id };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
@@ -116,6 +117,7 @@ export async function updateCustomer(
     }
 
     revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${customerId}`);
     return { success: true, customerId };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
