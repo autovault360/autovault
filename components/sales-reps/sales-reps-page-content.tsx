@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AddSalesRepTrigger from "@/components/sales-reps/add/add-sales-rep-trigger";
@@ -23,15 +23,27 @@ type Props = {
   salesReps: SalesRepListItem[];
   stats: SalesRepStats;
   loadError?: string;
+  defaultOpen?: boolean;
 };
 
 export default function SalesRepsPageContent({
   salesReps: initialSalesReps,
   stats: initialStats,
   loadError,
+  defaultOpen = false,
 }: Props) {
   const router = useRouter();
-  const [addOpen, setAddOpen] = useState(false);
+  const pathname = usePathname();
+  const [addOpen, setAddOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    setAddOpen(defaultOpen);
+  }, [defaultOpen]);
+
+  const handleAddOpenChange = (next: boolean) => {
+    setAddOpen(next);
+    window.history.replaceState(null, "", next ? pathname + "?add=true" : pathname);
+  };
   const [salesReps, setSalesReps] = useState(initialSalesReps);
   const [stats, setStats] = useState(initialStats);
   const [error, setError] = useState(loadError);
@@ -82,7 +94,7 @@ export default function SalesRepsPageContent({
             Track performance, manage goals, and view individual rep metrics.
           </p>
         </div>
-        <AddSalesRepTrigger onClick={() => setAddOpen(true)} />
+        <AddSalesRepTrigger onClick={() => handleAddOpenChange(true)} />
       </section>
 
       {error && (
@@ -111,7 +123,7 @@ export default function SalesRepsPageContent({
 
       <AddSalesRepModal
         open={addOpen}
-        onOpenChange={setAddOpen}
+        onOpenChange={handleAddOpenChange}
         onSaved={handleRepSaved}
       />
     </div>

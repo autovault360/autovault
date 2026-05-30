@@ -11,11 +11,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FormGrid } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,7 +25,11 @@ import {
   isPdfFile,
   validateFile,
 } from "@/lib/vehicles/actions/utils";
-import { formatField, formatMileage, getStatusStyle } from "@/lib/vehicles/types";
+import {
+  formatField,
+  formatMileage,
+  getStatusStyle,
+} from "@/lib/vehicles/types";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import {
   getFooterBorderClass,
@@ -41,7 +41,6 @@ import {
   type ModalTheme,
 } from "./modal-theme";
 import { ModalThemeProvider, useModalTheme } from "./modal-theme-context";
-
 
 export function VehicleActionDialog({
   open,
@@ -186,7 +185,6 @@ export function ModalSectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-
 export function FieldLabel({
   label,
   required,
@@ -272,7 +270,10 @@ export function VehicleSummaryBlock({
           label="Mileage"
           value={`${formatMileage(vehicle.mileage)} mi`}
         />
-        <ReadOnlyField label="Location" value={formatField("location", vehicle.location)} />
+        <ReadOnlyField
+          label="Location"
+          value={formatField("location", vehicle.location)}
+        />
         <div>
           <FieldLabel label="Status" />
           <div className="flex h-10 items-center">
@@ -351,7 +352,11 @@ export function TextareaWithCount({
       <span
         className={cn(
           "absolute right-2 bottom-2 text-[10px]",
-          atLimit ? "text-red-500" : theme === "dark" ? "text-slate-500" : "text-gray-400",
+          atLimit
+            ? "text-red-500"
+            : theme === "dark"
+              ? "text-slate-500"
+              : "text-gray-400",
         )}
       >
         {value.length}/{maxLength}
@@ -375,7 +380,9 @@ export function MarketStatCard({
     <div className="rounded-md border border-gray-200 bg-white p-3">
       <p className="text-[10.5px] text-gray-500">{label}</p>
       <div className="mt-1 flex items-end justify-between gap-2">
-        <p className={cn("text-[15px] font-bold text-gray-900", valueClassName)}>
+        <p
+          className={cn("text-[15px] font-bold text-gray-900", valueClassName)}
+        >
           {value}
         </p>
         <span className="text-[10px] font-semibold text-emerald-600">
@@ -553,7 +560,13 @@ export function FilePreviewCard({
         </div>
       ) : previewUrl ? (
         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
-          <Image src={previewUrl} alt={file.name} fill className="object-cover" unoptimized />
+          <Image
+            src={previewUrl}
+            alt={file.name}
+            fill
+            className="object-cover"
+            unoptimized
+          />
         </div>
       ) : (
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-gray-100">
@@ -561,7 +574,9 @@ export function FilePreviewCard({
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[12px] font-medium text-gray-800">{file.name}</p>
+        <p className="truncate text-[12px] font-medium text-gray-800">
+          {file.name}
+        </p>
         <p className="text-[10px] text-gray-500">{formatFileSize(file.size)}</p>
       </div>
       <button
@@ -612,13 +627,21 @@ export function ImageUploadSlot({
         onClick={() => inputRef.current?.click()}
         className={cn(
           "relative flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-md border-2 border-dashed transition-colors duration-150",
-          error ? "border-red-300 bg-red-50/30" : "border-gray-200 bg-blue-50/30 hover:border-blue-300",
+          error
+            ? "border-red-300 bg-red-50/30"
+            : "border-gray-200 bg-blue-50/30 hover:border-blue-300",
           previewUrl && "border-solid border-gray-200",
         )}
       >
         {previewUrl ? (
           <>
-            <Image src={previewUrl} alt={label} fill className="object-cover" unoptimized />
+            <Image
+              src={previewUrl}
+              alt={label}
+              fill
+              className="object-cover"
+              unoptimized
+            />
             <button
               type="button"
               onClick={(e) => {
@@ -633,7 +656,9 @@ export function ImageUploadSlot({
         ) : (
           <>
             <Upload className="mb-1.5 h-5 w-5 text-blue-400" />
-            <span className="text-[10px] font-medium text-blue-500">Upload JPG</span>
+            <span className="text-[10px] font-medium text-blue-500">
+              Upload JPG
+            </span>
             <span className="text-[9px] text-gray-400">Max 5MB</span>
           </>
         )}
@@ -682,7 +707,7 @@ export function ModalFooter({
   disabled,
   leftSlot,
   submitIcon,
-  className
+  className,
 }: {
   onCancel: () => void;
   onSubmit: () => void;
@@ -707,16 +732,12 @@ export function ModalFooter({
       {leftSlot && <div className="sm:mr-auto">{leftSlot}</div>}
       <div className="flex flex-col-reverse gap-2 sm:flex-row">
         <Button
+          theme="dark"
           type="button"
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
-          className={cn(
-            "h-10 px-5 text-[13px]",
-            theme === "dark"
-              ? "border-slate-600 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100"
-              : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
-          )}
+          className="h-8"
         >
           Cancel
         </Button>
@@ -724,7 +745,10 @@ export function ModalFooter({
           type="button"
           onClick={onSubmit}
           disabled={disabled || isSubmitting}
-          className={cn("h-10 px-5 text-[13px] font-semibold text-white", submitClassName)}
+          className={cn(
+            "h-8",
+            submitClassName
+          )}
         >
           {isSubmitting ? (
             <>
@@ -744,9 +768,7 @@ export function ModalFooter({
 }
 
 export function AutoCalculatedCaption() {
-  return (
-    <p className="text-[10px] text-blue-500">Auto-calculated</p>
-  );
+  return <p className="text-[10px] text-blue-500">Auto-calculated</p>;
 }
 
 export function MarketDataFooter({ date }: { date: string }) {

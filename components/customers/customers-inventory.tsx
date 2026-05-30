@@ -2,16 +2,16 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import NProgress from "nprogress";
 import { toast } from "sonner";
 import {
   Search,
   SlidersHorizontal,
-  MoreHorizontal,
   Pencil,
-  MessageSquare,
   Loader2,
+  MoreHorizontal,
+  MessageSquare,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import {
   InputGroup,
   InputGroupInput,
@@ -205,6 +205,7 @@ export default function CustomersInventory({
             type="button"
             onClick={(e) => {
               e.stopPropagation();
+              NProgress.start();
               setEditLoadingId(row.id);
               fetch(`/api/customers/${row.id}`)
                 .then((r) => {
@@ -213,7 +214,10 @@ export default function CustomersInventory({
                 })
                 .then((d) => onEdit(d))
                 .catch(() => toast.error("Could not load customer for editing"))
-                .finally(() => setEditLoadingId(null));
+                .finally(() => {
+                  setEditLoadingId(null);
+                  NProgress.done();
+                });
             }}
             className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit customer"

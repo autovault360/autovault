@@ -73,12 +73,13 @@ export function PhotoGalleryUpload({
           Drag and drop photos here or use the button below
         </p>
         <Button
+        theme="dark"
           type="button"
           variant="outline"
           size="sm"
           disabled={remaining <= 0}
           onClick={() => inputRef.current?.click()}
-          className="mt-3 h-8 border-slate-600 bg-[#1a2332] text-[11px] text-slate-200 hover:bg-slate-800"
+          className="mt-3"
         >
           <Upload className="mr-1.5 h-3.5 w-3.5" />
           Upload Photos

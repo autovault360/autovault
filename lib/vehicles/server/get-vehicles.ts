@@ -115,9 +115,12 @@ export async function getVehicleById(id: string) {
       )
     : 0;
 
-  const totalReconditioning = (vehicleRow.expenses ?? []).reduce(
-    (sum: number, e: ExpenseRow) => sum + Number(e.total_cost),
-    0,
+  const totalReconditioning = Math.max(
+    Number((vehicleRow as Record<string, unknown>).reconditioning_cost as number | null ?? 0),
+    (vehicleRow.expenses ?? []).reduce(
+      (sum: number, e: ExpenseRow) => sum + Number(e.total_cost),
+      0,
+    ),
   );
 
   const totalInvested = Number(vehicleRow.total_invested ?? 0);

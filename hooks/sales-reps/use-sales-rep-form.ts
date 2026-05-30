@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -118,6 +119,7 @@ export function useSalesRepForm(open: boolean, onSuccess: () => void) {
       return;
     }
 
+    NProgress.start();
     setIsSubmitting(true);
     try {
       const result = await createSalesRep(values);
@@ -144,6 +146,7 @@ export function useSalesRepForm(open: boolean, onSuccess: () => void) {
       }
     } finally {
       setIsSubmitting(false);
+      NProgress.done();
     }
   }, (errors) => {
     setShake(true);
