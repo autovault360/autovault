@@ -130,8 +130,15 @@ export async function assertVehicleActive(
   return null;
 }
 
+export type StorageBucket =
+  | "vehicle-images"
+  | "vehicle-documents"
+  | "customer-images"
+  | "user-images"
+  | "expense-receipts";
+
 export async function uploadFile(
-  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
+  bucket: StorageBucket,
   storagePath: string,
   file: File,
 ): Promise<string> {
@@ -182,7 +189,7 @@ export async function getSignedUrl(
   storagePath: string,
   expiresInSeconds: number = 3600,
 ): Promise<string> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const { data, error } = await supabase.storage
     .from(bucket)

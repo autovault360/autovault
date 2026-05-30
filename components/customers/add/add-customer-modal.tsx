@@ -26,7 +26,7 @@ import {
   ModalFooter,
   ModalHeader,
   VehicleActionDialog,
-} from "@/components/vehicles/detail/modals/modal-primitives";
+} from "@/components/shared/modal-primitives";
 import CustomerStatusBadge from "@/components/customers/customer-status-badge";
 import { useCustomerForm } from "@/hooks/customers/use-customer-form";
 import { US_STATES } from "@/lib/vehicles/actions/add-vehicle/options";

@@ -1,30 +1,73 @@
 "use client";
 
+import { useState, useTransition } from "react";
+
 import Image from "next/image";
+
 import { X, Maximize2 } from "lucide-react";
+
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
+
 import { cn } from "@/lib/utils";
+
 import type { ExpenseDetail } from "@/lib/expenses/types";
+
 import {
   formatCategory,
   formatCurrency,
   formatDisplayDate,
   formatDateTime,
 } from "@/lib/expenses/types";
+
+import { deleteExpense } from "@/lib/expenses/server/delete-expense";
+import EditExpenseModal from "./add/edit-expense-modal";
+
 import ExpenseCategoryBadge from "./expense-category-badge";
 
 export default function ExpenseDetailPanel({
   expense,
   onClose,
+  onDeleted,
 }: {
   expense: ExpenseDetail;
   onClose: () => void;
+  onDeleted?: () => void;
 }) {
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [, startTransition] = useTransition();
+
   const linkedVehicleLabel = expense.linkedVehicle
     ? expense.stockNumber
       ? `${expense.linkedVehicle} · Stock #${expense.stockNumber}`
       : expense.linkedVehicle
     : "—";
+
+  const handleDelete = () => {
+    if (!confirm("Delete this expense? This action cannot be undone.")) return;
+
+    setDeleting(true);
+
+    startTransition(async () => {
+      const result = await deleteExpense({
+        expenseKind: expense.expenseKind,
+        expenseId: expense.id,
+      });
+
+      setDeleting(false);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success("Expense deleted.");
+      onDeleted?.();
+      onClose();
+    });
+  };
 
   return (
     <>
@@ -33,6 +76,7 @@ export default function ExpenseDetailPanel({
         onClick={onClose}
         aria-hidden
       />
+
       <aside
         className={cn(
           "flex w-[430px] shrink-0 flex-col",
@@ -52,6 +96,7 @@ export default function ExpenseDetailPanel({
           >
             <X className="h-4 w-4" />
           </button>
+
           <h2 className="text-[13px] font-semibold text-white">Expense Details</h2>
         </div>
 
@@ -59,15 +104,19 @@ export default function ExpenseDetailPanel({
           <div className="space-y-4">
             <div>
               <ExpenseCategoryBadge category={expense.category} />
+
               <h3 className="mt-2.5 text-[17px] font-bold leading-snug text-white">
                 {expense.title}
               </h3>
+
               <div className="mt-2 flex items-end gap-2">
                 <span className="text-[22px] font-bold text-white">
                   {formatCurrency(expense.amount)}
                 </span>
+
                 <span className="mb-1 text-[10.5px] text-slate-500">Total Amount</span>
               </div>
+
               {expense.linkedVehicle && (
                 <p className="mt-1 text-[12px] text-slate-400">{expense.linkedVehicle}</p>
               )}
@@ -82,8 +131,10 @@ export default function ExpenseDetailPanel({
                     width={320}
                     height={420}
                     className="mx-auto h-auto w-full max-w-[280px]"
+                    unoptimized
                   />
                 </div>
+
                 <a
                   href={expense.receiptImageUrl}
                   target="_blank"
@@ -98,19 +149,33 @@ export default function ExpenseDetailPanel({
 
             <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 rounded-lg border border-slate-800/80 bg-[#0b121f]/40 p-3.5">
               <DetailField label="Date" value={formatDisplayDate(expense.date)} />
-              <DetailField label="Category" value={formatCategory(expense.category)} />
+
+              {expense.expenseKind === "vehicle" ? (
+                <DetailField label="Type" value={expense.expenseSubcategory ?? "—"} />
+              ) : (
+                <DetailField label="Category" value={formatCategory(expense.category)} />
+              )}
+
               <DetailField label="Amount" value={formatCurrency(expense.amount)} />
               <DetailField label="Vendor" value={expense.vendor} />
+
               <DetailField label="Linked Vehicle" value={linkedVehicleLabel} />
+
               <DetailField label="Transaction ID" value={expense.transactionId} />
+
               <DetailField label="Payment Method" value={expense.paymentMethod} />
+
               <DetailField
                 label="Receipt Uploaded"
                 value={formatDateTime(expense.receiptUploadedAt)}
               />
+
               <DetailField label="Notes" value={expense.notes ?? "—"} />
+
               <DetailField label="Added By" value={expense.addedBy} />
+
               <DetailField label="Description" value={expense.description} className="col-span-2" />
+
               <DetailField label="Created At" value={formatDateTime(expense.createdAt)} className="col-span-2" />
             </div>
           </div>
@@ -120,19 +185,29 @@ export default function ExpenseDetailPanel({
           <Button
             type="button"
             className="flex-1 bg-blue-600 hover:bg-blue-500"
+            onClick={() => setEditModalOpen(true)}
           >
             Edit Expense
           </Button>
+
           <Button
             type="button"
             theme="dark"
             variant="destructive"
             className="flex-1"
+            onClick={handleDelete}
+            disabled={deleting}
           >
-            Delete Expense
+            {deleting ? "Deleting…" : "Delete Expense"}
           </Button>
         </div>
       </aside>
+
+      <EditExpenseModal
+        expense={expense}
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+      />
     </>
   );
 }

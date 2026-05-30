@@ -14,7 +14,6 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FormGrid } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -37,7 +36,6 @@ import {
   getInputReadonlyClass,
   getLabelClass,
   getModalShellClass,
-  getTextareaClass,
   type ModalTheme,
 } from "./modal-theme";
 import { ModalThemeProvider, useModalTheme } from "./modal-theme-context";
@@ -314,53 +312,6 @@ export function VehicleSummaryBlock({
           Change Photo
         </Button>
       </div>
-    </div>
-  );
-}
-
-export function TextareaWithCount({
-  value,
-  onChange,
-  maxLength,
-  placeholder,
-  id,
-  rows = 4,
-  "aria-invalid": ariaInvalid,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  maxLength: number;
-  placeholder?: string;
-  id?: string;
-  rows?: number;
-  "aria-invalid"?: boolean;
-}) {
-  const theme = useModalTheme();
-  const atLimit = value.length >= maxLength;
-  return (
-    <div className="relative">
-      <Textarea
-        id={id}
-        aria-invalid={ariaInvalid}
-        rows={rows}
-        maxLength={maxLength}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={getTextareaClass(theme)}
-      />
-      <span
-        className={cn(
-          "absolute right-2 bottom-2 text-[10px]",
-          atLimit
-            ? "text-red-500"
-            : theme === "dark"
-              ? "text-slate-500"
-              : "text-gray-400",
-        )}
-      >
-        {value.length}/{maxLength}
-      </span>
     </div>
   );
 }

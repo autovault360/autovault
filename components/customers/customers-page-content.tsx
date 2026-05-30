@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
 import AdminHeader from "@/components/layout/AdminHeader";
@@ -8,7 +9,12 @@ import AddCustomerTrigger from "@/components/customers/add/add-customer-trigger"
 import AddCustomerModal from "@/components/customers/add/add-customer-modal";
 import CustomerStatsCards from "@/components/customers/customer-stats-cards";
 import CustomersInventory from "@/components/customers/customers-inventory";
-import CustomerDetailPanel from "@/components/customers/customer-detail-panel";
+import { CustomersTableSkeleton } from "@/components/customers/customers-skeleton";
+
+const CustomerDetailPanel = dynamic(
+  () => import("@/components/customers/customer-detail-panel"),
+  { ssr: false },
+);
 import type {
   CustomerDetail,
   CustomerListItem,
@@ -104,7 +110,7 @@ export default function CustomersPageContent({
 
           <CustomerStatsCards stats={stats} />
 
-          <Suspense fallback={null}>
+          <Suspense fallback={<CustomersTableSkeleton />}>
             <CustomersInventory
               customers={customers}
               salesReps={salesReps}

@@ -1,16 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import dynamic from "next/dynamic";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calendar, SlidersHorizontal } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AddExpenseModal from "@/components/expenses/add/add-expense-modal";
 import ExpenseStatsCards from "@/components/expenses/expense-stats-cards";
 import ExpensesInventory from "@/components/expenses/expenses-inventory";
-import ExpenseDetailPanel from "@/components/expenses/expense-detail-panel";
 import type { ExpenseDetail, ExpenseStats } from "@/lib/expenses/types";
 import { getExpenseDetail } from "@/lib/expenses/types";
 import type { ExpenseFormType } from "@/lib/expenses/form-types";
+
+const ExpenseDetailPanel = dynamic(
+  () => import("@/components/expenses/expense-detail-panel"),
+  { ssr: false },
+);
 
 type Props = {
   expenses: ExpenseDetail[];
@@ -26,16 +31,18 @@ export default function ExpensesPageContent({
   expenseType = "general",
 }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const defaultId = expenses[0]?.id ?? null;
   const [selectedId, setSelectedId] = useState<string | null>(defaultId);
   const [addOpen, setAddOpen] = useState(defaultOpen);
+  const [isPending, startTransition] = useTransition();
   const urlAddOpen = searchParams.get("add") === "true";
   const urlExpenseType = (searchParams.get("type") as ExpenseFormType | null) ?? expenseType;
 
   useEffect(() => {
-    setAddOpen(defaultOpen || urlAddOpen);
-  }, [defaultOpen, urlAddOpen]);
+    setAddOpen(urlAddOpen);
+  }, [urlAddOpen]);
 
   const selectedExpense = useMemo(
     () => (selectedId ? getExpenseDetail(expenses, selectedId) : null),
@@ -58,14 +65,27 @@ export default function ExpensesPageContent({
         return;
       }
       window.history.replaceState(null, "", pathname);
+      startTransition(() => {
+        router.refresh();
+      });
     },
-    [pathname, urlExpenseType],
+    [pathname, urlExpenseType, router],
   );
+
+  const handleExpenseDeleted = useCallback(() => {
+    setSelectedId(null);
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router]);
 
   return (
     <div className="relative">
       <AdminHeader />
 
+      {isPending && (
+        <div className="absolute left-0 right-0 top-0 z-50 h-0.5 animate-pulse bg-blue-500" />
+      )}
       <div className="flex items-start gap-5">
         <div className="min-w-0 flex-1">
           <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
@@ -107,6 +127,7 @@ export default function ExpensesPageContent({
           <ExpenseDetailPanel
             expense={selectedExpense}
             onClose={() => setSelectedId(null)}
+            onDeleted={handleExpenseDeleted}
           />
         )}
       </div>
