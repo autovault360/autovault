@@ -82,7 +82,7 @@ const navGroups = [
   {
     label: "DOCUMENTS",
     items: [
-      { href: "#", label: "Deal Jacket", icon: Folder, color: "text-blue-500" },
+      { href: "/dashboard/deal-jackets", label: "Deal Jacket", icon: Folder, color: "text-blue-500" },
       {
         href: "#",
         label: "Files & Storage",
