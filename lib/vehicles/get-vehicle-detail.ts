@@ -89,7 +89,16 @@ type DbVehicleRow = {
   created_at: string;
   updated_at: string;
   images?: { storage_path: string; is_primary: boolean; sort_order: number; deleted_at?: string | null }[];
-  expenses?: { total_cost: number; category: string; created_at: string }[];
+  expenses?: {
+    total_cost: number;
+    category: string;
+    created_at: string;
+    description?: string;
+    shop_vendor?: string | null;
+    expense_subcategory?: string | null;
+    receipt_storage_path?: string | null;
+    repair_type?: string;
+  }[];
   status_history?: { from_status: string | null; to_status: string; created_at: string; notes?: string }[];
   pricing_history?: { previous_price: number | null; new_price: number; reason: string; created_at: string }[];
 };
@@ -136,7 +145,16 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       .select(`
         *,
         images:vehicle_images(storage_path, is_primary, sort_order, deleted_at),
-        expenses:vehicle_expenses(total_cost, category, created_at),
+        expenses:vehicle_expenses(
+          total_cost,
+          category,
+          created_at,
+          description,
+          shop_vendor,
+          expense_subcategory,
+          receipt_storage_path,
+          repair_type
+        ),
         status_history(from_status, to_status, created_at, notes),
         pricing_history(previous_price, new_price, reason, created_at)
       `)
@@ -181,10 +199,16 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       sortedImages,
     );
 
-    const expenses: VehicleExpense[] = (row.expenses ?? []).map((e) => ({
-      label: e.category ? `${e.category} - ${formatDate(e.created_at)}` : formatDate(e.created_at),
-      amount: Number(e.total_cost),
-    }));
+    const expenses: VehicleExpense[] = (row.expenses ?? []).map((e) => {
+      const sub = e.expense_subcategory ?? e.repair_type ?? e.category;
+      const vendor = e.shop_vendor ? ` · ${e.shop_vendor}` : "";
+      return {
+        label: e.description
+          ? `${sub}${vendor} - ${formatDate(e.created_at)}`
+          : `${sub} - ${formatDate(e.created_at)}`,
+        amount: Number(e.total_cost),
+      };
+    });
 
     const logEntries: { ts: string; entry: ActivityLogEntry }[] = [];
 

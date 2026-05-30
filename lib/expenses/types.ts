@@ -4,7 +4,12 @@ export type ExpenseCategory =
   | "accounting"
   | "office"
   | "salary_wages"
-  | "recurring";
+  | "recurring"
+  | "software"
+  | "utilities"
+  | "rent"
+  | "insurance"
+  | "other";
 
 export type ExpenseListItem = {
   id: string;
@@ -18,9 +23,11 @@ export type ExpenseListItem = {
 };
 
 export type ExpenseDetail = ExpenseListItem & {
+  expenseKind: "dealership" | "vehicle";
   vendor: string;
   linkedVehicle: string | null;
   stockNumber: string | null;
+  expenseSubcategory: string | null;
   transactionId: string;
   receiptUploadedAt: string | null;
   notes: string | null;
@@ -52,6 +59,11 @@ export const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   "office",
   "salary_wages",
   "recurring",
+  "software",
+  "utilities",
+  "rent",
+  "insurance",
+  "other",
 ];
 
 const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
@@ -61,6 +73,11 @@ const CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   office: "Office Expenses",
   salary_wages: "Salary & Wages",
   recurring: "Recurring Expenses",
+  software: "Software Expenses",
+  utilities: "Utilities Expenses",
+  rent: "Rent Expenses",
+  insurance: "Insurance Expenses",
+  other: "Other Expenses",
 };
 
 export function formatCategory(category: ExpenseCategory): string {
@@ -81,6 +98,16 @@ export function getCategoryStyle(category: ExpenseCategory): string {
       return "bg-orange-500/15 text-orange-300 border-orange-500/30";
     case "recurring":
       return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30";
+    case "software":
+      return "bg-indigo-500/15 text-indigo-400 border-indigo-500/30";
+    case "utilities":
+      return "bg-yellow-500/15 text-yellow-400 border-yellow-500/30";
+    case "rent":
+      return "bg-slate-500/15 text-slate-300 border-slate-500/30";
+    case "insurance":
+      return "bg-cyan-500/15 text-cyan-400 border-cyan-500/30";
+    case "other":
+      return "bg-slate-500/15 text-slate-400 border-slate-500/30";
     default:
       return "bg-slate-500/15 text-slate-400 border-slate-500/30";
   }

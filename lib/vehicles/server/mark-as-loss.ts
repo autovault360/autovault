@@ -37,7 +37,7 @@ export async function markAsLoss(formData: FormData): Promise<ActionResult> {
 
     const { data: vehicle, error: fetchError } = await supabase
       .from("vehicles")
-      .select("total_invested")
+      .select("acquisition_cost, reconditioning_cost, total_invested")
       .eq("id", data.vehicleId)
       .eq("dealership_id", dealershipId)
       .single();
@@ -46,19 +46,9 @@ export async function markAsLoss(formData: FormData): Promise<ActionResult> {
       return { success: false, error: "Vehicle not found" };
     }
 
-    const { data: expensesData } = await supabase
-      .from("vehicle_expenses")
-      .select("total_cost")
-      .eq("vehicle_id", data.vehicleId)
-      .is("deleted_at", null);
-
-    const totalExpenses = expensesData?.reduce(
-      (sum: number, e: { total_cost: number }) => sum + Number(e.total_cost),
-      0,
-    ) ?? 0;
-
-    const totalInvestment = Number(vehicle.total_invested);
-    const totalCostBasis = totalInvestment + totalExpenses;
+    const totalInvestment = Number(vehicle.acquisition_cost ?? 0);
+    const totalExpenses = Number(vehicle.reconditioning_cost ?? 0);
+    const totalCostBasis = Number(vehicle.total_invested);
     const netLoss = totalCostBasis - data.insuranceProceeds;
 
     const docs = formData.getAll("documents") as File[];

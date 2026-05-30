@@ -1,5 +1,18 @@
 import type { ExpenseDetail, ExpenseStats } from "./types";
 
+type ExpenseDetailSeed = Omit<ExpenseDetail, "expenseKind" | "expenseSubcategory">;
+
+function withExpenseKind(row: ExpenseDetailSeed): ExpenseDetail {
+  return {
+    ...row,
+    expenseKind: row.category === "vehicle" ? "vehicle" : "dealership",
+    expenseSubcategory:
+      row.category === "vehicle"
+        ? (row.title.split(" - ")[0] ?? "Other")
+        : null,
+  };
+}
+
 export const EXPENSE_STATS_MOCK: ExpenseStats = {
   totalExpensesMtd: 38900.45,
   totalExpensesMtdDelta: "↓ 12.6% vs last month",
@@ -17,7 +30,7 @@ export const EXPENSE_STATS_MOCK: ExpenseStats = {
 
 const RECEIPT_URL = "/expenses/sample-receipt.svg";
 
-const VISIBLE_ROWS: ExpenseDetail[] = [
+const VISIBLE_ROWS: ExpenseDetailSeed[] = [
   {
     id: "exp-001",
     date: "2025-05-31",
@@ -220,8 +233,8 @@ const VISIBLE_ROWS: ExpenseDetail[] = [
   },
 ];
 
-function buildAdditionalExpenses(): ExpenseDetail[] {
-  const extras: Omit<ExpenseDetail, "id">[] = [
+function buildAdditionalExpenses(): ExpenseDetailSeed[] {
+  const extras: Omit<ExpenseDetailSeed, "id">[] = [
     {
       date: "2025-05-21",
       category: "vehicle",
@@ -936,4 +949,4 @@ function buildAdditionalExpenses(): ExpenseDetail[] {
 export const EXPENSES_MOCK: ExpenseDetail[] = [
   ...VISIBLE_ROWS,
   ...buildAdditionalExpenses(),
-];
+].map(withExpenseKind);

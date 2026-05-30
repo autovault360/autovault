@@ -2,6 +2,17 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+
+function formatDateLabel(value: string): string {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export type InputMode = "text" | "currency" | "date" | "readonly" | "percent";
 export type InputTone = "default" | "readonly" | "negative" | "positive";
@@ -17,8 +28,8 @@ const toneShellClass: Record<InputTone, string> = {
 };
 
 const darkShellClass: Record<InputTone, string> = {
-  default: "border-slate-600 text-slate-100",
-  readonly: "border-slate-600 bg-[#151d2b] text-slate-300",
+  default: "border-slate-600 bg-slate-800/50 text-slate-100",
+  readonly: "border-slate-600 bg-slate-800/50 text-slate-300",
   negative: "border-red-400 bg-red-900/30 text-red-400",
   positive: "border-emerald-400 bg-emerald-900/30 text-emerald-400",
 };
@@ -69,7 +80,7 @@ function CurrencyInput({
   const shell = theme === "dark" ? darkShellClass[resolvedTone] : toneShellClass[resolvedTone];
 
   const prefixBg = theme === "dark"
-    ? "border-slate-600 bg-[#121a28] text-slate-400"
+    ? "border-slate-600 bg-slate-800/50 text-slate-400"
     : "border-[#E0E0E0] bg-[#FAFAFA] text-gray-500";
 
   return (
@@ -132,6 +143,8 @@ function Input({
   theme?: "light" | "dark";
   onValueChange?: (value: number) => void;
 }) {
+  const dateInputRef = React.useRef<HTMLInputElement>(null);
+
   if (mode === "currency") {
     return (
       <CurrencyInput
@@ -146,6 +159,41 @@ function Input({
     );
   }
 
+  if (mode === "date") {
+    const dateTone: InputTone = disabled ? "readonly" : tone ?? "default";
+    const shell = theme === "dark" ? darkShellClass[dateTone] : toneShellClass[dateTone];
+    const dateValue = typeof props.value === "string" ? props.value : "";
+
+    return (
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => dateInputRef.current?.showPicker?.()}
+          disabled={disabled}
+          aria-invalid={ariaInvalid}
+          className={cn(
+            "flex h-8 w-full items-center justify-between rounded-[4px] border px-3 text-left text-[13px]",
+            shell,
+            disabled && "cursor-not-allowed",
+            className,
+          )}
+        >
+          {formatDateLabel(dateValue)}
+          <CalendarIcon className="h-4 w-4 shrink-0 text-slate-400" />
+        </button>
+        <input
+          ref={dateInputRef}
+          type="date"
+          value={dateValue}
+          onChange={(e) => props.onChange?.(e as React.ChangeEvent<HTMLInputElement>)}
+          className="pointer-events-none absolute inset-0 opacity-0"
+          tabIndex={-1}
+          aria-hidden
+        />
+      </div>
+    );
+  }
+
   const resolvedTone: InputTone = disabled
     ? "readonly"
     : mode === "readonly"
@@ -156,7 +204,7 @@ function Input({
   return (
     <input
       id={id}
-      type={mode === "date" ? "date" : type}
+      type={type}
       data-slot="input"
       disabled={disabled || mode === "readonly"}
       readOnly={mode === "readonly"}
@@ -164,7 +212,6 @@ function Input({
       className={cn(
         baseClass,
         shell,
-        mode === "date" && "appearance-none",
         className,
       )}
       {...props}

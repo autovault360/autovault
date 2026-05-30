@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calendar, SlidersHorizontal } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AddExpenseModal from "@/components/expenses/add/add-expense-modal";
@@ -26,16 +26,18 @@ export default function ExpensesPageContent({
   expenseType = "general",
 }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const defaultId = expenses[0]?.id ?? null;
   const [selectedId, setSelectedId] = useState<string | null>(defaultId);
   const [addOpen, setAddOpen] = useState(defaultOpen);
+  const [, startTransition] = useTransition();
   const urlAddOpen = searchParams.get("add") === "true";
   const urlExpenseType = (searchParams.get("type") as ExpenseFormType | null) ?? expenseType;
 
   useEffect(() => {
-    setAddOpen(defaultOpen || urlAddOpen);
-  }, [defaultOpen, urlAddOpen]);
+    setAddOpen(urlAddOpen);
+  }, [urlAddOpen]);
 
   const selectedExpense = useMemo(
     () => (selectedId ? getExpenseDetail(expenses, selectedId) : null),
@@ -58,9 +60,19 @@ export default function ExpensesPageContent({
         return;
       }
       window.history.replaceState(null, "", pathname);
+      startTransition(() => {
+        router.refresh();
+      });
     },
-    [pathname, urlExpenseType],
+    [pathname, urlExpenseType, router],
   );
+
+  const handleExpenseDeleted = useCallback(() => {
+    setSelectedId(null);
+    startTransition(() => {
+      router.refresh();
+    });
+  }, [router]);
 
   return (
     <div className="relative">
@@ -107,6 +119,7 @@ export default function ExpensesPageContent({
           <ExpenseDetailPanel
             expense={selectedExpense}
             onClose={() => setSelectedId(null)}
+            onDeleted={handleExpenseDeleted}
           />
         )}
       </div>
