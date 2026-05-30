@@ -67,6 +67,37 @@ function mapRow(
   };
 }
 
+export async function lookupVehicleById(
+  vehicleId: string,
+): Promise<LookupVehicleResult> {
+  try {
+    const auth = await authenticateUser();
+    if (!auth.ok) return { success: false, error: auth.error };
+
+    const supabase = await createClient();
+    const { dealershipId } = auth.user;
+
+    const { data: row, error } = await supabase
+      .from("vehicles")
+      .select(
+        "id, year, make, model, trim, stock_number, vin, mileage, exterior_color, status",
+      )
+      .eq("id", vehicleId)
+      .eq("dealership_id", dealershipId)
+      .is("deleted_at", null)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!row) return { success: false, error: "Vehicle not found" };
+
+    const imageUrl = await getPrimaryImageUrl(supabase, row.id, dealershipId);
+    return { success: true, vehicle: mapRow(row, imageUrl) };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Lookup failed";
+    return { success: false, error: message };
+  }
+}
+
 export async function lookupVehicle(
   input: unknown,
 ): Promise<LookupVehicleResult> {

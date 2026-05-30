@@ -50,6 +50,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Front brake replacement and rotors.",
     createdAt: "2025-05-31T09:15:00",
     receiptImageUrl: RECEIPT_URL,
+    vehicleId: null,
   },
   {
     id: "exp-002",
@@ -70,6 +71,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "May Facebook and Instagram ad spend.",
     createdAt: "2025-05-30T14:22:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-003",
@@ -90,6 +92,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "QuickBooks Online monthly subscription.",
     createdAt: "2025-05-29T10:05:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-004",
@@ -110,6 +113,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Printer paper, pens, and folders.",
     createdAt: "2025-05-28T16:40:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-005",
@@ -130,6 +134,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Bi-weekly payroll disbursement.",
     createdAt: "2025-05-27T08:00:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-006",
@@ -150,6 +155,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Monthly lot and office rent.",
     createdAt: "2025-05-26T09:30:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-007",
@@ -170,6 +176,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Business internet service.",
     createdAt: "2025-05-25T11:15:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-008",
@@ -190,6 +197,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "QuickBooks add-on services.",
     createdAt: "2025-05-24T13:50:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-009",
@@ -210,6 +218,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Detailing chemicals and microfiber towels.",
     createdAt: "2025-05-23T15:20:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
   {
     id: "exp-010",
@@ -230,6 +239,7 @@ const VISIBLE_ROWS: ExpenseDetailSeed[] = [
     description: "Dealer garage liability insurance.",
     createdAt: "2025-05-22T10:00:00",
     receiptImageUrl: null,
+    vehicleId: null,
   },
 ];
 
@@ -253,6 +263,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Full synthetic oil change.",
       createdAt: "2025-05-21T11:30:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-20",
@@ -272,6 +283,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Search and display ad campaign.",
       createdAt: "2025-05-20T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-19",
@@ -291,6 +303,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Office water cooler refill.",
       createdAt: "2025-05-19T14:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-18",
@@ -310,6 +323,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Four new all-season tires.",
       createdAt: "2025-05-18T16:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-17",
@@ -329,6 +343,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "VoIP phone system subscription.",
       createdAt: "2025-05-17T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-16",
@@ -348,6 +363,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Sales rep commission disbursement.",
       createdAt: "2025-05-16T17:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-15",
@@ -367,6 +383,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Quarterly financial review.",
       createdAt: "2025-05-15T12:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-14",
@@ -386,6 +403,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Minor scratch and dent repair.",
       createdAt: "2025-05-14T10:30:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-13",
@@ -405,6 +423,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Premium inventory listing package.",
       createdAt: "2025-05-13T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-12",
@@ -424,6 +443,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Monthly office and showroom cleaning.",
       createdAt: "2025-05-12T18:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-11",
@@ -443,6 +463,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Lot and building security monitoring.",
       createdAt: "2025-05-11T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-10",
@@ -462,6 +483,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Transmission rebuild and fluid flush.",
       createdAt: "2025-05-10T14:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-09",
@@ -481,6 +503,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Break room supplies for the month.",
       createdAt: "2025-05-09T11:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-08",
@@ -500,6 +523,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Highway billboard advertising.",
       createdAt: "2025-05-08T10:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-07",
@@ -519,6 +543,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Monthly business account fees.",
       createdAt: "2025-05-07T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-06",
@@ -538,6 +563,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Full interior and exterior detail.",
       createdAt: "2025-05-06T15:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-05",
@@ -557,6 +583,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Second bi-weekly payroll disbursement.",
       createdAt: "2025-05-05T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-04",
@@ -576,6 +603,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Landscaping and lot upkeep.",
       createdAt: "2025-05-04T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-03",
@@ -595,6 +623,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Replacement toner cartridges.",
       createdAt: "2025-05-03T13:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-02",
@@ -614,6 +643,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "New battery and installation.",
       createdAt: "2025-05-02T11:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-05-01",
@@ -633,6 +663,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Inventory syndication package.",
       createdAt: "2025-05-01T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-30",
@@ -652,6 +683,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Annual tax preparation software license.",
       createdAt: "2025-04-30T10:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-29",
@@ -671,6 +703,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Front windshield replacement.",
       createdAt: "2025-04-29T14:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-28",
@@ -690,6 +723,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Commercial waste pickup service.",
       createdAt: "2025-04-28T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-27",
@@ -709,6 +743,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "New sales team business cards.",
       createdAt: "2025-04-27T16:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-26",
@@ -728,6 +763,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "AC compressor recharge and leak repair.",
       createdAt: "2025-04-26T12:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-25",
@@ -747,6 +783,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Neighborhood direct mail flyers.",
       createdAt: "2025-04-25T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-24",
@@ -766,6 +803,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Quarterly sales team bonus disbursement.",
       createdAt: "2025-04-24T17:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-23",
@@ -785,6 +823,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Quarterly payroll tax filing service.",
       createdAt: "2025-04-23T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-22",
@@ -804,6 +843,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Four-wheel alignment service.",
       createdAt: "2025-04-22T14:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-21",
@@ -823,6 +863,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Dealer management software subscription.",
       createdAt: "2025-04-21T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-20",
@@ -842,6 +883,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Customer waiting area seating.",
       createdAt: "2025-04-20T11:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-19",
@@ -861,6 +903,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "California smog certification.",
       createdAt: "2025-04-19T10:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-18",
@@ -880,6 +923,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Weekly radio advertising spots.",
       createdAt: "2025-04-18T09:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-17",
@@ -899,6 +943,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Credit card processing fees for April.",
       createdAt: "2025-04-17T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-16",
@@ -918,6 +963,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Monthly electricity bill.",
       createdAt: "2025-04-16T08:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
     {
       date: "2025-04-15",
@@ -937,6 +983,7 @@ function buildAdditionalExpenses(): ExpenseDetailSeed[] {
       description: "Replacement key fob programming.",
       createdAt: "2025-04-15T13:00:00",
       receiptImageUrl: null,
+      vehicleId: null,
     },
   ];
 

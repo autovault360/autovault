@@ -1,70 +1,44 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createDealershipExpense } from "@/lib/expenses/server/create-dealership-expense";
+import { buildDealershipExpenseDefaults } from "@/lib/expenses/actions/defaults";
+import {
+  dealershipExpenseSchema,
+  type DealershipExpenseFormValues,
+} from "@/lib/expenses/actions/schemas";
 import {
   getCategoryOption,
-  getDefaultCategoryForType,
-  type ExpenseFormCategory,
   type ExpenseFormType,
-  type PaymentMethod,
 } from "@/lib/expenses/form-types";
-import { todayIsoDate } from "@/components/expenses/add/add-expense-modal-parts";
-
-export type DealershipExpenseFormState = {
-  category: ExpenseFormCategory;
-  expenseDate: string;
-  reference: string;
-  vendor: string;
-  description: string;
-  amount: number;
-  taxDeductible: "yes" | "no";
-  markRecurring: boolean;
-  saveMerchant: boolean;
-  addNote: boolean;
-  notes: string;
-  paymentMethod: PaymentMethod | "";
-};
-
-function buildInitialForm(expenseType: ExpenseFormType): DealershipExpenseFormState {
-  return {
-    category: getDefaultCategoryForType(expenseType),
-    expenseDate: todayIsoDate(),
-    reference: "",
-    vendor: "",
-    description: "",
-    amount: 0,
-    taxDeductible: "yes",
-    markRecurring: expenseType === "recurring",
-    saveMerchant: false,
-    addNote: false,
-    notes: "",
-    paymentMethod: "",
-  };
-}
 
 export function useAddDealershipExpenseForm(
   expenseType: ExpenseFormType,
   open: boolean,
+  onSuccess?: () => void,
 ) {
-  const [form, setForm] = useState<DealershipExpenseFormState>(() =>
-    buildInitialForm(expenseType),
-  );
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [shake, setShake] = useState(false);
+  const saveModeRef = useRef<"save" | "saveAndAddAnother">("save");
+
+  const form = useForm<DealershipExpenseFormValues>({
+    resolver: zodResolver(dealershipExpenseSchema) as Resolver<DealershipExpenseFormValues>,
+    defaultValues: buildDealershipExpenseDefaults(expenseType === "recurring" ? "recurring" : "general"),
+    mode: "onBlur",
+  });
 
   useEffect(() => {
-    if (!open) return;
-    setForm(buildInitialForm(expenseType));
-    setReceiptFile(null);
-  }, [open, expenseType]);
+    if (open) {
+      form.reset(buildDealershipExpenseDefaults(expenseType === "recurring" ? "recurring" : "general"));
+      setReceiptFile(null);
+    }
+  }, [open, expenseType, form]);
 
-  const patchForm = useCallback((patch: Partial<DealershipExpenseFormState>) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
-
-  const selectedCategory = getCategoryOption(form.category);
+  const category = form.watch("category");
+  const selectedCategory = getCategoryOption(category as Parameters<typeof getCategoryOption>[0]);
 
   const receiptPreview = useMemo(() => {
     if (!receiptFile) return null;
@@ -78,79 +52,60 @@ export function useAddDealershipExpenseForm(
     };
   }, [receiptPreview]);
 
-  const validate = useCallback((): boolean => {
-    if (!form.vendor.trim()) {
-      toast.error("Vendor is required.");
-      return false;
+  const handleSubmit = form.handleSubmit(async (values) => {
+    const payload = {
+      expenseDate: values.expenseDate,
+      category: values.category,
+      vendor: values.vendor.trim(),
+      description: values.description.trim(),
+      amount: values.amount,
+      referenceNumber: values.reference?.trim() || undefined,
+      paymentMethod: values.paymentMethod || undefined,
+      taxDeductible: values.taxDeductible === "yes",
+      isRecurring: values.markRecurring || expenseType === "recurring",
+      notes: values.addNote ? values.notes?.trim() || undefined : undefined,
+      saveMerchant: values.saveMerchant,
+    };
+
+    const formData = new FormData();
+    formData.set("payload", JSON.stringify(payload));
+    if (receiptFile) formData.set("receipt", receiptFile);
+
+    const result = await createDealershipExpense(formData);
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
-    if (!form.description.trim()) {
-      toast.error("Description is required.");
-      return false;
+
+    toast.success(
+      saveModeRef.current === "saveAndAddAnother"
+        ? "Expense saved. You can add another."
+        : "Expense saved successfully.",
+    );
+
+    if (saveModeRef.current === "saveAndAddAnother") {
+      form.reset(buildDealershipExpenseDefaults(expenseType === "recurring" ? "recurring" : "general"));
+      setReceiptFile(null);
+    } else {
+      onSuccess?.();
     }
-    if (form.amount <= 0) {
-      toast.error("Amount must be greater than zero.");
-      return false;
+  }, (errors) => {
+    setShake(true);
+    setTimeout(() => setShake(false), 300);
+    const firstError = Object.keys(errors)[0];
+    if (firstError) {
+      form.setFocus(firstError as Parameters<typeof form.setFocus>[0]);
     }
-    return true;
-  }, [form]);
-
-  const submit = useCallback(
-    async (addAnother: boolean) => {
-      if (!validate()) return false;
-
-      setSaving(true);
-      try {
-        const payload = {
-          expenseDate: form.expenseDate,
-          category: form.category,
-          vendor: form.vendor.trim(),
-          description: form.description.trim(),
-          amount: form.amount,
-          referenceNumber: form.reference.trim() || undefined,
-          paymentMethod: form.paymentMethod || undefined,
-          taxDeductible: form.taxDeductible === "yes",
-          isRecurring: form.markRecurring || expenseType === "recurring",
-          notes: form.addNote ? form.notes.trim() || undefined : undefined,
-          saveMerchant: form.saveMerchant,
-        };
-
-        const formData = new FormData();
-        formData.set("payload", JSON.stringify(payload));
-        if (receiptFile) formData.set("receipt", receiptFile);
-
-        const result = await createDealershipExpense(formData);
-        if (!result.success) {
-          toast.error(result.error);
-          return false;
-        }
-
-        toast.success(
-          addAnother
-            ? "Expense saved. You can add another."
-            : "Expense saved successfully.",
-        );
-
-        if (addAnother) {
-          setForm(buildInitialForm(expenseType));
-          setReceiptFile(null);
-        }
-
-        return true;
-      } finally {
-        setSaving(false);
-      }
-    },
-    [form, receiptFile, validate, expenseType],
-  );
+  });
 
   return {
     form,
-    patchForm,
+    handleSubmit,
     selectedCategory,
     receiptFile,
     setReceiptFile,
     receiptPreview,
-    saving,
-    submit,
+    shake,
+    saveModeRef,
   };
 }

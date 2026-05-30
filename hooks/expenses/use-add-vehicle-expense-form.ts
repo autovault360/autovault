@@ -1,59 +1,40 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useForm, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createVehicleExpense } from "@/lib/expenses/server/create-vehicle-expense";
 import type { LinkedVehicleResult } from "@/lib/expenses/server/types";
+import { buildVehicleExpenseDefaults } from "@/lib/expenses/actions/defaults";
 import {
-  type PaymentMethod,
-  type VehicleExpenseSubcategory,
+  vehicleExpenseSchema,
+  type VehicleExpenseFormValues,
+} from "@/lib/expenses/actions/schemas";
+import type {
+  PaymentMethod,
+  VehicleExpenseSubcategory,
 } from "@/lib/expenses/form-types";
-import { todayIsoDate } from "@/components/expenses/add/add-expense-modal-parts";
 
-export type VehicleExpenseFormState = {
-  expenseDate: string;
-  reference: string;
-  vendor: string;
-  description: string;
-  amount: number;
-  saveMerchant: boolean;
-  addNote: boolean;
-  notes: string;
-  vehicleSubcategory: VehicleExpenseSubcategory | "";
-  paymentMethod: PaymentMethod | "";
-};
-
-const EXPENSE_FIELD_DEFAULTS: VehicleExpenseFormState = {
-  expenseDate: todayIsoDate(),
-  reference: "",
-  vendor: "",
-  description: "",
-  amount: 0,
-  saveMerchant: false,
-  addNote: false,
-  notes: "",
-  vehicleSubcategory: "",
-  paymentMethod: "",
-};
-
-export function useAddVehicleExpenseForm(open: boolean) {
-  const [form, setForm] = useState<VehicleExpenseFormState>(EXPENSE_FIELD_DEFAULTS);
-  const [linkedVehicle, setLinkedVehicle] = useState<LinkedVehicleResult | null>(
-    null,
-  );
+export function useAddVehicleExpenseForm(open: boolean, onSuccess?: () => void) {
+  const [linkedVehicle, setLinkedVehicle] = useState<LinkedVehicleResult | null>(null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [shake, setShake] = useState(false);
+  const saveModeRef = useRef<"save" | "saveAndAddAnother">("save");
+
+  const form = useForm<VehicleExpenseFormValues>({
+    resolver: zodResolver(vehicleExpenseSchema) as Resolver<VehicleExpenseFormValues>,
+    defaultValues: buildVehicleExpenseDefaults(),
+    mode: "onBlur",
+  });
 
   useEffect(() => {
-    if (!open) return;
-    setForm({ ...EXPENSE_FIELD_DEFAULTS, expenseDate: todayIsoDate() });
-    setReceiptFile(null);
-    setLinkedVehicle(null);
-  }, [open]);
-
-  const patchForm = useCallback((patch: Partial<VehicleExpenseFormState>) => {
-    setForm((current) => ({ ...current, ...patch }));
-  }, []);
+    if (open) {
+      form.reset(buildVehicleExpenseDefaults());
+      setReceiptFile(null);
+      setLinkedVehicle(null);
+    }
+  }, [open, form]);
 
   const receiptPreview = useMemo(() => {
     if (!receiptFile) return null;
@@ -67,95 +48,70 @@ export function useAddVehicleExpenseForm(open: boolean) {
     };
   }, [receiptPreview]);
 
-  const validate = useCallback((): boolean => {
+  const vehicleIsSold =
+    linkedVehicle?.status === "Sold" || linkedVehicle?.status === "Loss";
+
+  const handleSubmit = form.handleSubmit(async (values) => {
     if (!linkedVehicle) {
       toast.error("Link a vehicle before saving.");
-      return false;
+      return;
     }
-    if (!form.vehicleSubcategory) {
-      toast.error("Select an expense category.");
-      return false;
+    if (vehicleIsSold) return;
+
+    const payload = {
+      vehicleId: linkedVehicle.id,
+      expenseDate: values.expenseDate,
+      expenseSubcategory: values.vehicleSubcategory as VehicleExpenseSubcategory,
+      vendor: values.vendor.trim(),
+      description: values.description.trim(),
+      amount: values.amount,
+      referenceNumber: values.reference?.trim() || undefined,
+      paymentMethod: values.paymentMethod as PaymentMethod,
+      notes: values.addNote ? values.notes?.trim() || undefined : undefined,
+      saveMerchant: values.saveMerchant,
+    };
+
+    const formData = new FormData();
+    formData.set("payload", JSON.stringify(payload));
+    if (receiptFile) formData.set("receipt", receiptFile);
+
+    const result = await createVehicleExpense(formData);
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
-    if (!form.vendor.trim()) {
-      toast.error("Vendor is required.");
-      return false;
+
+    toast.success(
+      saveModeRef.current === "saveAndAddAnother"
+        ? "Expense saved. You can add another."
+        : "Expense saved successfully.",
+    );
+
+    if (saveModeRef.current === "saveAndAddAnother") {
+      form.reset(buildVehicleExpenseDefaults());
+      setReceiptFile(null);
+    } else {
+      onSuccess?.();
     }
-    if (!form.description.trim()) {
-      toast.error("Description is required.");
-      return false;
+  }, (errors) => {
+    setShake(true);
+    setTimeout(() => setShake(false), 300);
+    const firstError = Object.keys(errors)[0];
+    if (firstError) {
+      form.setFocus(firstError as Parameters<typeof form.setFocus>[0]);
     }
-    if (!form.paymentMethod) {
-      toast.error("Payment method is required.");
-      return false;
-    }
-    if (form.amount <= 0) {
-      toast.error("Amount must be greater than zero.");
-      return false;
-    }
-    return true;
-  }, [form, linkedVehicle]);
-
-  const resetExpenseFields = useCallback(() => {
-    setForm({ ...EXPENSE_FIELD_DEFAULTS, expenseDate: todayIsoDate() });
-    setReceiptFile(null);
-  }, []);
-
-  const submit = useCallback(
-    async (addAnother: boolean) => {
-      if (!validate() || !linkedVehicle) return false;
-
-      setSaving(true);
-      try {
-        const payload = {
-          vehicleId: linkedVehicle.id,
-          expenseDate: form.expenseDate,
-          expenseSubcategory: form.vehicleSubcategory as VehicleExpenseSubcategory,
-          vendor: form.vendor.trim(),
-          description: form.description.trim(),
-          amount: form.amount,
-          referenceNumber: form.reference.trim() || undefined,
-          paymentMethod: form.paymentMethod as PaymentMethod,
-          notes: form.addNote ? form.notes.trim() || undefined : undefined,
-          saveMerchant: form.saveMerchant,
-        };
-
-        const formData = new FormData();
-        formData.set("payload", JSON.stringify(payload));
-        if (receiptFile) formData.set("receipt", receiptFile);
-
-        const result = await createVehicleExpense(formData);
-        if (!result.success) {
-          toast.error(result.error);
-          return false;
-        }
-
-        toast.success(
-          addAnother
-            ? "Expense saved. You can add another."
-            : "Expense saved successfully.",
-        );
-
-        if (addAnother) {
-          resetExpenseFields();
-        }
-
-        return true;
-      } finally {
-        setSaving(false);
-      }
-    },
-    [form, linkedVehicle, receiptFile, validate, resetExpenseFields],
-  );
+  });
 
   return {
     form,
-    patchForm,
+    handleSubmit,
     linkedVehicle,
     setLinkedVehicle,
     receiptFile,
     setReceiptFile,
     receiptPreview,
-    saving,
-    submit,
+    shake,
+    vehicleIsSold,
+    saveModeRef,
   };
 }

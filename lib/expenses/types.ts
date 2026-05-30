@@ -27,6 +27,7 @@ export type ExpenseDetail = ExpenseListItem & {
   vendor: string;
   linkedVehicle: string | null;
   stockNumber: string | null;
+  vehicleId: string | null;
   expenseSubcategory: string | null;
   transactionId: string;
   receiptUploadedAt: string | null;

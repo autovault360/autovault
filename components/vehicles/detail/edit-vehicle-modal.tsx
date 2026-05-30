@@ -8,7 +8,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { AutoCalculatedCaption } from "@/components/vehicles/detail/modals/modal-primitives";
+import { AutoCalculatedCaption } from "@/components/shared/modal-primitives";
 import { useEditVehicleForm } from "@/hooks/vehicles/use-edit-vehicle-form";
 import {
   BODY_STYLES,
@@ -27,6 +27,7 @@ import {
 } from "@/lib/vehicles/actions/add-vehicle/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -40,9 +41,8 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  TextareaWithCount,
   VehicleActionDialog,
-} from "@/components/vehicles/detail/modals/modal-primitives";
+} from "@/components/shared/modal-primitives";
 import { PhotoGalleryUpload } from "@/components/vehicles/add/photo-gallery-upload";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 
@@ -521,9 +521,10 @@ export default function EditVehicleModal({
                   <FormItem>
                     <FieldLabel label="Notes" />
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={500}
                         placeholder="Add any additional notes about this vehicle..."
                         aria-invalid={!!fieldState.error}

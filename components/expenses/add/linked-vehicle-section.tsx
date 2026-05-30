@@ -35,13 +35,23 @@ const TABS: { id: SearchTab; label: string }[] = [
   { id: "make", label: "Search by Make & Model" },
 ];
 
-export default function LinkedVehicleSection({
-  vehicle,
-  onVehicleChange,
-}: {
-  vehicle: LinkedVehicleResult | null;
-  onVehicleChange: (vehicle: LinkedVehicleResult | null) => void;
-}) {
+export default function LinkedVehicleSection({
+
+  vehicle,
+
+  onVehicleChange,
+
+  readOnly,
+
+}: {
+
+  vehicle: LinkedVehicleResult | null;
+
+  onVehicleChange: (vehicle: LinkedVehicleResult | null) => void;
+
+  readOnly?: boolean;
+
+}) {
   const [activeTab, setActiveTab] = useState<SearchTab>("vin");
   const [vinInput, setVinInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,61 +97,87 @@ export default function LinkedVehicleSection({
         Linked Vehicle <span className="text-red-500">*</span>
       </p>
 
-      <div className="mt-2.5 flex flex-wrap gap-4 border-b border-slate-800/80">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => handleTabClick(tab.id)}
-            className={cn(
-              "relative pb-2 text-[11.5px] font-medium transition-colors",
-              activeTab === tab.id
-                ? "text-blue-400 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-500"
-                : "text-slate-500 hover:text-slate-300",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-        <Input
-          theme="dark"
-          value={vinInput}
-          onChange={(e) => setVinInput(e.target.value.toUpperCase())}
-          placeholder="Enter VIN number"
-          className="h-9 flex-1 bg-slate-800/50 uppercase"
-          onKeyDown={(e) => e.key === "Enter" && handleLookup()}
-        />
-        <Button
-          type="button"
-          className="h-9 shrink-0 bg-blue-600 px-4 text-[12px] hover:bg-blue-500"
-          onClick={handleLookup}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              Looking up…
-            </>
-          ) : (
-            "Lookup Vehicle"
-          )}
-        </Button>
-      </div>
-
+      {!readOnly && (
+        <>
+          <div className="mt-2.5 flex flex-wrap gap-4 border-b border-slate-800/80">
+
+            {TABS.map((tab) => (
+
+              <button
+
+                key={tab.id}
+
+                type="button"
+
+                onClick={() => handleTabClick(tab.id)}
+
+                className={cn(
+
+                  "relative pb-2 text-[11.5px] font-medium transition-colors",
+
+                  activeTab === tab.id
+
+                    ? "text-blue-400 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-500"
+
+                    : "text-slate-500 hover:text-slate-300",
+
+                )}
+
+              >
+
+                {tab.label}
+
+              </button>
+
+            ))}
+
+          </div>
+
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <Input
+              theme="dark"
+              value={vinInput}
+              onChange={(e) => setVinInput(e.target.value.toUpperCase())}
+              placeholder="Enter VIN number"
+              className="h-9 flex-1 bg-slate-800/50 uppercase"
+              onKeyDown={(e) => e.key === "Enter" && handleLookup()}
+            />
+            <Button
+              type="button"
+              className="h-9 shrink-0 bg-blue-600 px-4 text-[12px] hover:bg-blue-500"
+              onClick={handleLookup}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  Looking up…
+                </>
+              ) : (
+                "Lookup Vehicle"
+              )}
+            </Button>
+          </div>
+        </>
+      )}
+
+      {readOnly && !vehicle && (
+        <p className="mt-2 text-[12px] text-slate-500">No vehicle linked</p>
+      )}
+
       {vehicle && (
         <>
           <div className="relative mt-3 flex gap-3 rounded-md border border-slate-700/80 bg-[#101722] p-2.5">
-            <button
-              type="button"
-              onClick={() => onVehicleChange(null)}
-              className="absolute right-2 top-2 rounded p-0.5 text-slate-500 transition hover:bg-slate-800 hover:text-slate-300"
-              aria-label="Remove linked vehicle"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => onVehicleChange(null)}
+                className="absolute right-2 top-2 rounded p-0.5 text-slate-500 transition hover:bg-slate-800 hover:text-slate-300"
+                aria-label="Remove linked vehicle"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
             <div className="relative h-[52px] w-[72px] shrink-0 overflow-hidden rounded-md bg-slate-800">
               <Image
                 src={vehicle.image}

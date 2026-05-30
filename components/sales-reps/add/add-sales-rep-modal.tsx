@@ -26,7 +26,7 @@ import {
   ModalFooter,
   ModalHeader,
   VehicleActionDialog,
-} from "@/components/vehicles/detail/modals/modal-primitives";
+} from "@/components/shared/modal-primitives";
 import { useSalesRepForm } from "@/hooks/sales-reps/use-sales-rep-form";
 import {
   SALES_REP_ROLES,

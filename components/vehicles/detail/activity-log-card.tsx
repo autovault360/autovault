@@ -22,7 +22,7 @@ import {
   VehicleActionDialog,
   ModalHeader,
   ModalBody,
-} from "@/components/vehicles/detail/modals/modal-primitives";
+} from "@/components/shared/modal-primitives";
 
 const iconMap: Record<string, LucideIcon> = {
   car: Car,

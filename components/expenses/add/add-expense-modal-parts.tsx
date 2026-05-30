@@ -3,7 +3,7 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { FieldLabel } from "@/components/vehicles/detail/modals/modal-primitives";
+import { FieldLabel } from "@/components/shared/modal-primitives";
 
 export function formatDateLabel(value: string): string {
   const date = new Date(`${value}T00:00:00`);
@@ -151,7 +151,7 @@ export function ReceiptUploadSection({
       className="flex flex-col"
       contentClassName="flex-1 min-h-0"
     >
-      {receiptFile && receiptPreview ? (
+      {receiptPreview ? (
         <div className="group relative h-full min-h-[220px] overflow-hidden rounded-md border border-slate-600/90 bg-[#0d1420]">
           <img
             src={receiptPreview}
@@ -168,6 +168,17 @@ export function ReceiptUploadSection({
               }}
             >
               Change
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              className="ml-2 h-8 rounded-[4px] px-4 text-[11.5px] font-medium"
+              onClick={(e) => {
+                e.stopPropagation();
+                onFileChange(null);
+              }}
+            >
+              Remove
             </Button>
           </div>
         </div>
