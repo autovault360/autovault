@@ -1,6 +1,14 @@
 import DealJacketsPageContent from "@/components/deal-jackets/deal-jackets-page-content";
-import { DEAL_JACKETS_MOCK } from "@/lib/deal-jackets/mock-data";
+import { getDealJacketsForDashboard } from "@/lib/deal-jackets/get-deal-jackets-for-dashboard";
 
-export default function DealJacketsPage() {
-  return <DealJacketsPageContent dealJackets={DEAL_JACKETS_MOCK} />;
+export default async function DealJacketsPage() {
+  const { dealJackets, salesRepFilterOptions } =
+    await getDealJacketsForDashboard();
+
+  return (
+    <DealJacketsPageContent
+      dealJackets={dealJackets}
+      salesRepFilterOptions={salesRepFilterOptions}
+    />
+  );
 }

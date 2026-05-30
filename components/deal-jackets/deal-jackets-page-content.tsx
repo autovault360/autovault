@@ -10,9 +10,13 @@ import { useMemo, useState } from "react";
 
 type Props = {
   dealJackets: DealJacketListItem[];
+  salesRepFilterOptions: { id: string; label: string }[];
 };
 
-export default function DealJacketsPageContent({ dealJackets }: Props) {
+export default function DealJacketsPageContent({
+  dealJackets,
+  salesRepFilterOptions,
+}: Props) {
   const [exporting, setExporting] = useState(false);
 
   const exportable = useMemo(
@@ -78,7 +82,10 @@ export default function DealJacketsPageContent({ dealJackets }: Props) {
         </div>
       </section>
 
-      <DealJacketsInventory dealJackets={dealJackets} />
+      <DealJacketsInventory
+        dealJackets={dealJackets}
+        salesRepFilterOptions={salesRepFilterOptions}
+      />
     </div>
   );
 }

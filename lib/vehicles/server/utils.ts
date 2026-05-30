@@ -170,8 +170,15 @@ export async function uploadFile(
   return storagePath;
 }
 
+export type StorageBucket =
+  | "vehicle-images"
+  | "vehicle-documents"
+  | "customer-images"
+  | "user-images"
+  | "deal-jacket-documents";
+
 export async function getSignedUrl(
-  bucket: "vehicle-images" | "vehicle-documents" | "customer-images" | "user-images",
+  bucket: StorageBucket,
   storagePath: string,
   expiresInSeconds: number = 3600,
 ): Promise<string> {

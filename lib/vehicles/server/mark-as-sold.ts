@@ -4,6 +4,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { phoneRegex, zipRegex } from "@/lib/shared/phone";
 import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
+import { createDealJacket } from "@/services/deal-jacket.service";
+import type { DealJacketDocumentInput } from "@/lib/deal-jackets/server/db-types";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -137,28 +139,97 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
       uploadedPaths.push(otherDocPath);
     }
 
-    const { error: dealError } = await supabase.from("deals").insert({
-      vehicle_id: data.vehicleId,
-      customer_id: customerId,
-      dealership_id: dealershipId,
-      sale_date: data.saleDate,
-      total_price_otd: data.totalPriceOtd,
-      sales_tax_amount: data.salesTaxAmount,
-      license_fees: data.licenseRegistrationFees,
-      dmv_fees: data.dmvDocFees,
-      other_fees: data.otherFees,
-      total_collected: data.totalCollected,
-      ros_number: data.rosNumber,
-      zip_of_sale: data.zipCodeOfSale,
-      buyer_id_front_path: buyerIdFrontPath,
-      buyer_id_back_path: buyerIdBackPath,
-      drivers_license_path: driversLicensePath,
-      other_doc_path: otherDocPath,
-      notes: data.notes,
-      created_by: userId,
+    const { data: dealRow, error: dealError } = await supabase
+      .from("deals")
+      .insert({
+        vehicle_id: data.vehicleId,
+        customer_id: customerId,
+        dealership_id: dealershipId,
+        sale_date: data.saleDate,
+        total_price_otd: data.totalPriceOtd,
+        sales_tax_amount: data.salesTaxAmount,
+        license_fees: data.licenseRegistrationFees,
+        dmv_fees: data.dmvDocFees,
+        other_fees: data.otherFees,
+        total_collected: data.totalCollected,
+        ros_number: data.rosNumber,
+        zip_of_sale: data.zipCodeOfSale,
+        buyer_id_front_path: buyerIdFrontPath,
+        buyer_id_back_path: buyerIdBackPath,
+        drivers_license_path: driversLicensePath,
+        other_doc_path: otherDocPath,
+        notes: data.notes,
+        created_by: userId,
+      })
+      .select("id")
+      .single();
+
+    if (dealError || !dealRow) throw new Error(dealError?.message ?? "Failed to create deal");
+
+    const feeTotal =
+      data.licenseRegistrationFees + data.dmvDocFees + data.otherFees;
+    const soldPrice = Math.max(
+      0,
+      data.totalPriceOtd - data.salesTaxAmount - feeTotal,
+    );
+
+    const jacketDocuments: DealJacketDocumentInput[] = [];
+    if (buyerIdFrontPath) {
+      jacketDocuments.push({
+        storagePath: buyerIdFrontPath,
+        fileType: "image",
+        documentName: "Buyer ID (Front)",
+      });
+    }
+    if (buyerIdBackPath) {
+      jacketDocuments.push({
+        storagePath: buyerIdBackPath,
+        fileType: "image",
+        documentName: "Buyer ID (Back)",
+      });
+    }
+    if (driversLicensePath) {
+      jacketDocuments.push({
+        storagePath: driversLicensePath,
+        fileType: "image",
+        documentName: "Driver License",
+      });
+    }
+    if (otherDocPath) {
+      jacketDocuments.push({
+        storagePath: otherDocPath,
+        fileType: "application/octet-stream",
+        documentName: "Other Document",
+      });
+    }
+
+    const jacketResult = await createDealJacket({
+      dealershipId,
+      createdBy: userId,
+      sale: {
+        dealId: dealRow.id,
+        vehicleId: data.vehicleId,
+        customerId,
+        saleDate: data.saleDate,
+        soldPrice,
+        totalTax: data.salesTaxAmount,
+        fees: {
+          license: data.licenseRegistrationFees,
+          registration: 0,
+          dmv: data.dmvDocFees,
+          documentation: 0,
+          other: data.otherFees,
+        },
+        totalSalePrice: data.totalPriceOtd,
+        downPayment: data.totalCollected,
+        balanceDue: Math.max(0, data.totalPriceOtd - data.totalCollected),
+      },
+      documents: jacketDocuments,
     });
 
-    if (dealError) throw new Error(dealError.message);
+    if (!jacketResult.success) {
+      throw new Error(jacketResult.error);
+    }
 
     await supabase
       .from("vehicles")
@@ -186,6 +257,7 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
 
     revalidatePath("/dashboard/vehicles");
     revalidatePath("/dashboard/customers");
+    revalidatePath("/dashboard/deal-jackets");
     return { success: true };
   } catch (err) {
     if (uploadedPaths.length > 0) {

@@ -8,7 +8,7 @@ type Props = {
 
 export default async function DealJacketDetailPage({ params }: Props) {
   const { id } = await params;
-  const detail = getDealJacketDetail(id);
+  const detail = await getDealJacketDetail(id);
 
   if (!detail) {
     notFound();

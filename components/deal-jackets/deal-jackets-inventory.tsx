@@ -27,10 +27,7 @@ import SoldStatusBadge from "@/components/deal-jackets/sold-status-badge";
 import ViewJacketButton from "@/components/deal-jackets/view-jacket-button";
 import DealJacketFilterTabs from "@/components/deal-jackets/deal-jacket-filter-tabs";
 import { filterDealJackets } from "@/lib/deal-jackets/filter-deal-jackets";
-import {
-  computeDealJacketTabCounts,
-  SALES_REP_FILTER_OPTIONS,
-} from "@/lib/deal-jackets/mock-data";
+import { computeDealJacketTabCounts } from "@/lib/deal-jackets/mock-data";
 import {
   PAYMENT_METHODS,
   formatCurrency,
@@ -43,6 +40,7 @@ import {
 
 type Props = {
   dealJackets: DealJacketListItem[];
+  salesRepFilterOptions: { id: string; label: string }[];
 };
 
 const TABLE_WRAPPER_CLASS =
@@ -57,7 +55,10 @@ const TABLE_WRAPPER_CLASS =
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-export default function DealJacketsInventory({ dealJackets }: Props) {
+export default function DealJacketsInventory({
+  dealJackets,
+  salesRepFilterOptions,
+}: Props) {
   const [activeTab, setActiveTab] = useState<DealJacketTab>("all");
   const [search, setSearch] = useState("");
   const [salesRepFilter, setSalesRepFilter] = useState("all");
@@ -234,7 +235,7 @@ export default function DealJacketsInventory({ dealJackets }: Props) {
             value={salesRepFilter}
             onChange={setSalesRepFilter}
             placeholder="All Sales Reps"
-            options={SALES_REP_FILTER_OPTIONS.map((o) => ({
+            options={salesRepFilterOptions.map((o) => ({
               value: o.id,
               label: o.label,
             }))}
