@@ -13,6 +13,7 @@ import { useMarkAsLossForm } from "@/hooks/vehicles/use-mark-as-loss-form";
 import { LOSS_REASONS, LOSS_TYPES } from "@/lib/vehicles/actions/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -29,9 +30,8 @@ import {
   ModalFooter,
   ModalHeader,
   ReadOnlyField,
-  TextareaWithCount,
   VehicleActionDialog,
-} from "./modal-primitives";
+} from "@/components/shared/modal-primitives";
 
 type Props = {
   vehicle: VehicleDetail;
@@ -151,9 +151,10 @@ export default function MarkAsLossModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={1000}
                         placeholder="Provide details about the loss, including circumstances and any relevant information..."
                         aria-invalid={!!fieldState.error}

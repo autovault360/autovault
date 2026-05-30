@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -142,6 +143,7 @@ export function useCustomerForm(
       return;
     }
 
+    NProgress.start();
     setIsSubmitting(true);
     try {
       const result = isEdit
@@ -166,6 +168,7 @@ export function useCustomerForm(
       }
     } finally {
       setIsSubmitting(false);
+      NProgress.done();
     }
   }, (errors) => {
     setShake(true);

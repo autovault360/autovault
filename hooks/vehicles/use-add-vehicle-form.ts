@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import NProgress from "nprogress";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -173,6 +174,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
 
   const onSubmit = form.handleSubmit(
     async (values) => {
+      NProgress.start();
       setIsSubmitting(true);
       try {
         const payload = {
@@ -227,6 +229,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
         }
       } finally {
         setIsSubmitting(false);
+        NProgress.done();
       }
     },
     (errors) => {

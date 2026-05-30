@@ -13,6 +13,7 @@ import { useMarkAsSoldForm } from "@/hooks/vehicles/use-mark-as-sold-form";
 import { CUSTOMER_TYPES, US_STATES } from "@/lib/vehicles/actions/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -29,10 +30,9 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  TextareaWithCount,
   UploadSectionHint,
   VehicleActionDialog,
-} from "./modal-primitives";
+} from "@/components/shared/modal-primitives";
 
 type Props = {
   vehicle: VehicleDetail;
@@ -508,9 +508,10 @@ export default function MarkAsSoldModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={500}
                         placeholder="Add any notes about this sale..."
                         aria-invalid={!!fieldState.error}

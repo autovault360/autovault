@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import AdminHeader from "@/components/layout/AdminHeader";
 import VehicleDetailHeader from "@/components/vehicles/detail/vehicle-detail-header";
@@ -16,21 +17,29 @@ import NotesCard from "@/components/vehicles/detail/notes-card";
 
 export default function VehicleDetailShell({
   vehicle: initialVehicle,
+  defaultEdit = false,
 }: {
   vehicle: VehicleDetail;
+  defaultEdit?: boolean;
 }) {
+  const pathname = usePathname();
   const [vehicle, setVehicle] = useState(initialVehicle);
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(defaultEdit);
   const [triggerUpload, setTriggerUpload] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     setVehicle(initialVehicle);
   }, [initialVehicle]);
 
+  useEffect(() => {
+    setEditOpen(defaultEdit);
+  }, [defaultEdit]);
+
   const handleEditOpenChange = useCallback((open: boolean) => {
     setEditOpen(open);
     if (!open) setTriggerUpload(undefined);
-  }, []);
+    window.history.replaceState(null, "", open ? "?edit=true" : pathname);
+  }, [pathname]);
 
   const handleUploadClick = useCallback(() => {
     setEditOpen(true);

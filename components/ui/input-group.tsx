@@ -14,7 +14,7 @@ const groupShellClass: Record<InputGroupTheme, Record<InputGroupTone, string>> =
   },
   dark: {
     default: "border-slate-600",
-    readonly: "border-slate-600 bg-[#151d2b]",
+    readonly: "border-slate-600 bg-slate-800/50",
   },
 };
 

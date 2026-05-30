@@ -16,6 +16,7 @@ import {
 } from "@/lib/vehicles/actions/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input, type InputTone } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -32,10 +33,9 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  TextareaWithCount,
   VehicleActionDialog,
   VehicleSummaryBlock,
-} from "./modal-primitives";
+} from "@/components/shared/modal-primitives";
 
 type Props = {
   vehicle: VehicleDetail;
@@ -338,9 +338,10 @@ export default function UpdatePricingModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={500}
                         placeholder="Add notes about this pricing update..."
                         aria-invalid={!!fieldState.error}

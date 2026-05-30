@@ -21,6 +21,7 @@ import {
 import { formatMileage } from "@/lib/vehicles/types";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -37,9 +38,8 @@ import {
   ModalFooter,
   ModalHeader,
   ReadOnlyField,
-  TextareaWithCount,
   VehicleActionDialog,
-} from "./modal-primitives";
+} from "@/components/shared/modal-primitives";
 
 type Props = {
   vehicle: VehicleDetail;
@@ -190,9 +190,10 @@ export default function AddRepairCostModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={1000}
                         placeholder="Describe the repair work performed..."
                         aria-invalid={!!fieldState.error}
@@ -441,9 +442,10 @@ export default function AddRepairCostModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <TextareaWithCount
+                      <Textarea
+                        showCount
                         value={field.value ?? ""}
-                        onChange={field.onChange}
+                        onChange={(e) => field.onChange(e.target.value)}
                         maxLength={500}
                         placeholder="Add any additional notes about this repair..."
                         aria-invalid={!!fieldState.error}

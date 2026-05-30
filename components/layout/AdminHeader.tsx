@@ -1,10 +1,11 @@
 "use client";
 
-import { Bell, Search, Car, Camera, Upload, Check, Plus } from "lucide-react";
+import { Bell, Search, Car, Camera, Check, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import AddExpenseDropdown from "@/components/layout/add-expense-dropdown";
 
 export default function AdminHeader({
   onAddCustomer,
@@ -25,8 +26,8 @@ export default function AdminHeader({
         <div className="text-[9.5px] tracking-[0.15em] text-slate-500">QUICK ACTIONS</div>
         <div className="flex gap-2">
           <QA icon={Car} label="Add a Vehicle" ring="bg-blue-500/20 text-blue-400" />
+          <AddExpenseDropdown />
           <QA icon={Camera} label="Scan VIN" ring="bg-emerald-500/20 text-emerald-400" />
-          <QA icon={Upload} label="Upload Expense" ring="bg-red-500/20 text-red-400" />
           <QA icon={Check} label="Mark Vehicle Sold" ring="bg-emerald-500/20 text-emerald-400" />
           <QA icon={Plus} label="Add Customer" ring="bg-purple-500/20 text-purple-400" onClick={onAddCustomer} />
         </div>
