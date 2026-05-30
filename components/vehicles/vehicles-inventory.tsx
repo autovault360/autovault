@@ -94,18 +94,18 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   }, [activePopover]);
 
   const makes = useMemo(
-    () => [...new Set(vehicles.map((v) => v.make))].sort(),
+    () => [...new Set(vehicles.map((v) => v.make).filter(Boolean))].sort(),
     [vehicles],
   );
 
   const models = useMemo(() => {
     const source =
       make === "all" ? vehicles : vehicles.filter((v) => v.make === make);
-    return [...new Set(source.map((v) => v.model))].sort();
+    return [...new Set(source.map((v) => v.model).filter(Boolean))].sort();
   }, [vehicles, make]);
 
   const locations = useMemo(
-    () => [...new Set(vehicles.map((v) => v.location))].sort(),
+    () => [...new Set(vehicles.map((v) => v.location).filter(Boolean))].sort(),
     [vehicles],
   );
 
