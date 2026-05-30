@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import NProgress from "nprogress";
 import Link from "next/link";
 import {
   Search,
@@ -40,9 +42,11 @@ import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 
 type VehiclesInventoryProps = {
   vehicles: Vehicle[];
+  defaultEditId?: string;
 };
 
-export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) {
+export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesInventoryProps) {
+  const pathname = usePathname();
   const [search, setSearch] = useState("");
   const [make, setMake] = useState("all");
   const [model, setModel] = useState("all");
@@ -55,18 +59,27 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (defaultEditId) setEditingId(defaultEditId);
+  }, [defaultEditId]);
+
+  useEffect(() => {
     if (!editingId) {
       setEditingVehicle(null);
       return;
     }
+    NProgress.start();
     setEditLoading(true);
     fetch(`/api/vehicles/${editingId}`)
       .then((r) => r.json())
       .then((data) => {
         setEditingVehicle(data);
         setEditLoading(false);
+        NProgress.done();
       })
-      .catch(() => setEditLoading(false));
+      .catch(() => {
+        setEditLoading(false);
+        NProgress.done();
+      });
   }, [editingId]);
 
   useEffect(() => {
@@ -301,7 +314,11 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
         <div className="flex items-center justify-end gap-1.5">
           <button
             type="button"
-            onClick={() => { setEditingId(v.id); setActivePopover(null); }}
+            onClick={() => {
+              setEditingId(v.id);
+              setActivePopover(null);
+              window.history.replaceState(null, "", `?edit=${v.id}`);
+            }}
             className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit vehicle"
             disabled={editLoading && editingId === v.id}
@@ -466,6 +483,7 @@ export default function VehiclesInventory({ vehicles }: VehiclesInventoryProps) 
             if (!open) {
               setEditingVehicle(null);
               setEditingId(null);
+              window.history.replaceState(null, "", pathname);
             }
           }}
           onVehicleUpdated={setEditingVehicle}

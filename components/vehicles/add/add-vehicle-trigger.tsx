@@ -1,23 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
 import AddVehicleModal from "./add-vehicle-modal";
+import { Button } from "@/components/ui/button";
 
-export default function AddVehicleTrigger() {
-  const [open, setOpen] = useState(false);
+export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    setOpen(defaultOpen);
+  }, [defaultOpen]);
+
+  const handleOpenChange = (next: boolean) => {
+    setOpen(next);
+    window.history.replaceState(null, "", next ? pathname + "?add=true" : pathname);
+  };
 
   return (
     <>
-      <button
+      <Button
         type="button"
-        onClick={() => setOpen(true)}
-        className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-[12.5px] font-semibold text-white transition hover:bg-blue-500"
+        onClick={() => handleOpenChange(true)}
+        className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white"
       >
         <Plus className="h-4 w-4" />
         Add Vehicle
-      </button>
-      <AddVehicleModal open={open} onOpenChange={setOpen} />
+      </Button>
+      <AddVehicleModal open={open} onOpenChange={handleOpenChange} />
     </>
   );
 }

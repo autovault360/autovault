@@ -1,6 +1,8 @@
 "use client";
 
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import NProgress from "nprogress";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AddCustomerTrigger from "@/components/customers/add/add-customer-trigger";
 import AddCustomerModal from "@/components/customers/add/add-customer-modal";
@@ -18,20 +20,48 @@ type Props = {
   customers: CustomerListItem[];
   stats: CustomerStats;
   salesReps: SalesRepOption[];
+  defaultOpen?: boolean;
+  defaultEditId?: string;
 };
 
 export default function CustomersPageContent({
   customers,
   stats,
   salesReps,
+  defaultOpen = false,
+  defaultEditId,
 }: Props) {
-  const [addOpen, setAddOpen] = useState(false);
+  const pathname = usePathname();
+
+  const [addOpen, setAddOpen] = useState(defaultOpen);
+
+  useEffect(() => {
+    setAddOpen(defaultOpen);
+  }, [defaultOpen]);
+
+  const handleAddOpenChange = (next: boolean) => {
+    setAddOpen(next);
+    window.history.replaceState(null, "", next ? pathname + "?add=true" : pathname);
+  };
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editCustomer, setEditCustomer] = useState<CustomerDetail | null>(null);
   const [detailRefreshKey, setDetailRefreshKey] = useState(0);
   const [detailInitialTab, setDetailInitialTab] = useState<
     "overview" | "deals" | "communications" | "notes" | "documents"
   >("overview");
+
+  useEffect(() => {
+    if (!defaultEditId) return;
+    NProgress.start();
+    fetch(`/api/customers/${defaultEditId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.id) setEditCustomer(data);
+        NProgress.done();
+      })
+      .catch(() => NProgress.done());
+  }, [defaultEditId]);
 
   const selectedItem =
     customers.find((c) => c.id === selectedId) ?? null;
@@ -53,11 +83,12 @@ export default function CustomersPageContent({
 
   const handleEdit = useCallback((detail: CustomerDetail) => {
     setEditCustomer(detail);
+    window.history.replaceState(null, "", `?edit=${detail.id}`);
   }, []);
 
   return (
     <div className="relative">
-      <AdminHeader onAddCustomer={() => setAddOpen(true)} />
+      <AdminHeader onAddCustomer={() => handleAddOpenChange(true)} />
 
       <div className="flex items-start gap-5">
         <div className="min-w-0 flex-1">
@@ -68,7 +99,7 @@ export default function CustomersPageContent({
                 Manage customer relationships and deal history.
               </p>
             </div>
-            <AddCustomerTrigger onClick={() => setAddOpen(true)} />
+            <AddCustomerTrigger onClick={() => handleAddOpenChange(true)} />
           </section>
 
           <CustomerStatsCards stats={stats} />
@@ -81,7 +112,7 @@ export default function CustomersPageContent({
               onSelect={handleSelect}
               onEdit={handleEdit}
               onAddNote={handleAddNote}
-              onRequestAdd={() => setAddOpen(true)}
+              onRequestAdd={() => handleAddOpenChange(true)}
             />
           </Suspense>
         </div>
@@ -101,14 +132,19 @@ export default function CustomersPageContent({
 
       <AddCustomerModal
         open={addOpen}
-        onOpenChange={setAddOpen}
+        onOpenChange={handleAddOpenChange}
         salesReps={salesReps}
         onSaved={handleCustomerSaved}
       />
       {editCustomer && (
         <AddCustomerModal
           open={!!editCustomer}
-          onOpenChange={(open) => !open && setEditCustomer(null)}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEditCustomer(null);
+              window.history.replaceState(null, "", pathname);
+            }
+          }}
           salesReps={salesReps}
           editCustomer={editCustomer}
           onSaved={handleCustomerSaved}

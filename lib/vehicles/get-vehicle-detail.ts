@@ -161,10 +161,11 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
     const askingPrice = Number(row.asking_price ?? 0);
     const acquisitionCost = Number(row.acquisition_cost ?? 0);
     const marketValue = Number(row.market_value ?? 0);
-    const totalReconditioning = (row.expenses ?? []).reduce(
+    const sumOfExpenses = (row.expenses ?? []).reduce(
       (sum, e) => sum + Number(e.total_cost),
       0,
     );
+    const totalReconditioning = Math.max(Number(row.reconditioning_cost ?? 0), sumOfExpenses);
     const grossProfit = askingPrice - acquisitionCost;
     const grossProfitPct = acquisitionCost > 0
       ? (grossProfit / acquisitionCost) * 100

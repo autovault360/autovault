@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import NProgress from "nprogress";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -221,6 +222,7 @@ export function useEditVehicleForm(
 
   const onSubmit = form.handleSubmit(
     async (values) => {
+      NProgress.start();
       setIsSubmitting(true);
       try {
         const currentGallery = galleryRef.current;
@@ -290,6 +292,7 @@ export function useEditVehicleForm(
         }
       } finally {
         setIsSubmitting(false);
+        NProgress.done();
       }
     },
     () => {

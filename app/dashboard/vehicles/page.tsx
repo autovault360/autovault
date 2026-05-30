@@ -33,7 +33,14 @@ function formatISO(date: string | null | undefined): string {
   return date.split("T")[0];
 }
 
-export default async function VehiclesPage() {
+export default async function VehiclesPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ add?: string; edit?: string }> | { add?: string; edit?: string };
+}) {
+  const resolved = searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
+  const defaultOpen = resolved.add === "true";
+  const defaultEditId = resolved.edit;
   const auth = await authenticateUser();
   const vehicles: Vehicle[] = [];
 
@@ -106,12 +113,12 @@ export default async function VehiclesPage() {
             Manage your vehicle inventory, pricing, and status.
           </p>
         </div>
-        <AddVehicleTrigger />
+        <AddVehicleTrigger defaultOpen={defaultOpen} />
       </section>
 
       <VehicleStatsCards stats={stats} />
 
-      <VehiclesInventory vehicles={vehicles} />
+      <VehiclesInventory vehicles={vehicles} defaultEditId={defaultEditId} />
     </div>
   );
 }

@@ -70,7 +70,12 @@ const navGroups = [
         icon: TrendingUp,
         color: "text-green-500",
       },
-      { href: "#", label: "Expenses", icon: DollarSign, color: "text-red-500" },
+      {
+        href: "/dashboard/expenses",
+        label: "Expenses",
+        icon: DollarSign,
+        color: "text-red-500",
+      },
       { href: "/dashboard/customers", label: "Customers", icon: User, color: "text-purple-500" },
     ],
   },

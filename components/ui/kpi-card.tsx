@@ -11,6 +11,8 @@ import {
   Users,
   UserPlus,
   Handshake,
+  Percent,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -26,7 +28,9 @@ export type KPIIconName =
   | "trending-down"
   | "users"
   | "user-plus"
-  | "handshake";
+  | "handshake"
+  | "percent"
+  | "landmark";
 
 const iconMap: Record<KPIIconName, LucideIcon> = {
   car: Car,
@@ -39,6 +43,8 @@ const iconMap: Record<KPIIconName, LucideIcon> = {
   users: Users,
   "user-plus": UserPlus,
   handshake: Handshake,
+  percent: Percent,
+  landmark: Landmark,
 };
 
 export type KPICardData = {
