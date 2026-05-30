@@ -177,6 +177,13 @@ export async function uploadFile(
   return storagePath;
 }
 
+export type StorageBucket =
+  | "vehicle-images"
+  | "vehicle-documents"
+  | "customer-images"
+  | "user-images"
+  | "deal-jacket-documents";
+
 export async function getSignedUrl(
   bucket: StorageBucket,
   storagePath: string,
