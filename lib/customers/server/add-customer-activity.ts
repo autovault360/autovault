@@ -35,6 +35,7 @@ export async function addCustomerNote(
     if (error) throw new Error(error.message);
 
     revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${data.customerId}`);
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
@@ -65,6 +66,7 @@ export async function addCustomerCommunication(
     if (error) throw new Error(error.message);
 
     revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${data.customerId}`);
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";

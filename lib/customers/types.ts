@@ -67,11 +67,40 @@ export type CustomerDealItem = {
   vehicleId: string;
   stockNumber: string;
   vehicleName: string;
+  vin: string;
+  imageUrl: string | null;
   saleDate: string;
   totalPriceOtd: number;
   totalCollected: number;
+  soldPrice: number;
   grossProfit: number;
   notes: string | null;
+  dealJacketId: string | null;
+  jacketNumber: string | null;
+  salesRepName: string;
+  balanceDue: number;
+};
+
+export type CustomerProfileSummary = {
+  totalVehiclesPurchased: number;
+  totalSpent: number;
+  lastPurchaseDate: string | null;
+  firstPurchaseDate: string | null;
+  averagePurchaseAmount: number;
+  dealsInProgress: number;
+  openBalance: number;
+};
+
+export type CustomerVehicleItem = {
+  vehicleId: string;
+  stockNumber: string;
+  vehicleName: string;
+  vin: string;
+  imageUrl: string | null;
+  saleDate: string;
+  soldPrice: number;
+  dealId: string;
+  dealJacketId: string | null;
 };
 
 export type CustomerNoteItem = {
@@ -138,6 +167,10 @@ export type CustomerDetail = {
   communications: CustomerCommunicationItem[];
   documents: CustomerDocumentItem[];
   activityTimeline: ActivityTimelineItem[];
+  profileSummary: CustomerProfileSummary;
+  vehicles: CustomerVehicleItem[];
+  latestNotePreview: string | null;
+  fullAddress: string;
 };
 
 const STATUS_LABELS: Record<CustomerStatus, string> = {
@@ -194,6 +227,38 @@ export function formatCurrency(value: number): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+export function formatCurrencyDecimal(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+export function formatDateTime(date: string): string {
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export function formatCommunicationTypeProfile(type: CommunicationType): string {
+  const labels: Record<CommunicationType, string> = {
+    email: "Email",
+    call: "Phone Call",
+    sms: "SMS",
+    meeting: "Meeting",
+    inquiry: "Inquiry",
+  };
+  return labels[type] ?? type;
 }
 
 export function formatDisplayDate(date: string | null | undefined): string {

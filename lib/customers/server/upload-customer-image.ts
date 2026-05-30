@@ -29,6 +29,7 @@ export async function uploadCustomerImage(
     if (error) throw new Error(error.message);
 
     revalidatePath("/dashboard/customers");
+    revalidatePath(`/dashboard/customers/${customerId}`);
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
