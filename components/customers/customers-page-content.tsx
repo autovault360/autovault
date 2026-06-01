@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
@@ -31,7 +31,7 @@ type Props = {
 };
 
 export default function CustomersPageContent({
-  customers,
+  customers: initialCustomers,
   stats,
   salesReps,
   defaultOpen = false,
@@ -39,11 +39,32 @@ export default function CustomersPageContent({
 }: Props) {
   const pathname = usePathname();
 
+  const [customers, setCustomers] = useState(initialCustomers);
+  const [tableLoading, setTableLoading] = useState(false);
+  const tableLoadingRef = useRef(false);
+
+  useEffect(() => {
+    setCustomers(initialCustomers);
+  }, [initialCustomers]);
+
   const [addOpen, setAddOpen] = useState(defaultOpen);
 
   useEffect(() => {
     setAddOpen(defaultOpen);
   }, [defaultOpen]);
+
+  const refreshTable = useCallback(async () => {
+    if (tableLoadingRef.current) return;
+    tableLoadingRef.current = true;
+    setTableLoading(true);
+    try {
+      const res = await fetch("/api/customers");
+      if (res.ok) setCustomers(await res.json());
+    } finally {
+      tableLoadingRef.current = false;
+      setTableLoading(false);
+    }
+  }, []);
 
   const handleAddOpenChange = (next: boolean) => {
     setAddOpen(next);
@@ -74,7 +95,8 @@ export default function CustomersPageContent({
 
   const handleCustomerSaved = useCallback(() => {
     setDetailRefreshKey((key) => key + 1);
-  }, []);
+    refreshTable();
+  }, [refreshTable]);
 
   const handleSelect = useCallback((row: CustomerListItem) => {
     setDetailInitialTab("overview");
@@ -119,6 +141,7 @@ export default function CustomersPageContent({
               onEdit={handleEdit}
               onAddNote={handleAddNote}
               onRequestAdd={() => handleAddOpenChange(true)}
+              loading={tableLoading}
             />
           </Suspense>
         </div>

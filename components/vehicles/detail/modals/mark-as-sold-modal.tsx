@@ -77,15 +77,15 @@ export default function MarkAsSoldModal({
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectOptions options={CUSTOMER_TYPES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="customerName"
+                           <SelectOptions options={CUSTOMER_TYPES} label="Customer Type" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="customerName"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -215,15 +215,15 @@ export default function MarkAsSoldModal({
                           <SelectValue placeholder="Select state..." />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectOptions options={US_STATES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="zipCode"
+                           <SelectOptions options={US_STATES} label="State" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="zipCode"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">

@@ -155,14 +155,14 @@ export function useCustomerForm(
           const uploadResult = await uploadCustomerImage(result.customerId, imageFile);
           if (!uploadResult.success) {
             toast.error("Customer saved but image upload failed: " + uploadResult.error);
-            router.refresh();
             onSuccess();
+            router.refresh();
             return;
           }
         }
         toast.success(isEdit ? "Customer updated" : "Customer added");
-        router.refresh();
         onSuccess();
+        router.refresh();
       } else {
         toast.error(result.error);
       }

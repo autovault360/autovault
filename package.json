@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "seed:sales-reps": "tsx scripts/seed-sales-reps.ts",
-    "seed:deal-jackets": "npx tsx scripts/seed-deal-jackets.ts"
+    "seed:deal-jackets": "npx tsx scripts/seed-deal-jackets.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -44,6 +46,7 @@
     "pg": "^8.21.0",
     "supabase": "^2.102.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.7"
   }
 }

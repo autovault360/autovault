@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Loader2, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { CustomerDetail, CustomerListItem } from "@/lib/customers/types";
@@ -90,9 +90,7 @@ export default function CustomerDetailPanel({
       )}
     >
       {loading && !display ? (
-        <div className="flex flex-1 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
-        </div>
+        <CustomerDetailPanelSkeleton />
       ) : display ? (
         <>
           <div className="relative shrink-0 pb-4 pt-1">
@@ -197,31 +195,42 @@ export default function CustomerDetailPanel({
             })}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto pt-4">
-            {activeTab === "overview" && (
-              <OverviewTab
-                customer={display}
-                onViewDeals={() => setActiveTab("deals")}
-                onViewActivity={() => setActiveTab("communications")}
-              />
-            )}
-            {activeTab === "deals" && <DealsTab customer={display} />}
-            {activeTab === "communications" && (
-              <CommunicationsTab
-                customer={display}
-                onRefresh={fetchDetail}
-                onListRefresh={onListRefresh}
-              />
-            )}
-            {activeTab === "notes" && (
-              <NotesTab
-                customer={display}
-                onRefresh={fetchDetail}
-                onListRefresh={onListRefresh}
-              />
-            )}
-            {activeTab === "documents" && <DocumentsTab customer={display} />}
-          </div>
+          {loading && (
+            <div className="flex flex-1 items-center justify-center">
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-slate-600 border-t-slate-400" />
+                Loading customer data...
+              </div>
+            </div>
+          )}
+
+          {!loading && (
+            <div className="min-h-0 flex-1 overflow-y-auto pt-4">
+              {activeTab === "overview" && (
+                <OverviewTab
+                  customer={display}
+                  onViewDeals={() => setActiveTab("deals")}
+                  onViewActivity={() => setActiveTab("communications")}
+                />
+              )}
+              {activeTab === "deals" && <DealsTab customer={display} />}
+              {activeTab === "communications" && (
+                <CommunicationsTab
+                  customer={display}
+                  onRefresh={fetchDetail}
+                  onListRefresh={onListRefresh}
+                />
+              )}
+              {activeTab === "notes" && (
+                <NotesTab
+                  customer={display}
+                  onRefresh={fetchDetail}
+                  onListRefresh={onListRefresh}
+                />
+              )}
+              {activeTab === "documents" && <DocumentsTab customer={display} />}
+            </div>
+          )}
         </>
       ) : (
         <div className="flex flex-1 items-center justify-center text-xs text-slate-500">
@@ -229,6 +238,50 @@ export default function CustomerDetailPanel({
         </div>
       )}
     </aside>
+  );
+}
+
+function CustomerDetailPanelSkeleton() {
+  return (
+    <div className="flex flex-1 flex-col gap-4 p-1 animate-pulse">
+      <div className="flex items-start gap-4">
+        <div className="h-16 w-16 shrink-0 rounded-full bg-slate-800" />
+        <div className="min-w-0 flex-1 space-y-2.5">
+          <div className="h-5 w-40 rounded bg-slate-800" />
+          <div className="h-3 w-32 rounded bg-slate-800/70" />
+          <div className="h-3 w-48 rounded bg-slate-800/70" />
+          <div className="h-3 w-36 rounded bg-slate-800/50" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 border-y border-slate-800/80 py-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="space-y-2 rounded-lg border border-slate-800/80 bg-[#0b121f]/40 p-3">
+            <div className="h-3 w-16 rounded bg-slate-800" />
+            <div className="h-5 w-20 rounded bg-slate-800" />
+            <div className="h-3 w-12 rounded bg-slate-800/60" />
+          </div>
+        ))}
+      </div>
+
+      <div className="flex gap-3 border-b border-slate-800/60 pb-3">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="h-4 w-16 rounded bg-slate-800" />
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex gap-3">
+            <div className="h-8 w-8 rounded bg-slate-800" />
+            <div className="flex-1 space-y-1.5">
+              <div className="h-3 w-3/4 rounded bg-slate-800" />
+              <div className="h-3 w-1/2 rounded bg-slate-800/60" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

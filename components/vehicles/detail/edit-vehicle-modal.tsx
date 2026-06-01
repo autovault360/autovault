@@ -135,7 +135,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={VEHICLE_YEARS} theme="dark" />
+                            <SelectOptions label="Year" options={VEHICLE_YEARS} theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -155,7 +155,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={VEHICLE_MAKES} theme="dark" />
+                            <SelectOptions label="Make" options={VEHICLE_MAKES} theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -175,7 +175,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={modelOptions} theme="dark" />
+                            <SelectOptions label="Model" options={modelOptions} theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -209,7 +209,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={BODY_STYLES} theme="dark" />
+                            <SelectOptions label="Body Style" options={BODY_STYLES} theme="dark" />
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -301,7 +301,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={DRIVE_TYPES} theme="dark" />
+                            <SelectOptions label="Drive Type" options={DRIVE_TYPES} theme="dark" />
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -352,7 +352,7 @@ export default function EditVehicleModal({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={LOT_LOCATIONS} theme="dark" />
+                            <SelectOptions label="Lot / Location" options={LOT_LOCATIONS} theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -395,7 +395,7 @@ export default function EditVehicleModal({
                       <FieldLabel label="State" />
                       <Select value={field.value ?? ""} onValueChange={field.onChange}>
                         <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="State" /></SelectTrigger></FormControl>
-                        <SelectContent theme="dark"><SelectOptions options={US_STATES} theme="dark" /></SelectContent>
+                        <SelectContent theme="dark"><SelectOptions label="State" options={US_STATES} theme="dark" /></SelectContent>
                       </Select>
                     </FormItem>
                   )} />
@@ -417,7 +417,7 @@ export default function EditVehicleModal({
                     <FieldLabel label="Purchase Type" />
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="Purchase type" /></SelectTrigger></FormControl>
-                      <SelectContent theme="dark"><SelectOptions options={PURCHASE_TYPES} theme="dark" /></SelectContent>
+                      <SelectContent theme="dark"><SelectOptions label="Purchase Type" options={PURCHASE_TYPES} theme="dark" /></SelectContent>
                     </Select>
                   </FormItem>
                 )} />
@@ -491,7 +491,7 @@ export default function EditVehicleModal({
                     <FieldLabel label="Title Status" />
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="Title status" /></SelectTrigger></FormControl>
-                      <SelectContent theme="dark"><SelectOptions options={TITLE_STATUSES} theme="dark" /></SelectContent>
+                      <SelectContent theme="dark"><SelectOptions label="Title Status" options={TITLE_STATUSES} theme="dark" /></SelectContent>
                     </Select>
                   </FormItem>
                 )} />
@@ -500,7 +500,7 @@ export default function EditVehicleModal({
                     <FieldLabel label="Odometer Status" />
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="Odometer status" /></SelectTrigger></FormControl>
-                      <SelectContent theme="dark"><SelectOptions options={ODOMETER_STATUSES} theme="dark" /></SelectContent>
+                      <SelectContent theme="dark"><SelectOptions label="Odometer Status" options={ODOMETER_STATUSES} theme="dark" /></SelectContent>
                     </Select>
                   </FormItem>
                 )} />
@@ -509,7 +509,7 @@ export default function EditVehicleModal({
                     <FieldLabel label="Fuel Type" />
                     <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="Fuel type" /></SelectTrigger></FormControl>
-                      <SelectContent theme="dark"><SelectOptions options={FUEL_TYPES} theme="dark" /></SelectContent>
+                      <SelectContent theme="dark"><SelectOptions label="Fuel Type" options={FUEL_TYPES} theme="dark" /></SelectContent>
                     </Select>
                   </FormItem>
                 )} />

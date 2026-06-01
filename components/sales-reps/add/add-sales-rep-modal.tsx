@@ -330,16 +330,16 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={US_STATES} theme="dark" />
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="zip"
+                           <SelectOptions options={US_STATES} label="State" theme="dark" />
+                         </SelectContent>
+                       </Select>
+                       <FormMessage />
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="zip"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">

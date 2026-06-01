@@ -20,7 +20,9 @@ import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/in
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -395,10 +397,13 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                 <SelectValue placeholder="All Makes" />
               </SelectTrigger>
               <SelectContent theme="dark" className="text-slate-300">
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">All Makes</SelectItem>
-                {makes.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>Make</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">All Makes</SelectItem>
+                  {makes.map((opt) => (
+                    <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
             <Select value={model} onValueChange={(v: any) => { setModel(v); }}>
@@ -406,10 +411,13 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                 <SelectValue placeholder="All Models" />
               </SelectTrigger>
               <SelectContent theme="dark" className="text-slate-300">
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">All Models</SelectItem>
-                {models.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>Model</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">All Models</SelectItem>
+                  {models.map((opt) => (
+                    <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
             <Select value={status} onValueChange={(v: any) => { setStatus(v); }}>
@@ -417,10 +425,13 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent theme="dark" className="text-slate-300">
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">All Statuses</SelectItem>
-                {statuses.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">All Statuses</SelectItem>
+                  {statuses.map((opt) => (
+                    <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
             <Select value={location} onValueChange={(v: any) => { setLocation(v); }}>
@@ -428,10 +439,13 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                 <SelectValue placeholder="All Locations" />
               </SelectTrigger>
               <SelectContent theme="dark" className="text-slate-300">
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">All Locations</SelectItem>
-                {locations.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
-                ))}
+                <SelectGroup>
+                  <SelectLabel>Location</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">All Locations</SelectItem>
+                  {locations.map((opt) => (
+                    <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">{opt}</SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
             <Button

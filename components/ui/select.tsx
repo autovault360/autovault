@@ -31,6 +31,11 @@ function SelectValue({
   return <SelectPrimitive.Value data-slot="select-value" {...props} />
 }
 
+const normalizeLabel = (value: string) =>
+  value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+
 function SelectTrigger({
   className,
   size = "default",
@@ -80,7 +85,7 @@ function SelectContent({
         className={cn(
           "relative z-50 max-h-(--radix-select-content-available-height) min-w-36 origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-[4px] text-[13px] shadow-lg ring-0 duration-100",
           theme === "dark"
-            ? "border border-slate-600 bg-[#0f1621] text-slate-100"
+            ? "select-content-dark border border-slate-600 bg-[#0f1621] text-slate-100"
             : "border border-[#E0E0E0] bg-white text-gray-900",
           position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
           className,
@@ -143,7 +148,11 @@ function SelectItem({
           <CheckIcon className="pointer-events-none" />
         </SelectPrimitive.ItemIndicator>
       </span>
-      <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+      <SelectPrimitive.ItemText>
+        {typeof children === "string"
+          ? normalizeLabel(children)
+          : children}
+      </SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   )
 }
@@ -200,15 +209,22 @@ function SelectScrollDownButton({
 function SelectOptions({
   options,
   theme = "light",
+  label,
 }: {
   options: readonly { value: string; label: string }[];
   theme?: "light" | "dark";
+  label?: string;
 }) {
-  return options.map((opt) => (
-    <SelectItem key={opt.value} value={opt.value} theme={theme}>
-      {opt.label}
-    </SelectItem>
-  ));
+  return (
+    <SelectGroup>
+      {label && <SelectLabel>{label}</SelectLabel>}
+      {options.map((opt) => (
+        <SelectItem key={opt.value} value={opt.value} theme={theme}>
+          {opt.label}
+        </SelectItem>
+      ))}
+    </SelectGroup>
+  );
 }
 
 export {

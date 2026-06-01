@@ -112,15 +112,15 @@ export default function MarkAsLossModal({
                           <SelectValue placeholder="Select Loss Reason" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectOptions options={LOSS_REASONS} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lossType"
+                           <SelectOptions options={LOSS_REASONS} label="Loss Reason" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="lossType"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -133,17 +133,17 @@ export default function MarkAsLossModal({
                             <SelectValue placeholder="Select Loss Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectOptions options={LOSS_TYPES} />
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </FormGrid>
-              <FormField
-                control={form.control}
-                name="explanation"
+                             <SelectOptions options={LOSS_TYPES} label="Loss Type" />
+                           </SelectContent>
+                         </Select>
+                       </FormControl>
+                     </FormItem>
+                   )}
+                 />
+               </FormGrid>
+               <FormField
+                 control={form.control}
+                 name="explanation"
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center gap-1 justify-between">

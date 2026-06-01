@@ -65,7 +65,7 @@ const navGroups = [
       },
       { href: "/dashboard/vehicles", label: "Vehicles", icon: Car, color: "text-amber-500" },
       {
-        href: "#",
+        href: "/dashboard/profit-loss",
         label: "Profit & Loss",
         icon: TrendingUp,
         color: "text-green-500",
@@ -84,7 +84,7 @@ const navGroups = [
     items: [
       { href: "/dashboard/deal-jackets", label: "Deal Jacket", icon: Folder, color: "text-blue-500" },
       {
-        href: "#",
+        href: "/dashboard/files-storage",
         label: "Files & Storage",
         icon: Archive,
         color: "text-cyan-500",

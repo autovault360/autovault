@@ -126,15 +126,15 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={REPAIR_CATEGORIES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="repairType"
+                           <SelectOptions options={REPAIR_CATEGORIES} label="Repair Category" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="repairType"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -148,15 +148,15 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={REPAIR_TYPES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="priority"
+                           <SelectOptions options={REPAIR_TYPES} label="Repair Type" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="priority"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -170,16 +170,16 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={REPAIR_PRIORITIES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-              </FormGrid>
-              <FormField
-                control={form.control}
-                name="description"
+                           <SelectOptions options={REPAIR_PRIORITIES} label="Priority" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+               </FormGrid>
+               <FormField
+                 control={form.control}
+                 name="description"
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <div className="flex items-center gap-1 justify-between">
@@ -262,15 +262,15 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={VENDORS} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="otherFees"
+                           <SelectOptions options={VENDORS} label="Shop / Vendor" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="otherFees"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -332,15 +332,15 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={PAYMENT_METHODS} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="invoiceNumber"
+                           <SelectOptions options={PAYMENT_METHODS} label="Payment Method" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="invoiceNumber"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -372,15 +372,15 @@ export default function AddRepairCostModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={PAYMENT_STATUSES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="datePaid"
+                           <SelectOptions options={PAYMENT_STATUSES} label="Payment Status" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="datePaid"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">

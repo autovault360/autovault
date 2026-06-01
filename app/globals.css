@@ -168,10 +168,12 @@
     font-family: "SF Pro Display", "Roboto", sans-serif;
   }
   body {
-    @apply bg-background text-foreground;
+    background: var(--scrollbar-track);
+    color: var(--foreground);
   }
   html {
     @apply font-sans;
+    background: var(--scrollbar-track);
   }
 }
 
@@ -213,4 +215,49 @@
 
 .animate-shake {
   animation: shake 0.3s ease-in-out;
+}
+
+.select-content-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f1621;
+  scrollbar-gutter: stable;
+}
+.select-content-dark::-webkit-scrollbar {
+  width: 6px;
+}
+.select-content-dark::-webkit-scrollbar-track {
+  background: #0f1621;
+}
+.select-content-dark::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+.select-content-dark::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .profit-loss-page,
+  .profit-loss-page * {
+    visibility: visible;
+  }
+
+  .profit-loss-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white !important;
+    color: black !important;
+  }
+
+  .profit-loss-page [class*="AdminHeader"],
+  .profit-loss-page button,
+  .profit-loss-page a[href] {
+    display: none !important;
+  }
 }
