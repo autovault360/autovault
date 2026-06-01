@@ -21,7 +21,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -53,6 +55,7 @@ type Props = {
   onEdit: (detail: CustomerDetail) => void;
   onAddNote?: (row: CustomerListItem) => void;
   onRequestAdd?: () => void;
+  loading?: boolean;
 };
 
 export default function CustomersInventory({
@@ -63,6 +66,7 @@ export default function CustomersInventory({
   onEdit,
   onAddNote,
   onRequestAdd,
+  loading = false,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -352,6 +356,7 @@ export default function CustomersInventory({
           onRowClick={onSelect}
           activeRowKey={selectedId}
           paginationSummaryLabel="customers"
+          loading={loading}
         />
       </div>
     </div>
@@ -375,11 +380,14 @@ function FilterSelect({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent theme="dark">
-        {options.map((o) => (
-          <SelectItem key={o.value} value={o.value} className="text-[11.5px]">
-            {o.label}
-          </SelectItem>
-        ))}
+        <SelectGroup>
+          <SelectLabel>{placeholder}</SelectLabel>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value} className="text-[11.5px]">
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );

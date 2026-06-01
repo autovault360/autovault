@@ -39,6 +39,7 @@ type Props = {
   selectedId: string | null;
   onSelect: (row: ExpenseDetail) => void;
   onRequestAdd?: () => void;
+  loading?: boolean;
 };
 
 const TABLE_WRAPPER_CLASS =
@@ -56,6 +57,7 @@ export default function ExpensesInventory({
   selectedId,
   onSelect,
   onRequestAdd,
+  loading = false,
 }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -218,7 +220,20 @@ export default function ExpensesInventory({
       </div>
 
       <div className={`py-3.5 ${TABLE_WRAPPER_CLASS}`}>
-        {filtered.length === 0 ? (
+        {loading ? (
+          <DataTable
+            columns={columns}
+            data={filtered}
+            rowKey="id"
+            pageSize={10}
+            addPagination
+            emptyMessage="No expenses match your filters."
+            onRowClick={onSelect}
+            activeRowKey={selectedId}
+            paginationSummaryLabel="expenses"
+            loading
+          />
+        ) : filtered.length === 0 ? (
           <EmptyState hasExpenses={expenses.length > 0} />
         ) : (
           <DataTable

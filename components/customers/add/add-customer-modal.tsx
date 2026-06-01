@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Camera, Save, User } from "lucide-react";
-import Image from "next/image";
 import {
   Form,
   FormControl,
@@ -67,6 +66,7 @@ export default function AddCustomerModal({
       editCustomer,
     );
 
+  const [imgError, setImgError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -80,6 +80,14 @@ export default function AddCustomerModal({
   }, [imageFile]);
 
   const displayPhoto = previewUrl ?? editCustomer?.imageUrl ?? null;
+
+  useEffect(() => {
+    setImgError(false);
+  }, [displayPhoto]);
+
+  const handleImgError = useCallback(() => {
+    setImgError(true);
+  }, []);
 
   return (
     <VehicleActionDialog
@@ -286,15 +294,16 @@ export default function AddCustomerModal({
               </FormGrid>
             </div>
                 <div className="flex flex-col items-center gap-2">
-                  <div className="relative h-[150px] w-[200px] overflow-hidden rounded-md border border-slate-600 bg-[#1a2332]">
-                    {displayPhoto && (
-                      <Image
+                  <div className="flex h-[150px] w-[200px] items-center justify-center overflow-hidden rounded-md border border-slate-600 bg-[#1a2332]">
+                    {displayPhoto && !imgError ? (
+                      <img
                         src={displayPhoto}
                         alt="Customer"
-                        fill
-                        className="object-cover"
-                        unoptimized={displayPhoto.startsWith("blob:")}
+                        className="h-full w-full object-cover"
+                        onError={handleImgError}
                       />
+                    ) : (
+                      <User className="h-10 w-10 text-slate-600" />
                     )}
                   </div>
                   <input
@@ -393,16 +402,16 @@ export default function AddCustomerModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={US_STATES} theme="dark" />
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="zip"
+                           <SelectOptions options={US_STATES} label="State" theme="dark" />
+                         </SelectContent>
+                       </Select>
+                       <FormMessage />
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="zip"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">

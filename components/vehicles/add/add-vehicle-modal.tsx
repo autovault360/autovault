@@ -125,7 +125,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={VEHICLE_YEARS} theme="dark" />
+                            <SelectOptions options={VEHICLE_YEARS} label="Year" theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -145,7 +145,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={VEHICLE_MAKES} theme="dark" />
+                            <SelectOptions options={VEHICLE_MAKES} label="Make" theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -165,7 +165,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={modelOptions} theme="dark" />
+                            <SelectOptions options={modelOptions} label="Model" theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -204,7 +204,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={BODY_STYLES} theme="dark" />
+                            <SelectOptions options={BODY_STYLES} label="Body Style" theme="dark" />
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -307,7 +307,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={DRIVE_TYPES} theme="dark" />
+                            <SelectOptions options={DRIVE_TYPES} label="Drive Type" theme="dark" />
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -366,7 +366,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={LOT_LOCATIONS} theme="dark" />
+                            <SelectOptions options={LOT_LOCATIONS} label="Lot / Location" theme="dark" />
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -442,7 +442,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent theme="dark">
-                            <SelectOptions options={US_STATES} theme="dark" />
+                            <SelectOptions options={US_STATES} label="State" theme="dark" />
                           </SelectContent>
                         </Select>
                       </FormItem>
@@ -495,7 +495,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={PURCHASE_TYPES} theme="dark" />
+                          <SelectOptions options={PURCHASE_TYPES} label="Purchase Type" theme="dark" />
                         </SelectContent>
                       </Select>
                     </FormItem>
@@ -632,7 +632,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={TITLE_STATUSES} theme="dark" />
+                          <SelectOptions options={TITLE_STATUSES} label="Title Status" theme="dark" />
                         </SelectContent>
                       </Select>
                     </FormItem>
@@ -651,7 +651,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={ODOMETER_STATUSES} theme="dark" />
+                          <SelectOptions options={ODOMETER_STATUSES} label="Odometer Status" theme="dark" />
                         </SelectContent>
                       </Select>
                     </FormItem>
@@ -670,7 +670,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent theme="dark">
-                          <SelectOptions options={FUEL_TYPES} theme="dark" />
+                          <SelectOptions options={FUEL_TYPES} label="Fuel Type" theme="dark" />
                         </SelectContent>
                       </Select>
                     </FormItem>

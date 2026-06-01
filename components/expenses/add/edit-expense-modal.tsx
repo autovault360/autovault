@@ -13,7 +13,9 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -182,15 +184,18 @@ export default function EditExpenseModal({
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
                               <SelectContent theme="dark">
-                                {VEHICLE_EXPENSE_SUBCATEGORIES.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    theme="dark"
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
+                                <SelectGroup>
+                                  <SelectLabel>Type</SelectLabel>
+                                  {VEHICLE_EXPENSE_SUBCATEGORIES.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                      theme="dark"
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -220,15 +225,18 @@ export default function EditExpenseModal({
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                               <SelectContent theme="dark">
-                                {EXPENSE_FORM_CATEGORIES.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    theme="dark"
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
+                                <SelectGroup>
+                                  <SelectLabel>Category</SelectLabel>
+                                  {EXPENSE_FORM_CATEGORIES.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                      theme="dark"
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
                               </SelectContent>
                             </Select>
                           </FormControl>
@@ -302,17 +310,20 @@ export default function EditExpenseModal({
                             >
                               <SelectValue placeholder="Select payment method" />
                             </SelectTrigger>
-                            <SelectContent theme="dark">
-                              {PAYMENT_METHOD_OPTIONS.map((option) => (
-                                <SelectItem
-                                  key={option.value}
-                                  value={option.value}
-                                  theme="dark"
-                                >
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
+                              <SelectContent theme="dark">
+                                <SelectGroup>
+                                  <SelectLabel>Payment Method</SelectLabel>
+                                  {PAYMENT_METHOD_OPTIONS.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                      theme="dark"
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
                           </Select>
                         </FormControl>
                       </FormItem>
@@ -335,15 +346,18 @@ export default function EditExpenseModal({
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent theme="dark">
-                                {TAX_DEDUCTIBLE_OPTIONS.map((option) => (
-                                  <SelectItem
-                                    key={option.value}
-                                    value={option.value}
-                                    theme="dark"
-                                  >
-                                    {option.label}
-                                  </SelectItem>
-                                ))}
+                                <SelectGroup>
+                                  <SelectLabel>Tax Deductible</SelectLabel>
+                                  {TAX_DEDUCTIBLE_OPTIONS.map((option) => (
+                                    <SelectItem
+                                      key={option.value}
+                                      value={option.value}
+                                      theme="dark"
+                                    >
+                                      {option.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
                               </SelectContent>
                             </Select>
                           </FormControl>

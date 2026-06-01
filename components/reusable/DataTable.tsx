@@ -36,6 +36,7 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void;
   activeRowKey?: string | number | null;
   paginationSummaryLabel?: string;
+  loading?: boolean;
 }
 
 function getPaginationRange(
@@ -70,6 +71,7 @@ export default function DataTable<T extends Record<string, unknown>>({
   onRowClick,
   activeRowKey = null,
   paginationSummaryLabel = "items",
+  loading = false,
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -211,7 +213,25 @@ export default function DataTable<T extends Record<string, unknown>>({
             </tr>
           </thead>
           <tbody>
-            {pageData.length === 0 ? (
+            {loading ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <tr key={`skeleton-${i}`} className="animate-pulse border-b border-slate-800/60 last:border-0">
+                  {enableSelection && (
+                    <td className="w-10 px-1.5 py-2.5">
+                      <div className="h-3.5 w-3.5 rounded bg-slate-800" />
+                    </td>
+                  )}
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={cn("px-1.5 py-2.5", col.cellClassName)}
+                    >
+                      <div className="h-3.5 w-3/4 rounded bg-slate-800" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : pageData.length === 0 ? (
               <tr>
                 <td
                   colSpan={colSpan}

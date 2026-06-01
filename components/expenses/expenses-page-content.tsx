@@ -120,6 +120,7 @@ export default function ExpensesPageContent({
             selectedId={selectedId}
             onSelect={handleSelect}
             onRequestAdd={() => handleAddOpenChange(true)}
+            loading={isPending}
           />
         </div>
 

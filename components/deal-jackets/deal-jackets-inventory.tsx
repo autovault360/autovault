@@ -17,7 +17,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -302,15 +304,20 @@ export default function DealJacketsInventory({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent theme="dark">
-                    {PAGE_SIZE_OPTIONS.map((size) => (
-                      <SelectItem
-                        key={size}
-                        value={String(size)}
-                        className="text-[11px]"
-                      >
-                        {size}
-                      </SelectItem>
-                    ))}
+                    <SelectGroup>
+                      <SelectLabel className="text-[10px] uppercase tracking-wider text-slate-500">
+                        Rows per page
+                      </SelectLabel>
+                      {PAGE_SIZE_OPTIONS.map((size) => (
+                        <SelectItem
+                          key={size}
+                          value={String(size)}
+                          className="text-[11px]"
+                        >
+                          {size}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
@@ -355,11 +362,16 @@ function FilterSelect({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent theme="dark">
-        {options.map((o) => (
-          <SelectItem key={o.value} value={o.value} className="text-[11.5px]">
-            {o.label}
-          </SelectItem>
-        ))}
+        <SelectGroup>
+          <SelectLabel className="text-[10px] uppercase tracking-wider text-slate-500">
+            {placeholder}
+          </SelectLabel>
+          {options.map((o) => (
+            <SelectItem key={o.value} value={o.value} className="text-[11.5px]">
+              {o.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </SelectContent>
     </Select>
   );

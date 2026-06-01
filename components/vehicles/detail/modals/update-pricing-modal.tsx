@@ -245,15 +245,15 @@ export default function UpdatePricingModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={PRICING_STRATEGIES} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="reason"
+                           <SelectOptions options={PRICING_STRATEGIES} label="Pricing Strategy" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="reason"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">
@@ -267,15 +267,15 @@ export default function UpdatePricingModal({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectOptions options={PRICE_UPDATE_REASONS} />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="effectiveDate"
+                           <SelectOptions options={PRICE_UPDATE_REASONS} label="Reason for Price Update" />
+                         </SelectContent>
+                       </Select>
+                     </FormItem>
+                   )}
+                 />
+                 <FormField
+                   control={form.control}
+                   name="effectiveDate"
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <div className="flex items-center gap-1 justify-between">

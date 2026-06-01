@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { X, Maximize2 } from "lucide-react";
 
@@ -35,9 +36,15 @@ export default function ExpenseDetailPanel({
   onClose: () => void;
   onDeleted?: () => void;
 }) {
+  const router = useRouter();
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [, startTransition] = useTransition();
+
+  const handleEditOpenChange = useCallback((next: boolean) => {
+    setEditModalOpen(next);
+    if (!next) startTransition(() => router.refresh());
+  }, [router]);
 
   const linkedVehicleLabel = expense.linkedVehicle
     ? expense.stockNumber
@@ -206,7 +213,7 @@ export default function ExpenseDetailPanel({
       <EditExpenseModal
         expense={expense}
         open={editModalOpen}
-        onOpenChange={setEditModalOpen}
+        onOpenChange={handleEditOpenChange}
       />
     </>
   );
