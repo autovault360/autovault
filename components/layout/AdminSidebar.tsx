@@ -95,7 +95,7 @@ const navGroups = [
     label: "TOOLS",
     items: [
       { href: "#", label: "Reports", icon: BarChart3, color: "text-red-500" },
-      { href: "#", label: "Reminders", icon: Bell, color: "text-amber-500" },
+      { href: "/dashboard/reminders", label: "Reminders", icon: Bell, color: "text-amber-500" },
       {
         href: "#",
         label: "Calendar",
