@@ -470,7 +470,7 @@ export default async function DashboardPage() {
                 "Receipts Uploaded",
                 "Bank Reconciled",
                 "Payroll Updated",
-                "CDTFA Filed",
+                "State Tax",
                 "Documents Complete",
               ].map((t) => (
                 <li
