@@ -4,7 +4,11 @@ import CalendarActivityLegend from "./calendar-activity-legend";
 import MonthlyCalendarGrid from "./monthly-calendar-grid";
 import DayDetailPanel from "./day-detail-panel";
 import MonthlyRightSidebar from "./monthly-right-sidebar";
-import MonthlyBottomAnalytics from "./monthly-bottom-analytics";
+import {
+  MonthlySalesByWeekCard,
+  MonthlySalesTrendChart,
+  MonthlyTopRepsCard,
+} from "./monthly-bottom-analytics";
 import type {
   CalendarEventType,
   IDailySalesActivity,
@@ -59,14 +63,17 @@ export default function MonthlyCalendarView({
     <>
       <CalendarActivityLegend />
       <section className="mb-3.5 grid gap-3.5 xl:grid-cols-12">
-        <div className="xl:col-span-5">
+        {/* Main calendar */}
+        <div className="xl:col-span-6 xl:row-start-1">
           <MonthlyCalendarGrid
             cells={monthGrid}
             selectedDay={selectedDay}
             onDaySelect={onDaySelect}
           />
         </div>
-        <div className="xl:col-span-4">
+
+        {/* Day detail panel */}
+        <div className="xl:col-span-3 xl:row-start-1">
           <DayDetailPanel
             activity={selectedActivity}
             date={selectedDay}
@@ -74,7 +81,9 @@ export default function MonthlyCalendarView({
             onAddEvent={(ev) => selectedDay && onAddEvent(selectedDay, ev)}
           />
         </div>
-        <div className="xl:col-span-3">
+
+        {/* Right sidebar - full height, standalone column */}
+        <div className="xl:col-span-3 xl:row-span-2 xl:row-start-1 xl:self-start">
           <MonthlyRightSidebar
             upcomingEvents={upcomingEvents}
             soldVehicles={soldVehicles}
@@ -82,12 +91,14 @@ export default function MonthlyCalendarView({
             onDayNoteChange={onDayNoteChange}
           />
         </div>
+
+        {/* Bottom left: weekly, top reps, sales trend in one row */}
+        <div className="grid gap-3.5 xl:col-span-9 xl:col-start-1 xl:row-start-2 xl:grid-cols-3">
+          <MonthlySalesByWeekCard weeklyBreakdown={weeklyBreakdown} />
+          <MonthlyTopRepsCard topReps={topReps} />
+          <MonthlySalesTrendChart trendData={trendData} />
+        </div>
       </section>
-      <MonthlyBottomAnalytics
-        weeklyBreakdown={weeklyBreakdown}
-        topReps={topReps}
-        trendData={trendData}
-      />
     </>
   );
 }
