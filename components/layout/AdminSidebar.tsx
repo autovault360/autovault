@@ -108,7 +108,12 @@ const navGroups = [
         icon: FileText,
         color: "text-blue-500",
       },
-      { href: "#", label: "Taxes", icon: Receipt, color: "text-purple-500" },
+      {
+        href: "/dashboard/sales-tax",
+        label: "State Tax",
+        icon: Receipt,
+        color: "text-purple-500",
+      },
       {
         href: "#",
         label: "CPA Log In",
