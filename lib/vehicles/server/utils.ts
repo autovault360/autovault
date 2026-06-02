@@ -228,6 +228,78 @@ export async function checkVinUniqueness(
   return { isDuplicate: !!data };
 }
 
+export type SourceEntity =
+  | "vehicle"
+  | "customer"
+  | "deal"
+  | "expense"
+  | "deal_jacket"
+  | "dealership_expense"
+  | "user";
+
+export type TrackFileOptions = {
+  sourceEntity?: SourceEntity;
+  sourceEntityId?: string;
+};
+
+export async function getNormalizedFileType(mimeType: string, fileName?: string): Promise<string> {
+  const ext = fileName?.split(".").pop()?.toLowerCase();
+  if (mimeType === "application/pdf") return "pdf";
+  if (mimeType === "image/jpeg") return "jpg";
+  if (mimeType === "image/png") return "png";
+  if (mimeType === "image/webp") return "webp";
+  if (mimeType === "image/gif") return "other";
+  if (mimeType === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") return "xlsx";
+  if (mimeType === "application/vnd.ms-excel") return "xlsx";
+  if (mimeType.startsWith("video/")) return "mp4";
+  if (ext === "pdf") return "pdf";
+  if (ext === "jpg" || ext === "jpeg") return "jpg";
+  if (ext === "png") return "png";
+  if (ext === "webp") return "webp";
+  if (ext === "xlsx" || ext === "xls") return "xlsx";
+  if (ext === "mp4" || ext === "mov") return "mp4";
+  return "other";
+}
+
+/**
+ * Register a file in the unified files table after upload.
+ * Call this after uploadFile() to track the file.
+ */
+export async function trackFile(
+  file: File,
+  bucket: StorageBucket,
+  storagePath: string,
+  dealershipId: string,
+  userId: string,
+  options?: TrackFileOptions,
+): Promise<string | null> {
+  const supabase = await createClient();
+  const fileType = await getNormalizedFileType(file.type, file.name);
+
+  const { data, error } = await supabase
+    .from("files")
+    .insert({
+      dealership_id: dealershipId,
+      bucket,
+      storage_path: storagePath,
+      original_name: file.name,
+      file_size: file.size,
+      mime_type: file.type || "application/octet-stream",
+      file_type: fileType,
+      source_entity: options?.sourceEntity ?? null,
+      source_entity_id: options?.sourceEntityId ?? null,
+      uploaded_by: userId,
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("trackFile failed:", error.message);
+    return null;
+  }
+  return data.id;
+}
+
 export async function rollbackVehicle(
   vehicleId: string,
   storagePaths: string[],

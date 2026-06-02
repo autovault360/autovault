@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authenticateUser, assertVehicleActive, uploadFile } from "./utils";
+import { authenticateUser, assertVehicleActive, uploadFile, trackFile } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -158,6 +158,11 @@ export async function updateVehicle(formData: FormData) {
         const path = `${dealershipId}/${data.vehicleId}/photos/${Date.now()}-${newPhotoIndex}.${ext}`;
         await uploadFile("vehicle-images", path, file);
         uploadedNewPaths.push(path);
+
+        await trackFile(file, "vehicle-images", path, dealershipId, userId, {
+          sourceEntity: "vehicle",
+          sourceEntityId: data.vehicleId,
+        });
       }
 
       newPhotoIndex = 0;
@@ -229,6 +234,11 @@ export async function updateVehicle(formData: FormData) {
           const ext = photos[i].name.split(".").pop();
           const path = `${dealershipId}/${data.vehicleId}/photos/${nextSort}.${ext}`;
           await uploadFile("vehicle-images", path, photos[i]);
+
+          await trackFile(photos[i], "vehicle-images", path, dealershipId, userId, {
+            sourceEntity: "vehicle",
+            sourceEntityId: data.vehicleId,
+          });
 
           await supabase.from("vehicle_images").insert({
             vehicle_id: data.vehicleId,

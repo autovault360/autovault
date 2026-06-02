@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
+import { authenticateUser, assertVehicleActive, uploadFile, trackFile, type ActionResult } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -75,6 +75,11 @@ export async function updatePricing(formData: FormData): Promise<ActionResult> {
       const ext = photoFile.name.split(".").pop();
       const path = `${dealershipId}/${data.vehicleId}/photos/primary.${ext}`;
       await uploadFile("vehicle-images", path, photoFile);
+
+      await trackFile(photoFile, "vehicle-images", path, dealershipId, userId, {
+        sourceEntity: "vehicle",
+        sourceEntityId: data.vehicleId,
+      });
 
       if (existingImages && existingImages.length > 0) {
         const oldPath = existingImages[0].storage_path;

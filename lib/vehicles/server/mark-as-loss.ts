@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
+import { authenticateUser, assertVehicleActive, uploadFile, trackFile, type ActionResult } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -61,6 +61,10 @@ export async function markAsLoss(formData: FormData): Promise<ActionResult> {
       await uploadFile("vehicle-documents", path, docs[i]);
       uploadedPaths.push(path);
       docPaths.push(path);
+      await trackFile(docs[i], "vehicle-documents", path, dealershipId, userId, {
+        sourceEntity: "vehicle",
+        sourceEntityId: data.vehicleId,
+      });
     }
 
     const { error: lossError } = await supabase.from("vehicle_losses").insert({

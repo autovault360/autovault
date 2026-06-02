@@ -55,6 +55,7 @@ export async function createDealershipExpense(
         "dealership",
         row.id,
         receipt,
+        userId,
       );
       const { error: updateError } = await supabase
         .from("dealership_expenses")

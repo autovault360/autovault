@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { phoneRegex, zipRegex } from "@/lib/shared/phone";
-import { authenticateUser, assertVehicleActive, uploadFile, type ActionResult } from "./utils";
+import { authenticateUser, assertVehicleActive, uploadFile, trackFile, type ActionResult } from "./utils";
 import { createDealJacket } from "@/services/deal-jacket.service";
 import type { DealJacketDocumentInput } from "@/lib/deal-jackets/server/db-types";
 import { revalidatePath } from "next/cache";
@@ -122,21 +122,37 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
       buyerIdFrontPath = `${docBase}/buyer-id-front`;
       await uploadFile("vehicle-documents", buyerIdFrontPath, buyerIdFront);
       uploadedPaths.push(buyerIdFrontPath);
+      await trackFile(buyerIdFront, "vehicle-documents", buyerIdFrontPath, dealershipId, userId, {
+        sourceEntity: "deal",
+        sourceEntityId: data.vehicleId,
+      });
     }
     if (buyerIdBack) {
       buyerIdBackPath = `${docBase}/buyer-id-back`;
       await uploadFile("vehicle-documents", buyerIdBackPath, buyerIdBack);
       uploadedPaths.push(buyerIdBackPath);
+      await trackFile(buyerIdBack, "vehicle-documents", buyerIdBackPath, dealershipId, userId, {
+        sourceEntity: "deal",
+        sourceEntityId: data.vehicleId,
+      });
     }
     if (driversLicense) {
       driversLicensePath = `${docBase}/drivers-license`;
       await uploadFile("vehicle-documents", driversLicensePath, driversLicense);
       uploadedPaths.push(driversLicensePath);
+      await trackFile(driversLicense, "vehicle-documents", driversLicensePath, dealershipId, userId, {
+        sourceEntity: "deal",
+        sourceEntityId: data.vehicleId,
+      });
     }
     if (otherDoc) {
       otherDocPath = `${docBase}/other`;
       await uploadFile("vehicle-documents", otherDocPath, otherDoc);
       uploadedPaths.push(otherDocPath);
+      await trackFile(otherDoc, "vehicle-documents", otherDocPath, dealershipId, userId, {
+        sourceEntity: "deal",
+        sourceEntityId: data.vehicleId,
+      });
     }
 
     const { data: dealRow, error: dealError } = await supabase

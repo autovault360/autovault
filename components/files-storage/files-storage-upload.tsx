@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { CloudUpload } from "lucide-react";
+import { CloudUpload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { validateFile } from "@/lib/vehicles/actions/utils";
+import { uploadFileToStorageAction } from "@/lib/files-storage/server/actions";
 import type { RecentUpload } from "@/lib/files-storage/types";
 
 const MAX_SIZE_MB = 250;
@@ -39,9 +40,12 @@ export default function FilesStorageUpload({ onUpload }: Props) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [uploading, setUploading] = React.useState(false);
 
-  const processFiles = (fileList: FileList | null) => {
-    if (!fileList?.length) return;
+  const processFiles = async (fileList: FileList | null) => {
+    if (!fileList?.length || uploading) return;
+
+    setUploading(true);
 
     for (const file of Array.from(fileList)) {
       const err = validateFile(file, {
@@ -50,23 +54,40 @@ export default function FilesStorageUpload({ onUpload }: Props) {
       });
       if (err) {
         setError(err);
-        toast.error(err);
-        return;
+        toast.error(`${file.name}: ${err}`);
+        continue;
       }
 
-      const upload: RecentUpload = {
-        id: `upload-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-        fileName: file.name,
-        category: "Other Files",
-        uploadedAt: new Date().toISOString(),
-        sizeBytes: file.size,
-        fileType: inferFileType(file.name),
-      };
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("bucket", "vehicle-documents");
 
-      setError(null);
-      onUpload(upload);
-      toast.success(`${file.name} uploaded successfully`);
+        const result = await uploadFileToStorageAction(formData);
+
+        if (!result.success) {
+          toast.error(`${file.name}: ${result.error}`);
+          continue;
+        }
+
+        const upload: RecentUpload = {
+          id: result.fileId || `upload-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          fileName: file.name,
+          category: "Other Files",
+          uploadedAt: new Date().toISOString(),
+          sizeBytes: file.size,
+          fileType: inferFileType(file.name),
+        };
+
+        setError(null);
+        onUpload(upload);
+        toast.success(`${file.name} uploaded successfully`);
+      } catch {
+        toast.error(`Failed to upload ${file.name}`);
+      }
     }
+
+    setUploading(false);
   };
 
   return (
@@ -92,18 +113,30 @@ export default function FilesStorageUpload({ onUpload }: Props) {
             : "border-slate-600 bg-[#0a101c]/20",
         )}
       >
-        <CloudUpload className="mb-3 h-10 w-10 text-blue-400" />
-        <p className="mb-3 text-center text-[12.5px] text-slate-400">
-          Drag & drop files here to upload or
-        </p>
-        <Button
-          theme="dark"
-          type="button"
-          size="lg"
-          onClick={() => inputRef.current?.click()}
-        >
-          Select Files
-        </Button>
+        {uploading ? (
+          <>
+            <Loader2 className="mb-3 h-10 w-10 animate-spin text-blue-400" />
+            <p className="mb-3 text-center text-[12.5px] text-slate-400">
+              Uploading files...
+            </p>
+          </>
+        ) : (
+          <>
+            <CloudUpload className="mb-3 h-10 w-10 text-blue-400" />
+            <p className="mb-3 text-center text-[12.5px] text-slate-400">
+              Drag & drop files here to upload or
+            </p>
+            <Button
+              theme="dark"
+              type="button"
+              size="lg"
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+            >
+              Select Files
+            </Button>
+          </>
+        )}
         <input
           ref={inputRef}
           type="file"
