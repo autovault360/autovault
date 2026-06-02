@@ -50,24 +50,24 @@ export default function MonthlyCalendarGrid({
               type="button"
               onClick={() => onDaySelect(cell.date!)}
               className={cn(
-                "min-h-[88px] rounded-[4px] border border-slate-800/60 bg-slate-900/20 p-1.5 text-left transition-colors hover:border-slate-600",
+                "flex min-h-[88px] flex-col items-start justify-start rounded-[4px] border border-slate-800/60 bg-slate-900/20 p-1.5 text-left transition-colors hover:border-slate-600",
                 isSelected && "ring-2 ring-blue-500 ring-offset-0",
               )}
             >
-              <div className="mb-1 text-[11px] font-semibold text-slate-300">
+              <div className="shrink-0 text-[11px] font-semibold leading-none text-slate-300">
                 {cell.dayNumber}
               </div>
               {pillLabel && (
                 <div
                   className={cn(
-                    "mb-1 inline-block rounded px-1 py-0.5 text-[9px] font-medium",
+                    "mt-1 inline-block rounded px-1 py-0.5 text-[9px] font-medium",
                     UNIT_PILL_STYLES[tier],
                   )}
                 >
                   {pillLabel}
                 </div>
               )}
-              <div className="space-y-0.5">
+              <div className="mt-0.5 w-full space-y-0.5">
                 {cell.activity?.salesReps.map((rep) => {
                   const repMeta = SALES_REPS.find((r) => r.id === rep.repId);
                   return (

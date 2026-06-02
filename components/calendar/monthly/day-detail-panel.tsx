@@ -45,7 +45,7 @@ export default function DayDetailPanel({
 
   if (!date) {
     return (
-      <CalendarCardShell className="flex items-center justify-center text-[12px] text-slate-500">
+      <CalendarCardShell className="min-h-[120px] text-[11px] text-slate-500">
         Select a day to view details
       </CalendarCardShell>
     );
@@ -60,7 +60,7 @@ export default function DayDetailPanel({
   };
 
   return (
-    <CalendarCardShell className="overflow-y-auto">
+    <CalendarCardShell className="overflow-y-auto text-[11px]">
       <div className="mb-3 flex items-start justify-between gap-2">
         <h2 className="text-[13px] font-semibold text-white">
           {formatFullDate(date)}
