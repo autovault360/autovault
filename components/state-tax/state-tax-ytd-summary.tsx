@@ -4,20 +4,20 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import BreakdownDonutChart from "@/components/shared/breakdown-donut-chart";
 import { cn } from "@/lib/utils";
-import type { SalesTaxReport } from "@/lib/sales-tax/types";
+import type { StateTaxReport } from "@/lib/state-tax/types";
 
 type Props = {
-  summary: SalesTaxReport["ytdSummary"];
+  summary: StateTaxReport["ytdSummary"];
 };
 
-export default function SalesTaxYtdSummary({ summary }: Props) {
+export default function StateTaxYtdSummary({ summary }: Props) {
   const { chart } = summary;
 
   return (
     <Card className="flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-[13px] font-bold text-white">
-          Sales Tax Summary (Year to Date)
+          State Tax Summary (Year to Date)
         </h2>
         <Link
           href="#"

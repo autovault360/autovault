@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { SalesTaxTransaction } from "@/lib/sales-tax/types";
+import type { StateTaxTransaction } from "@/lib/state-tax/types";
 
 type Props = {
-  transactions: SalesTaxTransaction[];
+  transactions: StateTaxTransaction[];
 };
 
 function CollectedBadge() {
@@ -17,12 +17,12 @@ function CollectedBadge() {
   );
 }
 
-export default function SalesTaxTransactionsTable({ transactions }: Props) {
+export default function StateTaxTransactionsTable({ transactions }: Props) {
   return (
     <Card className="flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-[13px] font-bold text-white">
-          Recent Sales Tax Transactions
+          Recent State Tax Transactions
         </h2>
         <Link
           href="#"

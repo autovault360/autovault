@@ -97,7 +97,7 @@ const navGroups = [
       { href: "#", label: "Reports", icon: BarChart3, color: "text-red-500" },
       { href: "/dashboard/reminders", label: "Reminders", icon: Bell, color: "text-amber-500" },
       {
-        href: "#",
+        href: "/dashboard/calendar",
         label: "Calendar",
         icon: Calendar,
         color: "text-emerald-500",
@@ -109,7 +109,7 @@ const navGroups = [
       //   color: "text-blue-500",
       // },
       {
-        href: "/dashboard/sales-tax",
+        href: "/dashboard/state-tax",
         label: "State Tax",
         icon: Receipt,
         color: "text-purple-500",

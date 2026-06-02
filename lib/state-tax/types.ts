@@ -1,17 +1,17 @@
-export type SalesTaxTab =
+export type StateTaxTab =
   | "overview"
   | "reports"
   | "transactions"
   | "configuration"
   | "reminders";
 
-export type SalesTaxKpiColor = "green" | "blue" | "purple" | "orange";
+export type StateTaxKpiColor = "green" | "blue" | "purple" | "orange";
 
-export type SalesTaxKpi = {
+export type StateTaxKpi = {
   id: string;
   label: string;
   valueFormatted: string;
-  iconColor: SalesTaxKpiColor;
+  iconColor: StateTaxKpiColor;
   trend?: {
     value: string;
     sentiment: "positive" | "negative" | "neutral";
@@ -21,7 +21,7 @@ export type SalesTaxKpi = {
   subtext?: string;
 };
 
-export type SalesTaxConfig = {
+export type StateTaxConfig = {
   state: string;
   stateSalesTaxPercent: string;
   additionalLocalTaxPercent: string;
@@ -30,14 +30,14 @@ export type SalesTaxConfig = {
   additionalLocalTaxApplies: string;
 };
 
-export type SalesTaxYtdRow = {
+export type StateTaxYtdRow = {
   id: string;
   label: string;
   amountFormatted: string;
   highlight?: "danger" | "default";
 };
 
-export type SalesTaxBreakdownSegment = {
+export type StateTaxBreakdownSegment = {
   id: string;
   label: string;
   color: string;
@@ -45,7 +45,7 @@ export type SalesTaxBreakdownSegment = {
   amountFormatted: string;
 };
 
-export type SalesTaxTransaction = {
+export type StateTaxTransaction = {
   id: string;
   date: string;
   invoiceNumber: string;
@@ -57,9 +57,9 @@ export type SalesTaxTransaction = {
   status: "collected";
 };
 
-export type SalesTaxReport = {
-  tabs: { id: SalesTaxTab; label: string }[];
-  config: SalesTaxConfig;
+export type StateTaxReport = {
+  tabs: { id: StateTaxTab; label: string }[];
+  config: StateTaxConfig;
   configOptions: {
     states: string[];
     localTaxOptions: { value: string; label: string }[];
@@ -67,14 +67,14 @@ export type SalesTaxReport = {
     filingDueDateOptions: string[];
     yesNoOptions: string[];
   };
-  kpis: SalesTaxKpi[];
+  kpis: StateTaxKpi[];
   ytdSummary: {
-    rows: SalesTaxYtdRow[];
+    rows: StateTaxYtdRow[];
     chart: {
       centerPercent: number;
       centerLabel: string;
-      breakdown: SalesTaxBreakdownSegment[];
+      breakdown: StateTaxBreakdownSegment[];
     };
   };
-  transactions: SalesTaxTransaction[];
+  transactions: StateTaxTransaction[];
 };

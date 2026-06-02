@@ -2,28 +2,28 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { SalesTaxKpi } from "@/lib/sales-tax/types";
+import type { StateTaxKpi } from "@/lib/state-tax/types";
 import ProfitLossTrendBadge from "@/components/profit-loss/profit-loss-trend-badge";
 import {
-  salesTaxKpiIconBg,
-  salesTaxKpiIconMap,
-} from "./sales-tax-kpi-icons";
+  stateTaxKpiIconBg,
+  stateTaxKpiIconMap,
+} from "./state-tax-kpi-icons";
 
 type Props = {
-  kpis: SalesTaxKpi[];
+  kpis: StateTaxKpi[];
 };
 
-export default function SalesTaxKpiCards({ kpis }: Props) {
+export default function StateTaxKpiCards({ kpis }: Props) {
   return (
     <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
       {kpis.map((kpi) => {
-        const Icon = salesTaxKpiIconMap[kpi.id] ?? salesTaxKpiIconMap.collected;
+        const Icon = stateTaxKpiIconMap[kpi.id] ?? stateTaxKpiIconMap.collected;
         const iconBg =
-          salesTaxKpiIconBg[kpi.id] ?? salesTaxKpiIconBg.collected;
+          stateTaxKpiIconBg[kpi.id] ?? stateTaxKpiIconBg.collected;
         return (
           <Card
             key={kpi.id}
-            className="flex h-full flex-col gap-1 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none"
+            className="flex h-full flex-col gap-2 rounded-sm border border-slate-700 bg-transparent p-5 text-slate-200 shadow-none"
           >
             <div className="flex items-start gap-2.5">
               <div

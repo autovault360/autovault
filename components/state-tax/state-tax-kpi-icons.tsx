@@ -33,7 +33,7 @@ export function MoneyBagIcon({ className }: KpiIconProps) {
   );
 }
 
-export const salesTaxKpiIconMap: Record<string, ComponentType<KpiIconProps>> = {
+export const stateTaxKpiIconMap: Record<string, ComponentType<KpiIconProps>> = {
   collected: MoneyBagIcon,
   "taxable-sales": ClipboardList,
   "tax-due": FileText,
@@ -41,7 +41,7 @@ export const salesTaxKpiIconMap: Record<string, ComponentType<KpiIconProps>> = {
 };
 
 /** Solid circle backgrounds — white icon glyphs per mockup */
-export const salesTaxKpiIconBg: Record<string, string> = {
+export const stateTaxKpiIconBg: Record<string, string> = {
   collected: "bg-emerald-500 text-white",
   "taxable-sales": "bg-blue-600 text-white",
   "tax-due": "bg-purple-600 text-white",

@@ -2,26 +2,26 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
-import { SALES_TAX_MOCK_REPORT } from "@/lib/sales-tax/mock-data";
-import type { SalesTaxTab } from "@/lib/sales-tax/types";
-import SalesTaxConfigForm from "./sales-tax-config-form";
-import SalesTaxHeader from "./sales-tax-header";
-import SalesTaxKpiCards from "./sales-tax-kpi-cards";
-import SalesTaxTabs from "./sales-tax-tabs";
-import SalesTaxTransactionsTable from "./sales-tax-transactions-table";
-import SalesTaxYtdSummary from "./sales-tax-ytd-summary";
+import { STATE_TAX_MOCK_REPORT } from "@/lib/state-tax/mock-data";
+import type { StateTaxTab } from "@/lib/state-tax/types";
+import StateTaxConfigForm from "./state-tax-config-form";
+import StateTaxHeader from "./state-tax-header";
+import StateTaxKpiCards from "./state-tax-kpi-cards";
+import StateTaxTabs from "./state-tax-tabs";
+import StateTaxTransactionsTable from "./state-tax-transactions-table";
+import StateTaxYtdSummary from "./state-tax-ytd-summary";
 
-export default function SalesTaxPageContent() {
-  const [activeTab, setActiveTab] = useState<SalesTaxTab>("overview");
-  const report = SALES_TAX_MOCK_REPORT;
+export default function StateTaxPageContent() {
+  const [activeTab, setActiveTab] = useState<StateTaxTab>("overview");
+  const report = STATE_TAX_MOCK_REPORT;
 
   return (
     <div className="relative">
       <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles…" />
 
-      <SalesTaxHeader />
+      <StateTaxHeader />
 
-      <SalesTaxTabs
+      <StateTaxTabs
         tabs={report.tabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -29,16 +29,16 @@ export default function SalesTaxPageContent() {
 
       {activeTab === "overview" && (
         <>
-          <SalesTaxConfigForm
+          <StateTaxConfigForm
             config={report.config}
             options={report.configOptions}
           />
 
-          <SalesTaxKpiCards kpis={report.kpis} />
+          <StateTaxKpiCards kpis={report.kpis} />
 
           <section className="grid gap-3.5 xl:grid-cols-2">
-            <SalesTaxYtdSummary summary={report.ytdSummary} />
-            <SalesTaxTransactionsTable transactions={report.transactions} />
+            <StateTaxYtdSummary summary={report.ytdSummary} />
+            <StateTaxTransactionsTable transactions={report.transactions} />
           </section>
         </>
       )}

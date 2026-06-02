@@ -1,17 +1,17 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { SalesTaxTab } from "@/lib/sales-tax/types";
+import type { StateTaxTab } from "@/lib/state-tax/types";
 
-type TabItem = { id: SalesTaxTab; label: string };
+type TabItem = { id: StateTaxTab; label: string };
 
 type Props = {
   tabs: TabItem[];
-  activeTab: SalesTaxTab;
-  onTabChange: (tab: SalesTaxTab) => void;
+  activeTab: StateTaxTab;
+  onTabChange: (tab: StateTaxTab) => void;
 };
 
-export default function SalesTaxTabs({ tabs, activeTab, onTabChange }: Props) {
+export default function StateTaxTabs({ tabs, activeTab, onTabChange }: Props) {
   return (
     <div className="mb-4 flex gap-0 overflow-x-auto border-b border-slate-800">
       {tabs.map((tab) => {
