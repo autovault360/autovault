@@ -15,11 +15,11 @@ import {
 } from "@/components/ui/select";
 import { FormGrid } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
-import type { SalesTaxConfig, SalesTaxReport } from "@/lib/sales-tax/types";
+import type { StateTaxConfig, StateTaxReport } from "@/lib/state-tax/types";
 
 type Props = {
-  config: SalesTaxConfig;
-  options: SalesTaxReport["configOptions"];
+  config: StateTaxConfig;
+  options: StateTaxReport["configOptions"];
 };
 
 function FormField({
@@ -42,10 +42,10 @@ function FormField({
 const selectTriggerClass =
   "h-9 w-full border-slate-600 bg-slate-800/50 text-[12.5px] text-slate-200";
 
-export default function SalesTaxConfigForm({ config, options }: Props) {
+export default function StateTaxConfigForm({ config, options }: Props) {
   const [form, setForm] = useState(config);
 
-  const update = (key: keyof SalesTaxConfig, value: string) => {
+  const update = (key: keyof StateTaxConfig, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -57,7 +57,7 @@ export default function SalesTaxConfigForm({ config, options }: Props) {
         </div>
         <div className="min-w-0 flex-1">
           <h2 className="text-[14px] font-bold text-white">
-            Input Your Sales Tax Information
+            Input Your State Tax Information
           </h2>
           <p className="mt-0.5 text-[11.5px] leading-relaxed text-slate-500">
             Enter your sales tax information, filing frequency, and due dates. This
@@ -85,7 +85,7 @@ export default function SalesTaxConfigForm({ config, options }: Props) {
         </FormField>
 
         <FormField label="State Sales Tax (%)">
-          <div className="flex h-9 overflow-hidden rounded-[4px] border border-slate-600 bg-slate-800/50">
+          <div className="flex h-8 overflow-hidden rounded-[4px] border border-slate-600 bg-slate-800/50">
             <input
               type="text"
               value={form.stateSalesTaxPercent}

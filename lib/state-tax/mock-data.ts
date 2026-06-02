@@ -1,12 +1,12 @@
 import { formatCurrency } from "@/lib/expenses/types";
-import type { SalesTaxReport } from "./types";
+import type { StateTaxReport } from "./types";
 
 const fmt = formatCurrency;
 
-export const SALES_TAX_MOCK_REPORT: SalesTaxReport = {
+export const STATE_TAX_MOCK_REPORT: StateTaxReport = {
   tabs: [
     { id: "overview", label: "Overview" },
-    { id: "reports", label: "Sales Tax Reports" },
+    { id: "reports", label: "State Tax Reports" },
     { id: "transactions", label: "Transactions" },
     { id: "configuration", label: "Tax Configuration" },
     { id: "reminders", label: "Reminders" },
@@ -37,7 +37,7 @@ export const SALES_TAX_MOCK_REPORT: SalesTaxReport = {
   kpis: [
     {
       id: "collected",
-      label: "Total Sales Tax Collected",
+      label: "Total State Tax Collected",
       valueFormatted: fmt(8245.67),
       iconColor: "green",
       trend: {
@@ -61,7 +61,7 @@ export const SALES_TAX_MOCK_REPORT: SalesTaxReport = {
     },
     {
       id: "tax-due",
-      label: "Sales Tax Due (Next)",
+      label: "State Tax Due (Next)",
       valueFormatted: fmt(1374.28),
       iconColor: "purple",
       subtext: "Due: Jun 20, 2025",
@@ -78,7 +78,7 @@ export const SALES_TAX_MOCK_REPORT: SalesTaxReport = {
     rows: [
       {
         id: "collected",
-        label: "Total Sales Tax Collected",
+        label: "Total State Tax Collected",
         amountFormatted: fmt(8245.67),
       },
       {
@@ -98,7 +98,7 @@ export const SALES_TAX_MOCK_REPORT: SalesTaxReport = {
       },
       {
         id: "due",
-        label: "Sales Tax Due",
+        label: "State Tax Due",
         amountFormatted: fmt(1374.28),
         highlight: "danger",
       },
