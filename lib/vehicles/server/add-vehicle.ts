@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { authenticateUser, uploadFile, rollbackVehicle } from "./utils";
+import { authenticateUser, uploadFile, trackFile, rollbackVehicle } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -117,6 +117,11 @@ export async function addVehicle(
         storage_path: path,
         is_primary: i === 0,
         sort_order: i + 1,
+      });
+
+      await trackFile(photos[i], "vehicle-images", path, dealershipId, userId, {
+        sourceEntity: "vehicle",
+        sourceEntityId: vehicle.id,
       });
     }
 

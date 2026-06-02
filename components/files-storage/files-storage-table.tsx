@@ -70,9 +70,10 @@ function FolderActionsMenu({ folderId }: { folderId: string }) {
 
 type Props = {
   folders: StorageFolder[];
+  onFolderClick?: (bucket: string) => void;
 };
 
-export default function FilesStorageTable({ folders }: Props) {
+export default function FilesStorageTable({ folders, onFolderClick }: Props) {
   const columns: Column<StorageFolder>[] = useMemo(
     () => [
       {
@@ -81,7 +82,10 @@ export default function FilesStorageTable({ folders }: Props) {
         sortable: true,
         accessor: (row) => row.name,
         cell: (row) => (
-          <div className="flex min-w-[200px] items-center gap-3">
+          <div
+            className="flex min-w-[200px] cursor-pointer items-center gap-3"
+            onClick={onFolderClick ? () => onFolderClick(row.id) : undefined}
+          >
             <div className="relative shrink-0">
               <div
                 className={cn(

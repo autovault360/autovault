@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { uploadFile, authenticateUser } from "@/lib/vehicles/server/utils";
+import { uploadFile, authenticateUser, trackFile } from "@/lib/vehicles/server/utils";
 
 export type DocumentUploadResult =
   | { success: true }
@@ -22,6 +22,11 @@ export async function uploadCustomerDocument(
     const path = `${auth.user.dealershipId}/customers/${customerId}/${Date.now()}-${safeName}`;
 
     await uploadFile("vehicle-documents", path, file);
+
+    await trackFile(file, "vehicle-documents", path, auth.user.dealershipId, auth.user.userId, {
+      sourceEntity: "customer",
+      sourceEntityId: customerId,
+    });
 
     const docLabel =
       label?.trim() ||

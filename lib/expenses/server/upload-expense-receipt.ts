@@ -4,6 +4,7 @@ import {
   authenticateUser,
   getSignedUrl,
   uploadFile,
+  trackFile,
 } from "@/lib/vehicles/server/utils";
 
 const RECEIPT_BUCKET = "expense-receipts" as const;
@@ -13,11 +14,19 @@ export async function uploadExpenseReceipt(
   expenseKind: "dealership" | "vehicle",
   expenseId: string,
   file: File,
+  userId: string,
 ): Promise<string> {
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
   const folder = expenseKind === "dealership" ? "dealership" : "vehicle";
   const path = `${dealershipId}/${folder}/${expenseId}/receipt.${ext}`;
   await uploadFile(RECEIPT_BUCKET, path, file);
+
+  const sourceEntity = expenseKind === "dealership" ? "dealership_expense" : "expense";
+  await trackFile(file, RECEIPT_BUCKET, path, dealershipId, userId, {
+    sourceEntity,
+    sourceEntityId: expenseId,
+  });
+
   return path;
 }
 

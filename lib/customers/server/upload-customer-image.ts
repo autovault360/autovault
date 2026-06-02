@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { uploadFile, authenticateUser } from "@/lib/vehicles/server/utils";
+import { uploadFile, authenticateUser, trackFile } from "@/lib/vehicles/server/utils";
 import { revalidatePath } from "next/cache";
 
 export type ImageActionResult =
@@ -18,6 +18,11 @@ export async function uploadCustomerImage(
 
     const path = `${auth.user.dealershipId}/${customerId}.jpg`;
     await uploadFile("customer-images", path, file);
+
+    await trackFile(file, "customer-images", path, auth.user.dealershipId, auth.user.userId, {
+      sourceEntity: "customer",
+      sourceEntityId: customerId,
+    });
 
     const supabase = await createClient();
     const { error } = await supabase

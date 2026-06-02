@@ -74,6 +74,21 @@ export type FilesStorageReport = {
   aiSuggestions: AiSuggestion[];
 };
 
+export type FolderFileDetail = {
+  id: string;
+  fileName: string;
+  storagePath: string;
+  fileSize: number;
+  mimeType: string;
+  fileType: RecentUploadFileType;
+  uploadedAt: string;
+  uploadedBy: string;
+  sourceEntity: string | null;
+  sourceEntityId: string | null;
+  sourceEntityName: string | null;
+  signedUrl: string | null;
+};
+
 export const DEFAULT_FILES_STORAGE_FILTERS: FilesStorageFilters = {
   asOfDate: "2025-05-20",
   folderSearch: "",

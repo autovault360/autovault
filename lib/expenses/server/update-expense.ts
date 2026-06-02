@@ -57,6 +57,7 @@ export async function updateExpense(
           "dealership",
           expenseId,
           receipt,
+          userId,
         );
         const { error: receiptError } = await supabase
           .from("dealership_expenses")
@@ -113,6 +114,7 @@ export async function updateExpense(
           "vehicle",
           expenseId,
           receipt,
+          userId,
         );
         const { error: receiptError } = await supabase
           .from("vehicle_expenses")
