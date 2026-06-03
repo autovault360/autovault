@@ -81,6 +81,7 @@ export type CpaKpi = {
   deltaPositive: boolean;
   icon: string;
   color: "green" | "purple" | "blue" | "red" | "teal" | "orange";
+  chartData: { name: string; value: number }[];
 };
 
 export type CpaSalesActivity = {
