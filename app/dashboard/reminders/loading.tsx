@@ -13,7 +13,7 @@ export default function RemindersLoading() {
         {Array.from({ length: 5 }).map((_, i) => (
           <Card
             key={i}
-            className="h-24 rounded-sm border border-slate-700 bg-transparent p-3 shadow-none"
+            className="h-24 rounded-sm border border-slate-800/50 bg-transparent p-3 shadow-none"
           >
             <SkeletonBlock className="h-full w-full" />
           </Card>
@@ -23,7 +23,7 @@ export default function RemindersLoading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <Card
             key={i}
-            className="h-64 rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none"
+            className="h-64 rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none"
           >
             <SkeletonBlock className="h-full w-full" />
           </Card>

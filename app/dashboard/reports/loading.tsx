@@ -15,7 +15,7 @@ export default function ReportsLoading() {
         {Array.from({ length: 4 }).map((_, i) => (
           <Card
             key={i}
-            className="h-28 w-[220px] shrink-0 rounded-sm border border-slate-700 bg-transparent p-3 shadow-none"
+            className="h-28 w-[220px] shrink-0 rounded-sm border border-slate-800/50 bg-transparent p-3 shadow-none"
           >
             <SkeletonBlock className="h-full w-full" />
           </Card>
@@ -25,7 +25,7 @@ export default function ReportsLoading() {
         {Array.from({ length: 6 }).map((_, i) => (
           <Card
             key={i}
-            className="h-56 rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none"
+            className="h-56 rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none"
           >
             <SkeletonBlock className="h-full w-full" />
           </Card>
