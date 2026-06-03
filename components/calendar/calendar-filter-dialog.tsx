@@ -16,13 +16,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { LOCATIONS, SALES_REPS } from "@/lib/calendar/constants";
-import type { CalendarFilters } from "@/lib/calendar/types";
+import type { CalendarFilterOptions, CalendarFilters } from "@/lib/calendar/types";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   filters: CalendarFilters;
+  filterOptions: CalendarFilterOptions;
   onApply: (filters: CalendarFilters) => void;
 };
 
@@ -30,6 +30,7 @@ export default function CalendarFilterDialog({
   open,
   onOpenChange,
   filters,
+  filterOptions,
   onApply,
 }: Props) {
   const [local, setLocal] = React.useState(filters);
@@ -55,10 +56,9 @@ export default function CalendarFilterDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="border-slate-800 bg-[#0e1626]">
-                <SelectItem value="all">All Sales Reps</SelectItem>
-                {SALES_REPS.map((rep) => (
-                  <SelectItem key={rep.id} value={rep.id}>
-                    {rep.name}
+                {filterOptions.salesReps.map((rep) => (
+                  <SelectItem key={rep.value} value={rep.value}>
+                    {rep.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -74,8 +74,8 @@ export default function CalendarFilterDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="border-slate-800 bg-[#0e1626]">
-                {LOCATIONS.map((loc) => (
-                  <SelectItem key={loc.id} value={loc.id}>
+                {filterOptions.locations.map((loc) => (
+                  <SelectItem key={loc.value} value={loc.value}>
                     {loc.label}
                   </SelectItem>
                 ))}

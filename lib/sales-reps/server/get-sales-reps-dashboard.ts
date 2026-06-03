@@ -18,12 +18,40 @@ import {
 } from "./date-ranges";
 import {
   buildRepListItem,
+  buildRepListItemFromJackets,
   computeCommissionForDeals,
+  computeCommissionForJackets,
+  resolveJacketRepId,
   resolveRepId,
   type RawCustomer,
   type RawDeal,
+  type RawJacket,
   type RawUser,
 } from "./metrics";
+
+type JacketRow = {
+  date_sold: string;
+  sold_price: number;
+  profit_gross: number;
+  profit_net: number;
+  commission_amount: number;
+  total_invested: number;
+  sales_rep_id: string | null;
+  created_by: string | null;
+};
+
+function mapJacketRow(row: JacketRow): RawJacket {
+  return {
+    date_sold: (row.date_sold as string).slice(0, 10),
+    sales_rep_id: row.sales_rep_id,
+    created_by: row.created_by,
+    sold_price: Number(row.sold_price ?? 0),
+    profit_gross: Number(row.profit_gross ?? 0),
+    profit_net: Number(row.profit_net ?? 0),
+    commission_amount: Number(row.commission_amount ?? 0),
+    total_invested: Number(row.total_invested ?? 0),
+  };
+}
 
 type DealRow = {
   sale_date: string;
@@ -227,12 +255,93 @@ function computeStatsFromDeals(
   };
 }
 
+function computeStatsFromJackets(
+  jackets: RawJacket[],
+  users: RawUser[],
+  now: Date,
+): SalesRepStats {
+  const repIds = new Set(users.map((u) => u.id));
+  const repJackets = jackets.filter((j) => {
+    const repId = resolveJacketRepId(j);
+    return repId != null && repIds.has(repId);
+  });
+
+  const mtdStart = monthStart(now);
+  const mtdEnd = monthEnd(now);
+  const prevMtdStart = monthStart(new Date(now.getFullYear(), now.getMonth() - 1, 1));
+  const prevMtdEnd = monthEnd(prevMtdStart);
+
+  const mtdJackets = repJackets.filter((j) => inRange(j.date_sold, mtdStart, mtdEnd));
+  const prevMtdJackets = repJackets.filter((j) =>
+    inRange(j.date_sold, prevMtdStart, prevMtdEnd),
+  );
+
+  const ytdStart = yearStart(now);
+  const ytdJackets = repJackets.filter((j) => inRange(j.date_sold, ytdStart, now));
+  const prevYtdStart = yearStart(new Date(now.getFullYear() - 1, 0, 1));
+  const prevYtdEnd = new Date(
+    now.getFullYear() - 1,
+    now.getMonth(),
+    now.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
+  const prevYtdJackets = repJackets.filter((j) =>
+    inRange(j.date_sold, prevYtdStart, prevYtdEnd),
+  );
+
+  const commissionsPaidMtd = computeCommissionForJackets(mtdJackets);
+  const commissionsPaidPrevMtd = computeCommissionForJackets(prevMtdJackets);
+  const totalCommissionsYtd = computeCommissionForJackets(ytdJackets);
+  const totalCommissionsPrevYtd = computeCommissionForJackets(prevYtdJackets);
+
+  const mtdDelta = formatMetricDelta(
+    commissionsPaidMtd,
+    commissionsPaidPrevMtd,
+    "last month",
+  );
+  const ytdDelta = formatMetricDelta(
+    totalCommissionsYtd,
+    totalCommissionsPrevYtd,
+    "last year",
+  );
+
+  const trendKeys = getTrendMonthKeys(5, now);
+  const commissionTrend = trendKeys.map((key) =>
+    computeCommissionForJackets(
+      repJackets.filter((j) => monthKey(j.date_sold) === key),
+    ),
+  );
+
+  return {
+    totalReps: users.length,
+    activeReps: users.filter((u) => u.is_active).length,
+    commissionsPaidMtd,
+    commissionsPaidMtdDelta: mtdDelta.text,
+    commissionsPaidMtdDeltaColor: mtdDelta.color,
+    commissionsPaidMtdSparkPoints: buildSparkPoints(commissionTrend),
+    totalCommissionsYtd,
+    totalCommissionsYtdDelta: ytdDelta.text,
+    totalCommissionsYtdDeltaColor: ytdDelta.color,
+    totalCommissionsYtdSparkPoints: buildSparkPoints(commissionTrend),
+  };
+}
+
 async function fetchDashboardRaw(dealershipId: string) {
   const supabase = await createClient();
 
   const usersResult = await fetchSalesRepUsers(dealershipId);
 
-  const [dealsResult, customersResult] = await Promise.all([
+  const [jacketsResult, dealsResult, customersResult] = await Promise.all([
+    supabase
+      .from("deal_jackets")
+      .select(
+        "date_sold, sold_price, profit_gross, profit_net, commission_amount, total_invested, sales_rep_id, created_by",
+      )
+      .eq("dealership_id", dealershipId)
+      .is("deleted_at", null),
     supabase
       .from("deals")
       .select(
@@ -254,6 +363,8 @@ async function fetchDashboardRaw(dealershipId: string) {
   return {
     users: usersResult.users,
     usersError: usersResult.error,
+    jackets: ((jacketsResult.data ?? []) as JacketRow[]).map(mapJacketRow),
+    jacketsError: jacketsResult.error?.message,
     deals: ((dealsResult.data ?? []) as unknown as DealRow[]).map(mapDealRow),
     dealsError: dealsResult.error?.message,
     customers: (customersResult.data ?? []) as RawCustomer[],
@@ -303,6 +414,10 @@ export async function getSalesRepsDashboard(
     };
   }
 
+  if (raw.jacketsError) {
+    console.warn("getSalesRepsDashboard jackets:", raw.jacketsError);
+  }
+
   if (raw.dealsError) {
     console.warn("getSalesRepsDashboard deals:", raw.dealsError);
   }
@@ -311,17 +426,8 @@ export async function getSalesRepsDashboard(
     console.warn("getSalesRepsDashboard customers:", raw.customersError);
   }
 
+  const useJackets = raw.jackets.length > 0 && !raw.jacketsError;
   const supabase = await createClient();
-  const dealsByRep = new Map<string, RawDeal[]>();
-  for (const user of raw.users) {
-    dealsByRep.set(user.id, []);
-  }
-
-  for (const deal of raw.deals) {
-    const repId = resolveRepId(deal);
-    if (!repId || !dealsByRep.has(repId)) continue;
-    dealsByRep.get(repId)!.push(deal);
-  }
 
   const salesReps = await Promise.all(
     raw.users.map(async (user) => {
@@ -330,20 +436,37 @@ export async function getSalesRepsDashboard(
         imageUrl = await signUserImage(supabase, user.image_url);
       }
 
+      if (useJackets) {
+        const repJackets = raw.jackets.filter(
+          (j) => resolveJacketRepId(j) === user.id,
+        );
+        const item = buildRepListItemFromJackets(
+          user,
+          repJackets,
+          raw.customers,
+          periodRange,
+          comparisonRange,
+          now,
+        );
+        return { ...item, imageUrl };
+      }
+
+      const repDeals = raw.deals.filter((d) => resolveRepId(d) === user.id);
       const item = buildRepListItem(
         user,
-        dealsByRep.get(user.id) ?? [],
+        repDeals,
         raw.customers,
         periodRange,
         comparisonRange,
         now,
       );
-
       return { ...item, imageUrl };
     }),
   );
 
-  const stats = computeStatsFromDeals(raw.deals, raw.users, now);
+  const stats = useJackets
+    ? computeStatsFromJackets(raw.jackets, raw.users, now)
+    : computeStatsFromDeals(raw.deals, raw.users, now);
 
   return { salesReps, stats };
 }

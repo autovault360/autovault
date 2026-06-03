@@ -22,6 +22,18 @@ export type RawDeal = {
   total_invested: number;
 };
 
+/** Deal jacket row mapped for sales rep metrics (canonical sales source). */
+export type RawJacket = {
+  date_sold: string;
+  sales_rep_id: string | null;
+  created_by: string | null;
+  sold_price: number;
+  profit_gross: number;
+  profit_net: number;
+  commission_amount: number;
+  total_invested: number;
+};
+
 export type RawCustomer = {
   sales_rep_id: string | null;
   status: string;
@@ -46,6 +58,35 @@ export function getCommissionRate(user: RawUser): number {
 
 export function resolveRepId(deal: RawDeal): string | null {
   return deal.sales_rep_id ?? deal.created_by;
+}
+
+export function resolveJacketRepId(jacket: RawJacket): string | null {
+  return jacket.sales_rep_id ?? jacket.created_by;
+}
+
+export function sumJacketMetrics(
+  jackets: RawJacket[],
+): Omit<PeriodMetrics, "conversionRate"> {
+  let grossProfit = 0;
+  let netProfit = 0;
+  let totalSales = 0;
+  let commission = 0;
+
+  for (const j of jackets) {
+    grossProfit += Number(j.profit_gross ?? 0);
+    netProfit += Number(j.profit_net ?? 0);
+    totalSales += Number(j.sold_price ?? 0);
+    commission += Number(j.commission_amount ?? 0);
+  }
+
+  const units = jackets.length;
+  const avgGross = units > 0 ? grossProfit / units : 0;
+
+  return { units, grossProfit, netProfit, totalSales, avgGross, commission };
+}
+
+export function computeCommissionForJackets(jackets: RawJacket[]): number {
+  return jackets.reduce((sum, j) => sum + Number(j.commission_amount ?? 0), 0);
 }
 
 export function sumDealMetrics(
@@ -96,14 +137,21 @@ export function computeConversionRate(
   periodDeals: RawDeal[],
   customers: RawCustomer[],
 ): number {
+  return computeConversionRateFromUnits(repId, periodDeals.length, customers);
+}
+
+export function computeConversionRateFromUnits(
+  repId: string,
+  closedUnits: number,
+  customers: RawCustomer[],
+): number {
   const assigned = customers.filter((c) => c.sales_rep_id === repId).length;
-  const closed = periodDeals.length;
 
   if (assigned > 0) {
-    return Math.min(100, (closed / assigned) * 100);
+    return Math.min(100, (closedUnits / assigned) * 100);
   }
 
-  return closed > 0 ? Math.min(100, closed * 10) : 0;
+  return closedUnits > 0 ? Math.min(100, closedUnits * 10) : 0;
 }
 
 export type PeriodMetrics = {
@@ -151,6 +199,134 @@ export function deriveStatus(progress: number): SalesRepPerformanceStatus {
   if (progress >= 75) return "on_track";
   if (progress >= 50) return "needs_attention";
   return "below_target";
+}
+
+export function buildRepListItemFromJackets(
+  user: RawUser,
+  allRepJackets: RawJacket[],
+  customers: RawCustomer[],
+  period: DateRange,
+  comparison: DateRange,
+  now: Date,
+): SalesRepListItem {
+  const periodJackets = allRepJackets.filter((j) =>
+    inRange(j.date_sold, period.start, period.end),
+  );
+  const comparisonJackets = allRepJackets.filter((j) =>
+    inRange(j.date_sold, comparison.start, comparison.end),
+  );
+
+  const current = sumJacketMetrics(periodJackets);
+  const previous = sumJacketMetrics(comparisonJackets);
+
+  const conversionRate = computeConversionRateFromUnits(
+    user.id,
+    periodJackets.length,
+    customers,
+  );
+  const prevConversion = computeConversionRateFromUnits(
+    user.id,
+    comparisonJackets.length,
+    customers,
+  );
+
+  const goalAmount = computeGoalAmount(
+    allRepJackets.map((j) => ({
+      sale_date: j.date_sold,
+      total_price_otd: j.sold_price,
+      total_collected: j.sold_price,
+      created_by: j.created_by ?? "",
+      sales_rep_id: j.sales_rep_id,
+      total_invested: j.total_invested,
+    })),
+    current.totalSales,
+    now,
+    user.monthly_goal,
+  );
+  const goalProgress =
+    goalAmount > 0 ? Math.round((current.totalSales / goalAmount) * 100) : 0;
+
+  const trendKeys = getTrendMonthKeys(5, now);
+  const unitsTrend = trendKeys.map((key) =>
+    allRepJackets.filter((j) => monthKey(j.date_sold) === key).length,
+  );
+  const grossTrend = trendKeys.map((key) =>
+    sumJacketMetrics(allRepJackets.filter((j) => monthKey(j.date_sold) === key)).grossProfit,
+  );
+  const salesTrend = trendKeys.map((key) =>
+    sumJacketMetrics(allRepJackets.filter((j) => monthKey(j.date_sold) === key)).totalSales,
+  );
+  const netTrend = trendKeys.map((key) =>
+    sumJacketMetrics(allRepJackets.filter((j) => monthKey(j.date_sold) === key)).netProfit,
+  );
+  const avgTrend = trendKeys.map((key) => {
+    const metrics = sumJacketMetrics(
+      allRepJackets.filter((j) => monthKey(j.date_sold) === key),
+    );
+    return metrics.avgGross;
+  });
+  const convTrend = trendKeys.map((_, i) => {
+    const key = trendKeys[i];
+    const monthJackets = allRepJackets.filter((j) => monthKey(j.date_sold) === key);
+    return computeConversionRateFromUnits(user.id, monthJackets.length, customers);
+  });
+
+  const unitsDelta = formatMetricDelta(current.units, previous.units, comparison.label);
+  const grossDelta = formatMetricDelta(
+    current.grossProfit,
+    previous.grossProfit,
+    comparison.label,
+  );
+  const netDelta = formatMetricDelta(
+    current.netProfit,
+    previous.netProfit,
+    comparison.label,
+  );
+  const salesDelta = formatMetricDelta(
+    current.totalSales,
+    previous.totalSales,
+    comparison.label,
+  );
+  const avgDelta = formatMetricDelta(current.avgGross, previous.avgGross, comparison.label);
+  const convDelta = formatMetricDelta(conversionRate, prevConversion, comparison.label);
+
+  return {
+    id: user.id,
+    fullName: user.full_name || "Unknown",
+    email: user.email,
+    phone: user.phone ?? "",
+    imageUrl: user.image_url ?? null,
+    isActive: user.is_active,
+    commissionRate: getCommissionRate(user) * 100,
+    monthlyGoal: Number(user.monthly_goal ?? DEFAULT_MONTHLY_GOAL),
+    unitsSold: current.units,
+    unitsSoldDelta: unitsDelta.text,
+    unitsSoldDeltaColor: unitsDelta.color,
+    unitsSoldSparkPoints: buildSparkPoints(unitsTrend),
+    grossProfit: current.grossProfit,
+    grossProfitDelta: grossDelta.text,
+    grossProfitDeltaColor: grossDelta.color,
+    grossProfitSparkPoints: buildSparkPoints(grossTrend),
+    netProfit: current.netProfit,
+    netProfitDelta: netDelta.text,
+    netProfitDeltaColor: netDelta.color,
+    netProfitSparkPoints: buildSparkPoints(netTrend),
+    totalSales: current.totalSales,
+    totalSalesDelta: salesDelta.text,
+    totalSalesDeltaColor: salesDelta.color,
+    totalSalesSparkPoints: buildSparkPoints(salesTrend),
+    avgGrossPerUnit: current.avgGross,
+    avgGrossDelta: avgDelta.text,
+    avgGrossDeltaColor: avgDelta.color,
+    avgGrossSparkPoints: buildSparkPoints(avgTrend),
+    conversionRate,
+    conversionDelta: convDelta.text,
+    conversionDeltaColor: convDelta.color,
+    conversionSparkPoints: buildSparkPoints(convTrend),
+    goalAmount,
+    goalProgress,
+    status: deriveStatus(goalProgress),
+  };
 }
 
 export function buildRepListItem(

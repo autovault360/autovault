@@ -134,7 +134,7 @@ export function KPICard({
   className?: string;
 }) {
   const Icon = iconMap[data.icon];
-  const sparkId = data.label.replace(/\s+/g, "-").toLowerCase();
+  const sparkId = data.label.toLowerCase().replace(/[^a-z0-9-]/g, "");
 
   return (
     <Card className={cn("flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none", className)}>

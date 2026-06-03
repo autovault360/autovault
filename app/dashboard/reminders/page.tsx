@@ -1,5 +1,8 @@
-import { redirect } from "next/navigation";
+import RemindersPageContent from "@/components/reminders/reminders-page-content";
+import { getRemindersReport } from "@/lib/reminders/server/get-reminders-report";
 
-export default function RemindersPage() {
-  redirect("/dashboard/reports");
+export default async function RemindersPage() {
+  const initialReport = await getRemindersReport();
+
+  return <RemindersPageContent initialReport={initialReport} />;
 }

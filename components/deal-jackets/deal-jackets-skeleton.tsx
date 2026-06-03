@@ -32,7 +32,7 @@ function AdminHeaderSkeleton() {
 
 export function DealJacketsTableSkeleton() {
   return (
-    <Card className="overflow-hidden rounded-sm border border-slate-700 bg-transparent shadow-none">
+    <Card className="overflow-hidden rounded-sm border border-slate-800/50 bg-transparent shadow-none">
       <div className="space-y-3.5 p-3.5">
         <div className="flex flex-wrap gap-2 border-b border-slate-800/80 pb-3.5">
           {Array.from({ length: 5 }).map((_, i) => (
