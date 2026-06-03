@@ -88,7 +88,7 @@ export default function CpaDashboardContent() {
   const { dashboard, loading, month, year } = useCpaPortal();
   const monthLabel = `${["January","February","March","April","May","June","July","August","September","October","November","December"][month - 1]?.toUpperCase() ?? "MAY"} ${year}`;
 
-  if (loading && !dashboard) {
+  if (!dashboard && loading) {
     return <CpaDashboardSkeleton />;
   }
 
@@ -101,7 +101,18 @@ export default function CpaDashboardContent() {
   }
 
   return (
-    <div>
+    <div className="relative">
+      {loading && (
+        <div className="absolute inset-0 z-50 flex items-start justify-center bg-slate-950/60 pt-32 backdrop-blur-[1px]">
+          <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 shadow-2xl">
+            <svg className="h-5 w-5 animate-spin text-blue-400" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+            <span className="text-sm text-slate-300">Updating data…</span>
+          </div>
+        </div>
+      )}
       <CpaHeader />
       <CpaMonthSelector />
 

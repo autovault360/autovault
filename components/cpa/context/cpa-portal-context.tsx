@@ -37,8 +37,9 @@ export function CpaPortalProvider({
   children: ReactNode;
 }) {
   const [viewMode, setViewMode] = useState<CpaViewMode>("monthly");
-  const [month, setMonth] = useState(5);
-  const [year, setYear] = useState(2025);
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState(now.getFullYear());
   const [dashboard, setDashboard] = useState<CpaDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notesOpen, setNotesOpen] = useState(false);

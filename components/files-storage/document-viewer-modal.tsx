@@ -147,12 +147,30 @@ export default function DocumentViewerModal({
 
             <button
               type="button"
-              onClick={() => {
-                if (currentFile.signedUrl) {
+              onClick={async () => {
+                if (!currentFile.signedUrl) return;
+                try {
+                  const res = await fetch("/api/download", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      url: currentFile.signedUrl,
+                      fileName: currentFile.fileName,
+                    }),
+                  });
+                  if (!res.ok) {
+                    console.error("Download failed", res.status);
+                    return;
+                  }
+                  const blob = await res.blob();
+                  const blobUrl = URL.createObjectURL(blob);
                   const a = document.createElement("a");
-                  a.href = currentFile.signedUrl;
+                  a.href = blobUrl;
                   a.download = currentFile.fileName;
                   a.click();
+                  URL.revokeObjectURL(blobUrl);
+                } catch (err) {
+                  console.error("Download error", err);
                 }
               }}
               disabled={!currentFile.signedUrl}

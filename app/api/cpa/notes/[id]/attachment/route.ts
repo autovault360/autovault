@@ -29,6 +29,7 @@ export async function POST(request: NextRequest, { params }: Params) {
     return NextResponse.json(attachment, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";
-    return NextResponse.json({ error: message }, { status: 400 });
+    console.error("cpa attachment upload error:", err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

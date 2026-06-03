@@ -45,7 +45,7 @@ export function CardHead({
       </div>
       {pill && (
         <Select defaultValue={pill}>
-          <SelectTrigger className="h-7 border-slate-800 bg-slate-900 px-2.5 py-1 text-[11px] text-slate-300">
+          <SelectTrigger className="max-w-32 h-7 border-slate-800 bg-slate-900 px-2.5 py-1 text-[11px] text-slate-300">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="border-slate-800 bg-[#0e1626] text-slate-300 text-[11px]">
