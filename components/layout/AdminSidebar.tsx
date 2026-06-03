@@ -118,8 +118,8 @@ const navGroups = [
         color: "text-purple-500",
       },
       {
-        href: "#",
-        label: "CPA Log In",
+        href: "/cpa/dashboard",
+        label: "CPA Portal",
         icon: BookOpen,
         color: "text-cyan-500",
       },
@@ -191,6 +191,7 @@ export default function AdminSidebar() {
                 pathname === item.href ||
                 (item.href !== "#" &&
                   item.href.length > 1 &&
+                  item.href !== "/dashboard" &&
                   pathname.startsWith(`${item.href}/`));
               return (
                 <Link
