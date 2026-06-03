@@ -1,5 +1,5 @@
-import RemindersPageContent from "@/components/reminders/reminders-page-content";
+import { redirect } from "next/navigation";
 
 export default function RemindersPage() {
-  return <RemindersPageContent />;
+  redirect("/dashboard/reports");
 }

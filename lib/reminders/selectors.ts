@@ -61,14 +61,14 @@ export function computeKpis(reminders: Reminder[], asOfDate: string): ReminderKp
       label: "DUE THIS WEEK",
       count: dueThisWeek,
       description: "Due in the next 7 days",
-      color: "purple",
+      color: "blue",
     },
     {
       id: "due_this_month",
       label: "DUE THIS MONTH",
       count: dueThisMonth,
       description: "Due in the next 30 days",
-      color: "blue",
+      color: "purple",
     },
     {
       id: "completed",

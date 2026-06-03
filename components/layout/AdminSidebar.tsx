@@ -14,7 +14,6 @@ import {
   Folder,
   Archive,
   BarChart3,
-  Bell,
   Calendar,
   FileText,
   Receipt,
@@ -94,8 +93,12 @@ const navGroups = [
   {
     label: "TOOLS",
     items: [
-      { href: "#", label: "Reports", icon: BarChart3, color: "text-red-500" },
-      { href: "/dashboard/reminders", label: "Reminders", icon: Bell, color: "text-amber-500" },
+      {
+        href: "/dashboard/reports",
+        label: "Reports & Reminders",
+        icon: BarChart3,
+        color: "text-red-500",
+      },
       {
         href: "/dashboard/calendar",
         label: "Calendar",
@@ -184,7 +187,11 @@ export default function AdminSidebar() {
               </div>
             )}
             {group.items.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "#" &&
+                  item.href.length > 1 &&
+                  pathname.startsWith(`${item.href}/`));
               return (
                 <Link
                   key={item.label}
