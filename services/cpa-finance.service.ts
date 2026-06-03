@@ -29,6 +29,13 @@ function formatCurrency(n: number): string {
   }).format(n);
 }
 
+function buildChartData(baseValue: number, month: number, months = MONTH_NAMES): { name: string; value: number }[] {
+  return months.map((m, i) => ({
+    name: m,
+    value: Math.round(baseValue * (0.7 + (i / (months.length - 1)) * 0.6) * (1 + (Math.random() - 0.5) * 0.08)),
+  }));
+}
+
 function buildVehiclesSold(month: number, year: number) {
   const base = [
     { stock: "STK12401", vehicle: "2023 Honda Accord Sport", vin: "1HGCV1F34PA123456", price: 24995, profit: 3200 },
@@ -82,6 +89,7 @@ export async function getCpaDashboardData(
         deltaPositive: true,
         icon: "dollar-sign",
         color: "green",
+        chartData: buildChartData(revenue / (view === "yearly" ? 12 : 1), month),
       },
       {
         label: "Gross Profit",
@@ -90,6 +98,7 @@ export async function getCpaDashboardData(
         deltaPositive: true,
         icon: "bar-chart-3",
         color: "purple",
+        chartData: buildChartData(grossProfit / (view === "yearly" ? 12 : 1), month),
       },
       {
         label: "Net Profit",
@@ -98,6 +107,7 @@ export async function getCpaDashboardData(
         deltaPositive: true,
         icon: "pie-chart",
         color: "blue",
+        chartData: buildChartData(netProfit / (view === "yearly" ? 12 : 1), month),
       },
       {
         label: "Total Expenses",
@@ -106,6 +116,7 @@ export async function getCpaDashboardData(
         deltaPositive: false,
         icon: "trending-down",
         color: "red",
+        chartData: buildChartData(expenses / (view === "yearly" ? 12 : 1), month),
       },
       {
         label: "Payroll Paid",
@@ -114,6 +125,7 @@ export async function getCpaDashboardData(
         deltaPositive: true,
         icon: "landmark",
         color: "teal",
+        chartData: buildChartData(payroll / (view === "yearly" ? 12 : 1), month),
       },
       {
         label: "Commissions Paid",
@@ -122,6 +134,7 @@ export async function getCpaDashboardData(
         deltaPositive: true,
         icon: "car",
         color: "orange",
+        chartData: buildChartData(commissions / (view === "yearly" ? 12 : 1), month),
       },
     ],
     salesActivity: [

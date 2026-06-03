@@ -2,6 +2,7 @@
 
 import CpaHeader from "../layout/cpa-header";
 import CpaMonthSelector from "./cpa-month-selector";
+import CpaDashboardSkeleton from "./cpa-dashboard-skeleton";
 import CpaSalesActivity from "./cpa-sales-activity";
 import CpaVehiclesSoldTable from "./cpa-vehicles-sold-table";
 import CpaSalesTaxSummary from "./cpa-sales-tax-summary";
@@ -18,6 +19,8 @@ import { useCpaPortal } from "../context/cpa-portal-context";
 import { PanelPreview } from "@/components/dashboard/PanelPreview";
 import { CardShell, CardHead } from "@/components/dashboard/card-shell";
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
+import { KPIChart } from "@/components/dashboard/KPIChart";
+import { cn } from "@/lib/utils";
 import { Download, FileText } from "lucide-react";
 
 function formatMoney(n: number) {
@@ -63,15 +66,19 @@ function toKpiCardData(kpi: import("@/lib/cpa/types").CpaKpi): KPICardData {
 }
 
 function ExpandedKpi({ kpi }: { kpi: import("@/lib/cpa/types").CpaKpi }) {
+  const hex = cpaColorToHex[kpi.color] || "#3b82f6";
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full flex-col gap-6">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-white">{kpi.label}</h2>
-        <p className="mt-0.5 text-sm text-slate-500">Detailed breakdown for {kpi.label}.</p>
+        <p className="mt-0.5 text-sm text-slate-500">Monthly trend for {kpi.label}.</p>
       </div>
-      <div className="flex items-center gap-4 shrink-0">
+      <div className="flex items-baseline gap-4 shrink-0">
         <div className="text-5xl font-bold text-white">{kpi.value}</div>
-        <div className={kpi.deltaPositive ? "text-emerald-400" : "text-red-400"}>{kpi.delta}</div>
+        <div className={cn("text-base", kpi.deltaPositive ? "text-emerald-400" : "text-red-400")}>{kpi.delta}</div>
+      </div>
+      <div className="h-64 w-full">
+        <KPIChart data={kpi.chartData} color={hex} label={kpi.label} gradId={`kpi-${kpi.label.replace(/[^a-z0-9]/gi, "-")}`} />
       </div>
     </div>
   );
@@ -82,11 +89,7 @@ export default function CpaDashboardContent() {
   const monthLabel = `${["January","February","March","April","May","June","July","August","September","October","November","December"][month - 1]?.toUpperCase() ?? "MAY"} ${year}`;
 
   if (loading && !dashboard) {
-    return (
-      <div className="flex min-h-[40vh] items-center justify-center text-slate-500">
-        Loading CPA dashboard...
-      </div>
-    );
+    return <CpaDashboardSkeleton />;
   }
 
   if (!dashboard) {
