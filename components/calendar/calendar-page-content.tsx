@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import AdminHeader from "@/components/layout/AdminHeader";
 import { filterCalendar } from "@/lib/calendar/filter-calendar";
-import { CALENDAR_MOCK_REPORT } from "@/lib/calendar/mock-data";
 import {
   DEFAULT_CALENDAR_FILTERS,
   type CalendarEventType,
+  type CalendarFilterOptions,
+  type CalendarReport,
   type CalendarViewMode,
 } from "@/lib/calendar/types";
 import { addMonths } from "@/lib/calendar/format-utils";
@@ -17,34 +18,50 @@ import {
   getDaySoldVehicles,
   getMonthlyPerformanceSummary,
 } from "@/lib/calendar/selectors";
+import {
+  fetchCalendarReportAction,
+  saveCalendarDayNoteAction,
+  saveCalendarEventAction,
+} from "@/lib/calendar/server/actions";
+import { downloadCalendarCsv, exportCalendarPdf } from "@/lib/calendar/export-calendar";
 import CalendarModuleHeader from "./calendar-module-header";
 import CalendarKpiRibbon from "./calendar-kpi-ribbon";
 import CalendarFilterDialog from "./calendar-filter-dialog";
 import MonthlyCalendarView from "./monthly/monthly-calendar-view";
 import YearlyCalendarView from "./yearly/yearly-calendar-view";
 
-const TODAY = "2025-05-20";
-const DEFAULT_FOCUS_MONTH = "2025-05";
-const DEFAULT_YEAR = 2025;
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
-export default function CalendarPageContent() {
+type Props = {
+  initialReport: CalendarReport;
+  filterOptions: CalendarFilterOptions;
+  initialYear: number;
+};
+
+export default function CalendarPageContent({
+  initialReport,
+  filterOptions,
+  initialYear,
+}: Props) {
+  const today = todayIso();
   const [viewMode, setViewMode] = useState<CalendarViewMode>("monthly");
-  const [year, setYear] = useState(DEFAULT_YEAR);
-  const [focusMonth, setFocusMonth] = useState(DEFAULT_FOCUS_MONTH);
-  const [selectedDay, setSelectedDay] = useState<string | null>("2025-05-01");
+  const [year, setYear] = useState(initialYear);
+  const [focusMonth, setFocusMonth] = useState(today.slice(0, 7));
+  const [selectedDay, setSelectedDay] = useState<string | null>(today);
   const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null);
   const [filters, setFilters] = useState(DEFAULT_CALENDAR_FILTERS);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [baseReport, setBaseReport] = useState<CalendarReport>(initialReport);
   const [dayNotes, setDayNotes] = useState<Record<string, string>>(
-    CALENDAR_MOCK_REPORT.dayNotes,
+    initialReport.dayNotes,
   );
-  const [extraEvents, setExtraEvents] = useState<
-    Record<string, Array<{ id: string; time: string; title: string; type: CalendarEventType; description?: string }>>
-  >({});
+  const [isPending, startTransition] = useTransition();
 
   const filteredReport = useMemo(
-    () => filterCalendar(filters, CALENDAR_MOCK_REPORT),
-    [filters],
+    () => filterCalendar(filters, baseReport),
+    [filters, baseReport],
   );
 
   const month = Number(focusMonth.slice(5, 7));
@@ -55,11 +72,8 @@ export default function CalendarPageContent() {
 
   const selectedActivity = useMemo(() => {
     if (!selectedDay) return null;
-    const base = getDailyActivity(selectedDay, viewData.dailyMap);
-    if (!base) return null;
-    const added = extraEvents[selectedDay] ?? [];
-    return { ...base, events: [...base.events, ...added] };
-  }, [selectedDay, viewData.dailyMap, extraEvents]);
+    return getDailyActivity(selectedDay, viewData.dailyMap);
+  }, [selectedDay, viewData.dailyMap]);
 
   const soldVehicles = useMemo(() => {
     if (!selectedDay) return viewData.monthSoldVehicles;
@@ -74,26 +88,54 @@ export default function CalendarPageContent() {
   const kpis =
     viewMode === "monthly" ? viewData.monthlyKpis : viewData.yearlyKpis;
 
+  const refetchReport = useCallback(
+    (targetYear: number) => {
+      startTransition(async () => {
+        const report = await fetchCalendarReportAction(targetYear);
+        setBaseReport(report);
+        setDayNotes((prev) => ({ ...report.dayNotes, ...prev }));
+      });
+    },
+    [],
+  );
+
+  const handleYearChange = useCallback(
+    (nextYear: number) => {
+      setYear(nextYear);
+      refetchReport(nextYear);
+    },
+    [refetchReport],
+  );
+
   const handleMonthChange = useCallback((delta: number) => {
     setFocusMonth((prev) => {
       const next = addMonths(prev, delta);
-      setYear(Number(next.slice(0, 4)));
+      const nextYear = Number(next.slice(0, 4));
+      setYear(nextYear);
+      if (nextYear !== year) {
+        refetchReport(nextYear);
+      }
       return next;
     });
-  }, []);
+  }, [year, refetchReport]);
 
   const handleToday = useCallback(() => {
-    setFocusMonth(TODAY.slice(0, 7));
-    setYear(Number(TODAY.slice(0, 4)));
-    setSelectedDay(TODAY);
-  }, []);
+    const now = todayIso();
+    setFocusMonth(now.slice(0, 7));
+    const nowYear = Number(now.slice(0, 4));
+    setYear(nowYear);
+    setSelectedDay(now);
+    if (nowYear !== year) refetchReport(nowYear);
+  }, [year, refetchReport]);
 
   const handleExport = useCallback(() => {
+    downloadCalendarCsv(filteredReport, year);
+    exportCalendarPdf();
     toast.success("Calendar report exported");
-  }, []);
+  }, [filteredReport, year]);
 
   const handleAddEvent = useCallback(
-    (
+    async (
       date: string,
       event: {
         title: string;
@@ -102,23 +144,35 @@ export default function CalendarPageContent() {
         description?: string;
       },
     ) => {
-      const id = `ev-custom-${Date.now()}`;
-      setExtraEvents((prev) => ({
-        ...prev,
-        [date]: [...(prev[date] ?? []), { ...event, id }],
-      }));
-      toast.success("Event saved");
+      const result = await saveCalendarEventAction({ date, ...event });
+      if (result.ok) {
+        toast.success("Event saved");
+        refetchReport(year);
+      } else {
+        toast.error(result.error ?? "Failed to save event");
+      }
     },
-    [],
+    [year, refetchReport],
   );
 
-  const handleDayNoteChange = useCallback((note: string) => {
-    if (!selectedDay) return;
-    setDayNotes((prev) => ({ ...prev, [selectedDay]: note }));
-  }, [selectedDay]);
+  const handleDayNoteChange = useCallback(
+    async (note: string) => {
+      if (!selectedDay) return;
+      setDayNotes((prev) => ({ ...prev, [selectedDay]: note }));
+      const result = await saveCalendarDayNoteAction(selectedDay, note);
+      if (!result.ok) {
+        toast.error(result.error ?? "Failed to save note");
+      }
+    },
+    [selectedDay],
+  );
 
   return (
     <div className="calendar-page relative">
+      {isPending && (
+        <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-blue-500/80 animate-pulse" />
+      )}
+
       <AdminHeader
         searchValue={filters.searchQuery}
         onSearchChange={(q) => setFilters((p) => ({ ...p, searchQuery: q }))}
@@ -129,7 +183,7 @@ export default function CalendarPageContent() {
         onViewChange={setViewMode}
         year={year}
         focusMonth={focusMonth}
-        onYearChange={setYear}
+        onYearChange={handleYearChange}
         onMonthChange={handleMonthChange}
         onToday={handleToday}
         onFilter={() => setFilterOpen(true)}
@@ -145,7 +199,7 @@ export default function CalendarPageContent() {
           selectedActivity={selectedActivity}
           upcomingEvents={filteredReport.upcomingEvents}
           soldVehicles={soldVehicles}
-          dayNote={selectedDay ? (dayNotes[selectedDay] ?? "") : ""}
+          dayNote={selectedDay ? (dayNotes[selectedDay] ?? baseReport.dayNotes[selectedDay] ?? "") : ""}
           weeklyBreakdown={viewData.weeklyBreakdown}
           topReps={viewData.topRepsMonth}
           trendData={viewData.monthlyTrendForMonth}
@@ -175,6 +229,7 @@ export default function CalendarPageContent() {
         open={filterOpen}
         onOpenChange={setFilterOpen}
         filters={filters}
+        filterOptions={filterOptions}
         onApply={setFilters}
       />
     </div>

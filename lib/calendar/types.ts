@@ -109,6 +109,8 @@ export type SoldVehicleRow = {
   vehicle: string;
   customer: string;
   salesRep: string;
+  repId?: string;
+  lotLocation?: string | null;
   profit: number;
   commission: number;
 };
@@ -174,6 +176,31 @@ export type CalendarReport = {
   upcomingEvents: UpcomingComplianceEvent[];
   yearlyEvents: UpcomingComplianceEvent[];
   dayNotes: Record<string, string>;
+  soldVehicleRows: SoldVehicleRow[];
+  purchasedVehicleRows: PurchasedVehicleRow[];
+  monthFinancials: Record<string, MonthFinancials>;
+};
+
+export type MonthFinancials = {
+  payrollPaid: number;
+  salesTaxCollected: number;
+  cdtfaObligations: number;
+  missingDocuments: number;
+  overdueFollowUps: number;
+  inventoryRemaining: number;
+  inventoryAdded: number;
+  salesByRep: Array<{
+    repId: string;
+    repName: string;
+    unitsSold: number;
+    grossProfit: number;
+    commissions: number;
+  }>;
+};
+
+export type CalendarFilterOptions = {
+  salesReps: Array<{ value: string; label: string }>;
+  locations: Array<{ value: string; label: string }>;
 };
 
 export type FilteredCalendarReport = CalendarReport & {

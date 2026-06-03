@@ -251,4 +251,7 @@ export const CALENDAR_MOCK_REPORT: CalendarReport = {
     "2025-05-01": "Strong sales day! Team exceeded daily target.",
     "2025-05-15": "Best sales day of the month - 8 units closed.",
   },
+  soldVehicleRows: [],
+  purchasedVehicleRows: [],
+  monthFinancials: {},
 };

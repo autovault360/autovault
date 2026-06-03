@@ -10,10 +10,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { filterReminders } from "@/lib/reminders/filter-reminders";
-import { REMINDERS_MOCK_REPORT } from "@/lib/reminders/mock-data";
 import {
   DEFAULT_REMINDERS_FILTERS,
   type Reminder,
+  type RemindersReport,
   type ViewAllModalView,
 } from "@/lib/reminders/types";
 import { formatShortDate } from "@/lib/reminders/format-utils";
@@ -30,15 +30,19 @@ import ReminderAiAssistant from "./reminder-ai-assistant";
 import ReminderViewAllModals from "./reminder-view-all-modals";
 import ReminderPriorityBadge from "./reminder-priority-badge";
 
-export default function RemindersPageContent() {
+export default function RemindersPageContent({
+  initialReport,
+}: {
+  initialReport: RemindersReport;
+}) {
   const [filters, setFilters] = useState(DEFAULT_REMINDERS_FILTERS);
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
   const [viewAll, setViewAll] = useState<ViewAllModalView | null>(null);
   const [selectedReminder, setSelectedReminder] = useState<Reminder | null>(null);
 
   const filtered = useMemo(
-    () => filterReminders(filters, REMINDERS_MOCK_REPORT),
-    [filters],
+    () => filterReminders(filters, initialReport),
+    [filters, initialReport],
   );
 
   const handleDateChange = useCallback((asOfDate: string) => {
@@ -129,7 +133,7 @@ export default function RemindersPageContent() {
 
         {aiPanelOpen && (
           <ReminderAiAssistant
-            suggestions={REMINDERS_MOCK_REPORT.aiSuggestions}
+            suggestions={initialReport.aiSuggestions}
             filtered={filtered}
             open={aiPanelOpen}
             onOpenChange={setAiPanelOpen}

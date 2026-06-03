@@ -1,4 +1,3 @@
-import { SALES_REPS } from "./constants";
 import type {
   BestMonthEntry,
   CalendarFilters,
@@ -269,16 +268,22 @@ export function getYearlyKpis(
 }
 
 function aggregateRepTotals(daily: IDailySalesActivity[]) {
-  const map = new Map<string, { repName: string; unitsSold: number; gross: number }>();
+  const map = new Map<
+    string,
+    { repId: string; repName: string; unitsSold: number; gross: number; commissions: number }
+  >();
   for (const day of daily) {
     for (const rep of day.salesReps) {
       const existing = map.get(rep.repId) ?? {
+        repId: rep.repId,
         repName: rep.repName,
         unitsSold: 0,
         gross: 0,
+        commissions: 0,
       };
       existing.unitsSold += rep.unitsSold;
       existing.gross += rep.grossProfit;
+      existing.commissions += rep.commissionsEarned;
       map.set(rep.repId, existing);
     }
   }
@@ -409,17 +414,13 @@ export function getTopSalesRepsForMonth(
   return totals
     .sort((a, b) => b.unitsSold - a.unitsSold)
     .slice(0, limit)
-    .map((r, i) => {
-      const rep = SALES_REPS.find((s) => s.name === r.repName);
-      return {
-        rank: i + 1,
-        repId: rep?.id ?? `rep-${i}`,
-        repName: r.repName,
-        avatarUrl: rep?.avatarUrl,
-        unitsSold: r.unitsSold,
-        gross: r.gross,
-      };
-    });
+    .map((r, i) => ({
+      rank: i + 1,
+      repId: r.repId,
+      repName: r.repName,
+      unitsSold: r.unitsSold,
+      gross: r.gross,
+    }));
 }
 
 export function getTopSalesRepsForYear(
@@ -433,17 +434,13 @@ export function getTopSalesRepsForYear(
   return totals
     .sort((a, b) => b.gross - a.gross)
     .slice(0, limit)
-    .map((r, i) => {
-      const rep = SALES_REPS.find((s) => s.name === r.repName);
-      return {
-        rank: i + 1,
-        repId: rep?.id ?? `rep-${i}`,
-        repName: r.repName,
-        avatarUrl: rep?.avatarUrl,
-        unitsSold: r.unitsSold,
-        gross: r.gross,
-      };
-    });
+    .map((r, i) => ({
+      rank: i + 1,
+      repId: r.repId,
+      repName: r.repName,
+      unitsSold: r.unitsSold,
+      gross: r.gross,
+    }));
 }
 
 export function getBestSalesMonths(
@@ -481,48 +478,13 @@ export function getDaySoldVehicles(
   date: string,
   report: FilteredCalendarReport,
 ): SoldVehicleRow[] {
+  if (report.soldVehicleRows.length > 0) {
+    return report.soldVehicleRows.filter((r) => r.date === date);
+  }
+
   const activity = buildDailyMap(report.dailyActivity).get(date);
   if (!activity || activity.unitsSold === 0) return [];
-
-  const vehicles = [
-    "2023 Toyota Camry",
-    "2022 Honda Accord",
-    "2024 Ford F-150",
-    "2021 BMW 3 Series",
-    "2023 Chevy Silverado",
-    "2020 Nissan Altima",
-    "2022 Jeep Wrangler",
-    "2024 Tesla Model 3",
-  ];
-  const customers = [
-    "John Smith",
-    "Jane Doe",
-    "Robert Lee",
-    "Maria Garcia",
-    "David Kim",
-    "Emily Brown",
-    "Chris Taylor",
-    "Ashley White",
-  ];
-
-  const rows: SoldVehicleRow[] = [];
-  let unitIdx = 0;
-  for (const rep of activity.salesReps) {
-    for (let u = 0; u < rep.unitsSold; u++) {
-      rows.push({
-        id: `sv-${date}-${unitIdx}`,
-        date,
-        stockNumber: `#${1200 + unitIdx}`,
-        vehicle: vehicles[unitIdx % vehicles.length]!,
-        customer: customers[unitIdx % customers.length]!,
-        salesRep: rep.repName,
-        profit: Math.round(rep.grossProfit / rep.unitsSold),
-        commission: Math.round(rep.commissionsEarned / rep.unitsSold),
-      });
-      unitIdx++;
-    }
-  }
-  return rows;
+  return [];
 }
 
 export function getMonthSoldVehicles(
@@ -530,6 +492,13 @@ export function getMonthSoldVehicles(
   report: FilteredCalendarReport,
   limit = 8,
 ): SoldVehicleRow[] {
+  if (report.soldVehicleRows.length > 0) {
+    return report.soldVehicleRows
+      .filter((r) => r.date.startsWith(monthId))
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, limit);
+  }
+
   const daily = getDailyForMonth(buildDailyMap(report.dailyActivity), monthId);
   const rows: SoldVehicleRow[] = [];
   for (const day of daily.sort((a, b) => b.date.localeCompare(a.date))) {
@@ -567,7 +536,20 @@ export function getMonthlyPerformanceSummary(
   if (!summary) return null;
 
   const daily = getDailyForMonth(buildDailyMap(report.dailyActivity), monthId);
-  const repTotals = aggregateRepTotals(daily);
+  const financials = report.monthFinancials[monthId];
+  const repTotals = financials?.salesByRep?.length
+    ? financials.salesByRep.map((r) => ({
+        repName: r.repName,
+        unitsSold: r.unitsSold,
+        gross: r.grossProfit,
+        commissions: r.commissions,
+      }))
+    : aggregateRepTotals(daily).map((r) => ({
+        repName: r.repName,
+        unitsSold: r.unitsSold,
+        gross: r.gross,
+        commissions: r.commissions,
+      }));
 
   const overviewLines = [
     { label: "Total Vehicles Sold", value: String(summary.unitsSold) },
@@ -586,50 +568,75 @@ export function getMonthlyPerformanceSummary(
     repName: r.repName,
     unitsSold: r.unitsSold,
     grossProfit: r.gross,
-    commissions: Math.round(r.gross * 0.127),
+    commissions: r.commissions,
   }));
 
-  const vehicleActivity = [
-    { category: "Vehicles Sold", count: summary.unitsSold, amount: summary.totalGross },
-    { category: "Vehicles Bought", count: summary.unitsBought, amount: summary.cogs },
-    { category: "Inventory Added", count: Math.round(summary.unitsBought * 0.3), amount: Math.round(summary.cogs * 0.3) },
-    { category: "Inventory Sold", count: summary.unitsSold, amount: summary.totalGross },
-    { category: "Inventory Remaining", count: Math.max(0, summary.unitsBought - summary.unitsSold), amount: Math.round(summary.cogs * 0.15) },
-  ];
+  const vehicleActivity = financials
+    ? [
+        { category: "Vehicles Sold", count: summary.unitsSold, amount: summary.totalGross },
+        { category: "Vehicles Bought", count: summary.unitsBought, amount: summary.cogs },
+        {
+          category: "Inventory Added",
+          count: financials.inventoryAdded,
+          amount: Math.round(summary.cogs * 0.3),
+        },
+        { category: "Inventory Sold", count: summary.unitsSold, amount: summary.totalGross },
+        {
+          category: "Inventory Remaining",
+          count: financials.inventoryRemaining,
+          amount: Math.round(summary.cogs * 0.15),
+        },
+      ]
+    : [
+        { category: "Vehicles Sold", count: summary.unitsSold, amount: summary.totalGross },
+        { category: "Vehicles Bought", count: summary.unitsBought, amount: summary.cogs },
+        { category: "Inventory Added", count: Math.round(summary.unitsBought * 0.3), amount: Math.round(summary.cogs * 0.3) },
+        { category: "Inventory Sold", count: summary.unitsSold, amount: summary.totalGross },
+        { category: "Inventory Remaining", count: Math.max(0, summary.unitsBought - summary.unitsSold), amount: Math.round(summary.cogs * 0.15) },
+      ];
 
-  const importantTotals = [
-    { label: "Payroll Paid", value: formatCurrency(Math.round(summary.totalExpenses * 0.45)) },
-    { label: "Sales Tax Collected", value: formatCurrency(Math.round(summary.totalGross * 0.0725)) },
-    { label: "CDTFA Obligations", value: formatCurrency(Math.round(summary.totalGross * 0.065)) },
-    { label: "Closed Deal Jackets", value: String(summary.unitsSold) },
-    { label: "Missing Documents", value: String(Math.max(1, Math.round(summary.unitsSold * 0.05))) },
-    { label: "Overdue Follow Ups", value: String(Math.max(0, Math.round(summary.unitsSold * 0.08))) },
-  ];
+  const importantTotals = financials
+    ? [
+        { label: "Payroll Paid", value: formatCurrency(financials.payrollPaid) },
+        { label: "Sales Tax Collected", value: formatCurrency(financials.salesTaxCollected) },
+        { label: "CDTFA Obligations", value: formatCurrency(financials.cdtfaObligations) },
+        { label: "Closed Deal Jackets", value: String(summary.unitsSold) },
+        { label: "Missing Documents", value: String(financials.missingDocuments) },
+        { label: "Overdue Follow Ups", value: String(financials.overdueFollowUps) },
+      ]
+    : [
+        { label: "Payroll Paid", value: formatCurrency(Math.round(summary.totalExpenses * 0.45)) },
+        { label: "Sales Tax Collected", value: formatCurrency(Math.round(summary.totalGross * 0.0725)) },
+        { label: "CDTFA Obligations", value: formatCurrency(Math.round(summary.totalGross * 0.065)) },
+        { label: "Closed Deal Jackets", value: String(summary.unitsSold) },
+        { label: "Missing Documents", value: String(Math.max(1, Math.round(summary.unitsSold * 0.05))) },
+        { label: "Overdue Follow Ups", value: String(Math.max(0, Math.round(summary.unitsSold * 0.08))) },
+      ];
 
-  const recentSold: SoldVehicleRow[] = [];
-  for (const day of daily.sort((a, b) => b.date.localeCompare(a.date))) {
-    if (day.unitsSold > 0) {
-      recentSold.push(...getDaySoldVehicles(day.date, report));
-    }
-    if (recentSold.length >= 6) break;
-  }
+  const recentSold: SoldVehicleRow[] =
+    report.soldVehicleRows.length > 0
+      ? report.soldVehicleRows
+          .filter((r) => r.date.startsWith(monthId))
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, 6)
+      : (() => {
+          const rows: SoldVehicleRow[] = [];
+          for (const day of daily.sort((a, b) => b.date.localeCompare(a.date))) {
+            if (day.unitsSold > 0) {
+              rows.push(...getDaySoldVehicles(day.date, report));
+            }
+            if (rows.length >= 6) break;
+          }
+          return rows;
+        })();
 
-  const vehicles = [
-    "2023 Toyota Camry",
-    "2022 Honda Accord",
-    "2024 Ford F-150",
-    "2021 BMW 3 Series",
-    "2023 Chevy Silverado",
-    "2020 Nissan Altima",
-  ];
-  const recentPurchased: PurchasedVehicleRow[] = Array.from({ length: 5 }, (_, i) => ({
-    id: `pv-${monthId}-${i}`,
-    date: `${monthId}-${String(5 + i * 4).padStart(2, "0")}`,
-    stockNumber: `#${1100 + i}`,
-    vehicle: vehicles[i % vehicles.length]!,
-    cost: 15000 + i * 3500,
-    status: i % 3 === 0 ? "In Recon" : "In Stock",
-  }));
+  const recentPurchased: PurchasedVehicleRow[] =
+    report.purchasedVehicleRows.length > 0
+      ? report.purchasedVehicleRows
+          .filter((r) => r.date.startsWith(monthId))
+          .sort((a, b) => b.date.localeCompare(a.date))
+          .slice(0, 6)
+      : [];
 
   const notes = [
     `${summary.monthName} closed with ${summary.unitsSold} units sold - ${summary.unitsSold >= 70 ? "above" : "near"} target.`,
