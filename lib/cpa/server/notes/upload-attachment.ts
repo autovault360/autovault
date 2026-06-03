@@ -40,10 +40,9 @@ export async function uploadCpaNoteAttachment(
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const path = `${dealershipId}/${noteId}/${Date.now()}-${safeName}`;
 
-  const buffer = Buffer.from(await file.arrayBuffer());
   const { error: uploadError } = await supabase.storage
     .from("cpa-note-attachments")
-    .upload(path, buffer, { contentType: file.type, upsert: false });
+    .upload(path, file, { contentType: file.type, upsert: false, cacheControl: "3600" });
 
   if (uploadError) throw new Error(uploadError.message);
 

@@ -14,13 +14,16 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = request.nextUrl;
   const view = (searchParams.get("view") ?? "monthly") as CpaViewMode;
-  const month = Number(searchParams.get("month") ?? "5");
-  const year = Number(searchParams.get("year") ?? "2025");
+  const now = new Date();
+  const defaultMonth = now.getMonth() + 1;
+  const defaultYear = now.getFullYear();
+  const month = Number(searchParams.get("month") ?? String(defaultMonth));
+  const year = Number(searchParams.get("year") ?? String(defaultYear));
 
   const data = await fetchCpaDashboard(auth.user.dealershipId, {
     view: view === "yearly" ? "yearly" : "monthly",
-    month: Number.isFinite(month) ? month : 5,
-    year: Number.isFinite(year) ? year : 2025,
+    month: Number.isFinite(month) ? month : defaultMonth,
+    year: Number.isFinite(year) ? year : defaultYear,
   });
 
   return NextResponse.json(data);
