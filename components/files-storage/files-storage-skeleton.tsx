@@ -39,7 +39,7 @@ export default function FilesStoragePageSkeleton() {
             {Array.from({ length: 4 }).map((_, i) => (
               <Card
                 key={i}
-                className="rounded-sm border border-slate-700 bg-transparent p-3 shadow-none"
+                className="rounded-sm border border-slate-800/50 bg-transparent p-3 shadow-none"
               >
                 <div className="flex items-start gap-2.5">
                   <SkeletonBar className="h-10 w-10 shrink-0 rounded-full" />
@@ -53,7 +53,7 @@ export default function FilesStoragePageSkeleton() {
             ))}
           </section>
 
-          <Card className="mb-3.5 rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+          <Card className="mb-3.5 rounded-sm border border-slate-800/50 bg-transparent p-4 shadow-none">
             <div className="mb-3 flex justify-between">
               <SkeletonBar className="h-3 w-32" />
               <SkeletonBar className="h-3 w-40" />
@@ -67,13 +67,13 @@ export default function FilesStoragePageSkeleton() {
           </Card>
 
           <div className="mb-3.5 grid gap-3.5 lg:grid-cols-[1fr_320px]">
-            <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+            <Card className="rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
               <SkeletonBar className="mb-3 h-8 w-full" />
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonBar key={i} className="mb-2 h-10 w-full" />
               ))}
             </Card>
-            <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+            <Card className="rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
               <SkeletonBar className="mb-3 h-3 w-32" />
               {Array.from({ length: 5 }).map((_, i) => (
                 <SkeletonBar key={i} className="mb-3 h-12 w-full" />
@@ -82,10 +82,10 @@ export default function FilesStoragePageSkeleton() {
           </div>
 
           <div className="grid gap-3.5 md:grid-cols-2">
-            <Card className="rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+            <Card className="rounded-sm border border-slate-800/50 bg-transparent p-4 shadow-none">
               <SkeletonBar className="h-40 w-full rounded-md" />
             </Card>
-            <Card className="rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+            <Card className="rounded-sm border border-slate-800/50 bg-transparent p-4 shadow-none">
               <SkeletonBar className="mb-4 h-3 w-24" />
               <div className="flex gap-4">
                 <SkeletonBar className="h-[100px] w-[100px] shrink-0 rounded-full" />
@@ -100,7 +100,7 @@ export default function FilesStoragePageSkeleton() {
         </div>
 
         <div className="hidden w-[320px] shrink-0 xl:block">
-          <Card className="sticky top-5 min-h-[calc(100vh-6rem)] rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+          <Card className="sticky top-5 min-h-[calc(100vh-6rem)] rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
             <SkeletonBar className="mb-4 h-6 w-40" />
             <SkeletonBar className="mb-3 h-4 w-full" />
             {Array.from({ length: 6 }).map((_, i) => (

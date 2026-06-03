@@ -66,7 +66,7 @@ export default function ProfitLossPageSkeleton() {
         {Array.from({ length: 6 }).map((_, i) => (
           <Card
             key={i}
-            className="flex h-full flex-col gap-1 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none"
+            className="flex h-full flex-col gap-1 rounded-sm border border-slate-800/50 bg-transparent p-3 text-slate-200 shadow-none"
           >
             <div className="flex items-start gap-2.5">
               <SkeletonBar className="h-10 w-10 shrink-0 rounded-full" />
@@ -88,22 +88,22 @@ export default function ProfitLossPageSkeleton() {
       </div>
 
       <div className="grid gap-3.5 xl:grid-cols-[1fr_380px]">
-        <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+        <Card className="rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
           <SkeletonBar className="mb-3 h-8 w-full" />
           {Array.from({ length: 10 }).map((_, i) => (
             <SkeletonBar key={i} className="mb-2 h-8 w-full" />
           ))}
         </Card>
         <div className="space-y-3.5">
-          <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+          <Card className="rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
             <div className="mb-3 flex items-center justify-between gap-2">
               <SkeletonBar className="h-4 w-32" />
               <SkeletonBar className="h-8 w-28" />
             </div>
-            <SkeletonBar className="h-52 w-full" />
-          </Card>
-          <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
-            <SkeletonBar className="mb-3 h-4 w-28" />
+              <SkeletonBar className="h-52 w-full" />
+            </Card>
+            <Card className="rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">
+              <SkeletonBar className="mb-3 h-4 w-28" />
             {Array.from({ length: 4 }).map((_, i) => (
               <SkeletonBar key={i} className="mb-2 h-10 w-full" />
             ))}
