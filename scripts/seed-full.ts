@@ -168,8 +168,6 @@ const CPA_USER = {
   isActive: true,
   firstName: "Wilson",
   lastName: "Associates",
-  firmName: "Wilson & Associates CPA",
-  licenseNumber: "CPA-2024-CA-0842",
 };
 
 const SUPER_ADMIN = {
