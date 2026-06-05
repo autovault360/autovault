@@ -73,7 +73,7 @@ async function resolveCommissionRate(
 
 /**
  * Creates a deal jacket when a vehicle is marked sold.
- * One vehicle → one deal jacket (enforced by unique vehicle_id).
+ * One vehicle ... one deal jacket (enforced by unique vehicle_id).
  */
 export async function createDealJacket(
   params: CreateDealJacketParams,

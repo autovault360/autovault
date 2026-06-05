@@ -37,7 +37,7 @@ export default function NotesTab({ detail }: { detail: DealJacketDetail }) {
               {note.body}
             </p>
             <p className="mt-3 text-[10px] text-[var(--text-muted)]">
-              {note.author} · {formatDisplayDate(note.date.split("T")[0])}
+              {note.author} .. {formatDisplayDate(note.date.split("T")[0])}
             </p>
           </DetailCardBody>
         </DetailCard>

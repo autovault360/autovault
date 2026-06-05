@@ -25,7 +25,7 @@ export default async function Home() {
             Operating System
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-zinc-400">
-            Manage inventory, sales, expenses, payroll, and taxes — all in one
+            Manage inventory, sales, expenses, payroll, and taxes ... all in one
             secure platform. Built for modern dealerships.
           </p>
 

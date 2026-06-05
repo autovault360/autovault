@@ -201,7 +201,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
 
     const expenses: VehicleExpense[] = (row.expenses ?? []).map((e) => {
       const sub = e.expense_subcategory ?? e.repair_type ?? e.category;
-      const vendor = e.shop_vendor ? ` · ${e.shop_vendor}` : "";
+      const vendor = e.shop_vendor ? ` .. ${e.shop_vendor}` : "";
       return {
         label: e.description
           ? `${sub}${vendor} - ${formatDate(e.created_at)}`
@@ -232,7 +232,7 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
         entry: {
           title: "Price updated",
           timestamp: formatDateTime(p.created_at),
-          description: `$${Number(p.previous_price ?? 0).toLocaleString()} → $${Number(p.new_price).toLocaleString()} (${p.reason})`,
+          description: `$${Number(p.previous_price ?? 0).toLocaleString()} ... $${Number(p.new_price).toLocaleString()} (${p.reason})`,
           color: "blue",
           icon: "dollar-sign",
           details: {
@@ -257,13 +257,13 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       if (details) {
         switch (a.action) {
           case "INSERT":
-            description = `VIN: ${details.vin ?? "N/A"} — ${formatField("make", (details.make as string) ?? "")} ${formatField("model", (details.model as string) ?? "", details.make as string)}`;
+            description = `VIN: ${details.vin ?? "N/A"} ... ${formatField("make", (details.make as string) ?? "")} ${formatField("model", (details.model as string) ?? "", details.make as string)}`;
             break;
           case "MARKED_SOLD":
             description = `Sold to ${details.customer_name ?? "N/A"} for $${Number(details.sale_price ?? 0).toLocaleString()}`;
             break;
           case "MARKED_LOSS":
-            description = `${details.loss_reason ?? "N/A"} — Net loss: $${Number(details.net_loss ?? 0).toLocaleString()}`;
+            description = `${details.loss_reason ?? "N/A"} ... Net loss: $${Number(details.net_loss ?? 0).toLocaleString()}`;
             break;
           case "REPAIR_ADDED":
             description = `${details.repair_category ?? "Repair"}: $${Number(details.total_cost ?? 0).toLocaleString()}`;

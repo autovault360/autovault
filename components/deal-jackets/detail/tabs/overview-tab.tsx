@@ -234,7 +234,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
               value={
                 detail.salesRep.commissionPaidDate
                   ? formatDisplayDate(detail.salesRep.commissionPaidDate)
-                  : "—"
+                  : "..."
               }
             />
             <DetailRow
@@ -245,7 +245,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
               label="Transaction ID"
               value={
                 <span className="font-mono text-[10px] text-slate-300">
-                  {detail.salesRep.transactionId ?? "—"}
+                  {detail.salesRep.transactionId ?? "..."}
                 </span>
               }
             />
@@ -303,7 +303,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
 
 function formatNoteDateTime(iso: string): string {
   const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleString("en-US", {
     month: "short",
     day: "numeric",

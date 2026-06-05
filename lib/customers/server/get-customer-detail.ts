@@ -191,9 +191,9 @@ export async function getCustomerDetail(
       return {
         id: dealId,
         vehicleId: deal.vehicle_id as string,
-        stockNumber: (vehicle?.stock_number as string) ?? "—",
+        stockNumber: (vehicle?.stock_number as string) ?? "...",
         vehicleName,
-        vin: (vehicle?.vin as string) ?? "—",
+        vin: (vehicle?.vin as string) ?? "...",
         imageUrl: imageUrl || null,
         saleDate: deal.sale_date as string,
         totalPriceOtd: price,
@@ -418,7 +418,7 @@ export async function getCustomerDetail(
     [r.city, r.state].filter(Boolean).join(", "),
     r.zip as string,
   ].filter(Boolean);
-  const fullAddress = addressParts.join(", ") || "—";
+  const fullAddress = addressParts.join(", ") || "...";
 
   const dealsInProgressCount = deals.filter(
     (d) => d.totalPriceOtd > d.totalCollected,

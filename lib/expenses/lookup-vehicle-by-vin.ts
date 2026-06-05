@@ -62,7 +62,7 @@ function mapRow(row: VehiclesJsonRow): LinkedVehicleResult {
     stockNumber: row.stockNumber.replace(/^AV-/, ""),
     vin: row.vin,
     mileage: row.mileage,
-    color: "—",
+    color: "...",
     status: row.status,
     image: row.image,
   };

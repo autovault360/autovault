@@ -36,7 +36,7 @@ const profiles = [
   },
   {
     name: "Sarah Williams",
-    role: "ADMIN #2 · EDITOR",
+    role: "ADMIN #2 .. EDITOR",
     img: "https://i.pravatar.cc/64?img=47",
   },
   {

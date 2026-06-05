@@ -34,7 +34,7 @@ const darkShellClass: Record<InputTone, string> = {
   positive: "border-emerald-400 bg-emerald-900/30 text-emerald-400",
 };
 
-/* ─── Currency internals ─── */
+/* ......... Currency internals ......... */
 
 function formatCurrencyInput(value: number): string {
   if (Number.isNaN(value)) return "";
@@ -124,7 +124,7 @@ function CurrencyInput({
   );
 }
 
-/* ─── Main Input ─── */
+/* ......... Main Input ......... */
 
 function Input({
   className,

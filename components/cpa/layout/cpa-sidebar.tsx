@@ -41,7 +41,7 @@ export default function CpaSidebar() {
     const className = cn(
       "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-slate-300 transition hover:bg-slate-800/60",
       active &&
-        "border border-slate-700 bg-slate-800/80 font-semibold text-white",
+        "relative border-l-2 border-l-blue-500 bg-slate-800/60 pl-[10px] font-semibold text-white",
     );
 
     if (isNotes) {

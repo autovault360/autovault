@@ -20,44 +20,61 @@ const priorityAccent: Record<CpaNotePriority, string> = {
   LOW: "border-l-slate-500",
 };
 
-export default function CpaNotesPreview({ notes, bare }: { notes: CpaNotePreview[]; bare?: boolean }) {
+export default function CpaNotesPreview({
+  notes,
+  bare,
+  onAddClick,
+  addLabel = "New Note",
+  hideFooter,
+}: {
+  notes: CpaNotePreview[];
+  bare?: boolean;
+  onAddClick?: () => void;
+  addLabel?: string;
+  hideFooter?: boolean;
+}) {
   const { openNotes } = useCpaPortal();
+  const handleAdd = onAddClick ?? openNotes;
 
   const header = (
     <div className="mb-3 flex items-center justify-between">
       <div className="text-[11px] font-bold tracking-[0.14em] text-slate-500">CPA NOTES</div>
       <button
         type="button"
-        onClick={openNotes}
+        onClick={handleAdd}
         className="flex items-center gap-1 text-[10px] text-blue-400 hover:underline"
       >
         <Plus className="h-3 w-3" />
-        New Note
+        {addLabel}
       </button>
     </div>
   );
 
   const list = (
     <ul className="space-y-2">
-      {notes.map((n) => (
-        <button
-          key={n.id}
-          type="button"
-          onClick={openNotes}
-          className={cn(
-            "w-full rounded-md border-l-4 p-2.5 text-left transition-opacity hover:opacity-90",
-            statusBg[n.status],
-            priorityAccent[n.priority],
-          )}
-        >
-          <p className="text-[12px] font-medium text-white">{n.title}</p>
-          <p className="mt-0.5 text-[10px] text-slate-500">{`${n.date} - ${n.creator}`}</p>
-        </button>
-      ))}
+      {notes.length === 0 ? (
+        <li className="text-[11px] text-slate-500">No notes for this period.</li>
+      ) : (
+        notes.map((n) => (
+          <button
+            key={n.id}
+            type="button"
+            onClick={openNotes}
+            className={cn(
+              "w-full rounded-md border-l-4 p-2.5 text-left transition-opacity hover:opacity-90",
+              statusBg[n.status],
+              priorityAccent[n.priority],
+            )}
+          >
+            <p className="text-[12px] font-medium text-white">{n.title}</p>
+            <p className="mt-0.5 text-[10px] text-slate-500">{`${n.date} - ${n.creator}`}</p>
+          </button>
+        ))
+      )}
     </ul>
   );
 
-  const footer = (
+  const footer = hideFooter ? null : (
     <button
       type="button"
       onClick={openNotes}

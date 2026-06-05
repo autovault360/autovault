@@ -120,7 +120,7 @@ export async function listDealJackets(params: {
         customerName: customer?.name ?? "",
         customerPhone: customer?.phone ?? null,
         salesRepId: row.sales_rep_id,
-        salesRepName: salesRep?.full_name ?? "—",
+        salesRepName: salesRep?.full_name ?? "...",
         year: vehicle?.year ?? 0,
         make: vehicle?.make ?? "",
         model: vehicle?.model ?? "",
@@ -133,7 +133,7 @@ export async function listDealJackets(params: {
         totalProfit: Number(row.profit_net),
         commissionAmount: Number(row.commission_amount),
         commissionStatus: row.commission_status,
-        paymentMethod: "—",
+        paymentMethod: "...",
       };
     }),
   );

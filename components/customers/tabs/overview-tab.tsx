@@ -44,7 +44,7 @@ export default function OverviewTab({
             <CustomerStatusBadge status={customer.status} />
             <p className="text-[11px] text-slate-400">
               {formatCustomerType(customer.type)}
-              {customer.source && ` • ${formatCustomerSource(customer.source)}`}
+              {customer.source && ` ... ${formatCustomerSource(customer.source)}`}
             </p>
             <p className="text-[11px] text-slate-400">
               Sales Rep: {customer.salesRepName}
@@ -58,13 +58,13 @@ export default function OverviewTab({
           Contact Information
         </h4>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-[11px]">
-          <InfoItem label="Phone" value={customer.phone || "—"} />
-          <InfoItem label="Email" value={customer.email || "—"} />
+          <InfoItem label="Phone" value={customer.phone || "..."} />
+          <InfoItem label="Email" value={customer.email || "..."} />
           <InfoItem
             label="Address"
             value={
               [customer.address, customer.address2].filter(Boolean).join(", ") ||
-              "—"
+              "..."
             }
             className="col-span-2"
           />
@@ -79,7 +79,7 @@ export default function OverviewTab({
           />
           <InfoItem
             label="Driver's License"
-            value={customer.driversLicenseNumber || "—"}
+            value={customer.driversLicenseNumber || "..."}
           />
           <InfoItem
             label="Status"
@@ -98,7 +98,7 @@ export default function OverviewTab({
             {latestNote.body}
           </p>
           <p className="mt-2 text-[10.5px] text-slate-600">
-            Added by {latestNote.authorName} ·{" "}
+            Added by {latestNote.authorName} ..{" "}
             {formatDisplayDate(latestNote.createdAt)}
           </p>
         </section>
@@ -150,7 +150,7 @@ export default function OverviewTab({
               onClick={onViewDeals}
               className="mt-3 text-[11px] font-medium text-blue-400 hover:text-blue-300"
             >
-              View Full Purchase History →
+              View Full Purchase History ...
             </button>
           )}
         </section>
@@ -167,7 +167,7 @@ export default function OverviewTab({
             onClick={onViewActivity}
             className="mt-3 text-[11px] font-medium text-blue-400 hover:text-blue-300"
           >
-            View All Activity →
+            View All Activity ...
           </button>
         )}
       </section>

@@ -44,7 +44,7 @@ export default function ReportsRemindersPageContent() {
       <AdminHeader
         searchValue={reminderFilters.searchQuery}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search VIN, Stock #, Customer, Deal, or Tag…"
+        searchPlaceholder="Search VIN, Stock #, Customer, Deal, or Tag..."
       />
 
       <div className="flex items-start gap-3.5">

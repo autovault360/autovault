@@ -124,9 +124,9 @@ export function formatCurrency(value: number): string {
 }
 
 export function formatDisplayDate(date: string | null | undefined): string {
-  if (!date) return "—";
+  if (!date) return "...";
   const d = new Date(date.includes("T") ? date : `${date}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -135,9 +135,9 @@ export function formatDisplayDate(date: string | null | undefined): string {
 }
 
 export function formatDateTime(date: string | null | undefined): string {
-  if (!date) return "—";
+  if (!date) return "...";
   const d = new Date(date);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
