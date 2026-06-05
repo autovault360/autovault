@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, Calendar, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Calendar, LayoutDashboard, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useNProgressRouter } from "@/hooks/use-nprogress-router";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -160,6 +160,16 @@ export default function CpaHeader({
                 <p className="text-[12px] font-medium text-white">{session.fullName}</p>
                 <p className="text-[10px] text-slate-500">{session.email}</p>
               </div>
+              {session.role !== "cpa" && (
+                <button
+                  type="button"
+                  onClick={() => router.push("/dashboard")}
+                  className="flex items-center gap-1 rounded-md border border-slate-700 px-3 py-1.5 text-[11px] text-blue-400 hover:text-blue-300"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Admin Dashboard
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleLogout}
