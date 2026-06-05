@@ -168,6 +168,8 @@ const CPA_USER = {
   isActive: true,
   firstName: "Wilson",
   lastName: "Associates",
+  firmName: "Wilson & Associates CPA",
+  licenseNumber: "CPA-CA-88421",
 };
 
 const SUPER_ADMIN = {
@@ -526,7 +528,7 @@ async function main() {
         if ("address2" in rep) payload.address2 = (rep as typeof SALES_REPS[0] & { address2?: string }).address2 ?? null;
       }
 
-      if (u.role === "cpa") {
+      if (u.role === "cpa" && "firmName" in u) {
         payload.firm_name = u.firmName;
         payload.license_number = u.licenseNumber;
         payload.phone = CPA_USER.phone;
