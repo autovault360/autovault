@@ -130,14 +130,14 @@ export default function CustomerDetailPanel({
                   {headerEmail && <p className="text-[#3b82f6]">{headerEmail}</p>}
                   {display && (
                     <p>
-                      {formatLocation(display.city, display.state, display.zip) || "—"}
+                      {formatLocation(display.city, display.state, display.zip) || "..."}
                     </p>
                   )}
                 </div>
 
                 <p className="mt-2 text-[11px] text-slate-500">
                   Customer Since: {formatDisplayDate(display.customerSince)}
-                  {display.source && ` • Source: ${formatCustomerSource(display.source)}`}
+                  {display.source && ` ... Source: ${formatCustomerSource(display.source)}`}
                 </p>
               </div>
 

@@ -56,7 +56,7 @@ export default function VehicleDetailHeader({
             </div>
             <p className="mt-1 text-[12.5px] text-slate-500">
               Stock #: {vehicle.stockNumber}
-              <span className="mx-2 text-slate-700">·</span>
+              <span className="mx-2 text-slate-700">..</span>
               VIN: {vehicle.vin}
             </p>
           </div>

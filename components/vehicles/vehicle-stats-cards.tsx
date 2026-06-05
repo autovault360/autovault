@@ -41,7 +41,7 @@ function buildCards(stats: VehicleStats) {
       color: "orange",
       label: "Total Inventory Value",
       value: formatCurrency(stats.totalValue),
-      delta: "↑ 7.6% vs last month",
+      delta: "... 7.6% vs last month",
       link: "View Valuation Report",
       sparkColor: "#f97316",
       sparkPoints:

@@ -151,7 +151,7 @@ export default function LinkedVehicleSection({
               {loading ? (
                 <>
                   <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  Looking up…
+                  Looking up...
                 </>
               ) : (
                 "Lookup Vehicle"
@@ -202,11 +202,11 @@ export default function LinkedVehicleSection({
                 </span>
               </div>
               <p className="mt-1 text-[11px] text-slate-400">
-                Stock #{vehicle.stockNumber} • VIN: {vehicle.vin}
+                Stock #{vehicle.stockNumber} ... VIN: {vehicle.vin}
               </p>
               <p className="mt-0.5 text-[11px] text-slate-500">
                 Mileage: {formatMileage(vehicle.mileage)} mi
-                {vehicle.color !== "—" ? ` • Color: ${vehicle.color}` : ""}
+                {vehicle.color !== "..." ? ` ... Color: ${vehicle.color}` : ""}
               </p>
             </div>
           </div>

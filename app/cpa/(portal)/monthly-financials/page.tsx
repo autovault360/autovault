@@ -1,11 +1,5 @@
-import CpaComingSoon from "@/components/cpa/layout/cpa-coming-soon";
-import CpaHeader from "@/components/cpa/layout/cpa-header";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return (
-    <>
-      <CpaHeader />
-      <CpaComingSoon title="Monthly Financials" />
-    </>
-  );
+  redirect("/cpa/dashboard/monthly-financial");
 }

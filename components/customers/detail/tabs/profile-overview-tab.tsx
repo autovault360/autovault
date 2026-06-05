@@ -50,8 +50,8 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
           <DetailCardHead title="Customer Information" />
           <div className="space-y-0 px-1">
             <DetailRow label="Full Name" value={customer.name} />
-            <DetailRow label="Phone Number" value={customer.phone || "—"} />
-            <DetailRow label="Email Address" value={customer.email || "—"} />
+            <DetailRow label="Phone Number" value={customer.phone || "..."} />
+            <DetailRow label="Email Address" value={customer.email || "..."} />
             <DetailRow label="Address" value={customer.fullAddress} />
             <DetailRow
               label="Date of Birth"
@@ -59,12 +59,12 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
             />
             <DetailRow
               label="Driver License #"
-              value={customer.driversLicenseNumber || "—"}
+              value={customer.driversLicenseNumber || "..."}
             />
-            <DetailRow label="DL State" value={customer.state || "—"} />
+            <DetailRow label="DL State" value={customer.state || "..."} />
             <DetailRow
               label="Notes"
-              value={customer.latestNotePreview || "—"}
+              value={customer.latestNotePreview || "..."}
             />
           </div>
         </DetailCard>
@@ -166,7 +166,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                 onClick={() => onTabChange("deals")}
                 className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
               >
-                View All Deal Jackets →
+                View All Deal Jackets ...
               </button>
             )}
           </div>
@@ -356,7 +356,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                       {formatCommunicationTypeProfile(comm.type)}
                     </td>
                     <td className="py-2.5 pr-3 font-medium text-white">
-                      {comm.subject || "—"}
+                      {comm.subject || "..."}
                     </td>
                     <td className="py-2.5 pr-3 text-slate-300">
                       {comm.authorName}

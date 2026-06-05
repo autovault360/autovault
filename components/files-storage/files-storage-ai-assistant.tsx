@@ -121,7 +121,7 @@ export function FilesStorageAIPanel({
         <div className="flex-1 space-y-4 overflow-y-auto px-4 scrollbar-thin">
           <div className="flex items-center gap-1.5 text-[13px] text-slate-200 font-medium">
             <span>Hello, John!</span>
-            <span className="text-amber-400">👋</span>
+            <span className="text-amber-400">....</span>
           </div>
           <p className="text-[12px] text-slate-400 -mt-2">
             How can I help you today?

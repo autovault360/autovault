@@ -228,7 +228,7 @@ export async function getDealJacketById(
     salesRep: salesRep
       ? {
           id: salesRep.id,
-          name: salesRep.full_name ?? "—",
+          name: salesRep.full_name ?? "...",
           commissionRate: salesRep.commission_rate,
         }
       : null,

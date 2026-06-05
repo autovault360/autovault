@@ -125,7 +125,7 @@ export function DetailRow({
           valueClassName,
         )}
       >
-        {value ?? "—"}
+        {value ?? "..."}
       </span>
     </div>
   );

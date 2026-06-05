@@ -278,7 +278,7 @@ export default function MarkAsLossModal({
 
             <InfoBanner>
               This records a loss event against this vehicle for financial
-              tracking. The vehicle's inventory status will not change —
+              tracking. The vehicle's inventory status will not change ...
               losses can be recorded multiple times.
             </InfoBanner>
           </ModalBody>

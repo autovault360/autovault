@@ -118,7 +118,7 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
               type="button"
               className="text-[7.5px] font-medium text-blue-400 hover:text-blue-300"
             >
-              View All →
+              View All ...
             </button>
           </div>
         ))}

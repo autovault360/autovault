@@ -17,7 +17,7 @@ export default function StateTaxPageContent() {
 
   return (
     <div className="relative">
-      <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles…" />
+      <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles..." />
 
       <StateTaxHeader />
 

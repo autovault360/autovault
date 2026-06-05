@@ -137,7 +137,7 @@ export default async function DashboardPage() {
                 $32,560
               </div>
               <div className="text-[10.5px] text-emerald-400">
-                ↑ 15.3% vs last month
+                ... 15.3% vs last month
               </div>
             </div>
             <div className="space-y-1 text-right text-[11px]">
@@ -288,7 +288,7 @@ export default async function DashboardPage() {
               CALENDAR
             </div>
             <div className="flex items-center gap-1.5 text-[11.5px] text-slate-300">
-              <span className="mr-1">May 20 – May 26, 2026</span>
+              <span className="mr-1">May 20 ... May 26, 2026</span>
               <button className="grid h-6 w-6 place-items-center rounded-md border border-slate-800 bg-slate-900">
                 <ChevronLeft className="h-3 w-3" />
               </button>
@@ -544,7 +544,7 @@ export default async function DashboardPage() {
   );
 }
 
-/* ─── Data ─── */
+/* ......... Data ......... */
 
 const kpis = [
   {
@@ -574,7 +574,7 @@ const kpis = [
     color: "amber",
     label: "Gross Profit (MTD)",
     value: "$48,750",
-    delta: "↑ 18.5% vs last month",
+    delta: "... 18.5% vs last month",
     link: "View Resales",
     sparkColor: "#22c55e",
     sparkPoints:
@@ -585,7 +585,7 @@ const kpis = [
     color: "violet",
     label: "Net Profit (MTD)",
     value: "$32,560",
-    delta: "↑ 15.3% vs last month",
+    delta: "... 15.3% vs last month",
     link: "View Report",
     sparkColor: "#a855f7",
     sparkPoints:
@@ -605,11 +605,11 @@ const kpis = [
 ];
 
 const compareRows = [
-  ["Total Sales", "$485,230", "$538,450", "↑ 10.9%", true],
-  ["Gross Profit", "$41,230", "$48,750", "↑ 18.2%", true],
-  ["Net Profit", "$28,240", "$32,560", "↑ 15.3%", true],
-  ["Total Expenses", "$14,850", "$16,190", "↑ 9.0%", false],
-  ["Vehicles Sold", "47", "58", "↑ 23.4%", true],
+  ["Total Sales", "$485,230", "$538,450", "... 10.9%", true],
+  ["Gross Profit", "$41,230", "$48,750", "... 18.2%", true],
+  ["Net Profit", "$28,240", "$32,560", "... 15.3%", true],
+  ["Total Expenses", "$14,850", "$16,190", "... 9.0%", false],
+  ["Vehicles Sold", "47", "58", "... 23.4%", true],
 ] as const;
 
 const expenseLegend = [
@@ -836,7 +836,7 @@ const tasks = [
   },
 ];
 
-/* ─── Sub-Components ─── */
+/* ......... Sub-Components ......... */
 
 function Dot({ c }: { c: string }) {
   return (
@@ -900,7 +900,7 @@ function Donut({
 function ViewMore({ label }: { label: string }) {
   return (
     <button className="mt-auto -mx-3.5 -mb-3.5 rounded-b-sm border-t border-slate-700 bg-transparent py-2.5 text-center text-[11.5px] font-medium text-blue-400">
-      {label} →
+      {label} ...
     </button>
   );
 }
@@ -933,7 +933,7 @@ function Snap({
   );
 }
 
-/* ─── Expanded Panel Views (Full-Screen Detail) ─── */
+/* ......... Expanded Panel Views (Full-Screen Detail) ......... */
 
 function BigDonut({
   segments,
@@ -1131,17 +1131,17 @@ function ExpandedPnL() {
         <div className="rounded-lg border border-emerald-700 bg-emerald-500/10 p-4">
           <div className="text-xs text-emerald-400">Total Income</div>
           <div className="text-3xl font-bold text-emerald-400">$98,450</div>
-          <div className="text-xs text-emerald-500/70">↑ 12.4% vs last month</div>
+          <div className="text-xs text-emerald-500/70">... 12.4% vs last month</div>
         </div>
         <div className="rounded-lg border border-red-700 bg-red-500/10 p-4">
           <div className="text-xs text-red-400">Total Expenses</div>
           <div className="text-3xl font-bold text-red-400">$16,190</div>
-          <div className="text-xs text-red-500/70">↑ 9.0% vs last month</div>
+          <div className="text-xs text-red-500/70">... 9.0% vs last month</div>
         </div>
         <div className="rounded-lg border border-blue-700 bg-blue-500/10 p-4">
           <div className="text-xs text-blue-400">Net Profit</div>
           <div className="text-3xl font-bold text-blue-400">$32,560</div>
-          <div className="text-xs text-blue-500/70">↑ 15.3% vs last month</div>
+          <div className="text-xs text-blue-500/70">... 15.3% vs last month</div>
         </div>
       </div>
       <svg viewBox="0 0 900 300" preserveAspectRatio="none" className="h-64 w-full">
@@ -1323,53 +1323,59 @@ function ExpandedPayroll() {
 }
 
 function ExpandedCalendar() {
-  const fullMonthDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-  const monthDays = Array.from({ length: 31 }, (_, i) => i + 1);
-  const firstDay = 3;
   return (
     <div className="space-y-4">
-      <ExpandedHeader title="Calendar" subtitle="Full monthly schedule with events, appointments, and dealership activities." />
-      <div className="grid grid-cols-7 gap-1 text-center text-sm">
-        {fullMonthDays.map((d) => (
-          <div key={d} className="py-2 text-xs font-semibold text-slate-500">{d}</div>
-        ))}
-        {Array.from({ length: firstDay }).map((_, i) => (
-          <div key={`empty-${i}`} />
-        ))}
-        {monthDays.map((d) => {
-          const dayEvents = events.filter((e) => {
-            const calDayIndex = Math.floor((d - 1 + firstDay) % 7);
-            return e.day === calDayIndex;
-          });
-          return (
+      <ExpandedHeader title="Calendar" subtitle="Full weekly schedule with events, appointments, and dealership activities." />
+      <div className="overflow-x-auto">
+        <div className="grid min-w-[700px] grid-cols-[56px_repeat(7,1fr)] gap-0.5 text-[11.5px]">
+          <div />
+          {calDays.map((d) => (
             <div
               key={d}
-              className={cn(
-                "min-h-[70px] rounded-md border border-slate-800 p-1 text-left text-xs",
-                d === 22 && "border-blue-500/50 bg-blue-500/5",
-              )}
+              className="py-2 text-center text-[13px] font-semibold text-slate-400"
             >
-              <div className={cn("mb-1 text-slate-400", d === 22 && "text-blue-400 font-bold")}>
-                {d}
-              </div>
-              {dayEvents.slice(0, 2).map((ev, i) => (
-                <div
-                  key={i}
-                  className={cn("mb-0.5 rounded px-1 py-0.5 text-[9px] leading-tight text-white truncate", ev.color)}
-                >
-                  {ev.title}
-                </div>
-              ))}
+              {d}
             </div>
-          );
-        })}
+          ))}
+          {calHours.map((h, hi) => [
+            <div
+              key={`h-${h}`}
+              className="border-t border-slate-800 pr-2 pt-1.5 text-right text-[11px] text-slate-500"
+            >
+              {h}
+            </div>,
+            ...[0, 1, 2, 3, 4, 5, 6].map((d) => {
+              const ev = events.find((e) => e.day === d && e.hour === hi);
+              return (
+                <div
+                  key={`d-${hi}-${d}`}
+                  className="min-h-[36px] rounded-[4px] border-t border-slate-800 p-1"
+                >
+                  {ev && (
+                    <div
+                      className={cn(
+                        "flex flex-col rounded-md px-1.5 py-1 text-[11px] leading-tight text-white",
+                        ev.color,
+                      )}
+                    >
+                      <span className="font-semibold">{ev.title}</span>
+                      <span className="text-[10px] opacity-80">
+                        {ev.time}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            }),
+          ])}
+        </div>
       </div>
       <div className="rounded-lg border border-slate-700 bg-[#0e1626] p-4">
         <div className="mb-2 text-xs font-semibold text-slate-500">ALL EVENTS</div>
         <div className="space-y-1.5">
           {events.map((ev, i) => (
             <div key={i} className="flex items-center gap-3 text-xs">
-              <span className={cn("h-2 w-2 rounded-full", ev.color.replace("bg-", "bg-"))} />
+              <span className={cn("h-2 w-2 rounded-full", ev.color)} />
               <span className="text-slate-300 w-16">{ev.time}</span>
               <span className="text-slate-200 font-medium">{ev.title}</span>
             </div>

@@ -34,7 +34,7 @@ export function ReportCardShell({
   );
 }
 
-/** REPORT SUMMARY (This Month) — title with period subtitle */
+/** REPORT SUMMARY (This Month) ... title with period subtitle */
 export function ReportSummaryTitle({ period = "This Month" }: { period?: string }) {
   return (
     <h2 className="mb-3 text-[11px] font-bold tracking-[0.08em] text-white uppercase">
@@ -73,7 +73,7 @@ export function ReportCardHeaderWithLink({
         type="button"
         className="shrink-0 text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
-        {linkLabel} →
+        {linkLabel} ...
       </button>
     </div>
   );
@@ -98,7 +98,7 @@ export function ReportCardSubtitle({
   );
 }
 
-/** Title with (period) inline and optional link — e.g. EXPENSE REPORT (This Month) */
+/** Title with (period) inline and optional link ... e.g. EXPENSE REPORT (This Month) */
 export function ReportTitleWithPeriodAndLink({
   title,
   period = "This Month",
@@ -123,7 +123,7 @@ export function ReportTitleWithPeriodAndLink({
           type="button"
           className="shrink-0 pt-px text-[11px] font-medium text-blue-400 hover:text-blue-300"
         >
-          {linkLabel} →
+          {linkLabel} ...
         </button>
       )}
     </div>
@@ -260,7 +260,7 @@ export function ReportSummaryFooter() {
         type="button"
         className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
-        View Full Report →
+        View Full Report ...
       </button>
       <div className="flex flex-wrap items-center gap-2">
         <button
@@ -302,7 +302,7 @@ export function ReportViewMore({
         className,
       )}
     >
-      {label} →
+      {label} ...
     </button>
   );
 }

@@ -69,6 +69,7 @@ export default function CpaLoginPage() {
               src="/login_left_bg.jpeg"
               alt="AutoVault Hero Background"
               fill
+              sizes="100vw"
               priority
               className="object-cover object-center w-full min-h-screen"
             />

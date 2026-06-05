@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AutoVault360 — Dealership Operating System",
+  title: "AutoVault360 ... Dealership Operating System",
   description:
     "Multi-tenant SaaS dealership management platform. Manage inventory, sales, expenses, payroll, and finances.",
 };

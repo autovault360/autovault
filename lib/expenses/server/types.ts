@@ -103,7 +103,7 @@ const SUBCATEGORY_LABELS: Record<string, string> = {
 };
 
 export function formatPaymentMethod(value: string | null | undefined): string {
-  if (!value) return "—";
+  if (!value) return "...";
   return PAYMENT_LABELS[value] ?? value;
 }
 
@@ -178,13 +178,13 @@ export function mapVehicleExpense(
     date: row.repair_date,
     category: "vehicle",
     title: vehicle
-      ? `${subLabel} - Stock #${vehicle.stock_number ?? "—"}`
+      ? `${subLabel} - Stock #${vehicle.stock_number ?? "..."}`
       : subLabel,
-    subtitle: row.shop_vendor ?? "—",
+    subtitle: row.shop_vendor ?? "...",
     hasReceipt: !!row.receipt_storage_path,
     paymentMethod: formatPaymentMethod(row.payment_method),
     amount: Number(row.total_cost),
-    vendor: row.shop_vendor ?? "—",
+    vendor: row.shop_vendor ?? "...",
     linkedVehicle: vehicleLabel,
     stockNumber: vehicle?.stock_number ?? null,
     vehicleId: row.vehicle_id,

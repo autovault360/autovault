@@ -11,7 +11,7 @@ export default function AdminHeader({
   onAddCustomer,
   searchValue,
   onSearchChange,
-  searchPlaceholder = "Search VIN, Stock #, Customer, Deal, or Tag…",
+  searchPlaceholder = "Search VIN, Stock #, Customer, Deal, or Tag...",
 }: {
   onAddCustomer?: () => void;
   searchValue?: string;

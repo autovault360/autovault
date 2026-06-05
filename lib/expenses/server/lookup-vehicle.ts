@@ -58,10 +58,10 @@ function mapRow(
     make: row.make,
     model: row.model,
     trim: row.trim ?? "",
-    stockNumber: row.stock_number ?? "—",
+    stockNumber: row.stock_number ?? "...",
     vin: row.vin,
     mileage: row.mileage ?? 0,
-    color: row.exterior_color ?? "—",
+    color: row.exterior_color ?? "...",
     status: mapVehicleStatus(row.status),
     image: imageUrl,
   };

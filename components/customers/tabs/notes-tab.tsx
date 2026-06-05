@@ -82,7 +82,7 @@ export default function NotesTab({
                 {note.body}
               </p>
               <p className="mt-2 text-[10.5px] text-slate-600">
-                {note.authorName} · {formatDisplayDate(note.createdAt)}
+                {note.authorName} .. {formatDisplayDate(note.createdAt)}
               </p>
             </div>
           ))

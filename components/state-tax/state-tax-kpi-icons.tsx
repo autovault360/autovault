@@ -9,7 +9,7 @@ const iconClass = "h-[22px] w-[22px] shrink-0";
 
 type KpiIconProps = { className?: string };
 
-/** Money bag with dollar sign — matches Sales Tax Center mockup */
+/** Money bag with dollar sign ... matches Sales Tax Center mockup */
 export function MoneyBagIcon({ className }: KpiIconProps) {
   return (
     <svg
@@ -40,7 +40,7 @@ export const stateTaxKpiIconMap: Record<string, ComponentType<KpiIconProps>> = {
   "filing-due": Calendar,
 };
 
-/** Solid circle backgrounds — white icon glyphs per mockup */
+/** Solid circle backgrounds ... white icon glyphs per mockup */
 export const stateTaxKpiIconBg: Record<string, string> = {
   collected: "bg-emerald-500 text-white",
   "taxable-sales": "bg-blue-600 text-white",

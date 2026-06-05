@@ -34,7 +34,7 @@ export default function DocumentsTab({
               {doc.label}
             </div>
             <div className="text-[10.5px] text-slate-500">
-              {doc.source === "deal" ? "From deal" : "Customer document"} ·{" "}
+              {doc.source === "deal" ? "From deal" : "Customer document"} ..{" "}
               {formatDisplayDate(doc.createdAt)}
             </div>
           </div>

@@ -42,7 +42,7 @@ export default function HistoryTab({ detail }: { detail: DealJacketDetail }) {
               </div>
               <div className="text-[11px] text-slate-400">{item.detail}</div>
               <div className="mt-1 text-[10px] text-[var(--text-muted)]">
-                {item.actor} ·{" "}
+                {item.actor} ..{" "}
                 {formatDisplayDate(item.occurredAt.split("T")[0])}
               </div>
             </div>

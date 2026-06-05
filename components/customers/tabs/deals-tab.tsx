@@ -28,7 +28,7 @@ export default function DealsTab({ customer }: { customer: CustomerDetail }) {
                 {deal.vehicleName}
               </div>
               <div className="mt-0.5 text-[10.5px] text-slate-500">
-                Stock #{deal.stockNumber} · {formatDisplayDate(deal.saleDate)}
+                Stock #{deal.stockNumber} .. {formatDisplayDate(deal.saleDate)}
               </div>
             </div>
             <div className="text-right">

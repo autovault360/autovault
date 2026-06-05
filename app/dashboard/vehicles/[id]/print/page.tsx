@@ -14,7 +14,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
         {label}
       </span>
       <span className="text-[11px] font-medium text-gray-900 text-right">
-        {value === "" || value === null || value === undefined ? "—" : value}
+        {value === "" || value === null || value === undefined ? "..." : value}
       </span>
     </div>
   );
@@ -39,7 +39,7 @@ export default async function VehiclePrintPage({ params }: Props) {
   return (
     <html>
       <head>
-        <title>Print — {vehicle.displayTitle}</title>
+        <title>Print ... {vehicle.displayTitle}</title>
         <style>{`
           @page { margin: 0.6in 0.5in; size: letter; }
           * { box-sizing: border-box; }
@@ -75,7 +75,7 @@ export default async function VehiclePrintPage({ params }: Props) {
             <div>
               <h1 style={{ fontSize: "20px", fontWeight: 700, margin: 0, lineHeight: 1.2 }}>{vehicle.displayTitle}</h1>
               <p style={{ fontSize: "11px", color: "#6b7280", margin: "4px 0 0 0" }}>
-                Stock #: {vehicle.stockNumber} &nbsp;·&nbsp; VIN: {vehicle.vin}
+                Stock #: {vehicle.stockNumber} &nbsp;..&nbsp; VIN: {vehicle.vin}
               </p>
             </div>
             <div style={{ textAlign: "right" }}>
@@ -205,7 +205,7 @@ export default async function VehiclePrintPage({ params }: Props) {
 
           {/* Footer */}
           <div style={{ marginTop: "24px", borderTop: "1px solid #e5e7eb", paddingTop: "8px", fontSize: "9px", color: "#9ca3af", textAlign: "center" }}>
-            Printed from AutoVault360 · {vehicle.displayTitle} · {vehicle.vin}
+            Printed from AutoVault360 .. {vehicle.displayTitle} .. {vehicle.vin}
           </div>
         </div>
       </body>

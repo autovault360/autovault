@@ -80,7 +80,7 @@ function ActivityDetailModal({
                 .replace(/\b\w/g, (c) => c.toUpperCase());
               const formattedValue =
                 value === null || value === undefined
-                  ? "—"
+                  ? "..."
                   : typeof value === "number" &&
                       (key.toLowerCase().includes("price") ||
                         key.toLowerCase().includes("cost") ||

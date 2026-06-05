@@ -119,7 +119,7 @@ export default function DocumentViewerModal({
             <span className="min-w-[3rem] text-center text-[11px] text-slate-400">
               {currentIndex >= 0
                 ? `${currentIndex + 1} / ${files.length}`
-                : "—"}
+                : "..."}
             </span>
             <button
               type="button"
