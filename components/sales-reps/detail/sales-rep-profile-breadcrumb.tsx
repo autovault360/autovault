@@ -15,12 +15,12 @@ export default function SalesRepProfileBreadcrumb({ repName }: Props) {
     >
       <Link
         href="/dashboard/sales-reps"
-        className="transition hover:text-slate-200"
+        className="transition hover:text-slate-200 text-white font-semibold text-[24px]"
       >
         Sales Reps
       </Link>
-      <ChevronRight className="h-3 w-3 text-slate-600" />
-      <span className="font-medium text-white">{repName}</span>
+      <ChevronRight className="h-5 w-5 text-white" />
+      <span className="font-medium text-white text-[20px]">{repName}</span>
     </nav>
   );
 }

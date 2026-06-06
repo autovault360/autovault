@@ -191,9 +191,11 @@ export async function getDealAggregates(
 export async function getRecentDeals(
   dealershipId: string,
   limit: number = 5,
+  statusFilter?: string,
 ): Promise<RecentDeal[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase
+
+  let query = supabase
     .from("deal_jackets")
     .select(
       `
@@ -209,6 +211,12 @@ export async function getRecentDeals(
     .is("deleted_at", null)
     .order("date_sold", { ascending: false })
     .limit(limit);
+
+  if (statusFilter && statusFilter !== "all") {
+    query = query.eq("status", statusFilter);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.warn("getRecentDeals:", error.message);

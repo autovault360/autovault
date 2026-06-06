@@ -41,9 +41,15 @@ import type {
   ExpensesPayrollOverview,
 } from "@/services/report.service";
 import type { TopVehicle } from "@/services/vehicle.service";
-import type { RecentDeal } from "@/services/deal-jacket.service";
+import { RecentDealActivityPanel } from "./_components/recent-deal-activity-panel";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status: dealStatusFilter } = await searchParams;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -56,7 +62,7 @@ export default async function DashboardPage() {
     .eq("auth_user_id", user.id)
     .single();
 
-  const dashData = await getDashboardData();
+  const dashData = await getDashboardData(dealStatusFilter);
 
   const kpis = [
     dashData.kpis.totalInventory,
@@ -84,16 +90,6 @@ export default async function DashboardPage() {
     ["bg-purple-500", "Contractors", "$575 (2.7%)"],
     ["bg-red-500", "Payroll Taxes", "$250 (1.2%)"],
   ] as const;
-
-  const deals = dashData.recentDeals.map((d) =>
-    [d.jacketNumber, d.customerName, d.vehicleTitle, d.status, formatCurrencyStr(d.salesPrice), formatCurrencyStr(d.profit), d.dateSold] as const
-  );
-
-  const statusStyle: Record<string, string> = {
-    Sold: "bg-emerald-500/15 text-emerald-400",
-    Delivered: "bg-blue-500/15 text-blue-400",
-    "In Progress": "bg-amber-500/15 text-amber-400",
-  };
 
   const topVehicles = dashData.topVehicles.map((v, i) => ({
     id: v.vin || `nv-${i}`,
@@ -398,58 +394,7 @@ export default async function DashboardPage() {
       </section>
 
       <section className="mb-3.5 grid gap-3.5 xl:grid-cols-[1.4fr_1fr]">
-        <PanelPreview title="Recent Deal Activity" expanded={<ExpandedDeals recentDeals={dashData.recentDeals} />}>
-          <CardShell>
-          <CardHead title="RECENT DEAL ACTIVITY" pill="This Month" />
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px] text-[11.5px]">
-              <thead className="text-slate-500">
-                <tr className="border-b border-slate-800">
-                  {[
-                    "Deal #",
-                    "Customer",
-                    "Vehicle",
-                    "Status",
-                    "Sales Price",
-                    "Profit",
-                    "Date",
-                  ].map((h) => (
-                    <th key={h} className="px-1.5 py-2 text-left font-medium">
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {deals.map((r) => (
-                  <tr
-                    key={r[0]}
-                    className="border-b border-slate-800/60 last:border-0"
-                  >
-                    <td className="px-1.5 py-2 text-slate-300">{r[0]}</td>
-                    <td className="px-1.5 py-2 text-slate-200">{r[1]}</td>
-                    <td className="px-1.5 py-2 text-slate-300">{r[2]}</td>
-                    <td className="px-1.5 py-2">
-                      <span
-                        className={cn(
-                          "rounded-md px-2 py-0.5 text-[10px] font-semibold",
-                          statusStyle[r[3]] || "bg-slate-500/15 text-slate-400",
-                        )}
-                      >
-                        {r[3]}
-                      </span>
-                    </td>
-                    <td className="px-1.5 py-2 text-slate-300">{r[4]}</td>
-                    <td className="px-1.5 py-2 text-emerald-400">{r[5]}</td>
-                    <td className="px-1.5 py-2 text-slate-400">{r[6]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <ViewMore label="View All Deals" />
-        </CardShell>
-        </PanelPreview>
+        <RecentDealActivityPanel initialDeals={dashData.recentDeals} currentFilter={dealStatusFilter} />
 
         <PanelPreview title="Top Vehicles by Gross Profit" expanded={<ExpandedTopVehicles topVehicles={dashData.topVehicles} />}>
           <CardShell>
@@ -1103,74 +1048,6 @@ function ExpandedCalendar() {
             </div>
           ))}
         </div>
-      </div>
-    </div>
-  );
-}
-
-function ExpandedDeals({ recentDeals }: { recentDeals: RecentDeal[] }) {
-  const statusStyle: Record<string, string> = {
-    Sold: "bg-emerald-500/15 text-emerald-400",
-    Delivered: "bg-blue-500/15 text-blue-400",
-    "In Progress": "bg-amber-500/15 text-amber-400",
-  };
-  const deals = recentDeals.map((d) =>
-    [d.jacketNumber, d.customerName, d.vehicleTitle, d.status, formatCurrencyStr(d.salesPrice), formatCurrencyStr(d.profit), d.dateSold] as const
-  );
-  const totalSales = deals.reduce((s, r) => s + parseInt(String(r[4]).replace(/[$,]/g, "")) || 0, 0);
-  const totalProfit = deals.reduce((s, r) => s + parseInt(String(r[5]).replace(/[$,]/g, "")) || 0, 0);
-  return (
-    <div className="space-y-4">
-      <ExpandedHeader title="Recent Deal Activity" subtitle="Complete deal pipeline with sales performance, margins, and transaction history." />
-      <div className="flex gap-4">
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
-          <div className="text-xs text-slate-500">Total Deals</div>
-          <div className="text-xl font-bold text-white">{deals.length}</div>
-        </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
-          <div className="text-xs text-slate-500">Total Sales</div>
-          <div className="text-xl font-bold text-emerald-400">${totalSales.toLocaleString()}</div>
-        </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
-          <div className="text-xs text-slate-500">Total Profit</div>
-          <div className="text-xl font-bold text-emerald-400">${totalProfit.toLocaleString()}</div>
-        </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
-          <div className="text-xs text-slate-500">Avg Profit/Deal</div>
-          <div className="text-xl font-bold text-blue-400">${deals.length > 0 ? Math.round(totalProfit / deals.length).toLocaleString() : "0"}</div>
-        </div>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-700 text-slate-500">
-              {["Deal #","Customer","Vehicle","Status","Sales Price","Profit","Margin","Date"].map((h) => (
-                <th key={h} className="px-3 py-2.5 text-left font-medium">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {deals.map((r) => {
-              const price = parseInt(String(r[4]).replace(/[$,]/g, "")) || 0;
-              const profit = parseInt(String(r[5]).replace(/[$,]/g, "")) || 0;
-              const margin = price ? ((profit / price) * 100).toFixed(1) : "0";
-              return (
-                <tr key={r[0]} className="border-b border-slate-800/60">
-                  <td className="px-3 py-2.5 text-slate-300">{r[0]}</td>
-                  <td className="px-3 py-2.5 text-slate-200">{r[1]}</td>
-                  <td className="px-3 py-2.5 text-slate-300">{r[2]}</td>
-                  <td className="px-3 py-2.5">
-                    <span className={cn("rounded-md px-2 py-0.5 text-xs font-semibold", statusStyle[r[3]] || "bg-slate-500/15 text-slate-400")}>{r[3]}</span>
-                  </td>
-                  <td className="px-3 py-2.5 text-slate-300">{r[4]}</td>
-                  <td className="px-3 py-2.5 text-emerald-400">{r[5]}</td>
-                  <td className="px-3 py-2.5 text-slate-400">{margin}%</td>
-                  <td className="px-3 py-2.5 text-slate-500">{r[6]}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
     </div>
   );
