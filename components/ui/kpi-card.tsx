@@ -136,21 +136,23 @@ function PeriodFooterMetric({
   label,
   className,
 }: {
-  value: string;
+  value: string | number;
   label: string;
   className?: string;
 }) {
   return (
-    <div className={cn("min-w-0", className)}>
-      <div className="truncate text-[13px] font-bold tabular-nums text-white">
+    <div className={cn("flex flex-col items-center text-center", className)}>
+      <span className="text-[13px] font-bold text-white tabular-nums tracking-tight leading-none">
         {value}
-      </div>
-      <div className="mt-0.5 text-[10px] text-slate-500">{label}</div>
+      </span>
+      <span className="mt-1 text-[9.5px] font-medium text-slate-500 tracking-wide">
+        {label}
+      </span>
     </div>
   );
 }
 
-function PeriodKPICard({
+export default function PeriodKPICard({
   data,
   className,
 }: {
@@ -164,45 +166,56 @@ function PeriodKPICard({
   return (
     <Card
       className={cn(
-        "flex h-full min-h-[148px] flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
+        "flex flex-col rounded-lg border border-slate-700 bg-transparent p-4 text-slate-200 shadow-none w-full",
         className,
       )}
     >
-      <div className="flex items-start gap-2">
+      {/* Top Section Matrix: Side-by-Side Content Block */}
+      <div className="flex items-start gap-3.5">
+        {/* Left Side: Circular Icon Core Container */}
         <div
           className={cn(
-            "grid h-9 w-9 shrink-0 place-items-center rounded-full",
-            iconBg[data.color],
+            "grid h-11 w-11 shrink-0 place-items-center rounded-full transition-colors",
+            iconBg[data.color] || "bg-emerald-500/10 text-emerald-400",
           )}
         >
-          <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+          <Icon className="h-5 w-5" strokeWidth={2} />
         </div>
-        <p className="min-w-0 flex-1 pt-1 text-[10.5px] font-medium leading-snug text-slate-400">
-          {data.label}
-        </p>
+
+        {/* Right Side: High Density Descriptive Vertical Text Stack */}
+        <div className="flex-1 min-w-0 flex flex-col items-start pt-0.5">
+          <span className="text-[13px] font-semibold text-slate-400 tracking-tight leading-none">
+            {data.label}
+          </span>
+          <span className="mt-1.5 text-[24px] font-bold leading-none tracking-tight text-white tabular-nums">
+            {data.value}
+          </span>
+          {data.unit && (
+            <span className="mt-1 text-[10px] font-medium text-slate-500 tracking-wide">
+              {data.unit}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center py-1.5 text-center">
-        <p className="text-[24px] font-bold leading-none tracking-tight text-white tabular-nums">
-          {data.value}
-        </p>
-        {data.unit && (
-          <p className="mt-1 text-[10px] text-slate-500">{data.unit}</p>
-        )}
-      </div>
-
+      {/* Bottom Section Matrix: Segmented Timeline Array */}
       {periodMetrics.length > 0 && (
-        <div className="mt-auto border-t border-slate-800/80 pt-2">
+        <div className="mt-4 pt-3 border-t border-slate-800/60">
           {hasDualFooter ? (
-            <div className="grid grid-cols-2 gap-1">
+            <div className="grid grid-cols-2 relative">
+              {/* Left Column Metric */}
               <PeriodFooterMetric
                 value={periodMetrics[0]!.value}
                 label={periodMetrics[0]!.label}
               />
+              
+              {/* Sharp Center Border Splitter Segment */}
+              <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-slate-800/80" />
+              
+              {/* Right Column Metric */}
               <PeriodFooterMetric
                 value={periodMetrics[1]!.value}
                 label={periodMetrics[1]!.label}
-                className="text-right"
               />
             </div>
           ) : (

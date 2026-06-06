@@ -4,7 +4,9 @@ import { authenticateUser } from "@/lib/vehicles/server/utils";
 import { getDashboardData as getDashboardDataFromService } from "@/services/report.service";
 import type { DashboardData } from "@/services/report.service";
 
-export async function getDashboardData(): Promise<DashboardData> {
+export async function getDashboardData(
+  dealStatusFilter?: string,
+): Promise<DashboardData> {
   const auth = await authenticateUser();
   if (!auth.ok) {
     return {
@@ -26,5 +28,5 @@ export async function getDashboardData(): Promise<DashboardData> {
     };
   }
 
-  return getDashboardDataFromService(auth.user.dealershipId);
+  return getDashboardDataFromService(auth.user.dealershipId, dealStatusFilter);
 }

@@ -94,7 +94,10 @@ function lastMonthRange(): { from: string; to: string } {
   return monthRange(1);
 }
 
-export async function getDashboardData(dealershipId: string): Promise<DashboardData> {
+export async function getDashboardData(
+  dealershipId: string,
+  dealStatusFilter?: string,
+): Promise<DashboardData> {
   const { from: mtdFrom, to: mtdTo } = monthRange(0);
   const { from: ltdFrom, to: ltdTo } = lastMonthRange();
   const ytdFrom = `${new Date().getFullYear()}-01-01`;
@@ -122,7 +125,7 @@ export async function getDashboardData(dealershipId: string): Promise<DashboardD
     getDealAggregates(dealershipId, ltdFrom, ltdTo),
     getExpenseTotals(dealershipId, mtdFrom, mtdTo),
     getExpenseTotals(dealershipId, ltdFrom, ltdTo),
-    getRecentDeals(dealershipId, 5),
+    getRecentDeals(dealershipId, 5, dealStatusFilter),
     getTopVehiclesByProfit(dealershipId, 5),
     getInventoryAging(dealershipId),
     getInventoryValue(dealershipId),
