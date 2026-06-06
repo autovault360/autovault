@@ -1,18 +1,20 @@
 "use client";
 
 import {
-  Car,
-  Leaf,
   BarChart3,
+  Car,
   DollarSign,
-  Tag,
-  PieChart,
-  TrendingDown,
-  Users,
-  UserPlus,
   Handshake,
-  Percent,
   Landmark,
+  Leaf,
+  Percent,
+  PieChart,
+  ShoppingCart,
+  Tag,
+  TrendingDown,
+  TrendingUp,
+  UserPlus,
+  Users,
   type LucideIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -32,6 +34,8 @@ export type KPIIconName =
   | "tag"
   | "pie-chart"
   | "trending-down"
+  | "trending-up"
+  | "shopping-cart"
   | "users"
   | "user-plus"
   | "handshake"
@@ -46,11 +50,18 @@ const iconMap: Record<KPIIconName, LucideIcon> = {
   tag: Tag,
   "pie-chart": PieChart,
   "trending-down": TrendingDown,
+  "trending-up": TrendingUp,
+  "shopping-cart": ShoppingCart,
   users: Users,
   "user-plus": UserPlus,
   handshake: Handshake,
   percent: Percent,
   landmark: Landmark,
+};
+
+export type KPIPeriodMetric = {
+  value: string;
+  label: string;
 };
 
 export type KPICardData = {
@@ -63,7 +74,11 @@ export type KPICardData = {
   link: string;
   sparkColor: string;
   sparkPoints: string;
+  /** Optional footer stats for period-based profile KPIs (This Year, Lifetime, etc.). */
+  periodMetrics?: KPIPeriodMetric[];
 };
+
+export type KPICardLayout = "default" | "period";
 
 function Sparkline({
   color,
@@ -116,19 +131,111 @@ function Sparkline({
   );
 }
 
+function PeriodFooterMetric({
+  value,
+  label,
+  className,
+}: {
+  value: string;
+  label: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("min-w-0", className)}>
+      <div className="truncate text-[13px] font-bold tabular-nums text-white">
+        {value}
+      </div>
+      <div className="mt-0.5 text-[10px] text-slate-500">{label}</div>
+    </div>
+  );
+}
+
+function PeriodKPICard({
+  data,
+  className,
+}: {
+  data: KPICardData;
+  className?: string;
+}) {
+  const Icon = iconMap[data.icon];
+  const periodMetrics = data.periodMetrics ?? [];
+  const hasDualFooter = periodMetrics.length >= 2;
+
+  return (
+    <Card
+      className={cn(
+        "flex h-full min-h-[148px] flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
+        className,
+      )}
+    >
+      <div className="flex items-start gap-2">
+        <div
+          className={cn(
+            "grid h-9 w-9 shrink-0 place-items-center rounded-full",
+            iconBg[data.color],
+          )}
+        >
+          <Icon className="h-[18px] w-[18px]" strokeWidth={2} />
+        </div>
+        <p className="min-w-0 flex-1 pt-1 text-[10.5px] font-medium leading-snug text-slate-400">
+          {data.label}
+        </p>
+      </div>
+
+      <div className="flex flex-1 flex-col items-center justify-center py-1.5 text-center">
+        <p className="text-[24px] font-bold leading-none tracking-tight text-white tabular-nums">
+          {data.value}
+        </p>
+        {data.unit && (
+          <p className="mt-1 text-[10px] text-slate-500">{data.unit}</p>
+        )}
+      </div>
+
+      {periodMetrics.length > 0 && (
+        <div className="mt-auto border-t border-slate-800/80 pt-2">
+          {hasDualFooter ? (
+            <div className="grid grid-cols-2 gap-1">
+              <PeriodFooterMetric
+                value={periodMetrics[0]!.value}
+                label={periodMetrics[0]!.label}
+              />
+              <PeriodFooterMetric
+                value={periodMetrics[1]!.value}
+                label={periodMetrics[1]!.label}
+                className="text-right"
+              />
+            </div>
+          ) : (
+            <PeriodFooterMetric
+              value={periodMetrics[0]!.value}
+              label={periodMetrics[0]!.label}
+            />
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export function KPICard({
   data,
   showSparkline = true,
   showLink = true,
   deltaColor = "green",
+  layout = "default",
   className,
 }: {
   data: KPICardData;
   showSparkline?: boolean;
   showLink?: boolean;
   deltaColor?: "green" | "red";
+  layout?: KPICardLayout;
   className?: string;
 }) {
+  if (layout === "period") {
+    return <PeriodKPICard data={data} className={className} />;
+  }
+
   const Icon = iconMap[data.icon];
 
   return (

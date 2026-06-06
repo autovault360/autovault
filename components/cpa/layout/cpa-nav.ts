@@ -42,6 +42,7 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         label: "Monthly Financials",
         icon: Calendar,
         color: "text-emerald-500",
+        comingSoon: true,
       },
       {
         href: "/cpa/yearly-financials",
