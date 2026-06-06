@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { getReportsRemindersData } from "@/lib/reports-reminders/server/get-reports-reminders-data";
 import ReportsPageSkeleton from "./loading";
 
 const ReportsContent = dynamic(
@@ -6,6 +7,7 @@ const ReportsContent = dynamic(
   { loading: () => <ReportsPageSkeleton /> },
 );
 
-export default function ReportsRemindersPage() {
-  return <ReportsContent />;
+export default async function ReportsRemindersPage() {
+  const { report, reminders } = await getReportsRemindersData();
+  return <ReportsContent report={report} reminders={reminders} />;
 }
