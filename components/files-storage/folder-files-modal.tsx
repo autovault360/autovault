@@ -200,7 +200,7 @@ export default function FolderFilesModal({ bucket, open, onOpenChange }: Props) 
                           <>
                             <div className="text-[12px] text-slate-300">
                               {file.sourceEntityName ?? (
-                                <span className="text-slate-600">—</span>
+                                <span className="text-slate-600">...</span>
                               )}
                             </div>
                             {file.sourceEntity && (

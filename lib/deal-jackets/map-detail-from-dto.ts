@@ -129,7 +129,7 @@ export function mapDealJacketDetailFromDto(
     notes: null,
   }));
 
-  const repName = dto.salesRep?.name ?? "—";
+  const repName = dto.salesRep?.name ?? "...";
   const activities: DealJacketDetail["activities"] = [
     {
       id: "act-created",
@@ -165,7 +165,7 @@ export function mapDealJacketDetailFromDto(
       stockNumber: dto.vehicle.stockNumber,
       vin: dto.vehicle.vin,
       mileage: dto.vehicle.mileage ?? 0,
-      color: dto.vehicle.color ?? "—",
+      color: dto.vehicle.color ?? "...",
       purchasePrice,
       totalInvested: dto.totalInvested,
       soldPrice: dto.soldPrice,
@@ -175,10 +175,10 @@ export function mapDealJacketDetailFromDto(
     customer: {
       id: dto.customer.id,
       name: dto.customer.name,
-      phone: dto.customer.phone ?? "—",
-      email: dto.customer.email ?? "—",
-      address: dto.customer.address ?? "—",
-      driversLicense: "—",
+      phone: dto.customer.phone ?? "...",
+      email: dto.customer.email ?? "...",
+      address: dto.customer.address ?? "...",
+      driversLicense: "...",
       notes: null,
     },
     sale: {
@@ -205,7 +205,7 @@ export function mapDealJacketDetailFromDto(
       commissionAmount: dto.commissionAmount,
       commissionStatus,
       commissionPaidDate: commissionStatus === "paid" ? saleDate : null,
-      commissionPaymentMethod: commissionStatus === "paid" ? "ACH" : "—",
+      commissionPaymentMethod: commissionStatus === "paid" ? "ACH" : "...",
       transactionId:
         commissionStatus === "paid"
           ? `TXN-${dto.jacketNumber.replace(/\D/g, "").slice(-6)}`

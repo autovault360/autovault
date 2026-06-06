@@ -44,7 +44,7 @@ export default function ExpensesTab({ detail }: { detail: DealJacketDetail }) {
       key: "notes",
       header: "Notes",
       cell: (row) => (
-        <span className="text-slate-500">{row.notes ?? "—"}</span>
+        <span className="text-slate-500">{row.notes ?? "..."}</span>
       ),
     },
   ];

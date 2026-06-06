@@ -33,7 +33,7 @@ export function buildReferenceDocuments(
   const names = [
     { name: "Bill of Sale", icon: "contract" as const },
     { name: "Purchase Agreement", icon: "contract" as const },
-    { name: "Buyer ID – Front", icon: "license" as const },
+    { name: "Buyer ID ... Front", icon: "license" as const },
     { name: "Insurance Declaration", icon: "insurance" as const },
     { name: "Funding Authorization", icon: "generic" as const },
   ];

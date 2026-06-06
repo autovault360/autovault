@@ -15,16 +15,16 @@ function withExpenseKind(row: ExpenseDetailSeed): ExpenseDetail {
 
 export const EXPENSE_STATS_MOCK: ExpenseStats = {
   totalExpensesMtd: 38900.45,
-  totalExpensesMtdDelta: "↓ 12.6% vs last month",
+  totalExpensesMtdDelta: "... 12.6% vs last month",
   totalExpensesMtdDeltaColor: "red",
   totalExpensesYtd: 142450.15,
-  totalExpensesYtdDelta: "↓ 8.4% vs last year",
+  totalExpensesYtdDelta: "... 8.4% vs last year",
   totalExpensesYtdDeltaColor: "red",
   averageDailyExpense: 1227.42,
-  averageDailyExpenseDelta: "↑ 15.3% vs last month",
+  averageDailyExpenseDelta: "... 15.3% vs last month",
   averageDailyExpenseDeltaColor: "green",
   revenuePercentMtd: 20.6,
-  revenuePercentMtdDelta: "↓ 2.1% vs last month",
+  revenuePercentMtdDelta: "... 2.1% vs last month",
   revenuePercentMtdDeltaColor: "red",
 };
 

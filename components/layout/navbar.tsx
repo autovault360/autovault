@@ -23,7 +23,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="#"
-            className="h-9 px-4 rounded-lg bg-gradient-to-b from-secondary to-primary/90 text-[13px] font-semibold text-white shadow-md shadow-green-950/10 transition-all hover:brightness-105 active:scale-[0.995]"
+            className="h-9 flex items-center justify-center px-4 rounded-lg bg-gradient-to-b from-secondary to-primary/90 text-[13px] font-semibold text-white shadow-md shadow-green-950/10 transition-all hover:brightness-105 active:scale-[0.995]"
           >
             Get Started
           </Link>

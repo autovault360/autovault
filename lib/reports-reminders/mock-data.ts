@@ -7,7 +7,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "green",
       label: "Total Revenue",
       value: "$512,450",
-      delta: "↑ 16.3% vs last month",
+      delta: "... 16.3% vs last month",
       sparkColor: "#22c55e",
       sparkPoints:
         "0,38 25,32 50,28 75,26 100,22 125,20 150,16 175,14 200,12 220,8",
@@ -17,7 +17,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "violet",
       label: "Gross Profit",
       value: "$98,420",
-      delta: "↑ 18.3% vs last month",
+      delta: "... 18.3% vs last month",
       sparkColor: "#a855f7",
       sparkPoints:
         "0,40 25,34 50,30 75,26 100,24 125,18 150,16 175,12 200,10 220,6",
@@ -27,7 +27,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "blue",
       label: "Net Profit",
       value: "$62,150",
-      delta: "↑ 14.6% vs last month",
+      delta: "... 14.6% vs last month",
       sparkColor: "#3b82f6",
       sparkPoints:
         "0,36 25,32 50,28 75,24 100,22 125,18 150,16 175,12 200,10 220,8",
@@ -37,7 +37,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "orange",
       label: "Vehicles Sold",
       value: "78",
-      delta: "↑ 13.4% vs last month",
+      delta: "... 13.4% vs last month",
       sparkColor: "#f97316",
       sparkPoints:
         "0,40 25,36 50,32 75,28 100,26 125,22 150,18 175,14 200,12 220,10",
@@ -47,7 +47,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "amber",
       label: "Vehicles Purchased",
       value: "42",
-      delta: "↑ 8.7% vs last month",
+      delta: "... 8.7% vs last month",
       sparkColor: "#eab308",
       sparkPoints:
         "0,38 25,34 50,30 75,28 100,24 125,22 150,18 175,16 200,14 220,12",
@@ -57,7 +57,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "red",
       label: "Total Expenses",
       value: "$16,190",
-      delta: "↑ 9.2% vs last month",
+      delta: "... 9.2% vs last month",
       sparkColor: "#ef4444",
       sparkPoints:
         "0,32 25,30 50,28 75,26 100,24 125,22 150,20 175,18 200,16 220,14",
@@ -67,7 +67,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "green",
       label: "Sales Tax Collected",
       value: "$8,425",
-      delta: "↑ 7.1% vs last month",
+      delta: "... 7.1% vs last month",
       sparkColor: "#14b8a6",
       sparkPoints:
         "0,36 25,32 50,28 75,26 100,22 125,20 150,18 175,14 200,12 220,10",
@@ -77,7 +77,7 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
       color: "green",
       label: "Payroll Paid",
       value: "$9,850",
-      delta: "↑ 5.5% vs last month",
+      delta: "... 5.5% vs last month",
       sparkColor: "#4ade80",
       sparkPoints:
         "0,38 25,34 50,32 75,28 100,26 125,24 150,20 175,18 200,16 220,14",

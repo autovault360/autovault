@@ -21,12 +21,12 @@ function pctChange(current: number, previous: number): {
   color: "green" | "red";
 } {
   if (previous === 0) {
-    return { text: "— vs prior period", color: "green" };
+    return { text: "... vs prior period", color: "green" };
   }
   const pct = ((current - previous) / previous) * 100;
   const down = pct < 0;
   return {
-    text: `${down ? "↓" : "↑"} ${Math.abs(pct).toFixed(1)}% vs prior period`,
+    text: `${down ? "..." : "..."} ${Math.abs(pct).toFixed(1)}% vs prior period`,
     color: down ? "red" : "green",
   };
 }
@@ -97,16 +97,16 @@ async function sumDealRevenue(
 
 const EMPTY_STATS: ExpenseStats = {
   totalExpensesMtd: 0,
-  totalExpensesMtdDelta: "—",
+  totalExpensesMtdDelta: "...",
   totalExpensesMtdDeltaColor: "green",
   totalExpensesYtd: 0,
-  totalExpensesYtdDelta: "—",
+  totalExpensesYtdDelta: "...",
   totalExpensesYtdDeltaColor: "green",
   averageDailyExpense: 0,
-  averageDailyExpenseDelta: "—",
+  averageDailyExpenseDelta: "...",
   averageDailyExpenseDeltaColor: "green",
   revenuePercentMtd: 0,
-  revenuePercentMtdDelta: "—",
+  revenuePercentMtdDelta: "...",
   revenuePercentMtdDeltaColor: "green",
 };
 

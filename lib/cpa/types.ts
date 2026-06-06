@@ -139,6 +139,7 @@ export type CpaDealJacketSegment = {
   name: string;
   value: number;
   color: string;
+  count?: number;
 };
 
 export type CpaStorageFolder = {
@@ -184,4 +185,133 @@ export type CpaSession = {
   dealershipName: string;
   canManageNotes: boolean;
   isReadOnly: boolean;
+};
+
+export type CpaMetricTrend = {
+  value: number;
+  changePct: number;
+  trend: "up" | "down";
+};
+
+export type CpaMonthlyVehicleSold = {
+  id: string;
+  date: string;
+  stockId: string;
+  vehicle: string;
+  customer: string;
+  salePrice: number;
+  cogs: number;
+  grossProfit: number;
+  salesRep: string;
+};
+
+export type CpaMonthlyVehiclePurchased = {
+  id: string;
+  date: string;
+  stockId: string;
+  vehicle: string;
+  purchasePrice: number;
+  cost: number;
+};
+
+export type CpaExpenseCategory = {
+  label: string;
+  amount: number;
+  pct: number;
+  color: string;
+};
+
+export type CpaSalesRepRank = {
+  id: string;
+  name: string;
+  initials: string;
+  unitsSold: number;
+  grossProfit: number;
+  commissions: number;
+};
+
+export type CpaMonthlyNoteItem = {
+  id: string;
+  content: string;
+  date: string;
+  author: string;
+  ribbon: "blue" | "green" | "amber";
+};
+
+export type CpaDealJacketStatusSegment = {
+  name: string;
+  count: number;
+  pct: number;
+  color: string;
+};
+
+export type CpaReportExportItem = {
+  id: string;
+  label: string;
+  format: "pdf" | "excel";
+};
+
+export type CpaMonthlyFinancialsData = {
+  selectedMonth: string;
+  periodSubtitle: string;
+  prevMonthLabel: string;
+  metrics: {
+    totalRevenue: CpaMetricTrend;
+    cogs: CpaMetricTrend;
+    grossProfit: CpaMetricTrend;
+    totalExpenses: CpaMetricTrend;
+    netProfit: CpaMetricTrend;
+    salesTaxCollected: CpaMetricTrend;
+    payrollPaid: CpaMetricTrend;
+    commissionsPaid: CpaMetricTrend;
+  };
+  vehiclesSold: {
+    totalCount: number;
+    data: CpaMonthlyVehicleSold[];
+    totals: { salePrice: number; cogs: number; grossProfit: number };
+  };
+  vehiclesPurchased: {
+    totalCount: number;
+    data: CpaMonthlyVehiclePurchased[];
+    totals: { purchasePrice: number; cost: number };
+  };
+  salesTax: CpaSalesTaxSummary & {
+    salesTaxOwed: number;
+  };
+  expenseBreakdown: {
+    total: number;
+    categories: CpaExpenseCategory[];
+  };
+  profitLossSummary: {
+    totalRevenue: number;
+    cogs: number;
+    grossProfit: number;
+    totalExpenses: number;
+    netProfit: number;
+    otherIncome: number;
+    profitMargin: number;
+  };
+  topSalesReps: CpaSalesRepRank[];
+  payrollCommissions: {
+    payroll: {
+      totalPayroll: number;
+      employeesPaid: number;
+      payrollTaxes: number;
+      benefits: number;
+      bonuses: number;
+    };
+    commissions: {
+      totalCommissions: number;
+      salesCommissions: number;
+      financeCommissions: number;
+      otherCommissions: number;
+    };
+  };
+  dealJackets: {
+    total: number;
+    segments: CpaDealJacketStatusSegment[];
+  };
+  notes: CpaMonthlyNoteItem[];
+  storageFolders: CpaStorageFolder[];
+  reportExports: CpaReportExportItem[];
 };

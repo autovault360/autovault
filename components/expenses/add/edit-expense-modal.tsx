@@ -86,7 +86,7 @@ export default function EditExpenseModal({
             {linkedVehicleLoading && (
               <div className="mb-4 flex items-center gap-2 rounded-md border border-slate-700/60 bg-slate-800/30 p-3">
                 <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
-                <span className="text-[12px] text-slate-400">Loading linked vehicle…</span>
+                <span className="text-[12px] text-slate-400">Loading linked vehicle...</span>
               </div>
             )}
 
@@ -539,7 +539,7 @@ export default function EditExpenseModal({
               onClick={() => handleSubmit()}
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Saving…" : "Save Changes"}
+              {form.formState.isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>

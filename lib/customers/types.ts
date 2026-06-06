@@ -240,7 +240,7 @@ export function formatCurrencyDecimal(value: number): string {
 
 export function formatDateTime(date: string): string {
   const d = new Date(date);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleString("en-US", {
     month: "short",
     day: "numeric",
@@ -262,9 +262,9 @@ export function formatCommunicationTypeProfile(type: CommunicationType): string 
 }
 
 export function formatDisplayDate(date: string | null | undefined): string {
-  if (!date) return "—";
+  if (!date) return "...";
   const d = new Date(date.includes("T") ? date : `${date}T00:00:00`);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -288,7 +288,7 @@ export function formatLocation(
 ): string {
   const parts = [city, state].filter(Boolean).join(", ");
   if (zip) return parts ? `${parts} ${zip}` : zip;
-  return parts || "—";
+  return parts || "...";
 }
 
 export function formatDelta(

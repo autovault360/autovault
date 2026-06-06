@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 function displayValue(value: React.ReactNode): React.ReactNode {
   if (value === "" || value === null || value === undefined || value === 0)
-    return "—";
+    return "...";
   return value;
 }
 

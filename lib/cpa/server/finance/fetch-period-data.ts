@@ -461,3 +461,160 @@ export function sumAllCommissions(jacketRows: JacketRow[]): number {
     0,
   );
 }
+
+type ExtendedJacketRow = JacketRow & {
+  customer: { name: string } | { name: string }[] | null;
+  sales_rep: { full_name: string } | { full_name: string }[] | null;
+};
+
+export async function fetchJacketsInRangeExtended(
+  dealershipId: string,
+  from: string,
+  to: string,
+): Promise<ExtendedJacketRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("deal_jackets")
+    .select(
+      `
+      id,
+      sold_price,
+      total_invested,
+      profit_gross,
+      profit_net,
+      commission_amount,
+      commission_status,
+      total_tax,
+      date_sold,
+      vehicle_id,
+      amount_financed,
+      balance_due,
+      sales_rep_id,
+      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin),
+      customer:customers(name),
+      sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name)
+    `,
+    )
+    .eq("dealership_id", dealershipId)
+    .is("deleted_at", null)
+    .gte("date_sold", `${from}T00:00:00`)
+    .lte("date_sold", `${to}T23:59:59`)
+    .order("date_sold", { ascending: false });
+
+  if (error) {
+    console.warn("cpa fetchJacketsInRangeExtended:", error.message);
+    return [];
+  }
+
+  return (data ?? []) as unknown as ExtendedJacketRow[];
+}
+
+export type PurchasedVehicleRow = {
+  id: string;
+  acquisition_date: string | null;
+  acquisition_cost: number | null;
+  total_invested: number | null;
+  stock_number: string | null;
+  year: number | null;
+  make: string | null;
+  model: string | null;
+};
+
+export async function fetchVehiclesPurchasedInRange(
+  dealershipId: string,
+  from: string,
+  to: string,
+): Promise<PurchasedVehicleRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(
+      "id, acquisition_date, acquisition_cost, total_invested, stock_number, year, make, model",
+    )
+    .eq("dealership_id", dealershipId)
+    .is("deleted_at", null)
+    .gte("acquisition_date", from)
+    .lte("acquisition_date", to)
+    .order("acquisition_date", { ascending: false });
+
+  if (error) {
+    console.warn("cpa fetchVehiclesPurchasedInRange:", error.message);
+    return [];
+  }
+
+  return (data ?? []) as PurchasedVehicleRow[];
+}
+
+export function mapMonthlyVehiclesSold(
+  rows: ExtendedJacketRow[],
+): import("@/lib/cpa/types").CpaMonthlyVehicleSold[] {
+  return rows.map((row) => {
+    const vehicle = Array.isArray(row.vehicle) ? row.vehicle[0] : row.vehicle;
+    const customer = Array.isArray(row.customer) ? row.customer[0] : row.customer;
+    const salesRep = Array.isArray(row.sales_rep) ? row.sales_rep[0] : row.sales_rep;
+    const year = vehicle?.year ?? 0;
+    const make = vehicle?.make ?? "";
+    const model = vehicle?.model ?? "";
+    const cogs = Number(row.total_invested);
+    return {
+      id: row.id,
+      date: new Date(row.date_sold).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      stockId: vehicle?.stock_number ?? "...",
+      vehicle: `${year} ${make} ${model}`.trim(),
+      customer: customer?.name ?? "...",
+      salePrice: Number(row.sold_price),
+      cogs,
+      grossProfit: Number(row.profit_gross),
+      salesRep: salesRep?.full_name ?? "Unassigned",
+    };
+  });
+}
+
+export function mapMonthlyVehiclesPurchased(
+  rows: PurchasedVehicleRow[],
+): import("@/lib/cpa/types").CpaMonthlyVehiclePurchased[] {
+  return rows.map((row) => {
+    const purchasePrice = Number(row.acquisition_cost ?? 0);
+    const cost = Number(row.total_invested ?? row.acquisition_cost ?? 0);
+    return {
+      id: row.id,
+      date: row.acquisition_date
+        ? new Date(`${row.acquisition_date}T12:00:00`).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+        : "...",
+      stockId: row.stock_number ?? "...",
+      vehicle: `${row.year ?? ""} ${row.make ?? ""} ${row.model ?? ""}`.trim(),
+      purchasePrice,
+      cost,
+    };
+  });
+}
+
+export function sumBenefits(expenses: RawDealershipExpenseWithMeta[]): number {
+  return expenses.reduce((sum, exp) => {
+    const text = `${exp.description} ${exp.vendor}`.toLowerCase();
+    if (text.includes("benefit") || text.includes("401k") || text.includes("health")) {
+      return sum + exp.amount;
+    }
+    return sum;
+  }, 0);
+}
+
+export function sumFinanceCommissions(
+  expenses: RawDealershipExpenseWithMeta[],
+): number {
+  return expenses.reduce((sum, exp) => {
+    const text = `${exp.description} ${exp.vendor} ${exp.category}`.toLowerCase();
+    if (text.includes("finance commission") || text.includes("f&i")) {
+      return sum + exp.amount;
+    }
+    return sum;
+  }, 0);
+}

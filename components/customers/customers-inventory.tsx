@@ -142,8 +142,8 @@ export default function CustomersInventory({
       header: "Contact Info",
       cell: (row) => (
         <div className="text-[11px]">
-          <div className="text-slate-300">{row.phone || "—"}</div>
-          <div className="text-slate-500">{row.email || "—"}</div>
+          <div className="text-slate-300">{row.phone || "..."}</div>
+          <div className="text-slate-500">{row.email || "..."}</div>
         </div>
       ),
     },

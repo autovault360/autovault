@@ -23,7 +23,7 @@ export default function PrintButton() {
         cursor: "pointer",
       }}
     >
-      🖨️ Print / Save PDF
+      ..-.... Print / Save PDF
     </button>
   );
 }

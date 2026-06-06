@@ -43,7 +43,7 @@ export function DetailCardFooter({ label }: { label: string }) {
       type="button"
       className="mt-auto -mx-3.5 -mb-3.5 rounded-b-sm border-t border-slate-700 bg-transparent py-2.5 text-center text-[11.5px] font-medium text-blue-400"
     >
-      {label} →
+      {label} ...
     </button>
   );
 }

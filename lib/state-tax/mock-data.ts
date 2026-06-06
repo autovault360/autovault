@@ -44,7 +44,7 @@ export const STATE_TAX_MOCK_REPORT: StateTaxReport = {
         value: "+ 8.4%",
         sentiment: "positive",
         direction: "up",
-        comparisonLabel: "vs May 1 – May 31",
+        comparisonLabel: "vs May 1 ... May 31",
       },
     },
     {
@@ -56,7 +56,7 @@ export const STATE_TAX_MOCK_REPORT: StateTaxReport = {
         value: "+ 6.7%",
         sentiment: "positive",
         direction: "up",
-        comparisonLabel: "vs May 1 – May 31",
+        comparisonLabel: "vs May 1 ... May 31",
       },
     },
     {

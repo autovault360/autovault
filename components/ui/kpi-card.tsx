@@ -19,6 +19,12 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  AreaChart,
+  Area,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 export type KPIIconName =
   | "car"
@@ -77,61 +83,51 @@ export type KPICardLayout = "default" | "period";
 function Sparkline({
   color,
   points,
-  id,
 }: {
   color: string;
   points: string;
-  id: string;
 }) {
-  const coords = points.split(" ").map((p) => {
-    const [x, y] = p.split(",").map(Number);
-    return { x, y };
+  const data = points.split(" ").map((p, i) => {
+    const [, y] = p.split(",").map(Number);
+    return { i, v: 50 - y };
   });
-  const fillPoints = `0,50 ${points} 220,50`;
 
   return (
-    <svg
-      viewBox="0 0 220 50"
-      className="mt-1 h-9 w-full"
-      preserveAspectRatio="none"
-      aria-hidden
-    >
-      <defs>
-        <linearGradient id={`spark-fill-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={0.2} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
-        </linearGradient>
-        <filter id={`spark-glow-${id}`} x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
-          <feFlood floodColor={color} floodOpacity="0.35" result="color" />
-          <feComposite in="color" in2="blur" operator="in" result="shadow" />
-          <feMerge>
-            <feMergeNode in="shadow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      <polygon points={fillPoints} fill={`url(#spark-fill-${id})`} />
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth={2}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        points={points}
-        filter={`url(#spark-glow-${id})`}
-      />
-      {coords.map(({ x, y }, i) => (
-        <circle
-          key={i}
-          cx={x}
-          cy={y}
-          r={2.5}
-          fill={color}
-          filter={`url(#spark-glow-${id})`}
-        />
-      ))}
-    </svg>
+    <div className="absolute inset-0" aria-hidden>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+          <defs>
+            <linearGradient id={`sf-${color.replace("#", "")}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.2} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Tooltip
+            contentStyle={{
+              background: "#1e293b",
+              border: "1px solid #334155",
+              borderRadius: 4,
+              fontSize: 12,
+              color: "#e2e8f0",
+              padding: "4px 8px",
+            }}
+            labelStyle={{ display: "none" }}
+            formatter={(value) => [value, "Value"] as [string, string]}
+            cursor={false}
+          />
+          <Area
+            type="natural"
+            dataKey="v"
+            stroke={color}
+            strokeWidth={2}
+            fill={`url(#sf-${color.replace("#", "")})`}
+            dot={{ fill: color, r: 4, strokeWidth: 0 }}
+            activeDot={{ fill: color, r: 5, strokeWidth: 0 }}
+            isAnimationActive={false}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
 
@@ -241,12 +237,11 @@ export function KPICard({
   }
 
   const Icon = iconMap[data.icon];
-  const sparkId = data.label.toLowerCase().replace(/[^a-z0-9-]/g, "");
 
   return (
     <Card
       className={cn(
-        "flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
+        "flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
         className,
       )}
     >
@@ -259,19 +254,25 @@ export function KPICard({
         >
           <Icon className="h-6 w-6" />
         </div>
-        <div className="min-w-0">
+
+        <div className="min-w-0 space-y-1">
           <div className="text-[10.5px] text-slate-500">{data.label}</div>
-          <div className="mt-0.5 text-[18px] font-bold text-white">
+
+          <div className="text-[18px] font-bold text-white">
             {data.value}
           </div>
+
           {data.unit && (
             <div className="text-[10.5px] text-slate-500">{data.unit}</div>
           )}
+
           {data.delta && (
             <div
               className={cn(
                 "text-[10.5px]",
-                deltaColor === "red" ? "text-red-400" : "text-emerald-400",
+                deltaColor === "red"
+                  ? "text-red-400"
+                  : "text-emerald-400",
               )}
             >
               {data.delta}
@@ -279,15 +280,22 @@ export function KPICard({
           )}
         </div>
       </div>
+
       {showSparkline && (
-        <Sparkline color={data.sparkColor} points={data.sparkPoints} id={sparkId} />
+        <div className="relative flex-1 min-h-[80px] py-2">
+          <Sparkline
+            color={data.sparkColor}
+            points={data.sparkPoints}
+          />
+        </div>
       )}
+
       {showLink && (
         <button
           type="button"
           className="mt-auto -mx-3 -mb-3 rounded-b-sm border-t border-slate-700 bg-transparent py-2.5 text-center text-[11.5px] font-medium text-blue-400"
         >
-          {data.link} →
+          {data.link} ...
         </button>
       )}
     </Card>

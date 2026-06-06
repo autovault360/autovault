@@ -101,7 +101,7 @@ export default function ExpensesPageContent({
                 className="flex h-9 items-center gap-1.5 rounded-md border border-slate-800 bg-[#0e1626] px-3.5 text-[12.5px] text-slate-300"
               >
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
-                May 1 – May 31, 2025
+                May 1 ... May 31, 2025
               </button>
               <button
                 type="button"

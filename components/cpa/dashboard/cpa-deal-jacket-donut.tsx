@@ -49,7 +49,7 @@ export default function CpaDealJacketDonut({
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <div className="text-lg font-bold text-white">{total}</div>
-          <div className="text-[9px] text-slate-500">Total</div>
+          <div className="text-[9px] text-slate-500">Total Deals</div>
         </div>
       </div>
       <ul className="space-y-1.5">
@@ -57,7 +57,9 @@ export default function CpaDealJacketDonut({
                   <li key={s.name} className="flex items-center gap-2 text-[11px]">
                     <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
                     <span className="text-slate-300">{s.name}</span>
-            <span className="ml-auto font-medium text-white">{s.value}%</span>
+            <span className="ml-auto font-medium text-white tabular-nums">
+              {s.count != null ? `${s.count} | ${s.value}%` : `${s.value}%`}
+            </span>
           </li>
         ))}
       </ul>

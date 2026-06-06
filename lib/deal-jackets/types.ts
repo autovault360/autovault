@@ -72,7 +72,7 @@ export function formatCurrency(value: number, decimals = 2): string {
 
 export function formatDisplayDate(date: string): string {
   const d = new Date(date.includes("T") ? date : `${date}T12:00:00`);
-  if (Number.isNaN(d.getTime())) return "—";
+  if (Number.isNaN(d.getTime())) return "...";
   return d.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

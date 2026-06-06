@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import AdminHeader from "@/components/layout/AdminHeader";
-import { STATE_TAX_MOCK_REPORT } from "@/lib/state-tax/mock-data";
-import type { StateTaxTab } from "@/lib/state-tax/types";
+import type { StateTaxReport, StateTaxTab } from "@/lib/state-tax/types";
 import StateTaxConfigForm from "./state-tax-config-form";
 import StateTaxHeader from "./state-tax-header";
 import StateTaxKpiCards from "./state-tax-kpi-cards";
@@ -11,13 +10,16 @@ import StateTaxTabs from "./state-tax-tabs";
 import StateTaxTransactionsTable from "./state-tax-transactions-table";
 import StateTaxYtdSummary from "./state-tax-ytd-summary";
 
-export default function StateTaxPageContent() {
+export default function StateTaxPageContent({
+  report,
+}: {
+  report: StateTaxReport;
+}) {
   const [activeTab, setActiveTab] = useState<StateTaxTab>("overview");
-  const report = STATE_TAX_MOCK_REPORT;
 
   return (
     <div className="relative">
-      <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles…" />
+      <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles..." />
 
       <StateTaxHeader />
 

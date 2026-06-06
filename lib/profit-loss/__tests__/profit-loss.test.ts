@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-// ── Types / Formatters ──────────────────────────────────────────────────
+// ...... Types / Formatters ......................................................................................................................................................
 import {
   formatPercent,
   formatPoints,
@@ -9,7 +9,7 @@ import {
   DEFAULT_PL_FILTERS,
 } from "../types";
 
-// ── Build Report ────────────────────────────────────────────────────────
+// ...... Build Report ........................................................................................................................................................................
 import {
   finalizePeriodTotals,
   EMPTY_PERIOD_TOTALS,
@@ -23,18 +23,18 @@ import {
 } from "../build-report";
 import type { PeriodTotals } from "../build-report";
 
-// ── Filter / Enrich ─────────────────────────────────────────────────────
+// ...... Filter / Enrich ...............................................................................................................................................................
 import { enrichTableRows, applyPlFilters } from "../filter-pl-data";
 
-// ── Aggregation ─────────────────────────────────────────────────────────
+// ...... Aggregation ...........................................................................................................................................................................
 import { matchesDealType, aggregatePeriodTotals } from "../server/aggregate-pl-data";
 import type { RawDealJacket, RawVehicleExpense, RawDealershipExpense } from "../server/aggregate-pl-data";
 
-// ── Mock data for verification ──────────────────────────────────────────
+// ...... Mock data for verification ..............................................................................................................................
 import { PROFIT_LOSS_MOCK } from "../mock-data";
 
 // =========================================================================
-//  SECTION 1 — Formatters
+//  SECTION 1 ... Formatters
 // =========================================================================
 describe("formatPercent", () => {
   it("formats positive percent", () => {
@@ -85,7 +85,7 @@ describe("formatCompactCurrency", () => {
 });
 
 // =========================================================================
-//  SECTION 2 — computeChange
+//  SECTION 2 ... computeChange
 // =========================================================================
 describe("computeChange", () => {
   it("computes positive dollar and percent", () => {
@@ -121,7 +121,7 @@ describe("computeChange", () => {
 });
 
 // =========================================================================
-//  SECTION 3 — finalizePeriodTotals
+//  SECTION 3 ... finalizePeriodTotals
 // =========================================================================
 describe("finalizePeriodTotals", () => {
   const raw: Partial<PeriodTotals> = {
@@ -195,7 +195,7 @@ describe("finalizePeriodTotals", () => {
 });
 
 // =========================================================================
-//  SECTION 4 — buildKpis
+//  SECTION 4 ... buildKpis
 // =========================================================================
 describe("buildKpis", () => {
   const current = {
@@ -304,7 +304,7 @@ describe("buildKpis", () => {
 });
 
 // =========================================================================
-//  SECTION 5 — buildStatementRows
+//  SECTION 5 ... buildStatementRows
 // =========================================================================
 describe("buildStatementRows", () => {
   const thisMonth = finalizePeriodTotals({
@@ -372,7 +372,7 @@ describe("buildStatementRows", () => {
 });
 
 // =========================================================================
-//  SECTION 6 — Revenue & Expense Breakdown
+//  SECTION 6 ... Revenue & Expense Breakdown
 // =========================================================================
 describe("buildRevenueBreakdown", () => {
   const data = finalizePeriodTotals({ vehicle_sales: 181120, other_income: 4110 });
@@ -426,7 +426,7 @@ describe("buildExpenseBreakdown", () => {
 });
 
 // =========================================================================
-//  SECTION 7 — buildInsights
+//  SECTION 7 ... buildInsights
 // =========================================================================
 describe("buildInsights", () => {
   const thisMonth = finalizePeriodTotals({
@@ -512,7 +512,7 @@ describe("buildInsights", () => {
 });
 
 // =========================================================================
-//  SECTION 8 — buildDailyTrendFromEvents
+//  SECTION 8 ... buildDailyTrendFromEvents
 // =========================================================================
 describe("buildDailyTrendFromEvents", () => {
   it("builds cumulative daily trend from event map", () => {
@@ -551,7 +551,7 @@ describe("buildDailyTrendFromEvents", () => {
 });
 
 // =========================================================================
-//  SECTION 9 — enrichTableRows
+//  SECTION 9 ... enrichTableRows
 // =========================================================================
 describe("enrichTableRows", () => {
   const mockRows = [
@@ -612,7 +612,7 @@ describe("enrichTableRows", () => {
 });
 
 // =========================================================================
-//  SECTION 10 — applyPlFilters
+//  SECTION 10 ... applyPlFilters
 // =========================================================================
 describe("applyPlFilters", () => {
   it("filters statement rows by search term", () => {
@@ -654,7 +654,7 @@ describe("applyPlFilters", () => {
 });
 
 // =========================================================================
-//  SECTION 11 — aggregatePeriodTotals
+//  SECTION 11 ... aggregatePeriodTotals
 // =========================================================================
 describe("aggregatePeriodTotals", () => {
   it("sums sold_price to vehicle_sales", () => {
@@ -756,7 +756,7 @@ describe("aggregatePeriodTotals", () => {
 });
 
 // =========================================================================
-//  SECTION 12 — matchesDealType
+//  SECTION 12 ... matchesDealType
 // =========================================================================
 describe("matchesDealType", () => {
   const makeJacket = (amount_financed: number) =>
@@ -789,7 +789,7 @@ describe("matchesDealType", () => {
 });
 
 // =========================================================================
-//  SECTION 13 — DEFAULT_PL_FILTERS
+//  SECTION 13 ... DEFAULT_PL_FILTERS
 // =========================================================================
 describe("DEFAULT_PL_FILTERS", () => {
   it("has expected defaults", () => {
@@ -804,7 +804,7 @@ describe("DEFAULT_PL_FILTERS", () => {
 });
 
 // =========================================================================
-//  SECTION 14 — Full Report Integration (mock verification)
+//  SECTION 14 ... Full Report Integration (mock verification)
 // =========================================================================
 describe("buildProfitLossReport (integration)", () => {
   const thisMonth = finalizePeriodTotals({
@@ -898,7 +898,7 @@ describe("buildProfitLossReport (integration)", () => {
 });
 
 // =========================================================================
-//  SECTION 15 — EMPTY_PERIOD_TOTALS
+//  SECTION 15 ... EMPTY_PERIOD_TOTALS
 // =========================================================================
 describe("EMPTY_PERIOD_TOTALS", () => {
   it("all fields are 0", () => {

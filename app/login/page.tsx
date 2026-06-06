@@ -69,6 +69,7 @@ export default function LoginPage() {
               src="/login_left_bg.jpeg"
               alt="AutoVault Hero Background"
               fill
+              sizes="100vw"
               priority
               className="object-cover object-center w-full min-h-screen"
             />
@@ -101,7 +102,7 @@ export default function LoginPage() {
                 <p className="text-[13px] leading-relaxed text-zinc-300 max-w-xs pr-10 font-normal">
                   AutoVault is the all-in-one platform built for modern
                   dealerships. Manage your CRM, inventory, deals, customers, and
-                  performance—all from one secure dashboard.
+                  performance...all from one secure dashboard.
                 </p>
               </div>
             </div>
@@ -145,7 +146,7 @@ export default function LoginPage() {
                 </h4>
                 <p className="text-[11px] leading-relaxed text-muted">
                   Everything your dealership needs to run, grow, and
-                  succeed—CRM, inventory, deals, analytics, and more, all in one
+                  succeed...CRM, inventory, deals, analytics, and more, all in one
                   place.
                 </p>
               </div>

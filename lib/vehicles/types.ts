@@ -50,7 +50,7 @@ export function formatCurrencyDecimal(value: number): string {
 }
 
 export function formatMileage(value: number): string {
-  if (value === 0) return "—";
+  if (value === 0) return "...";
   return new Intl.NumberFormat("en-US").format(value);
 }
 
@@ -89,7 +89,7 @@ export function formatDetailValue(
   value: unknown,
   allDetails?: Record<string, unknown> | null,
 ): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "...";
   const fieldName = SNAKE_TO_FIELD[key];
   if (fieldName && typeof value === "string") {
     if (fieldName === "model") {

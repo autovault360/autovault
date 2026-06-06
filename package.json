@@ -8,6 +8,7 @@
     "start": "next start",
     "seed:sales-reps": "tsx scripts/seed-sales-reps.ts",
     "seed:deal-jackets": "npx tsx scripts/seed-deal-jackets.ts",
+    "seed:full": "npx tsx scripts/seed-full.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

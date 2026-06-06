@@ -44,3 +44,15 @@ export const cpaNotesQuerySchema = z.object({
 export type CreateCpaNoteInput = z.infer<typeof createCpaNoteSchema>;
 export type UpdateCpaNoteInput = z.infer<typeof updateCpaNoteSchema>;
 export type CreateCpaCommentInput = z.infer<typeof createCpaCommentSchema>;
+
+export const createCpaMonthlyNoteSchema = z.object({
+  content: z
+    .string()
+    .min(5, "Note must be at least 5 characters")
+    .max(250, "Note cannot exceed 250 characters"),
+  ribbon: z.enum(["blue", "green", "amber"], {
+    message: "Please select a category ribbon",
+  }),
+});
+
+export type CreateCpaMonthlyNoteInput = z.infer<typeof createCpaMonthlyNoteSchema>;

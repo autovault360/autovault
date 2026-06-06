@@ -4,12 +4,12 @@ import { useCallback, useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import { filterReminders } from "@/lib/reminders/filter-reminders";
-import { REMINDERS_MOCK_REPORT } from "@/lib/reminders/mock-data";
 import { DEFAULT_REMINDERS_FILTERS } from "@/lib/reminders/types";
-import { REPORTS_REMINDERS_MOCK } from "@/lib/reports-reminders/mock-data";
+import type { RemindersReport } from "@/lib/reminders/types";
 import {
   DEFAULT_REPORTS_FILTERS,
   type ReportsFilters,
+  type ReportsRemindersMock,
 } from "@/lib/reports-reminders/types";
 import ReportsRemindersHeader from "./reports-reminders-header";
 import ReportsRemindersFilters from "./reports-reminders-filters";
@@ -21,7 +21,13 @@ import StickyNotesCard from "./sticky-notes-card";
 import { cn } from "@/lib/utils";
 import { REPORTS_SIDEBAR_WIDTH_CLASS } from "./reports-constants";
 
-export default function ReportsRemindersPageContent() {
+export default function ReportsRemindersPageContent({
+  report,
+  reminders,
+}: {
+  report: ReportsRemindersMock;
+  reminders: RemindersReport;
+}) {
   const [reminderFilters, setReminderFilters] = useState(
     DEFAULT_REMINDERS_FILTERS,
   );
@@ -31,8 +37,8 @@ export default function ReportsRemindersPageContent() {
   const [aiPanelOpen, setAiPanelOpen] = useState(true);
 
   const filteredReminders = useMemo(
-    () => filterReminders(reminderFilters, REMINDERS_MOCK_REPORT),
-    [reminderFilters],
+    () => filterReminders(reminderFilters, reminders),
+    [reminderFilters, reminders],
   );
 
   const handleSearchChange = useCallback((searchQuery: string) => {
@@ -44,7 +50,7 @@ export default function ReportsRemindersPageContent() {
       <AdminHeader
         searchValue={reminderFilters.searchQuery}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="Search VIN, Stock #, Customer, Deal, or Tag…"
+        searchPlaceholder="Search VIN, Stock #, Customer, Deal, or Tag..."
       />
 
       <div className="flex items-start gap-3.5">
@@ -56,16 +62,16 @@ export default function ReportsRemindersPageContent() {
             onChange={setReportFilters}
           />
 
-          <ReportsKpiRow kpis={REPORTS_REMINDERS_MOCK.kpis} />
+          <ReportsKpiRow kpis={report.kpis} />
 
           <ReportsGrid
-            report={REPORTS_REMINDERS_MOCK}
+            report={report}
             reminderKpis={filteredReminders.kpis}
           />
         </div>
 
         <ReportsSidebar
-          report={REPORTS_REMINDERS_MOCK}
+          report={report}
           aiOpen={aiPanelOpen}
           onAiOpenChange={setAiPanelOpen}
         />
@@ -96,10 +102,10 @@ export default function ReportsRemindersPageContent() {
             )}
           >
             <ReportsAiAssistant
-              suggestions={REPORTS_REMINDERS_MOCK.aiSuggestions}
+              suggestions={report.aiSuggestions}
               onClose={() => setAiPanelOpen(false)}
             />
-            <StickyNotesCard notes={REPORTS_REMINDERS_MOCK.stickyNotes} />
+            <StickyNotesCard notes={report.stickyNotes} />
           </div>
         </>
       )}

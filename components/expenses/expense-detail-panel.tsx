@@ -48,9 +48,9 @@ export default function ExpenseDetailPanel({
 
   const linkedVehicleLabel = expense.linkedVehicle
     ? expense.stockNumber
-      ? `${expense.linkedVehicle} · Stock #${expense.stockNumber}`
+      ? `${expense.linkedVehicle} .. Stock #${expense.stockNumber}`
       : expense.linkedVehicle
-    : "—";
+    : "...";
 
   const handleDelete = () => {
     if (!confirm("Delete this expense? This action cannot be undone.")) return;
@@ -158,7 +158,7 @@ export default function ExpenseDetailPanel({
               <DetailField label="Date" value={formatDisplayDate(expense.date)} />
 
               {expense.expenseKind === "vehicle" ? (
-                <DetailField label="Type" value={expense.expenseSubcategory ?? "—"} />
+                <DetailField label="Type" value={expense.expenseSubcategory ?? "..."} />
               ) : (
                 <DetailField label="Category" value={formatCategory(expense.category)} />
               )}
@@ -177,7 +177,7 @@ export default function ExpenseDetailPanel({
                 value={formatDateTime(expense.receiptUploadedAt)}
               />
 
-              <DetailField label="Notes" value={expense.notes ?? "—"} />
+              <DetailField label="Notes" value={expense.notes ?? "..."} />
 
               <DetailField label="Added By" value={expense.addedBy} />
 
@@ -205,7 +205,7 @@ export default function ExpenseDetailPanel({
             onClick={handleDelete}
             disabled={deleting}
           >
-            {deleting ? "Deleting…" : "Delete Expense"}
+            {deleting ? "Deleting..." : "Delete Expense"}
           </Button>
         </div>
       </aside>

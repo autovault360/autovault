@@ -125,7 +125,7 @@ export default function ExpensesInventory({
         ) : row.hasReceipt ? (
           <FileText className="h-4 w-4 text-slate-400" aria-label="Receipt attached" />
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-600">...</span>
         ),
     },
     {

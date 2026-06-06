@@ -158,10 +158,10 @@ export function formatMetricDelta(
     return { text: `0% vs ${comparisonLabel}`, color: "green" };
   }
   if (previous === 0) {
-    return { text: `↑ 100% vs ${comparisonLabel}`, color: "green" };
+    return { text: `... 100% vs ${comparisonLabel}`, color: "green" };
   }
   const pct = ((current - previous) / previous) * 100;
-  const arrow = pct >= 0 ? "↑" : "↓";
+  const arrow = pct >= 0 ? "..." : "...";
   return {
     text: `${arrow} ${Math.abs(pct).toFixed(1)}% vs ${comparisonLabel}`,
     color: pct >= 0 ? "green" : "red",

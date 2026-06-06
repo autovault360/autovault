@@ -38,11 +38,10 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         color: "text-blue-500",
       },
       {
-        href: "/cpa/monthly-financials",
+        href: "/cpa/dashboard/monthly-financial",
         label: "Monthly Financials",
         icon: Calendar,
         color: "text-emerald-500",
-        comingSoon: true,
         comingSoon: true,
       },
       {
