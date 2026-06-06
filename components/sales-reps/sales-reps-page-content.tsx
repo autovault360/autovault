@@ -60,6 +60,13 @@ export default function SalesRepsPageContent({
     router.refresh();
   }, [router]);
 
+  const handleRowClick = useCallback(
+    (row: SalesRepListItem) => {
+      router.push(`/dashboard/sales-reps/${row.id}`);
+    },
+    [router],
+  );
+
   const handlePeriodChange = useCallback((nextPeriod: SalesRepPeriod) => {
     setPeriod(nextPeriod);
     startTransition(async () => {
@@ -118,6 +125,7 @@ export default function SalesRepsPageContent({
           period={period}
           onPeriodChange={handlePeriodChange}
           isLoading={isPending}
+          onRowClick={handleRowClick}
         />
       )}
 

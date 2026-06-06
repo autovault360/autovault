@@ -37,6 +37,7 @@ type Props = {
   period: SalesRepPeriod;
   onPeriodChange: (period: SalesRepPeriod) => void;
   isLoading?: boolean;
+  onRowClick?: (row: SalesRepListItem) => void;
 };
 
 const PERIOD_OPTIONS: { value: SalesRepPeriod; label: string }[] = [
@@ -61,6 +62,7 @@ export default function SalesRepsInventory({
   period,
   onPeriodChange,
   isLoading = false,
+  onRowClick,
 }: Props) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -224,7 +226,11 @@ export default function SalesRepsInventory({
       header: "Actions",
       headerClassName: "text-right pr-4 w-[100px]",
       cellClassName: "text-right pr-4 w-[100px]",
-      cell: () => <SalesRepRowActions />,
+      cell: () => (
+        <div onClick={(e) => e.stopPropagation()} role="presentation">
+          <SalesRepRowActions />
+        </div>
+      ),
     },
   ];
 
@@ -296,6 +302,7 @@ export default function SalesRepsInventory({
             addPagination
             emptyMessage="No sales reps match your filters."
             paginationSummaryLabel="sales reps"
+            onRowClick={onRowClick}
           />
         )}
       </div>
