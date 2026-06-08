@@ -13,6 +13,7 @@ import RecentDealJacketsTable from "./recent-deal-jackets-table";
 import TeamMessagesCard from "./team-messages-card";
 import RecentActivityCard from "./recent-activity-card";
 import SalesRepDealJacketWorkspace from "./sales-rep-deal-jacket-workspace";
+import CommissionSection from "./commissions/commission-section";
 import SalesRepDashboardSkeleton from "./sales-rep-dashboard-skeleton";
 
 function DashboardInner() {
@@ -60,7 +61,7 @@ function DashboardInner() {
         />
       </section>
 
-      {/* MASTER TWO-COLUMN GRID SYSTEM - UPDATED COLUMNS FOR PIXEL PERFECT WIDTH PARITY */}
+      {/* MASTER TWO-COLUMN GRID SYSTEM */}
       <section className="grid grid-cols-1 xl:grid-cols-[1fr_360px] 2xl:grid-cols-[1fr_400px] gap-3.5 items-start">
         
         {/* LEFT WORKSPACE FLOW BLOCK COLUMN CONTAINER */}
@@ -96,9 +97,25 @@ function DashboardInner() {
             </div>
           </div>
 
+          {/* ZONE 4: COMMISSIONS SECTION */}
+          <CommissionSection
+            data={dashboardData.commissions}
+            loading={loading.commissions}
+          />
+
+          {/* ZONE 5: DEAL JACKET WORKSPACE */}
+          <SalesRepDealJacketWorkspace
+            expanded={isDealJacketExpanded}
+            onCollapse={() => setIsDealJacketExpanded(false)}
+            selectedVehicle={selectedVehicle}
+            inventory={dashboardData.inventory}
+            pricing={dashboardData.pricing}
+            panelRef={dealJacketRef}
+          />
+
         </div>
 
-        {/* RIGHT STANDALONE COMMUNICATIONS COLUMN - EXPANDED WIDTH ASSIGNMENT */}
+        {/* RIGHT STANDALONE COMMUNICATIONS COLUMN - STICKY */}
         <div className="flex flex-col gap-3.5 w-full xl:w-[360px] 2xl:w-[400px] shrink-0 sticky top-3.5">
           {/* STANDALONE ROW BLOCK A: MESSAGE CELL TILES */}
           <TeamMessagesCard
@@ -114,18 +131,6 @@ function DashboardInner() {
         </div>
 
       </section>
-
-      {/* LOWER EXPANDABLE PRODUCTION-GRADE FORM CONTAINER FIELDSET */}
-      <div className="mt-3.5">
-        <SalesRepDealJacketWorkspace
-          expanded={isDealJacketExpanded}
-          onCollapse={() => setIsDealJacketExpanded(false)}
-          selectedVehicle={selectedVehicle}
-          inventory={dashboardData.inventory}
-          pricing={dashboardData.pricing}
-          panelRef={dealJacketRef}
-        />
-      </div>
     </div>
   );
 }

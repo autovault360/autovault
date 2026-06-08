@@ -236,6 +236,7 @@ export function KPICard({
   showLink = true,
   deltaColor = "green",
   layout = "default",
+  valueClassName,
   className,
 }: {
   data: KPICardData;
@@ -243,6 +244,7 @@ export function KPICard({
   showLink?: boolean;
   deltaColor?: "green" | "red";
   layout?: KPICardLayout;
+  valueClassName?: string;
   className?: string;
 }) {
   if (layout === "period") {
@@ -271,7 +273,12 @@ export function KPICard({
         <div className="min-w-0 space-y-1">
           <div className="text-[13px] text-slate-500">{data.label}</div>
 
-          <div className="text-[18px] font-bold text-white">
+          <div
+            className={cn(
+              "text-[18px] font-bold text-white tabular-nums",
+              valueClassName,
+            )}
+          >
             {data.value}
           </div>
 
