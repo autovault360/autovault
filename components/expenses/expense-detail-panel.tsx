@@ -121,7 +121,7 @@ export default function ExpenseDetailPanel({
                   {formatCurrency(expense.amount)}
                 </span>
 
-                <span className="mb-1 text-[10.5px] text-slate-500">Total Amount</span>
+                <span className="mb-1 text-[13px] text-slate-500">Total Amount</span>
               </div>
 
               {expense.linkedVehicle && (

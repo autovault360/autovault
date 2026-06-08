@@ -15,7 +15,7 @@ export default function CustomerStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10.5px] font-medium",
+        "inline-flex items-center rounded-full border px-2 py-0.5 text-[13px] font-medium",
         getCustomerStatusStyle(status),
         className,
       )}

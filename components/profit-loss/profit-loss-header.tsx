@@ -117,7 +117,7 @@ export function ProfitLossHeader({ report }: HeaderProps) {
       <div>
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-2xl font-bold text-white">Profit & Loss</h1>
-          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10.5px] font-medium text-emerald-400">
+          <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[13px] font-medium text-emerald-400">
             Auto-Generated
           </span>
         </div>

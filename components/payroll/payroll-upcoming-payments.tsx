@@ -42,7 +42,7 @@ export default function PayrollUpcomingPayments({
         ))}
       </ul>
       <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-3">
-        <span className="text-[10.5px] font-semibold uppercase tracking-wide text-slate-500">
+        <span className="text-[13px] font-semibold uppercase tracking-wide text-slate-500">
           Total Upcoming
         </span>
         <span className="font-mono text-[13px] font-bold tabular-nums text-emerald-400">

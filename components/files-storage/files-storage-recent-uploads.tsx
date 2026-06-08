@@ -36,7 +36,7 @@ export default function FilesStorageRecentUploads({ uploads }: Props) {
                 <div className="text-[10px] text-slate-500">{upload.category}</div>
               </div>
               <div className="shrink-0 text-right">
-                <div className="text-[10.5px] text-slate-400">
+                <div className="text-[13px] text-slate-400">
                   {formatUploadTime(upload.uploadedAt)}
                 </div>
                 <div className="text-[10px] text-slate-500">

@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/layout/AdminSidebar";
 
+const ADMIN_ALLOWED_ROLES = new Set(["super_admin", "owner", "manager"]);
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -19,7 +21,17 @@ export default async function DashboardLayout({
     .eq("auth_user_id", user.id)
     .single();
 
-  if (profile && !profile.is_active) {
+  if (!profile) {
+    await supabase.auth.signOut();
+    redirect("/login");
+  }
+
+  if (!profile.is_active) {
+    await supabase.auth.signOut();
+    redirect("/login");
+  }
+
+  if (!ADMIN_ALLOWED_ROLES.has(profile.role)) {
     await supabase.auth.signOut();
     redirect("/login");
   }

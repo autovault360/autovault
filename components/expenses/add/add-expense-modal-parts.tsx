@@ -123,7 +123,7 @@ export function OptionCheckbox({
         <span className="block text-[12px] leading-snug text-slate-200">
           {label}
         </span>
-        <span className="mt-0.5 block text-[10.5px] leading-relaxed text-slate-500">
+        <span className="mt-0.5 block text-[13px] leading-relaxed text-slate-500">
           {helper}
         </span>
       </span>
@@ -210,7 +210,7 @@ export function ReceiptUploadSection({
             JPG, PNG, PDF up to 10MB
           </p>
           {receiptFile && (
-            <p className="mt-2 max-w-full truncate text-[10.5px] text-blue-400">
+            <p className="mt-2 max-w-full truncate text-[13px] text-blue-400">
               {receiptFile.name}
             </p>
           )}

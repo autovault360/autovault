@@ -47,7 +47,7 @@ export default function NotesTab({
         onSubmit={handleSubmit}
         className="rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3 space-y-2"
       >
-        <h4 className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+        <h4 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Add Note
         </h4>
         <Textarea
@@ -81,7 +81,7 @@ export default function NotesTab({
               <p className="text-[11.5px] leading-relaxed text-slate-300">
                 {note.body}
               </p>
-              <p className="mt-2 text-[10.5px] text-slate-600">
+              <p className="mt-2 text-[13px] text-slate-600">
                 {note.authorName} .. {formatDisplayDate(note.createdAt)}
               </p>
             </div>

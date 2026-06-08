@@ -15,7 +15,7 @@ export default function ExpenseCategoryBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-sm px-2.5 py-1 text-[10.5px] font-medium whitespace-nowrap",
+        "inline-flex items-center rounded-sm px-2.5 py-1 text-[13px] font-medium whitespace-nowrap",
         getCategoryStyle(category),
         className,
       )}

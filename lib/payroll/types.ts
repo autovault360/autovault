@@ -96,3 +96,136 @@ export function formatPaymentType(type: PaymentType): string {
       return "Paper Check";
   }
 }
+
+export type PayrollCycle = "weekly" | "biweekly" | "semimonthly" | "monthly";
+
+export type EmployeePayrollTab = "overview" | "calendar";
+
+export type DeductionLine = {
+  type: string;
+  description: string;
+  amount: number;
+};
+
+export type EarningsLine = {
+  type: string;
+  reference: string;
+  description: string;
+  rateOrAmount: string;
+  amount: number;
+};
+
+export type CommissionDealRow = {
+  dealJacketId: string;
+  vehicle: string;
+  grossProfit: number;
+  commissionRate: number;
+  commission: number;
+};
+
+export type PayHistoryEntry = {
+  id: string;
+  payPeriod: string;
+  payDate: string;
+  totalPay: number;
+  status: PayrollStatus;
+  paymentType: PaymentType;
+};
+
+export type PaymentSummary = {
+  status: PayrollStatus;
+  paymentType: PaymentType;
+  bank: string;
+  accountMasked: string;
+  estimatedDeposit: string;
+  netPay: number;
+  infoNote: string;
+};
+
+export type YtdSummary = {
+  year: number;
+  grossEarnings: number;
+  taxes: number;
+  otherDeductions: number;
+  netPayYtd: number;
+  totalCommissions: number;
+  totalBonuses: number;
+};
+
+export type EmployeeUpcomingPayDate = {
+  id: string;
+  date: string;
+  label: string;
+  daysUntil: number;
+  estimatedAmount: number;
+};
+
+export type PayrollDocument = {
+  id: string;
+  name: string;
+  uploadedAt: string;
+  type: "w4" | "direct_deposit" | "pay_stub" | "other";
+};
+
+export type PayPeriodSummary = {
+  status: PayrollStatus;
+  payPeriod: string;
+  payDate: string;
+  paymentType: PaymentType;
+  basePay: number;
+  commission: number;
+  bonus: number;
+  deductions: number;
+  totalPay: number;
+};
+
+export type PayrollCalendarEventType = "period_start" | "period_end" | "pay_date";
+
+export type PayrollCalendarEvent = {
+  date: string;
+  type: PayrollCalendarEventType;
+  label: string;
+  amount?: number;
+  period?: string;
+};
+
+export type PaycheckDetail = {
+  period: string;
+  payDate: string;
+  basePay: number;
+  commission: number;
+  bonus: number;
+  deductions: number;
+  netPay: number;
+  paymentType: PaymentType;
+  verificationStatus: "verified" | "pending" | "review";
+  adminNote: string;
+  documents: PayrollDocument[];
+};
+
+export type EmployeePayrollProfile = {
+  id: string;
+  empCode: string;
+  name: string;
+  avatarUrl: string;
+  role: string;
+  phone: string;
+  email: string;
+  hireDate: string;
+  payFrequency: string;
+  isActive: boolean;
+  periodLabel: string;
+  payPeriodSummary: PayPeriodSummary;
+  deductions: DeductionLine[];
+  earnings: EarningsLine[];
+  commissionDeals: CommissionDealRow[];
+  payHistory: PayHistoryEntry[];
+  paymentSummary: PaymentSummary;
+  ytdSummary: YtdSummary;
+  upcomingPayDates: EmployeeUpcomingPayDate[];
+  documents: PayrollDocument[];
+  adminNote: string;
+  adminNoteUpdatedAt: string;
+  calendarEvents: PayrollCalendarEvent[];
+  paycheckDetails: Record<string, PaycheckDetail>;
+};

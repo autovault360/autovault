@@ -90,7 +90,7 @@ export function ReportCardSubtitle({
     <p
       className={cn(
         "leading-snug text-slate-500",
-        compact ? "mb-1.5 text-[10px]" : "mb-2.5 text-[10.5px]",
+        compact ? "mb-1.5 text-[10px]" : "mb-2.5 text-[13px]",
       )}
     >
       {children}

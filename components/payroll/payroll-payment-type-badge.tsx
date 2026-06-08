@@ -11,7 +11,7 @@ export default function PayrollPaymentTypeBadge({ type }: { type: PaymentType })
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium border whitespace-nowrap",
+        "inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium whitespace-nowrap",
         styles[type],
       )}
     >

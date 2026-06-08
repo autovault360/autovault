@@ -101,7 +101,7 @@ export default function MonthlyPerformanceSummaryView({ summary, onClose }: Prop
                   className="h-8 w-10 rounded object-cover"
                 />
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-[10.5px] text-slate-300">
+                  <div className="truncate text-[13px] text-slate-300">
                     {v.makeModel}
                   </div>
                   <div className="text-[9.5px] text-slate-500">
@@ -238,7 +238,7 @@ function ScorecardTable({
           {rows.map((row) => (
             <div
               key={row.label}
-              className="flex justify-between gap-2 text-[10.5px]"
+              className="flex justify-between gap-2 text-[13px]"
             >
               <span className="text-slate-500">{row.label}</span>
               <span className="font-medium text-slate-200">{row.value}</span>

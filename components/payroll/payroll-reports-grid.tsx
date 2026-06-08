@@ -68,7 +68,7 @@ export default function PayrollReportsGrid({ reports }: { reports: PayrollReport
                 </div>
                 <button
                   type="button"
-                  className="mt-1.5 text-left text-[10.5px] font-medium text-[#4589ff] hover:text-blue-400 transition-colors cursor-pointer w-fit"
+                  className="mt-1.5 text-left text-[13px] font-medium text-[#4589ff] hover:text-blue-400 transition-colors cursor-pointer w-fit"
                   onClick={() =>
                     toast.success(`Report queued: ${report.title}`)
                   }

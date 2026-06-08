@@ -88,7 +88,7 @@ export default function InventoryOverviewCard({ inventory }: Props) {
           {inventory.breakdown.map((seg) => (
             <li
               key={seg.id}
-              className="flex items-center gap-2 text-[10.5px] leading-tight"
+              className="flex items-center gap-2 text-[13px] leading-tight"
             >
               <span
                 className="h-2 w-2 shrink-0 rounded-full"

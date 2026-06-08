@@ -38,7 +38,7 @@ export function ReminderCardHead({
         <button
           type="button"
           onClick={onViewAll}
-          className="text-[10.5px] font-medium text-blue-400 hover:text-blue-300"
+          className="text-[13px] font-medium text-blue-400 hover:text-blue-300"
         >
           View All
         </button>

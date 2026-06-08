@@ -12,5 +12,7 @@ export const config = {
     "/forgot-password",
     "/cpa/:path*",
     "/cpa/login",
+    "/sales-rep/:path*",
+    "/sales-rep/login",
   ],
 };

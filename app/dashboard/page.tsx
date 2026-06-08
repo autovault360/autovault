@@ -185,7 +185,7 @@ export default async function DashboardPage({
               <div className="text-[22px] font-bold text-emerald-400">
                 {formatCurrencyStr(dashData.profitLoss.netProfit)}
               </div>
-              <div className="text-[10.5px] text-emerald-400">
+              <div className="text-[13px] text-emerald-400">
                 ... {dashData.profitLoss.profitDelta} vs last month
               </div>
             </div>
@@ -656,7 +656,7 @@ function ViewMore({ label }: { label: string }) {
 function Snap({ label, value, red }: { label: string; value: string; red?: boolean }) {
   return (
     <div className="rounded-lg border border-slate-800 bg-[#0e1626] p-2.5 text-center">
-      <div className={cn("text-[10.5px]", red ? "text-red-400" : "text-slate-500")}>{label}</div>
+      <div className={cn("text-[13px]", red ? "text-red-400" : "text-slate-500")}>{label}</div>
       <div className={cn("mt-1 text-[16px] font-bold", red ? "text-red-400" : "text-white")}>{value}</div>
     </div>
   );

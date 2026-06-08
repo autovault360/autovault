@@ -19,7 +19,7 @@ export default function PayrollRunHistory({ runs }: { runs: PayrollRun[] }) {
             className="flex items-center gap-2 rounded-md border border-slate-800/60 bg-[#0e1626]/40 px-2.5 py-2"
           >
             <div className="min-w-0 flex-1">
-              <div className="text-[10.5px] font-medium text-slate-300">
+              <div className="text-[13px] font-medium text-slate-300">
                 {run.period}
               </div>
               <div className="mt-0.5 font-mono text-[11px] tabular-nums text-white">

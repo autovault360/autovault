@@ -76,7 +76,7 @@ export default function ProfileVehiclesTab({
                   asChild
                   variant="outline"
                   size="sm"
-                  className="h-7 border-slate-600 bg-transparent text-[10.5px] text-blue-400"
+                  className="h-7 border-slate-600 bg-transparent text-[13px] text-blue-400"
                 >
                   <Link href={`/dashboard/vehicles/${v.vehicleId}`}>
                     View Vehicle
@@ -87,7 +87,7 @@ export default function ProfileVehiclesTab({
                     asChild
                     variant="outline"
                     size="sm"
-                    className="h-7 border-slate-600 bg-transparent text-[10.5px] text-blue-400"
+                    className="h-7 border-slate-600 bg-transparent text-[13px] text-blue-400"
                   >
                     <Link href={`/dashboard/deal-jackets/${v.dealJacketId}`}>
                       View Jacket

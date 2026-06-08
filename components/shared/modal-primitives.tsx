@@ -329,7 +329,7 @@ export function MarketStatCard({
 }) {
   return (
     <div className="rounded-md border border-gray-200 bg-white p-3">
-      <p className="text-[10.5px] text-gray-500">{label}</p>
+      <p className="text-[13px] text-gray-500">{label}</p>
       <div className="mt-1 flex items-end justify-between gap-2">
         <p
           className={cn("text-[15px] font-bold text-gray-900", valueClassName)}
@@ -726,7 +726,7 @@ export function MarketDataFooter({ date }: { date: string }) {
   const display =
     date.includes("-") && date.length === 10 ? formatDisplayDate(date) : date;
   return (
-    <p className="flex items-center gap-1 text-[10.5px] text-gray-400">
+    <p className="flex items-center gap-1 text-[13px] text-gray-400">
       <Info className="h-3 w-3" />
       Data updated on {display}
     </p>

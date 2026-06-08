@@ -8,6 +8,10 @@ const CPA_PORTAL_ROLES = new Set([
   "cpa",
 ]);
 
+const SALES_REP_PORTAL_ROLES = new Set([
+  "sales_rep",
+]);
+
 async function getUserRole(
   supabase: ReturnType<typeof createServerClient>,
   authUserId: string,
@@ -50,6 +54,8 @@ export async function updateSession(request: NextRequest) {
   const isCpaAuthPage = pathname === "/cpa/login";
   const isCpaRoute = pathname.startsWith("/cpa");
   const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isSalesRepAuthPage = pathname === "/sales-rep/login";
+  const isSalesRepRoute = pathname.startsWith("/sales-rep");
 
   let user = null;
 
@@ -70,6 +76,11 @@ export async function updateSession(request: NextRequest) {
       url.pathname = "/cpa/login";
       return NextResponse.redirect(url);
     }
+    if (isSalesRepRoute && !isSalesRepAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/sales-rep/login";
+      return NextResponse.redirect(url);
+    }
     return supabaseResponse;
   }
 
@@ -80,6 +91,7 @@ export async function updateSession(request: NextRequest) {
 
   const canAccessCpa = role ? CPA_PORTAL_ROLES.has(role) : false;
   const isCpaOnly = role === "cpa";
+  const isSalesRep = role === "sales_rep";
 
   if (!user && isDashboardRoute) {
     const url = request.nextUrl.clone();
@@ -93,9 +105,17 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (!user && isSalesRepRoute && !isSalesRepAuthPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sales-rep/login";
+    return NextResponse.redirect(url);
+  }
+
   if (user && isAdminAuthPage) {
     const url = request.nextUrl.clone();
-    url.pathname = isCpaOnly ? "/cpa/dashboard" : "/dashboard";
+    if (isCpaOnly) url.pathname = "/cpa/dashboard";
+    else if (isSalesRep) url.pathname = "/sales-rep/dashboard";
+    else url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 
@@ -105,7 +125,19 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (user && isSalesRepAuthPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = isSalesRep ? "/sales-rep/dashboard" : "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
   if (user && isCpaRoute && !isCpaAuthPage && !canAccessCpa) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isSalesRepRoute && !isSalesRepAuthPage && !isSalesRep) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
@@ -114,6 +146,12 @@ export async function updateSession(request: NextRequest) {
   if (user && isDashboardRoute && isCpaOnly) {
     const url = request.nextUrl.clone();
     url.pathname = "/cpa/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isDashboardRoute && isSalesRep) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sales-rep/dashboard";
     return NextResponse.redirect(url);
   }
 

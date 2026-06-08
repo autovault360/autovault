@@ -27,7 +27,7 @@ export default function DealsTab({ customer }: { customer: CustomerDetail }) {
               <div className="text-[12.5px] font-medium text-white">
                 {deal.vehicleName}
               </div>
-              <div className="mt-0.5 text-[10.5px] text-slate-500">
+              <div className="mt-0.5 text-[13px] text-slate-500">
                 Stock #{deal.stockNumber} .. {formatDisplayDate(deal.saleDate)}
               </div>
             </div>
@@ -35,7 +35,7 @@ export default function DealsTab({ customer }: { customer: CustomerDetail }) {
               <div className="text-[12.5px] font-semibold text-white">
                 {formatCurrency(deal.totalCollected)}
               </div>
-              <div className="text-[10.5px] text-emerald-400">
+              <div className="text-[13px] text-emerald-400">
                 +{formatCurrency(deal.grossProfit)} gross
               </div>
             </div>

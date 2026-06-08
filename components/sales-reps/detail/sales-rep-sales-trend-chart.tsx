@@ -117,7 +117,7 @@ export default function SalesRepSalesTrendChart({ data, summary }: Props) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-800/60 pt-2.5 text-[10.5px]">
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 border-t border-slate-800/60 pt-2.5 text-[13px]">
         <span>
           <span className="text-slate-500">Total Vehicles: </span>
           <span className="font-semibold text-white">{summary.totalVehicles}</span>

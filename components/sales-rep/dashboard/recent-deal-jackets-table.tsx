@@ -55,7 +55,7 @@ export default function RecentDealJacketsTable({ deals, loading }: Props) {
                 >
                   <td className="py-2.5 pr-2">
                     <div className="font-medium text-slate-200">{deal.id}</div>
-                    <div className="text-[10.5px] text-slate-500">
+                    <div className="text-[13px] text-slate-500">
                       {deal.vehicleDesc} | {deal.buyerName}
                     </div>
                   </td>

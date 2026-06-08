@@ -291,7 +291,7 @@ export default function DataTable<T extends Record<string, unknown>>({
       {(addPagination || enableSelection) && (
         <div className="mt-0 border-t border-slate-800 px-3 py-3 flex w-full flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           {addPagination && sortedData.length > 0 && (
-            <span className="text-[10.5px] text-slate-500">
+            <span className="text-[13px] text-slate-500">
               Showing {safePageIndex * pageSize + 1} to{" "}
               {Math.min((safePageIndex + 1) * pageSize, sortedData.length)} of{" "}
               {sortedData.length.toLocaleString()} {paginationSummaryLabel}

@@ -54,7 +54,7 @@ export default function UpcomingPaymentsCard({
         </table>
       </div>
       <div className="mt-3 rounded-sm border border-blue-500/25 bg-blue-500/10 px-3 py-2">
-        <div className="text-[10.5px] text-blue-400">Total Upcoming Obligations</div>
+        <div className="text-[13px] text-blue-400">Total Upcoming Obligations</div>
         <div className="text-[16px] font-bold text-blue-400">
           {formatCurrency(totalObligations)}
         </div>

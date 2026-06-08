@@ -238,7 +238,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       header: "VIN",
       sortable: true,
       cell: (v) => (
-        <span className="text-slate-400 font-mono text-[10.5px]">{v.vin}</span>
+        <span className="text-slate-400 font-mono text-[13px]">{v.vin}</span>
       ),
     },
     {

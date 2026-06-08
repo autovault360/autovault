@@ -50,13 +50,13 @@ export default function ReminderKpiCards({ kpis }: Props) {
                 <Icon className="h-5 w-5" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-[10.5px] leading-tight text-slate-500">
+                <div className="text-[13px] leading-tight text-slate-500">
                   {kpi.label}
                 </div>
                 <div className="mt-0.5 text-[18px] font-bold text-white">
                   {kpi.count}
                 </div>
-                <div className="text-[10.5px] text-slate-500">
+                <div className="text-[13px] text-slate-500">
                   {kpi.description}
                 </div>
               </div>

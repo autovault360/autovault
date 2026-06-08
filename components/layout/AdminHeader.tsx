@@ -86,7 +86,7 @@ export default function AdminHeader({
           >
             <div className="hidden text-right sm:block">
               <div className="text-[13px] font-semibold text-white">John Dealer</div>
-              <div className="text-[10.5px] text-slate-500">Main Admin</div>
+              <div className="text-[13px] text-slate-500">Main Admin</div>
             </div>
             <Avatar className="h-9 w-9 ring-2 ring-slate-700">
               <AvatarImage src="https://i.pravatar.cc/64?img=12" />

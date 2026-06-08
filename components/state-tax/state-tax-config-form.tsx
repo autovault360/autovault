@@ -33,7 +33,7 @@ function FormField({
 }) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <Label className="text-[10.5px] font-medium text-slate-500">{label}</Label>
+      <Label className="text-[13px] font-medium text-slate-500">{label}</Label>
       {children}
     </div>
   );
@@ -185,7 +185,7 @@ export default function StateTaxConfigForm({ config, options }: Props) {
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-1 flex-wrap items-end justify-between gap-3">
-          <div className="rounded-md border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[10.5px] text-blue-300">
+          <div className="rounded-md border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-[13px] text-blue-300">
             Example: Sales in May are due June 20
           </div>
           <Button theme="dark" type="button" size="lg" className="shrink-0">
@@ -196,7 +196,7 @@ export default function StateTaxConfigForm({ config, options }: Props) {
 
       <div className="mt-3 flex items-start gap-2 rounded-md border border-blue-500/25 bg-blue-500/10 px-3 py-2.5">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
-        <p className="text-[10.5px] leading-relaxed text-blue-200/90">
+        <p className="text-[13px] leading-relaxed text-blue-200/90">
           <span className="font-semibold text-blue-300">Important:</span> You are
           responsible for entering accurate tax rates and due dates. AutoVault does
           not verify or guarantee this information.

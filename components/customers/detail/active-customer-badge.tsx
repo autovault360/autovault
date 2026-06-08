@@ -8,7 +8,7 @@ export default function ActiveCustomerBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-[10.5px] font-semibold text-emerald-400",
+        "inline-flex items-center rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-[13px] font-semibold text-emerald-400",
         className,
       )}
     >

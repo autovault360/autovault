@@ -59,7 +59,7 @@ function ExpenseDonut({
       </div>
       <ul className="flex-1 space-y-1.5">
         {categories.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-[10.5px]">
+          <li key={c.label} className="flex items-center gap-2 text-[13px]">
             <span
               className="inline-block h-2 w-2 shrink-0 rounded-full"
               style={{ backgroundColor: c.color }}

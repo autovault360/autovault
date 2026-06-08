@@ -53,7 +53,7 @@ export default function ActivityTimeline({
                   {item.description}
                 </p>
               )}
-              <div className={cn("text-[10.5px] text-slate-600", compact ? "mt-0.5" : "mt-1")}>
+              <div className={cn("text-[13px] text-slate-600", compact ? "mt-0.5" : "mt-1")}>
                 {formatDisplayDate(item.occurredAt)}
               </div>
             </div>

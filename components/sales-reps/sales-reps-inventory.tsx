@@ -97,7 +97,7 @@ export default function SalesRepsInventory({
             <div className="truncate text-[13px] font-semibold leading-tight text-white">
               {row.fullName}
             </div>
-            <div className="truncate text-[10.5px] leading-tight text-slate-500">
+            <div className="truncate text-[13px] leading-tight text-slate-500">
               {row.email}
             </div>
           </div>

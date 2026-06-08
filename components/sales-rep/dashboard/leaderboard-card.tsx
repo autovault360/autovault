@@ -35,7 +35,7 @@ export default function LeaderboardCard({ entries, loading }: Props) {
       <div>
         {/* Header Ribbon Actions */}
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-[10.5px] font-bold tracking-[0.15em] text-slate-500">
+          <h2 className="text-[13px] font-bold tracking-[0.15em] text-slate-500">
             TOP SALES REPS
           </h2>
           <button className="text-[10px] font-bold text-blue-400 hover:underline bg-transparent border-0 p-0 cursor-pointer">

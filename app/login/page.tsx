@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/footer";
 import { createClient } from "@/lib/supabase/client";
+import { checkPortalRole } from "@/lib/auth/check-portal-role";
 
 export default function LoginPage() {
   const router = useNProgressRouter();
@@ -38,6 +39,18 @@ export default function LoginPage() {
 
     if (error) {
       toast.error(error.message);
+      setLoading(false);
+      return;
+    }
+
+    const roleCheck = await checkPortalRole("admin");
+    if (!roleCheck.ok) {
+      await supabase.auth.signOut();
+      toast.error(
+        roleCheck.reason === "wrong_role"
+          ? "Access denied. This portal is for dealership admins only."
+          : "Unable to verify your account. Please contact support.",
+      );
       setLoading(false);
       return;
     }
