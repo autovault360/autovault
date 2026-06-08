@@ -37,6 +37,7 @@ const defaultLoading: DashboardLoadingState = {
   activity: true,
   topPerformer: true,
   leaderboard: true,
+  commissions: true,
 };
 
 const SalesRepDashboardContext =
@@ -66,6 +67,7 @@ export function SalesRepDashboardProvider({ children }: { children: ReactNode })
       "deals",
       "messages",
       "activity",
+      "commissions",
     ];
     for (let i = 0; i < sections.length; i++) {
       await new Promise((r) => setTimeout(r, 120));

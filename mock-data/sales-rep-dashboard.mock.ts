@@ -1,4 +1,5 @@
 import type { SalesRepDashboardData } from "@/lib/sales-rep/dashboard/types";
+import { SALES_REP_COMMISSIONS_MOCK } from "@/lib/sales-rep/commissions/mock-data";
 
 export const SALES_REP_PROD_DATA = {
   profile: {
@@ -155,6 +156,7 @@ export const SALES_REP_DASHBOARD_MOCK: SalesRepDashboardData = {
     reconditioning: 750,
     commissionRate: 0.2,
   },
+  commissions: SALES_REP_COMMISSIONS_MOCK,
   notificationCount: 7,
 };
 

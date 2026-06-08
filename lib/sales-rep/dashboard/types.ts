@@ -1,3 +1,5 @@
+import type { ISalesRepCommissionsData } from "@/lib/sales-rep/commissions/types";
+
 export interface IVehicleCard {
   stockNo: string;
   vin: string;
@@ -83,7 +85,8 @@ export type DashboardSectionKey =
   | "messages"
   | "activity"
   | "topPerformer"
-  | "leaderboard";
+  | "leaderboard"
+  | "commissions";
 
 export interface SalesRepDashboardData {
   profile: ISalesRepProfile;
@@ -96,6 +99,7 @@ export interface SalesRepDashboardData {
   recentActivity: IActivityItem[];
   tradeInOptions: ITradeInOption[];
   pricing: IPricingConstants;
+  commissions: ISalesRepCommissionsData;
   notificationCount: number;
 }
 
