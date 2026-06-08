@@ -12,7 +12,7 @@ import QuickActionCard from "./quick-action-card";
 import RecentDealJacketsTable from "./recent-deal-jackets-table";
 import TeamMessagesCard from "./team-messages-card";
 import RecentActivityCard from "./recent-activity-card";
-import CreateDealJacketPanel from "./create-deal-jacket-panel";
+import SalesRepDealJacketWorkspace from "./sales-rep-deal-jacket-workspace";
 import SalesRepDashboardSkeleton from "./sales-rep-dashboard-skeleton";
 
 function DashboardInner() {
@@ -117,13 +117,12 @@ function DashboardInner() {
 
       {/* LOWER EXPANDABLE PRODUCTION-GRADE FORM CONTAINER FIELDSET */}
       <div className="mt-3.5">
-        <CreateDealJacketPanel
+        <SalesRepDealJacketWorkspace
           expanded={isDealJacketExpanded}
           onCollapse={() => setIsDealJacketExpanded(false)}
           selectedVehicle={selectedVehicle}
-          profile={dashboardData.profile}
+          inventory={dashboardData.inventory}
           pricing={dashboardData.pricing}
-          tradeInOptions={dashboardData.tradeInOptions}
           panelRef={dealJacketRef}
         />
       </div>

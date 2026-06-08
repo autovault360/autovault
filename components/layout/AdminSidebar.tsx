@@ -12,6 +12,7 @@ import {
   DollarSign,
   User,
   Folder,
+  FolderPlus,
   Archive,
   BarChart3,
   Calendar,
@@ -20,6 +21,8 @@ import {
   BookOpen,
   Headphones,
   ChevronRight,
+  ChevronDown,
+  Wallet,
   Check,
   X,
   Menu,
@@ -83,6 +86,12 @@ const navGroups = [
     items: [
       { href: "/dashboard/deal-jackets", label: "Deal Jacket", icon: Folder, color: "text-blue-500" },
       {
+        href: "/dashboard/deal-jackets/create",
+        label: "Create Deal Jacket",
+        icon: FolderPlus,
+        color: "text-cyan-500",
+      },
+      {
         href: "/dashboard/files-storage",
         label: "Files & Storage",
         icon: Archive,
@@ -127,11 +136,21 @@ const navGroups = [
   },
 ];
 
+const payrollNavItems = [
+  { href: "/dashboard/payroll", label: "Payroll Dashboard" },
+  { href: "/dashboard/payroll/runs", label: "Payroll Runs", comingSoon: true },
+  { href: "/dashboard/payroll/commission-payouts", label: "Commission Payouts", comingSoon: true },
+  { href: "/dashboard/payroll/deductions", label: "Deductions", comingSoon: true },
+  { href: "/dashboard/payroll/history", label: "Payroll History", comingSoon: true },
+];
+
 export default function AdminSidebar() {
   const pathname = usePathname();
   const router = useNProgressRouter();
   const [activeProfile, setActiveProfile] = useState(0);
   const [open, setOpen] = useState(false);
+  const isPayrollActive = pathname.startsWith("/dashboard/payroll");
+  const [payrollOpen, setPayrollOpen] = useState(isPayrollActive);
   const close = () => setOpen(false);
 
   const sidebar = (
@@ -211,6 +230,63 @@ export default function AdminSidebar() {
             })}
           </div>
         ))}
+
+        <div className="px-1.5 pb-1 pt-3 text-[10px] font-semibold tracking-[0.12em] text-slate-500">
+          PAYROLL
+        </div>
+        <button
+          type="button"
+          onClick={() => setPayrollOpen((v) => !v)}
+          className={cn(
+            "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-slate-300 transition hover:bg-slate-800/60",
+            isPayrollActive &&
+              "border border-slate-700 bg-slate-800/80 font-semibold text-white",
+          )}
+        >
+          <Wallet className="h-4 w-4 shrink-0 text-emerald-500" />
+          <span className="truncate flex-1 text-left">Payroll</span>
+          {payrollOpen ? (
+            <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
+          ) : (
+            <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
+          )}
+        </button>
+        {payrollOpen && (
+          <div className="ml-3 space-y-0.5 border-l border-slate-800 pl-2">
+            {payrollNavItems.map((item) => {
+              const isActive =
+                pathname === item.href ||
+                (item.href === "/dashboard/payroll" &&
+                  pathname === "/dashboard/payroll");
+              if (item.comingSoon && item.href !== "/dashboard/payroll") {
+                return (
+                  <div
+                    key={item.label}
+                    className="flex w-full cursor-default items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] text-slate-500 opacity-70"
+                  >
+                    <span className="truncate">{item.label}</span>
+                    <span className="ml-auto text-[9px] uppercase tracking-wide">
+                      Soon
+                    </span>
+                  </div>
+                );
+              }
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={close}
+                  className={cn(
+                    "flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] text-slate-300 transition hover:bg-slate-800/60",
+                    isActive && "bg-slate-800/60 font-semibold text-white",
+                  )}
+                >
+                  <span className="truncate">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </nav>
 
       <div className="mt-auto flex items-center gap-2.5 rounded-xl border border-slate-700 bg-slate-900/60 p-2.5">
