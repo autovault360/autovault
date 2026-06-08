@@ -52,7 +52,7 @@ export default function NotesCard({
                 type="button"
                 onClick={handleCancel}
                 disabled={saving}
-                className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[10.5px] text-slate-400 transition hover:border-slate-600 disabled:opacity-50"
+                className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[13px] text-slate-400 transition hover:border-slate-600 disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -60,7 +60,7 @@ export default function NotesCard({
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-md bg-blue-600 px-2.5 py-1 text-[10.5px] text-white transition hover:bg-blue-500 disabled:opacity-50"
+                className="rounded-md bg-blue-600 px-2.5 py-1 text-[13px] text-white transition hover:bg-blue-500 disabled:opacity-50"
               >
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -69,7 +69,7 @@ export default function NotesCard({
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[10.5px] text-slate-300 transition hover:border-slate-600"
+              className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[13px] text-slate-300 transition hover:border-slate-600"
             >
               Edit
             </button>

@@ -173,7 +173,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
               value={formatCurrency(detail.financial.additionalCosts)}
             />
             <div className="mt-3 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-3 py-3">
-              <div className="text-[10.5px] text-slate-500">Net Profit</div>
+              <div className="text-[13px] text-slate-500">Net Profit</div>
               <div className="mt-1 text-[20px] font-bold leading-none text-[var(--accent-green)]">
                 {formatCurrency(detail.financial.netProfit)}
               </div>
@@ -262,7 +262,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
           <DetailCardBody>
             <FileList items={detail.documents} />
             {moreDocs > 0 && (
-              <p className="mt-2.5 text-[10.5px] font-medium text-[var(--accent)]">
+              <p className="mt-2.5 text-[13px] font-medium text-[var(--accent)]">
                 + {moreDocs} more documents
               </p>
             )}
@@ -277,7 +277,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
           <DetailCardBody>
             <FileList items={detail.receipts} icon={Receipt} />
             {moreReceipts > 0 && (
-              <p className="mt-2.5 text-[10.5px] font-medium text-[var(--accent)]">
+              <p className="mt-2.5 text-[13px] font-medium text-[var(--accent)]">
                 + {moreReceipts} more receipts
               </p>
             )}

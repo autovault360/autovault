@@ -112,7 +112,7 @@ export default function FolderFilesModal({ bucket, open, onOpenChange }: Props) 
                 className="text-[11.5px]"
               />
             </InputGroup>
-            <span className="whitespace-nowrap text-[10.5px] text-slate-500">
+            <span className="whitespace-nowrap text-[13px] text-slate-500">
               {filtered.length} / {files.length} files
             </span>
           </div>

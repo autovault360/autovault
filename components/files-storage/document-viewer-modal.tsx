@@ -96,7 +96,7 @@ export default function DocumentViewerModal({
               <h2 className="truncate text-[14px] font-medium text-white">
                 {currentFile.fileName}
               </h2>
-              <div className="flex items-center gap-2 text-[10.5px] text-slate-400">
+              <div className="flex items-center gap-2 text-[13px] text-slate-400">
                 <span>{formatFileSize(currentFile.fileSize)}</span>
                 <span className="text-slate-600">|</span>
                 <span>{currentFile.mimeType}</span>

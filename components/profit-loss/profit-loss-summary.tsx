@@ -75,7 +75,7 @@ export default function ProfitLossSummary({ insights, meta, periodEnd }: Props) 
 
       <div className="flex items-start gap-2 px-0.5">
         <ShieldCheck className="mt-0.5 size-7 shrink-0 text-emerald-400" />
-        <p className="text-[10.5px] leading-relaxed text-slate-500">
+        <p className="text-[13px] leading-relaxed text-slate-500">
           This report is auto-generated and includes all posted transactions up to{" "}
           {endDate}.
         </p>

@@ -97,7 +97,7 @@ export default function OverviewTab({
           <p className="text-[11.5px] leading-relaxed text-slate-300">
             {latestNote.body}
           </p>
-          <p className="mt-2 text-[10.5px] text-slate-600">
+          <p className="mt-2 text-[13px] text-slate-600">
             Added by {latestNote.authorName} ..{" "}
             {formatDisplayDate(latestNote.createdAt)}
           </p>

@@ -49,7 +49,7 @@ export default function UpcomingRemindersCard({
             <ReminderIconCircle category={r.category} iconColor={r.iconColor} size="sm" />
             <div className="min-w-0 flex-1">
               <div className="text-[11.5px] font-medium text-slate-200">{r.title}</div>
-              <div className="text-[10.5px] text-slate-500">{r.description}</div>
+              <div className="text-[13px] text-slate-500">{r.description}</div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-[10px] text-slate-400">
                   {formatDueStatus(r.dueDate, asOfDate) === "Due Today"

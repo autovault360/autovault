@@ -52,7 +52,7 @@ export default function ProfileDealsTab({
                   {deal.vehicleName}
                 </h3>
                 {deal.jacketNumber && (
-                  <p className="mt-0.5 text-[10.5px] text-slate-500">
+                  <p className="mt-0.5 text-[13px] text-slate-500">
                     Jacket #{deal.jacketNumber}
                   </p>
                 )}
@@ -95,7 +95,7 @@ export default function ProfileDealsTab({
                 asChild
                 variant="outline"
                 size="sm"
-                className="h-7 border-slate-600 bg-transparent text-[10.5px] text-blue-400"
+                className="h-7 border-slate-600 bg-transparent text-[13px] text-blue-400"
               >
                 <Link href={`/dashboard/vehicles/${deal.vehicleId}`}>
                   View Vehicle
@@ -106,7 +106,7 @@ export default function ProfileDealsTab({
                   asChild
                   variant="outline"
                   size="sm"
-                  className="h-7 border-slate-600 bg-transparent text-[10.5px] text-blue-400"
+                  className="h-7 border-slate-600 bg-transparent text-[13px] text-blue-400"
                 >
                   <Link href={`/dashboard/deal-jackets/${deal.dealJacketId}`}>
                     View Jacket

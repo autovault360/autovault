@@ -66,7 +66,7 @@ export default function CommunicationsTab({
         onSubmit={handleSubmit}
         className="rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3 space-y-2"
       >
-        <h4 className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+        <h4 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Log Communication
         </h4>
         <Select value={type} onValueChange={(v) => setType(v as CommunicationType)}>
@@ -119,7 +119,7 @@ export default function CommunicationsTab({
                 <span className="text-[11px] font-medium text-blue-400">
                   {formatCommunicationType(comm.type)}
                 </span>
-                <span className="text-[10.5px] text-slate-600">
+                <span className="text-[13px] text-slate-600">
                   {formatDisplayDate(comm.occurredAt)}
                 </span>
               </div>

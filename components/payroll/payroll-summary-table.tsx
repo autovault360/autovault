@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { MoreHorizontal, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,6 +57,7 @@ function getInitials(name: string) {
 }
 
 export default function PayrollSummaryTable({ rows, loading = false }: Props) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<StatusTab>("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
@@ -92,13 +94,17 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
     });
   }, [rows, activeTab, roleFilter, paymentFilter]);
 
+  const navigateToEmployee = (id: string) => {
+    router.push(`/dashboard/payroll/employee/${id}`);
+  };
+
   const columns: Column<PayrollSummaryRow>[] = useMemo(
     () => [
       {
         key: "employee",
         header: "Employee / Sales Rep",
         cell: (row) => (
-          <div className="flex items-center gap-2 min-w-[160px]">
+          <div className="flex items-center gap-2 min-w-[160px] cursor-pointer" onClick={() => navigateToEmployee(row.id)}>
             <Avatar className="h-7 w-7 shrink-0">
               <AvatarImage src={row.avatarUrl} alt={row.employeeName} />
               <AvatarFallback className="text-[9px] bg-slate-800">
@@ -130,7 +136,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
         key: "payPeriod",
         header: "Pay Period",
         cell: (row) => (
-          <span className="text-[10.5px] text-slate-400 whitespace-nowrap">
+          <span className="text-[13px] text-slate-400 whitespace-nowrap">
             {row.payPeriod}
           </span>
         ),
@@ -139,7 +145,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
         key: "payDate",
         header: "Pay Date",
         cell: (row) => (
-          <span className="text-[10.5px] text-slate-400">{row.payDate}</span>
+          <span className="text-[13px] text-slate-400">{row.payDate}</span>
         ),
       },
       {
@@ -219,7 +225,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
                   className="block w-full px-3 py-1.5 text-left text-[11px] text-slate-300 hover:bg-slate-800"
                   onClick={() => {
                     setActivePopover(null);
-                    toast.success(`Viewing payroll for ${row.employeeName}`);
+                    navigateToEmployee(row.id);
                   }}
                 >
                   View Details
@@ -250,7 +256,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
         ),
       },
     ],
-    [activePopover],
+    [activePopover, router],
   );
 
   return (
@@ -267,7 +273,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
                 className={cn(
-                  "rounded px-2.5 py-1 text-[10.5px] font-medium transition",
+                  "rounded px-2.5 py-1 text-[13px] font-medium transition",
                   activeTab === tab.key
                     ? "bg-slate-700 text-white"
                     : "text-slate-400 hover:text-slate-200",
@@ -334,6 +340,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
           paginationSummaryLabel="entries"
           loading={loading}
           emptyMessage="No payroll records match your filters."
+          onRowClick={(row) => navigateToEmployee(row.id)}
         />
       </div>
     </CardShell>

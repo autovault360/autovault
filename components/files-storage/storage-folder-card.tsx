@@ -70,7 +70,7 @@ export default function StorageFolderCard({ folder, onClick }: Props) {
           <div className="truncate text-[13px] font-semibold text-white">
             {folder.name}
           </div>
-          <div className="mt-0.5 line-clamp-2 text-[10.5px] text-slate-500">
+          <div className="mt-0.5 line-clamp-2 text-[13px] text-slate-500">
             {folder.description}
           </div>
           <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-500">

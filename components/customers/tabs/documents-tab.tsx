@@ -33,7 +33,7 @@ export default function DocumentsTab({
             <div className="truncate text-[12px] font-medium text-white">
               {doc.label}
             </div>
-            <div className="text-[10.5px] text-slate-500">
+            <div className="text-[13px] text-slate-500">
               {doc.source === "deal" ? "From deal" : "Customer document"} ..{" "}
               {formatDisplayDate(doc.createdAt)}
             </div>

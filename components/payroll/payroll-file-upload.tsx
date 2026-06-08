@@ -62,7 +62,7 @@ export default function PayrollFileUpload() {
         <p className="text-center text-[12px] text-slate-400">
           Drag &amp; Drop Payroll File Here
         </p>
-        <p className="mt-1 text-center text-[10.5px] text-slate-500">
+        <p className="mt-1 text-center text-[13px] text-slate-500">
           or{" "}
           <span className="font-medium text-blue-400">Choose File</span>
         </p>

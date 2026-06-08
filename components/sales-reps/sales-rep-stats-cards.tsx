@@ -44,11 +44,11 @@ export default function SalesRepStatsCards({ stats }: { stats: SalesRepStats }) 
             <Users className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <div className="text-[10.5px] text-slate-500">Total Sales Reps</div>
+            <div className="text-[13px] text-slate-500">Total Sales Reps</div>
             <div className="mt-0.5 text-[18px] font-bold text-white">
               {stats.totalReps}
             </div>
-            <div className="text-[10.5px] font-medium text-emerald-400">
+            <div className="text-[13px] font-medium text-emerald-400">
               {stats.activeReps} Active
             </div>
           </div>

@@ -12,7 +12,7 @@ const LEGEND_ITEMS: Array<{ tier: UnitsColorTier; label: string }> = [
 
 export default function CalendarActivityLegend() {
   return (
-    <div className="mb-2.5 flex flex-wrap items-center gap-4 text-[10.5px] text-slate-500">
+    <div className="mb-2.5 flex flex-wrap items-center gap-4 text-[13px] text-slate-500">
       {LEGEND_ITEMS.map((item) => (
         <span key={item.tier} className="inline-flex items-center gap-1.5">
           <span

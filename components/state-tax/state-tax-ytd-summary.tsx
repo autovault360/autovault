@@ -56,7 +56,7 @@ export default function StateTaxYtdSummary({ summary }: Props) {
           {chart.breakdown.map((segment) => (
             <li
               key={segment.id}
-              className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10.5px]"
+              className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[13px]"
             >
               <span
                 className="h-2 w-2 shrink-0 rounded-full"

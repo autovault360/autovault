@@ -61,7 +61,7 @@ export default function ExpenseDonut({
         {breakdown.map((item) => (
           <li
             key={item.label}
-            className="flex items-center gap-2 text-[10.5px]"
+            className="flex items-center gap-2 text-[13px]"
           >
             <span
               className="h-2 w-2 shrink-0 rounded-full"

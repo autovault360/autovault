@@ -141,7 +141,7 @@ export default function CpaSidebar() {
         </div>
         <div className="flex-1">
           <div className="text-[12.5px] font-semibold text-white">Need Help?</div>
-          <div className="text-[10.5px] text-slate-500">Contact Support</div>
+          <div className="text-[13px] text-slate-500">Contact Support</div>
         </div>
         <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
       </div>

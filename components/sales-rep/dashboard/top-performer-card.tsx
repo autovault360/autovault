@@ -68,7 +68,7 @@ export default function TopPerformerCard({ performerData, leaderboardEntries, lo
     <CardShell className="p-4 border rounded-xl">
       {/* 1. Header Ribbon spanning across both internal halves */}
       <div className="flex items-center justify-between mb-3 border-b border-slate-800/40 pb-2">
-        <div className="text-[10.5px] font-bold tracking-[0.15em] text-slate-500 flex items-center gap-1.5">
+        <div className="text-[13px] font-bold tracking-[0.15em] text-slate-500 flex items-center gap-1.5">
           <Crown className="h-3.5 w-3.5 text-amber-500/80" />
           <span>TOP PERFORMER</span>
         </div>

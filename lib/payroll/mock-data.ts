@@ -1,31 +1,29 @@
 import type { PayrollDashboardData } from "./types";
-
-const employees = [
-  { name: "Mike Johnson", id: "SR-001", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=12" },
-  { name: "Sarah Williams", id: "SR-002", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=47" },
-  { name: "Mike Thompson", id: "SR-003", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=33" },
-  { name: "Emily Davis", id: "SR-004", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=45" },
-  { name: "James Wilson", id: "SR-005", role: "Sales Manager", avatar: "https://i.pravatar.cc/64?img=15" },
-  { name: "Lisa Anderson", id: "SR-006", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=32" },
-  { name: "David Martinez", id: "SR-007", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=52" },
-  { name: "Jennifer Lee", id: "SR-008", role: "Finance Admin", avatar: "https://i.pravatar.cc/64?img=25" },
-  { name: "Robert Brown", id: "SR-009", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=68" },
-  { name: "Amanda Taylor", id: "SR-010", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=44" },
-  { name: "Chris Garcia", id: "SR-011", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=51" },
-  { name: "Michelle White", id: "SR-012", role: "Office Manager", avatar: "https://i.pravatar.cc/64?img=29" },
-  { name: "Kevin Harris", id: "SR-013", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=13" },
-  { name: "Rachel Clark", id: "SR-014", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=38" },
-  { name: "Daniel Lewis", id: "SR-015", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=60" },
-  { name: "Stephanie Hall", id: "SR-016", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=41" },
-  { name: "Brian Young", id: "SR-017", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=56" },
-  { name: "Nicole King", id: "SR-018", role: "Sales Rep", avatar: "https://i.pravatar.cc/64?img=49" },
-] as const;
+import { PAYROLL_EMPLOYEES } from "./employees";
 
 const paymentTypes = ["direct_deposit", "check", "paper_check"] as const;
 const statuses = ["paid", "pending", "overdue"] as const;
 
 function buildSummaryRows(): PayrollDashboardData["summaryRows"] {
-  return employees.map((emp, i) => {
+  return PAYROLL_EMPLOYEES.map((emp, i) => {
+    if (i === 0) {
+      return {
+        id: emp.payrollId,
+        employeeName: emp.name,
+        employeeId: emp.salesRepId,
+        avatarUrl: emp.avatar,
+        role: emp.role,
+        paymentType: "direct_deposit" as const,
+        payPeriod: "May 11 – May 24, 2026",
+        payDate: "May 28, 2026",
+        basePay: 2500,
+        commission: 8450,
+        bonus: 750,
+        deductions: 425,
+        totalPaid: 11275,
+        status: "pending" as const,
+      };
+    }
     const basePay = 1200 + (i % 5) * 150;
     const commission = 800 + (i % 7) * 320;
     const bonus = i % 4 === 0 ? 250 : i % 3 === 0 ? 150 : 0;
@@ -35,9 +33,9 @@ function buildSummaryRows(): PayrollDashboardData["summaryRows"] {
     const paymentType = paymentTypes[i % 3]!;
 
     return {
-      id: `payroll-${i + 1}`,
+      id: emp.payrollId,
       employeeName: emp.name,
-      employeeId: emp.id,
+      employeeId: emp.salesRepId,
       avatarUrl: emp.avatar,
       role: emp.role,
       paymentType,

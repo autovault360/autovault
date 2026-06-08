@@ -35,7 +35,7 @@ export default function StateTaxKpiCards({ kpis }: Props) {
                 <Icon className="h-[22px] w-[22px] stroke-[1.75]" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="text-[10.5px] leading-tight text-slate-500">
+                <div className="text-[13px] leading-tight text-slate-500">
                   {kpi.label}
                 </div>
                 <div className="mt-0.5 text-[18px] font-bold leading-tight text-white">
@@ -54,7 +54,7 @@ export default function StateTaxKpiCards({ kpis }: Props) {
                   </div>
                 )}
                 {kpi.subtext && (
-                  <div className="mt-0.5 text-[10.5px] text-slate-500">
+                  <div className="mt-0.5 text-[13px] text-slate-500">
                     {kpi.subtext}
                   </div>
                 )}

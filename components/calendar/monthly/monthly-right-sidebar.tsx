@@ -74,7 +74,7 @@ export default function MonthlyRightSidebar({
                 </AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[10.5px] text-slate-300">
+                <div className="truncate text-[13px] text-slate-300">
                   {v.vehicle}
                 </div>
                 <div className="text-[9.5px] text-slate-500">{v.customer}</div>
@@ -124,14 +124,14 @@ export default function MonthlyRightSidebar({
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="text-[10.5px] text-slate-500 hover:text-slate-300"
+                className="text-[13px] text-slate-500 hover:text-slate-300"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={saveNote}
-                className="text-[10.5px] text-blue-400 hover:text-blue-300"
+                className="text-[13px] text-blue-400 hover:text-blue-300"
               >
                 Save
               </button>

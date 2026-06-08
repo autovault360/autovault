@@ -22,7 +22,7 @@ export function DetailRow({
         className,
       )}
     >
-      <span className="shrink-0 text-[10.5px] text-slate-500">{label}</span>
+      <span className="shrink-0 text-[13px] text-slate-500">{label}</span>
       <span className="text-right text-[11px] font-medium text-white">
         {displayValue(value)}
       </span>
@@ -39,7 +39,7 @@ export function DetailGridRow({
 }) {
   return (
     <div className="py-1">
-      <div className="text-[10.5px] text-slate-500">{label}</div>
+      <div className="text-[13px] text-slate-500">{label}</div>
       <div className="mt-0.5 text-[11.5px] text-white">{value}</div>
     </div>
   );

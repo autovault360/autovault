@@ -50,7 +50,7 @@ export function PanelPreview({ title, children, expanded, className }: PanelPrev
           className="max-w-[95vw] w-full max-h-[90vh] h-[90vh] overflow-y-auto bg-[#010d19] border-slate-700 text-slate-200"
           overlayClassName="bg-black/70 backdrop-blur-sm"
         >
-          <DialogTitle className="sr-only">{title}</DialogTitle>
+          <DialogTitle className="rs-only">{title}</DialogTitle>
           <div className="p-1">
             {expanded ?? children}
           </div>

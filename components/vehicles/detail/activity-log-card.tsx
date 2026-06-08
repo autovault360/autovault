@@ -161,7 +161,7 @@ export default function ActivityLogCard({
                   <div className="mt-0.5 text-[9.5px] text-slate-500">
                     {entry.timestamp}
                   </div>
-                  <p className="mt-0.5 truncate text-[10.5px] leading-relaxed text-slate-400">
+                  <p className="mt-0.5 truncate text-[13px] leading-relaxed text-slate-400">
                     {entry.description}
                   </p>
                 </div>

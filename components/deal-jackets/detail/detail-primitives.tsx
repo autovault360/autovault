@@ -37,7 +37,7 @@ export function DetailCardHead({
 }) {
   return (
     <CardHeader className="grid-rows-1 items-center gap-0 border-b border-slate-800/60 px-4 py-3 [.border-b]:pb-3">
-      <CardTitle className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-slate-500">
+      <CardTitle className="text-[13px] font-bold uppercase tracking-[0.12em] text-slate-500">
         {title}
       </CardTitle>
       {action ? <CardAction>{action}</CardAction> : null}
@@ -69,7 +69,7 @@ export function DetailLinkAction({
   return (
     <Link
       href={href}
-      className="text-[10.5px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
+      className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
     >
       {label}
     </Link>

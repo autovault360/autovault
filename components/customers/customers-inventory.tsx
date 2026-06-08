@@ -130,7 +130,7 @@ export default function CustomersInventory({
           </Avatar>
           <div>
             <div className="text-[12px] font-medium text-white">{row.name}</div>
-            <div className="text-[10.5px] text-slate-500">
+            <div className="text-[13px] text-slate-500">
               Customer since {formatDisplayDate(row.customerSince)}
             </div>
           </div>

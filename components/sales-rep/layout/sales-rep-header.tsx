@@ -43,7 +43,7 @@ export default function SalesRepHeader({
           <div className="text-[13px] font-semibold text-white">
             {profile.name}
           </div>
-          <div className="text-[10.5px] text-slate-500">{profile.title}</div>
+          <div className="text-[13px] text-slate-500">{profile.title}</div>
         </div>
         <Avatar className="h-9 w-9 ring-2 ring-slate-700">
           {profile.imageUrl ? (

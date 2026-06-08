@@ -76,7 +76,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
               <button
                 type="button"
                 onClick={() => onTabChange("deals")}
-                className="text-[10.5px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
+                className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
               >
                 View All
               </button>
@@ -116,7 +116,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                         Sold
                       </span>
                     </div>
-                    <div className="mt-1.5 grid grid-cols-1 gap-0.5 text-[10.5px] text-slate-400">
+                    <div className="mt-1.5 grid grid-cols-1 gap-0.5 text-[13px] text-slate-400">
                       <span>
                         Stock #:{" "}
                         <span className="text-slate-200">{deal.stockNumber}</span>
@@ -147,7 +147,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                         asChild
                         variant="outline"
                         size="sm"
-                        className="mt-2.5 h-7 border-slate-600 bg-transparent px-3 text-[10.5px] font-medium text-blue-400 hover:bg-slate-800/50"
+                        className="mt-2.5 h-7 border-slate-600 bg-transparent px-3 text-[13px] font-medium text-blue-400 hover:bg-slate-800/50"
                       >
                         <Link
                           href={`/dashboard/deal-jackets/${deal.dealJacketId}`}
@@ -214,7 +214,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                 <button
                   type="button"
                   onClick={() => onTabChange("notes")}
-                  className="text-[10.5px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
+                  className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
                 >
                   View All
                 </button>
@@ -250,7 +250,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
             <button
               type="button"
               onClick={() => onTabChange("documents")}
-              className="text-[10.5px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
+              className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
             >
               View All
             </button>
@@ -268,7 +268,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
               <div className="grid h-10 w-10 place-items-center rounded-md bg-red-500/15">
                 <FileText className="h-5 w-5 text-red-400" />
               </div>
-              <span className="line-clamp-2 text-center text-[10.5px] font-medium text-white">
+              <span className="line-clamp-2 text-center text-[13px] font-medium text-white">
                 {doc.label}
               </span>
               <span className="text-[9.5px] text-slate-500">
@@ -287,7 +287,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
             ) : (
               <>
                 <Plus className="h-6 w-6" />
-                <span className="text-[10.5px] font-medium">Upload</span>
+                <span className="text-[13px] font-medium">Upload</span>
               </>
             )}
           </button>
@@ -312,7 +312,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
             <button
               type="button"
               onClick={() => onTabChange("communications")}
-              className="text-[10.5px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
+              className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)]"
             >
               View All
             </button>

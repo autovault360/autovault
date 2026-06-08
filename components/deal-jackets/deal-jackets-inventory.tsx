@@ -111,7 +111,7 @@ export default function DealJacketsInventory({
             <div className="truncate text-[12.5px] font-semibold text-white">
               {getVehicleDisplayName(row)}
             </div>
-            <div className="text-[10.5px] text-slate-500">
+            <div className="text-[13px] text-slate-500">
               Stock #{row.stockNumber}
             </div>
             <div className="truncate text-[10px] text-slate-600">{row.vin}</div>
@@ -129,7 +129,7 @@ export default function DealJacketsInventory({
           <div className="text-[12px] font-medium text-white">
             {row.customerName}
           </div>
-          <div className="text-[10.5px] text-slate-500">{row.customerPhone}</div>
+          <div className="text-[13px] text-slate-500">{row.customerPhone}</div>
         </div>
       ),
     },
@@ -291,7 +291,7 @@ export default function DealJacketsInventory({
               paginationSummaryLabel="deal jackets"
             />
             <div className="mt-2 flex justify-end border-t border-slate-800/80 px-1 pt-3">
-              <div className="flex items-center gap-2 text-[10.5px] text-slate-500">
+              <div className="flex items-center gap-2 text-[13px] text-slate-500">
                 <span>Rows per page</span>
                 <Select
                   value={String(pageSize)}

@@ -154,7 +154,7 @@ export default function FilesStorageUpload({ onUpload }: Props) {
           </p>
         )}
       </div>
-      <p className="mt-3 text-center text-[10.5px] text-slate-500">
+      <p className="mt-3 text-center text-[13px] text-slate-500">
         Maximum file size: 250MB
       </p>
     </Card>

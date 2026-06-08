@@ -269,20 +269,20 @@ export function KPICard({
         </div>
 
         <div className="min-w-0 space-y-1">
-          <div className="text-[10.5px] text-slate-500">{data.label}</div>
+          <div className="text-[13px] text-slate-500">{data.label}</div>
 
           <div className="text-[18px] font-bold text-white">
             {data.value}
           </div>
 
           {data.unit && (
-            <div className="text-[10.5px] text-slate-500">{data.unit}</div>
+            <div className="text-[13px] text-slate-500">{data.unit}</div>
           )}
 
           {data.delta && (
             <div
               className={cn(
-                "text-[10.5px]",
+                "text-[13px]",
                 deltaColor === "red"
                   ? "text-red-400"
                   : "text-emerald-400",

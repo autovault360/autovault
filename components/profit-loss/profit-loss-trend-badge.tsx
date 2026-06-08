@@ -24,7 +24,7 @@ export default function ProfitLossTrendBadge({
         : "text-emerald-400";
 
   return (
-    <span className={cn("inline-flex items-center gap-0.5 text-[10.5px] font-medium", colorClass, className)}>
+    <span className={cn("inline-flex items-center gap-0.5 text-[13px] font-medium", colorClass, className)}>
       {direction === "up" && <TrendingUp className="h-3 w-3" />}
       {direction === "down" && <TrendingDown className="h-3 w-3" />}
       {value}

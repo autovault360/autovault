@@ -45,12 +45,12 @@ export default function AvailableInventoryPanel({
       <div>
         {/* 1. Panel Header Ribbon */}
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-[10.5px] font-bold tracking-[0.15em] text-slate-500">
+          <span className="text-[13px] font-bold tracking-[0.15em] text-slate-500">
             AVAILABLE INVENTORY
           </span>
           <button
             type="button"
-            className="text-[10.5px] font-bold text-blue-500 hover:underline bg-transparent border-0 p-0 cursor-pointer"
+            className="text-[13px] font-bold text-blue-500 hover:underline bg-transparent border-0 p-0 cursor-pointer"
           >
             View All Inventory
           </button>
@@ -138,7 +138,7 @@ export default function AvailableInventoryPanel({
                         <span className="text-slate-700">•</span>
                         <span className="text-slate-400 font-mono">VIN {vehicle.vin}</span>
                       </div>
-                      <div className="mt-1 text-[10.5px] font-semibold text-slate-400 flex items-center gap-1 leading-none">
+                      <div className="mt-1 text-[13px] font-semibold text-slate-400 flex items-center gap-1 leading-none">
                         <span>{vehicle.mileage} mi</span>
                         <span className="text-slate-700 font-normal">•</span>
                         <span>{vehicle.type}</span>
