@@ -14,5 +14,7 @@ export const config = {
     "/cpa/login",
     "/sales-rep/:path*",
     "/sales-rep/login",
+    "/dealer/:path*",
+    "/dealer/login",
   ],
 };

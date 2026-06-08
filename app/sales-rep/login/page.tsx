@@ -18,7 +18,8 @@ import {
 } from "lucide-react";
 import Footer from "@/components/layout/footer";
 import { createClient } from "@/lib/supabase/client";
-import { checkPortalRole } from "@/lib/auth/check-portal-role";
+
+const SALES_REP_ROLES = new Set(["sales_rep"]);
 
 export default function SalesRepLoginPage() {
   const router = useNProgressRouter();
@@ -43,14 +44,23 @@ export default function SalesRepLoginPage() {
       return;
     }
 
-    const roleCheck = await checkPortalRole("sales-rep");
-    if (!roleCheck.ok) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       await supabase.auth.signOut();
-      toast.error(
-        roleCheck.reason === "wrong_role"
-          ? "Access denied. This portal is for sales representatives only."
-          : "Unable to verify your account. Please contact support.",
-      );
+      toast.error("Unable to verify your account. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("auth_user_id", user.id)
+      .single();
+
+    if (!profile || !SALES_REP_ROLES.has(profile.role)) {
+      await supabase.auth.signOut();
+      toast.error("Access denied. This portal is for sales representatives only.");
       setLoading(false);
       return;
     }

@@ -5,7 +5,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 export type AuthUser = {
   userId: string;
   dealershipId: string;
-  role: "super_admin" | "owner" | "manager" | "sales_rep" | "cpa";
+  role: "super_admin" | "owner" | "manager" | "sales_rep" | "cpa" | "wholesale_dealer";
 };
 
 export type ActionResult =

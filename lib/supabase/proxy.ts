@@ -12,6 +12,10 @@ const SALES_REP_PORTAL_ROLES = new Set([
   "sales_rep",
 ]);
 
+const WHOLESALE_DEALER_PORTAL_ROLES = new Set([
+  "wholesale_dealer",
+]);
+
 async function getUserRole(
   supabase: ReturnType<typeof createServerClient>,
   authUserId: string,
@@ -56,6 +60,8 @@ export async function updateSession(request: NextRequest) {
   const isDashboardRoute = pathname.startsWith("/dashboard");
   const isSalesRepAuthPage = pathname === "/sales-rep/login";
   const isSalesRepRoute = pathname.startsWith("/sales-rep");
+  const isDealerAuthPage = pathname === "/dealer/login";
+  const isDealerRoute = pathname.startsWith("/dealer");
 
   let user = null;
 
@@ -81,6 +87,11 @@ export async function updateSession(request: NextRequest) {
       url.pathname = "/sales-rep/login";
       return NextResponse.redirect(url);
     }
+    if (isDealerRoute && !isDealerAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dealer/login";
+      return NextResponse.redirect(url);
+    }
     return supabaseResponse;
   }
 
@@ -92,6 +103,7 @@ export async function updateSession(request: NextRequest) {
   const canAccessCpa = role ? CPA_PORTAL_ROLES.has(role) : false;
   const isCpaOnly = role === "cpa";
   const isSalesRep = role === "sales_rep";
+  const isWholesaleDealer = role === "wholesale_dealer";
 
   if (!user && isDashboardRoute) {
     const url = request.nextUrl.clone();
@@ -111,10 +123,17 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (!user && isDealerRoute && !isDealerAuthPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dealer/login";
+    return NextResponse.redirect(url);
+  }
+
   if (user && isAdminAuthPage) {
     const url = request.nextUrl.clone();
     if (isCpaOnly) url.pathname = "/cpa/dashboard";
     else if (isSalesRep) url.pathname = "/sales-rep/dashboard";
+    else if (isWholesaleDealer) url.pathname = "/dealer/dashboard";
     else url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
@@ -131,6 +150,12 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  if (user && isDealerAuthPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = isWholesaleDealer ? "/dealer/dashboard" : "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
   if (user && isCpaRoute && !isCpaAuthPage && !canAccessCpa) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
@@ -138,6 +163,12 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && isSalesRepRoute && !isSalesRepAuthPage && !isSalesRep) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isDealerRoute && !isDealerAuthPage && !isWholesaleDealer) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
@@ -152,6 +183,12 @@ export async function updateSession(request: NextRequest) {
   if (user && isDashboardRoute && isSalesRep) {
     const url = request.nextUrl.clone();
     url.pathname = "/sales-rep/dashboard";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isDashboardRoute && isWholesaleDealer) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dealer/dashboard";
     return NextResponse.redirect(url);
   }
 

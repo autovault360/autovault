@@ -19,9 +19,9 @@ import {
 import Footer from "@/components/layout/footer";
 import { createClient } from "@/lib/supabase/client";
 
-const ADMIN_ROLES = new Set(["super_admin", "owner", "manager"]);
+const WHOLESALE_ROLES = new Set(["wholesale_dealer"]);
 
-export default function LoginPage() {
+export default function DealerLoginPage() {
   const router = useNProgressRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,14 +58,14 @@ export default function LoginPage() {
       .eq("auth_user_id", user.id)
       .single();
 
-    if (!profile || !ADMIN_ROLES.has(profile.role)) {
+    if (!profile || !WHOLESALE_ROLES.has(profile.role)) {
       await supabase.auth.signOut();
-      toast.error("Access denied. This portal is for dealership admins only.");
+      toast.error("Access denied. This portal is for wholesale dealers only.");
       setLoading(false);
       return;
     }
 
-    router.push("/dashboard");
+    router.push("/dealer/dashboard");
     router.refresh();
   };
 
@@ -116,16 +116,16 @@ export default function LoginPage() {
               <div className="w-1/2"></div>
               <div className="w-1/2 max-w-xl space-y-6">
                 <h1 className="text-2xl font-extrabold tracking-tight text-white xl:text-4xl uppercase leading-[1.1]">
-                  Secure.
+                  Wholesale.
                   <br />
-                  Manage.
+                  Dealer-to-Dealer.
                   <br />
-                  <span className="text-primary">Drive Forward.</span>
+                  <span className="text-primary">Inventory Exchange.</span>
                 </h1>
                 <p className="text-[13px] leading-relaxed text-zinc-300 max-w-xs pr-10 font-normal">
-                  AutoVault is the all-in-one platform built for modern
-                  dealerships. Manage your CRM, inventory, deals, customers, and
-                  performance...all from one secure dashboard.
+                  Dedicated wholesale portal for dealer-to-dealer inventory
+                  trading, wholesale pricing, and bulk transactions across
+                  your dealership network.
                 </p>
               </div>
             </div>
@@ -137,12 +137,11 @@ export default function LoginPage() {
                   <BadgeCheck className="h-10 w-10" strokeWidth={1.5} />
                 </div>
                 <h4 className="text-sm text-center font-bold tracking-wide text-zinc-200">
-                  Secure by Design & CRM Powered
+                  Secure &amp; Role-Based
                 </h4>
                 <p className="text-[11px] leading-relaxed text-muted">
-                  Enterprise-grade security protects your data while our CRM
-                  tools help you build stronger customer relationships and close
-                  more deals.
+                  Enterprise-grade security ensures only authorized wholesale
+                  dealers can access inventory and transactions.
                 </p>
               </div>
 
@@ -151,12 +150,11 @@ export default function LoginPage() {
                   <BarChart3 className="h-10 w-10" strokeWidth={1.5} />
                 </div>
                 <h4 className="text-sm text-center font-bold tracking-wide text-zinc-200">
-                  Smart Dealership Management
+                  Real-Time Inventory Sharing
                 </h4>
                 <p className="text-[11px] leading-relaxed text-muted">
-                  Manage inventory, customers, leads, communications,
-                  appointments, and tasks from one intelligent CRM built for
-                  dealerships.
+                  Browse and list wholesale inventory in real-time across
+                  your dealer network with instant availability updates.
                 </p>
               </div>
 
@@ -165,12 +163,11 @@ export default function LoginPage() {
                   <PieChart className="h-10 w-10" strokeWidth={1.5} />
                 </div>
                 <h4 className="text-sm text-center font-bold tracking-wide text-zinc-200">
-                  All-in-One Dealership Management
+                  All-in-One Wholesale Hub
                 </h4>
                 <p className="text-[11px] leading-relaxed text-muted">
-                  Everything your dealership needs to run, grow, and
-                  succeed...CRM, inventory, deals, analytics, and more, all in one
-                  place.
+                  Manage wholesale listings, track dealer transactions, and
+                  view P&L from a single dashboard built for wholesale dealers.
                 </p>
               </div>
             </div>
@@ -227,11 +224,11 @@ export default function LoginPage() {
             {/* Typography Header Group */}
             <div className="space-y-1.5 text-center">
               <h2 className="text-[25px] font-medium tracking-tight text-white font-sans">
-                Welcome Back
+                Wholesale Portal
               </h2>
               <p className="text-[13px] text-zinc-500 font-normal tracking-wide">
                 Sign in to access your{" "}
-                <span className="text-primary font-medium">AutoVault</span>{" "}
+                <span className="text-primary font-medium">Wholesale</span>{" "}
                 dashboard.
               </p>
             </div>
@@ -241,7 +238,7 @@ export default function LoginPage() {
               {/* Field: Email */}
               <div className="space-y-2">
                 <label
-                  htmlFor="email"
+                  htmlFor="dealer-email"
                   className="text-[13px] font-normal text-zinc-400"
                 >
                   Email Address
@@ -249,7 +246,7 @@ export default function LoginPage() {
                 <div className="relative flex items-center">
                   <Mail className="absolute left-4 h-5 w-5 text-primary stroke-[1.5]" />
                   <Input
-                    id="email"
+                    id="dealer-email"
                     type="email"
                     placeholder="Enter your email address"
                     required
@@ -263,7 +260,7 @@ export default function LoginPage() {
               {/* Field: Password */}
               <div className="space-y-2">
                 <label
-                  htmlFor="password"
+                  htmlFor="dealer-password"
                   className="text-[13px] font-normal text-zinc-400"
                 >
                   Password
@@ -271,7 +268,7 @@ export default function LoginPage() {
                 <div className="relative flex items-center">
                   <Lock className="absolute left-4 h-5 w-5 text-primary stroke-[1.5]" />
                   <Input
-                    id="password"
+                    id="dealer-password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     required
@@ -329,9 +326,9 @@ export default function LoginPage() {
 
               {/* System Admin Contact */}
               <p className="text-center text-[13px] text-zinc-500 font-normal">
-                Don&apos;t have an account?{" "}
-                <Link href="#" className="text-[#35942e] hover:underline">
-                  Contact your administrator.
+                Dealership admin?{" "}
+                <Link href="/login" className="text-[#35942e] hover:underline">
+                  Main portal login
                 </Link>
               </p>
             </form>
