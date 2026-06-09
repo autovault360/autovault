@@ -38,16 +38,24 @@ export default function AdminDashboardContent(props: AdminDashboardContentProps)
         topSalesRep={props.topSalesRep}
         todayEvents={props.todayEvents}
       />
-      <StickyNotesCard notes={props.stickyNotes} />
-      <SalesRepSection
-        periodLabel={props.periodLabel}
-        kpiCards={props.salesRepKpis}
-        tableRows={props.salesRepTableRows}
-      />
-      <GrossProfitSection
-        periodLabel={props.grossProfitPeriodLabel}
-        rows={props.grossProfitRows}
-      />
+      <div className="flex">
+        <div className="w-full">
+          <SalesRepSection
+            periodLabel={props.periodLabel}
+            kpiCards={props.salesRepKpis}
+            tableRows={props.salesRepTableRows}
+          />
+          <GrossProfitSection
+            periodLabel={props.grossProfitPeriodLabel}
+            rows={props.grossProfitRows}
+          />
+        </div>
+        <div className="ml-3.5 max-w-[360px] relative">
+          <div className="sticky top-0 z-10">
+            <StickyNotesCard notes={props.stickyNotes} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

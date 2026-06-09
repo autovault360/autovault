@@ -10,6 +10,8 @@ import type {
   RecentUpload,
 } from "@/lib/files-storage/types";
 import { DEFAULT_FILES_STORAGE_FILTERS } from "@/lib/files-storage/types";
+import type { PortalModuleOptions } from "@/lib/portal/module-options";
+import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 import FilesStorageHeader from "./files-storage-header";
 import StorageOverviewCards from "./storage-overview-cards";
 import StorageUsageCard from "./storage-usage-card";
@@ -18,11 +20,17 @@ import FilesStorageUpload from "./files-storage-upload";
 import StorageTipsCard from "./storage-tips-card";
 import FilesStorageAIAssistant from "./files-storage-ai-assistant";
 
-type Props = {
+type Props = PortalModuleOptions & {
   initialReport: FilesStorageReport;
 };
 
-export default function FilesStoragePageContent({ initialReport }: Props) {
+export default function FilesStoragePageContent({
+  initialReport,
+  readOnly,
+  showAdminHeader,
+}: Props) {
+  const { readOnly: isReadOnly, showAdminHeader: showHeader } =
+    resolvePortalModuleOptions({ readOnly, showAdminHeader });
   const [filters, setFilters] = useState<FilesStorageFilters>(
     DEFAULT_FILES_STORAGE_FILTERS,
   );
@@ -62,7 +70,7 @@ export default function FilesStoragePageContent({ initialReport }: Props) {
 
   return (
     <div className="files-storage-page relative">
-      <AdminHeader />
+      {showHeader && <AdminHeader />}
 
       <div className="flex gap-3.5">
         <div className="min-w-0 flex-1">
@@ -84,8 +92,12 @@ export default function FilesStoragePageContent({ initialReport }: Props) {
             onViewModeChange={handleViewModeChange}
           />
 
-          <section className="grid gap-3.5 md:grid-cols-2">
-            <FilesStorageUpload onUpload={handleUpload} />
+          <section
+            className={`grid gap-3.5 ${isReadOnly ? "md:grid-cols-1" : "md:grid-cols-2"}`}
+          >
+            {!isReadOnly && (
+              <FilesStorageUpload onUpload={handleUpload} />
+            )}
             <StorageTipsCard
               usagePercent={filtered.report.usagePercent}
               tips={filtered.report.storageTips}

@@ -80,6 +80,26 @@ export function getCpaHeaderDefaults(pathname: string): CpaHeaderDefaults {
     return PAGE_DEFAULTS[pathname];
   }
 
+  if (/^\/cpa\/deal-jackets\/[^/]+$/.test(pathname)) {
+    return {
+      title: "Deal Jacket Review",
+      subtitle: "Review deal documentation, expenses, and supporting files",
+      showViewMode: false,
+      showMonthNav: false,
+      backLink: { href: "/cpa/deal-jackets", label: "Back to Deal Jackets" },
+    };
+  }
+
+  if (/^\/cpa\/payroll\/employee\/[^/]+$/.test(pathname)) {
+    return {
+      title: "Payroll & Commissions",
+      subtitle: "Employee payroll and commission details",
+      showViewMode: false,
+      showMonthNav: false,
+      backLink: { href: "/cpa/payroll", label: "Back to Payroll" },
+    };
+  }
+
   for (const [route, config] of Object.entries(PAGE_DEFAULTS)) {
     if (route !== "/cpa/dashboard" && pathname.startsWith(`${route}/`)) {
       return config;

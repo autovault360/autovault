@@ -6,9 +6,11 @@ import DealJacketsInventory from "@/components/deal-jackets/deal-jackets-invento
 import { downloadDealJacketsCsv } from "@/lib/deal-jackets/export-deal-jackets";
 import { filterDealJackets } from "@/lib/deal-jackets/filter-deal-jackets";
 import type { DealJacketListItem } from "@/lib/deal-jackets/types";
+import type { PortalModuleOptions } from "@/lib/portal/module-options";
+import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 import { useMemo, useState } from "react";
 
-type Props = {
+type Props = PortalModuleOptions & {
   dealJackets: DealJacketListItem[];
   salesRepFilterOptions: { id: string; label: string }[];
 };
@@ -16,7 +18,12 @@ type Props = {
 export default function DealJacketsPageContent({
   dealJackets,
   salesRepFilterOptions,
+  readOnly,
+  showAdminHeader,
+  basePath,
 }: Props) {
+  const { showAdminHeader: showHeader, basePath: portalBasePath } =
+    resolvePortalModuleOptions({ readOnly, showAdminHeader, basePath });
   const [exporting, setExporting] = useState(false);
 
   const exportable = useMemo(
@@ -46,7 +53,7 @@ export default function DealJacketsPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader />
+      {showHeader && <AdminHeader />}
 
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div className="flex items-start gap-3">
@@ -56,7 +63,9 @@ export default function DealJacketsPageContent({
           <div>
             <h1 className="text-2xl font-bold text-white">Deal Jackets</h1>
             <p className="mt-0.5 text-[12.5px] text-slate-500">
-              View and manage all sold vehicles and their deal jackets.
+              {portalBasePath === "/cpa"
+                ? "Review sold vehicles, deal documentation, and commission status."
+                : "View and manage all sold vehicles and their deal jackets."}
             </p>
           </div>
         </div>
@@ -85,6 +94,7 @@ export default function DealJacketsPageContent({
       <DealJacketsInventory
         dealJackets={dealJackets}
         salesRepFilterOptions={salesRepFilterOptions}
+        jacketBasePath={`${portalBasePath}/deal-jackets`}
       />
     </div>
   );

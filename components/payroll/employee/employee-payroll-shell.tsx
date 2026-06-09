@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import type { EmployeePayrollProfile, EmployeePayrollTab } from "@/lib/payroll/types";
+import type { PortalModuleOptions } from "@/lib/portal/module-options";
+import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 import { logPayrollAudit } from "@/lib/payroll/audit";
 import PayrollToolbarActions from "../payroll-toolbar-actions";
 import EmployeePayrollBreadcrumb from "./employee-payroll-breadcrumb";
@@ -15,9 +17,14 @@ import PayrollNotesCard from "./payroll-notes-card";
 
 export default function EmployeePayrollShell({
   profile: initialProfile,
-}: {
+  readOnly,
+  showAdminHeader,
+  basePath,
+}: PortalModuleOptions & {
   profile: EmployeePayrollProfile;
 }) {
+  const { readOnly: isReadOnly, showAdminHeader: showHeader, basePath: portalBasePath } =
+    resolvePortalModuleOptions({ readOnly, showAdminHeader, basePath });
   const [profile, setProfile] = useState(initialProfile);
   const [activeTab, setActiveTab] = useState<EmployeePayrollTab>("overview");
 
@@ -33,11 +40,13 @@ export default function EmployeePayrollShell({
 
   return (
     <div className="relative pb-8">
-      <AdminHeader />
+      {showHeader && <AdminHeader />}
 
       <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <EmployeePayrollBreadcrumb />
-        <PayrollToolbarActions periodLabel={profile.periodLabel} />
+        <EmployeePayrollBreadcrumb payrollBasePath={`${portalBasePath}/payroll`} />
+        {!isReadOnly && (
+          <PayrollToolbarActions periodLabel={profile.periodLabel} />
+        )}
       </div>
 
       <EmployeePayrollBanner profile={profile} />
@@ -46,11 +55,13 @@ export default function EmployeePayrollShell({
       {activeTab === "overview" ? (
         <>
           <EmployeePayrollOverviewTab profile={profile} />
-          <PayrollNotesCard
-            note={profile.adminNote}
-            updatedAt={profile.adminNoteUpdatedAt}
-            onSave={(note) => setProfile((p) => ({ ...p, adminNote: note }))}
-          />
+          {!isReadOnly && (
+            <PayrollNotesCard
+              note={profile.adminNote}
+              updatedAt={profile.adminNoteUpdatedAt}
+              onSave={(note) => setProfile((p) => ({ ...p, adminNote: note }))}
+            />
+          )}
         </>
       ) : (
         <EmployeePayrollCalendarTab profile={profile} />

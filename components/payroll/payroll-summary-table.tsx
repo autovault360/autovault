@@ -28,7 +28,10 @@ type StatusTab = "all" | PayrollStatus;
 type Props = {
   rows: PayrollSummaryRow[];
   loading?: boolean;
+  employeeBasePath?: string;
 };
+
+const DEFAULT_EMPLOYEE_BASE = "/dashboard/payroll/employee";
 
 const TABLE_WRAPPER_CLASS =
   "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-[#0a101c]/40 " +
@@ -56,7 +59,11 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-export default function PayrollSummaryTable({ rows, loading = false }: Props) {
+export default function PayrollSummaryTable({
+  rows,
+  loading = false,
+  employeeBasePath = DEFAULT_EMPLOYEE_BASE,
+}: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<StatusTab>("all");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -95,7 +102,7 @@ export default function PayrollSummaryTable({ rows, loading = false }: Props) {
   }, [rows, activeTab, roleFilter, paymentFilter]);
 
   const navigateToEmployee = (id: string) => {
-    router.push(`/dashboard/payroll/employee/${id}`);
+    router.push(`${employeeBasePath}/${id}`);
   };
 
   const columns: Column<PayrollSummaryRow>[] = useMemo(

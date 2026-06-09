@@ -7,9 +7,14 @@ import { cn } from "@/lib/utils";
 type Props = {
   dealId: string;
   className?: string;
+  basePath?: string;
 };
 
-export default function ViewJacketButton({ dealId, className }: Props) {
+export default function ViewJacketButton({
+  dealId,
+  className,
+  basePath = "/dashboard/deal-jackets",
+}: Props) {
   return (
     <div
       className={cn(
@@ -18,7 +23,7 @@ export default function ViewJacketButton({ dealId, className }: Props) {
       )}
     >
       <Link
-        href={`/dashboard/deal-jackets/${dealId}`}
+        href={`${basePath}/${dealId}`}
         className="inline-flex h-8 items-center gap-1.5 bg-blue-600 px-3 text-[11px] font-semibold text-white transition-colors hover:bg-blue-500"
       >
         <FolderOpen className="h-3.5 w-3.5" />

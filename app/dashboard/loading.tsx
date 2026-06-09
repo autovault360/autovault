@@ -33,6 +33,16 @@ function PanelSkeleton() {
   );
 }
 
+function KpiRowSkeleton({ count }: { count: number }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5">
+      {Array.from({ length: count }).map((_, i) => (
+        <KpiSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
 export default function DashboardLoading() {
   return (
     <div>
@@ -61,9 +71,12 @@ export default function DashboardLoading() {
             <SkeletonBar className="h-3 w-20" />
             <SkeletonBar className="h-4 w-32" />
           </div>
-          <div className="flex gap-2 overflow-hidden">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <SkeletonBar key={i} className="h-14 w-11 shrink-0 rounded-md" />
+          <div className="flex gap-0 overflow-x-auto">
+            {Array.from({ length: 31 }).map((_, i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-1 py-1">
+                <SkeletonBar className="h-2 w-4" />
+                <SkeletonBar className="h-7 w-7 rounded-full" />
+              </div>
             ))}
           </div>
           <SkeletonBar className="mt-3 h-4 w-full" />
@@ -76,32 +89,91 @@ export default function DashboardLoading() {
         ))}
       </section>
 
-      <section className="mb-3.5 grid grid-cols-1 gap-3 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card
-            key={i}
-            className="rounded-sm border border-[#1e293b] bg-[#0a101d]/60 p-3.5 shadow-none"
-          >
-            <SkeletonBar className="h-3 w-32" />
-            <SkeletonBar className="mt-3 h-5 w-48" />
-            <SkeletonBar className="mt-2 h-4 w-36" />
-          </Card>
-        ))}
+      <section className="mb-3.5">
+        <Card className="rounded-sm border border-[#1e293b] bg-card p-3.5 shadow-none">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <SkeletonBar className="h-9 w-9 shrink-0 rounded-full" />
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <SkeletonBar className="h-3 w-36" />
+                  <SkeletonBar className="h-5 w-48" />
+                  <SkeletonBar className="h-4 w-32" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
       </section>
 
-      {Array.from({ length: 2 }).map((_, i) => (
-        <section key={i} className="mb-3.5">
-          <Card className="rounded-sm border border-[#1e293b] bg-card p-3.5 shadow-none">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <SkeletonBar className="h-6 w-6 rounded-full" />
-                <SkeletonBar className="h-4 w-48" />
+      <section className="mb-3.5">
+        <Card className="rounded-sm border border-[#1e293b] bg-card p-3.5 shadow-none">
+          <div className="mb-3 flex items-center justify-between">
+            <SkeletonBar className="h-3 w-24" />
+            <SkeletonBar className="h-4 w-20" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex min-h-[80px] flex-col gap-1.5 rounded-md bg-slate-800/40 p-2.5"
+              >
+                <SkeletonBar className="h-3 w-3/4" />
+                <SkeletonBar className="h-3 w-full" />
+                <SkeletonBar className="mt-auto h-3 w-1/2" />
               </div>
+            ))}
+          </div>
+        </Card>
+      </section>
+
+      <section className="mb-3.5">
+        <KpiRowSkeleton count={5} />
+      </section>
+
+      <section className="mb-3.5">
+        <Card className="rounded-sm border border-[#1e293b] bg-card p-3.5 shadow-none">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <SkeletonBar className="h-6 w-6 rounded-full" />
+              <SkeletonBar className="h-4 w-48" />
+            </div>
+            <SkeletonBar className="h-4 w-20" />
+          </div>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="mt-3 flex items-center gap-3">
+              <SkeletonBar className="h-6 w-6 shrink-0 rounded-full" />
+              <SkeletonBar className="h-4 flex-1" />
               <SkeletonBar className="h-4 w-20" />
             </div>
-          </Card>
-        </section>
-      ))}
+          ))}
+        </Card>
+      </section>
+
+      <section className="mb-3.5">
+        <Card className="rounded-sm border border-[#1e293b] bg-card p-3.5 shadow-none">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <SkeletonBar className="h-6 w-6 rounded-full" />
+              <SkeletonBar className="h-4 w-36" />
+            </div>
+            <div className="flex items-center gap-2">
+              <SkeletonBar className="h-8 w-48" />
+              <SkeletonBar className="h-8 w-24" />
+            </div>
+          </div>
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="mt-3 flex items-center gap-3">
+              <SkeletonBar className="h-10 w-10 shrink-0 rounded-md" />
+              <div className="min-w-0 flex-1 space-y-1">
+                <SkeletonBar className="h-3 w-48" />
+                <SkeletonBar className="h-3 w-32" />
+              </div>
+              <SkeletonBar className="h-4 w-24" />
+            </div>
+          ))}
+        </Card>
+      </section>
     </div>
   );
 }

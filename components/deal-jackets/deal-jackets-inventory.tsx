@@ -43,6 +43,7 @@ import {
 type Props = {
   dealJackets: DealJacketListItem[];
   salesRepFilterOptions: { id: string; label: string }[];
+  jacketBasePath?: string;
 };
 
 const TABLE_WRAPPER_CLASS =
@@ -60,6 +61,7 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50];
 export default function DealJacketsInventory({
   dealJackets,
   salesRepFilterOptions,
+  jacketBasePath = "/dashboard/deal-jackets",
 }: Props) {
   const [activeTab, setActiveTab] = useState<DealJacketTab>("all");
   const [search, setSearch] = useState("");
@@ -207,7 +209,7 @@ export default function DealJacketsInventory({
       header: "Actions",
       headerClassName: "text-right pr-4",
       cellClassName: "text-right pr-4",
-      cell: (row) => <ViewJacketButton dealId={row.id} />,
+      cell: (row) => <ViewJacketButton dealId={row.id} basePath={jacketBasePath} />,
     },
   ];
 
