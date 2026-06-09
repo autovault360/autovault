@@ -116,7 +116,7 @@ function generateDailyActivity(
 
 function generateAllDailyActivity(): IDailySalesActivity[] {
   const days: IDailySalesActivity[] = [];
-  for (const year of [2024, 2025]) {
+  for (const year of [2024, 2025, 2026]) {
     for (let month = 1; month <= 12; month++) {
       const daysInMonth = getDaysInMonth(year, month);
       for (let day = 1; day <= daysInMonth; day++) {

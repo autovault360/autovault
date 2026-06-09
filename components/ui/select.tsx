@@ -39,7 +39,7 @@ const normalizeLabel = (value: string) =>
 function SelectTrigger({
   className,
   size = "default",
-  theme = "light",
+  theme = "dark",
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
@@ -72,7 +72,7 @@ function SelectContent({
   children,
   position = "item-aligned",
   align = "center",
-  theme = "light",
+  theme = "dark",
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content> & {
   theme?: "light" | "dark"

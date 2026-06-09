@@ -63,6 +63,7 @@ export default function ForgotPasswordPage() {
               width={170}
               height={45}
               className="object-contain"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </div>
 
@@ -177,6 +178,7 @@ export default function ForgotPasswordPage() {
                 width={150}
                 height={40}
                 className="object-contain"
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
 

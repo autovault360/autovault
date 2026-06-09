@@ -246,6 +246,67 @@ export async function getVehiclesByStatus(
   return counts;
 }
 
+export async function getDashboardInventoryPreview(
+  dealershipId: string,
+  limit: number = 5,
+): Promise<
+  Array<{
+    id: string;
+    vin: string;
+    year: number;
+    make: string;
+    model: string;
+    stockNumber: string;
+    totalInvested: number;
+    status: string;
+    daysInLot: number;
+    purchaseDate: string;
+    imageUrl?: string;
+  }>
+> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("vehicles")
+    .select(
+      "id, vin, year, make, model, stock_number, status, total_invested, acquisition_cost, created_at",
+    )
+    .eq("dealership_id", dealershipId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.warn("getDashboardInventoryPreview:", error.message);
+    return [];
+  }
+
+  const now = Date.now();
+  const results = [];
+
+  for (const row of data ?? []) {
+    const imageUrl = await resolveVehicleImage(row.id);
+    const daysInLot = Math.max(
+      0,
+      Math.floor((now - new Date(row.created_at).getTime()) / 86400000),
+    );
+    results.push({
+      id: row.id,
+      vin: row.vin,
+      year: row.year,
+      make: row.make,
+      model: row.model,
+      stockNumber: row.stock_number ?? "N/A",
+      totalInvested: Number(row.total_invested ?? row.acquisition_cost ?? 0),
+      status: row.status,
+      daysInLot,
+      purchaseDate: row.created_at?.slice(0, 10) ?? "",
+      imageUrl: imageUrl ?? undefined,
+    });
+  }
+
+  return results;
+}
+
 export async function getLotLocations(dealershipId: string): Promise<string[]> {
   const supabase = await createClient();
   const { data, error } = await supabase

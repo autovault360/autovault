@@ -12,6 +12,7 @@ export default function Navbar() {
             width={150}
             height={40}
             className="object-contain"
+            style={{ width: 'auto', height: 'auto' }}
           />
         </Link>
         <div className="flex items-center gap-6">
