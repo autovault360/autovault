@@ -33,17 +33,30 @@ export type TransactionWorkspaceValues = z.infer<
   typeof transactionWorkspaceSchema
 >;
 
-export const expenseSchema = z.object({
-  category: z.enum([
-    "auction_fees",
-    "transportation",
-    "recon_repairs",
-    "storage_fees",
-    "dealer_fees",
-    "miscellaneous",
-  ]),
-  description: z.string().min(1, "Description is required"),
+const wholesaleExpenseCategoryEnum = z.enum([
+  "auction_fees",
+  "transportation",
+  "recon_repairs",
+  "storage_fees",
+  "dealer_fees",
+  "miscellaneous",
+]);
+
+export const wholesaleExpenseSchema = z.object({
+  expenseName: z.string().min(1, "Expense name is required"),
+  category: wholesaleExpenseCategoryEnum,
   amount: currencyField.refine((v) => v > 0, "Amount is required"),
+  description: z
+    .string()
+    .max(500, "Description must be 500 characters or less")
+    .optional(),
+  notes: z.string().max(500, "Notes must be 500 characters or less").optional(),
+  reference: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  paymentMethod: z.string().min(1, "Payment method is required"),
+  vendor: z.string().min(1, "Vendor is required"),
+  expenseDate: z.string().min(1, "Date is required"),
+  status: z.enum(["paid", "pending", "unpaid"]),
 });
 
-export type ExpenseFormValues = z.infer<typeof expenseSchema>;
+export type WholesaleExpenseFormValues = z.infer<typeof wholesaleExpenseSchema>;

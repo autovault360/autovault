@@ -50,6 +50,9 @@ type DealerDashboardContextValue = {
   expandInventory: (vehicle?: WholesaleVehicle | null) => void;
   expandTransaction: (transaction?: DealerTransaction | null) => void;
   expandExpenseForm: () => void;
+  isExpenseModalOpen: boolean;
+  openExpenseModal: () => void;
+  setExpenseModalOpen: (open: boolean) => void;
   collapseExpanded: () => void;
   refreshSection: (section: DashboardSectionKey) => Promise<void>;
   workspaceSaving: boolean;
@@ -113,6 +116,7 @@ export function DealerDashboardProvider({
   const [selectedTransaction, setSelectedTransaction] =
     useState<DealerTransaction | null>(null);
   const [workspaceSaving, setWorkspaceSaving] = useState(false);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
 
   const inventoryRef = useRef<HTMLDivElement | null>(null);
   const transactionsRef = useRef<HTMLDivElement | null>(null);
@@ -174,7 +178,7 @@ export function DealerDashboardProvider({
           setExpandedSection("transaction");
           break;
         case "expense-add":
-          setExpandedSection("expense");
+          setIsExpenseModalOpen(true);
           break;
       }
     },
@@ -186,6 +190,10 @@ export function DealerDashboardProvider({
       setActiveSection(sectionId);
       pushSectionHash(sectionId);
       handleExpandAction(expandAction);
+
+      if (expandAction === "expense-add") {
+        return;
+      }
 
       if (sectionId === DEALER_SECTION_IDS.dashboard) {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -233,10 +241,13 @@ export function DealerDashboardProvider({
     [navigateToSection],
   );
 
+  const openExpenseModal = useCallback(() => {
+    setIsExpenseModalOpen(true);
+  }, []);
+
   const expandExpenseForm = useCallback(() => {
-    setExpandedSection("expense");
-    navigateToSection(DEALER_SECTION_IDS.expenses);
-  }, [navigateToSection]);
+    setIsExpenseModalOpen(true);
+  }, []);
 
   const collapseExpanded = useCallback(() => {
     setExpandedSection(null);
@@ -273,6 +284,9 @@ export function DealerDashboardProvider({
       expandInventory,
       expandTransaction,
       expandExpenseForm,
+      isExpenseModalOpen,
+      openExpenseModal,
+      setExpenseModalOpen: setIsExpenseModalOpen,
       collapseExpanded,
       refreshSection,
       workspaceSaving,
@@ -290,6 +304,8 @@ export function DealerDashboardProvider({
       expandInventory,
       expandTransaction,
       expandExpenseForm,
+      isExpenseModalOpen,
+      openExpenseModal,
       collapseExpanded,
       refreshSection,
       workspaceSaving,
