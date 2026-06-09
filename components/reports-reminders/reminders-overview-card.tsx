@@ -17,11 +17,11 @@ import {
 } from "./report-card-primitives";
 
 const boxStyles: Record<ReminderKpi["color"], string> = {
-  red: "border-red-500/35 bg-red-950/40",
-  amber: "border-orange-500/35 bg-orange-950/30",
-  purple: "border-purple-500/35 bg-purple-950/35",
-  blue: "border-blue-500/35 bg-blue-950/35",
-  green: "border-emerald-500/35 bg-emerald-950/30",
+  red: "border-red-500/40 bg-red-950/45",
+  amber: "border-orange-500/40 bg-orange-950/35",
+  purple: "border-purple-500/40 bg-purple-950/40",
+  blue: "border-blue-500/40 bg-blue-950/40",
+  green: "border-emerald-500/40 bg-emerald-950/35",
 };
 
 const countStyles: Record<ReminderKpi["color"], string> = {
@@ -89,26 +89,26 @@ type Props = {
 
 export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
   return (
-    <ReportCardShell className="@container flex min-w-0 flex-col overflow-hidden">
-      <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.08em] text-white uppercase">
+    <ReportCardShell className="flex h-full min-w-0 flex-col overflow-hidden">
+      <h2 className="mb-3 text-[11px] font-bold tracking-[0.08em] text-white uppercase">
         REMINDERS OVERVIEW
       </h2>
 
-      <div className="mb-3 grid min-w-0 grid-cols-2 gap-2 @min-[480px]:grid-cols-3 @min-[640px]:grid-cols-5">
+      <div className="mb-3 grid grid-cols-5 gap-1">
         {kpis.map((kpi) => (
           <div
             key={kpi.id}
             className={cn(
-              "flex min-w-0 flex-col items-center rounded border px-1.5 py-2.5 text-center",
+              "flex min-w-0 flex-col items-center rounded border px-0.5 py-2 text-center",
               boxStyles[kpi.color],
             )}
           >
-            <div className="w-full text-[9px] font-semibold leading-tight text-slate-400 @min-[480px]:text-[8px] @min-[640px]:text-[7.5px]">
+            <div className="w-full text-[7px] font-semibold leading-tight text-slate-400 sm:text-[7.5px]">
               {formatKpiLabel(kpi.label)}
             </div>
             <div
               className={cn(
-                "my-1 text-[20px] font-bold leading-none tabular-nums @min-[640px]:my-0.5 @min-[640px]:text-[18px]",
+                "my-1 text-[17px] font-bold leading-none tabular-nums sm:text-[18px]",
                 countStyles[kpi.color],
               )}
             >
@@ -116,28 +116,28 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
             </div>
             <button
               type="button"
-              className="text-[9px] font-medium text-blue-400 hover:text-blue-300 @min-[640px]:text-[7.5px]"
+              className="text-[7px] font-medium text-blue-400 hover:text-blue-300 sm:text-[7.5px]"
             >
-              View All ...
+              View All →
             </button>
           </div>
         ))}
       </div>
 
       <ReportSectionLabel>Top Reminders (Action Items)</ReportSectionLabel>
-      <ul className="mb-1 min-h-0 flex-1 space-y-0">
+      <ul className="mb-1 min-h-0 flex-1">
         {topReminders.map((item) => (
           <li
             key={item.id}
-            className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-1.5 border-b border-slate-800/50 py-2.5 last:border-0 @min-[400px]:grid-cols-[auto_minmax(0,1fr)_auto] @min-[400px]:items-center @min-[400px]:gap-y-0"
+            className="flex items-center gap-2 border-b border-slate-800/50 py-2 last:border-0"
           >
             <ReminderListIcon tone={item.iconTone} />
-            <span className="col-start-2 min-w-0 text-[11px] leading-snug text-slate-200 @min-[400px]:col-start-2">
+            <span className="min-w-0 flex-1 text-[10.5px] leading-snug text-slate-200 sm:text-[11px]">
               {item.title}
             </span>
             <span
               className={cn(
-                "col-start-2 w-fit rounded border px-1.5 py-0.5 text-[9px] font-semibold whitespace-nowrap @min-[400px]:col-start-3",
+                "shrink-0 rounded border px-1.5 py-0.5 text-[8.5px] font-semibold whitespace-nowrap sm:text-[9px]",
                 toneStyles[item.statusTone],
               )}
             >

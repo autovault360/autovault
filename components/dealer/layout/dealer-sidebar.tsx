@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
 import { AppSidebar } from "@/components/layout/sidebar";
@@ -7,12 +8,19 @@ import type { SidebarItem, SidebarGroup } from "@/components/layout/sidebar";
 import { DEALER_NAV_GROUPS, type DealerNavItem } from "./dealer-nav";
 import { useDealerNavigation } from "../context/dealer-dashboard-context";
 
+function isRouteActive(pathname: string, item: SidebarItem): boolean {
+  if (!item.href) return false;
+  if (item.exact) return pathname === item.href;
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+}
+
 function toSidebarItem(item: DealerNavItem): SidebarItem {
   return {
     label: item.label,
     icon: item.icon,
     color: item.color,
     sectionId: item.sectionId,
+    href: item.href,
     comingSoon: item.comingSoon,
   };
 }
@@ -25,6 +33,7 @@ export default function DealerSidebar({
   initials: string;
 }) {
   const { navigateToSection, activeSection } = useDealerNavigation();
+  const pathname = usePathname();
 
   const groups: SidebarGroup[] = DEALER_NAV_GROUPS.map((g) => ({
     label: g.label,
@@ -57,11 +66,13 @@ export default function DealerSidebar({
       groups={groups}
       logoLabel="WHOLESALE DEALER PORTAL"
       profile={profileSection}
-      isActive={(item) =>
-        item.sectionId != null && activeSection === item.sectionId
-      }
+      isActive={(item) => {
+        if (item.href) return isRouteActive(pathname, item);
+        return item.sectionId != null && activeSection === item.sectionId;
+      }}
       onNavigate={(item) => {
-        // find the original nav item for expandAction
+        if (item.href) return;
+
         for (const g of DEALER_NAV_GROUPS) {
           for (const orig of g.items) {
             if (orig.label === item.label && orig.sectionId) {

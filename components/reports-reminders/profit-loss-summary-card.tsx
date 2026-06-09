@@ -18,7 +18,7 @@ export default function ProfitLossSummaryCard({
   period = "This Month",
 }: Props) {
   return (
-    <ReportCardShell className="flex flex-col">
+    <ReportCardShell className="flex h-full min-w-0 flex-col">
       <ReportTitleWithPeriodAndLink
         title="PROFIT & LOSS SUMMARY"
         period={period}
