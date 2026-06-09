@@ -31,7 +31,6 @@ export type DealerNavItem = {
   href?: string;
   sectionId?: DealerSectionId;
   expandAction?: DealerExpandAction;
-  href?: string;
   comingSoon?: boolean;
 };
 
