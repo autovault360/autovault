@@ -14,6 +14,7 @@ import {
   ArrowLeftRight,
   User,
   CreditCard,
+  FileWarning,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -30,6 +31,7 @@ export type DealerNavItem = {
   href?: string;
   sectionId?: DealerSectionId;
   expandAction?: DealerExpandAction;
+  href?: string;
   comingSoon?: boolean;
 };
 
@@ -66,6 +68,12 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         icon: Car,
         color: "text-blue-500",
         sectionId: DEALER_SECTION_IDS.inventory,
+      },
+      {
+        label: "Missing Titles Center",
+        icon: FileWarning,
+        color: "text-red-400",
+        href: "/dealer/dashboard/missing-titles",
       },
     ],
   },
@@ -151,7 +159,7 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Profit & Loss",
         icon: BarChart3,
         color: "text-green-500",
-        comingSoon: true,
+        href: "/dealer/dashboard/profit-loss",
       },
       {
         label: "Inventory",

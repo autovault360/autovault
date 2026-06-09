@@ -28,7 +28,7 @@ export default function ReportsGrid({ report, reminderKpis }: Props) {
         <InventoryOverviewCard inventory={report.inventory} />
       </section>
 
-      <section className="grid grid-cols-1 items-stretch gap-3.5 md:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-1 items-stretch gap-3.5 md:grid-cols-2 lg:grid-cols-3">
         <ExpenseReportCard bars={report.expenseBars} />
         <RemindersOverviewCard
           kpis={reminderKpis}
@@ -39,11 +39,12 @@ export default function ReportsGrid({ report, reminderKpis }: Props) {
           payroll={report.payroll}
           commissions={report.commissions}
         />
-      </section>
-
-      <section className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-2 xl:grid-cols-4">
         <DealJacketStatusCard segments={report.dealJacketStatus} />
         <CpaReportCenterCard />
+      </section>
+
+      <section className="grid grid-cols-1 items-stretch gap-3.5 md:grid-cols-2 lg:grid-cols-3">
+        
         <AuditReadinessCard audit={report.auditReadiness} />
         <CustomReportBuilderCard fields={report.customReportFields} />
       </section>
