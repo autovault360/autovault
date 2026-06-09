@@ -32,16 +32,22 @@ const iconColorMap = {
   inventory: "text-cyan-400 bg-cyan-500/15",
 };
 
+const DEFAULT_SHELL_CLASS = "border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
+
 export default function RecentActivityPanel({
   activities,
   loading,
+  shellClassName,
 }: {
   activities: ActivityItem[];
   loading?: boolean;
+  shellClassName?: string;
 }) {
+  const shellClass = cn(DEFAULT_SHELL_CLASS, shellClassName);
+
   if (loading) {
     return (
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className={shellClass}>
         <SkeletonBar className="mb-3 h-3 w-32" />
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="mb-2 flex items-center gap-2">
@@ -57,7 +63,7 @@ export default function RecentActivityPanel({
   }
 
   return (
-    <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <CardShell className={shellClass}>
       <CardHead title="RECENT ACTIVITY" />
       <ul className="space-y-2.5">
         {activities.map((item) => {

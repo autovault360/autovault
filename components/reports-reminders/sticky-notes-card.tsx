@@ -8,9 +8,11 @@ type Props = {
   notes: StickyNote[];
 };
 
-export default function StickyNotesCard({ notes }: Props) {
+export default function StickyNotesCard({ notes = [] }: Props) {
+  if (!notes.length) return null;
+
   return (
-    <Card className="w-full rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+    <Card className="w-full rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-[10px] font-bold tracking-[0.12em] text-slate-500">
           STICKY NOTES

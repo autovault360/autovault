@@ -107,6 +107,7 @@ export default function LoginPage() {
               width={220}
               height={45}
               className="p-2 object-cover"
+              style={{ width: 'auto', height: 'auto' }}
             />
           </div>
 
@@ -221,6 +222,7 @@ export default function LoginPage() {
                 width={150}
                 height={40}
                 className="object-contain"
+                style={{ width: 'auto', height: 'auto' }}
               />
             </div>
 

@@ -23,18 +23,24 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
+const DEFAULT_SHELL_CLASS = "border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
+
 export default function ProfitLossSummaryPanel({
   data,
   summary,
   loading,
+  shellClassName,
 }: {
   data: ProfitLossPoint[];
   summary: { totalRevenue: number; totalExpenses: number; netProfit: number };
   loading?: boolean;
+  shellClassName?: string;
 }) {
+  const shellClass = cn(DEFAULT_SHELL_CLASS, shellClassName);
+
   if (loading) {
     return (
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className={shellClass}>
         <SkeletonBar className="mb-3 h-3 w-40" />
         <SkeletonBar className="h-40 w-full" />
         <div className="mt-3 grid grid-cols-3 gap-2">
@@ -47,7 +53,7 @@ export default function ProfitLossSummaryPanel({
   }
 
   return (
-    <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <CardShell className={shellClass}>
       <CardHead title="PROFIT & LOSS SUMMARY" pill="This Month" />
       <div className="h-44 w-full">
         <ResponsiveContainer width="100%" height="100%">

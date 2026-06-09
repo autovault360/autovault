@@ -33,20 +33,25 @@ function StatusBadge({ status }: { status: VehicleStatus }) {
   );
 }
 
+const DEFAULT_SHELL_CLASS = "border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
+
 export default function InventoryMiniPanel({
   vehicles,
   loading,
   onViewAll,
+  shellClassName,
 }: {
   vehicles: WholesaleVehicle[];
   loading?: boolean;
   onViewAll?: () => void;
+  shellClassName?: string;
 }) {
   const topFive = vehicles.slice(0, 5);
+  const shellClass = cn(DEFAULT_SHELL_CLASS, shellClassName);
 
   if (loading) {
     return (
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className={shellClass}>
         <SkeletonBar className="mb-3 h-3 w-36" />
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="mb-2 flex items-center gap-2">
@@ -60,7 +65,7 @@ export default function InventoryMiniPanel({
   }
 
   return (
-    <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <CardShell className={shellClass}>
       <CardHead title="INVENTORY OVERVIEW" />
       <div className="overflow-x-auto">
         <table className="w-full text-[11px]">
