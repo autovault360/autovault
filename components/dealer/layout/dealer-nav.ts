@@ -4,6 +4,7 @@ import {
   Plus,
   Handshake,
   Search,
+  Tag,
   Receipt,
   List,
   FolderOpen,
@@ -16,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import {
+  DEALER_ROUTES,
   DEALER_SECTION_IDS,
   type DealerExpandAction,
   type DealerSectionId,
@@ -25,6 +27,7 @@ export type DealerNavItem = {
   label: string;
   icon: LucideIcon;
   color: string;
+  href?: string;
   sectionId?: DealerSectionId;
   expandAction?: DealerExpandAction;
   comingSoon?: boolean;
@@ -43,6 +46,7 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Dashboard",
         icon: LayoutDashboard,
         color: "text-blue-500",
+        href: DEALER_ROUTES.dashboard,
         sectionId: DEALER_SECTION_IDS.dashboard,
       },
     ],
@@ -66,20 +70,36 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
     ],
   },
   {
+    label: "SOLD VEHICLES",
+    items: [
+      {
+        label: "Add Sold Vehicle",
+        icon: Plus,
+        color: "text-emerald-500",
+        href: `${DEALER_ROUTES.soldVehicles}?add=true`,
+      },
+      {
+        label: "Sold Vehicles",
+        icon: Tag,
+        color: "text-blue-500",
+        href: DEALER_ROUTES.soldVehicles,
+      },
+    ],
+  },
+  {
     label: "DEALER TRANSACTIONS",
     items: [
       {
-        label: "Find Dealers",
+        label: "Add Transaction",
         icon: Search,
         color: "text-cyan-500",
-        sectionId: DEALER_SECTION_IDS.transactions,
-        expandAction: "transaction-add",
+        href: `${DEALER_ROUTES.transactions}?add=true`,
       },
       {
         label: "Dealer Transactions",
         icon: Handshake,
         color: "text-amber-500",
-        sectionId: DEALER_SECTION_IDS.transactions,
+        href: DEALER_ROUTES.transactions,
       },
     ],
   },

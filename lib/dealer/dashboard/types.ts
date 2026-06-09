@@ -1,7 +1,24 @@
 import type { KPICardData } from "@/components/ui/kpi-card";
 
 export type VehicleStatus = "in_inventory" | "sold" | "pending";
+
+/** @deprecated Use TransactionPaymentStatus for the transactions center */
 export type PaymentStatus = "pending" | "funded" | "settled";
+
+export type TransactionType =
+  | "dealer_sale"
+  | "auction_sale"
+  | "dealer_purchase"
+  | "auction_purchase";
+
+export type TransactionPaymentStatus = "paid" | "partial" | "pending";
+
+export type TransactionPaymentMethod =
+  | "wire_transfer"
+  | "ach"
+  | "check"
+  | "floor_plan"
+  | "cash";
 
 export type VehicleCosts = {
   acquisition: number;
@@ -31,16 +48,32 @@ export type WholesaleVehicle = {
 export type DealerTransaction = {
   id: string;
   inventoryId: string;
-  dateSold: string;
-  buyerDealer: string;
-  contactPerson: string;
+  type: TransactionType;
+  transactionDate: string;
+  vin: string;
   vehicleLabel: string;
   stockNumber: string;
-  salePrice: number;
-  paymentStatus: PaymentStatus;
+  vehicleImageUrl?: string;
+  mileage?: number;
+  buyerSeller: string;
+  auction: string | null;
+  salePurchasePrice: number;
+  grossProfit: number | null;
+  paymentStatus: TransactionPaymentStatus;
+  paymentMethod: TransactionPaymentMethod;
+  contactPerson: string;
+  dealerLicense?: string;
+  phone?: string;
+  email?: string;
   documents: { id: string; name: string; uploadedAt: string }[];
   notes: string;
   auditEvents: { at: string; action: string; actor?: string }[];
+  /** @deprecated Use transactionDate */
+  dateSold?: string;
+  /** @deprecated Use buyerSeller */
+  buyerDealer?: string;
+  /** @deprecated Use salePurchasePrice */
+  salePrice?: number;
 };
 
 export type ExpenseCategory =
@@ -100,6 +133,7 @@ export type DashboardLoadingState = {
   kpis: boolean;
   inventory: boolean;
   transactions: boolean;
+  soldVehicles: boolean;
   expenses: boolean;
   documents: boolean;
   activity: boolean;
@@ -114,11 +148,68 @@ export type ExpandedSection =
   | "transaction"
   | "expense";
 
+export type TransactionKpiStrip = {
+  totalTransactions: DealerKpi;
+  dealerSales: DealerKpi;
+  auctionSales: DealerKpi;
+  totalRevenue: DealerKpi;
+  pendingPayments: DealerKpi;
+  completedPayments: DealerKpi;
+  grossProfit: DealerKpi;
+};
+
+export type SaleType = "wholesale" | "retail" | "dealer_trade" | "auction";
+
+export type BuyerType = "dealer" | "auction" | "private" | "other";
+
+export type SoldVehicleRecord = {
+  id: string;
+  inventoryId: string;
+  dateSold: string;
+  vin: string;
+  vehicleLabel: string;
+  stockNumber: string;
+  vehicleImageUrl?: string;
+  mileage?: number;
+  buyer: string;
+  buyerType: BuyerType;
+  contactPerson: string;
+  dealerLicense?: string;
+  phone?: string;
+  email?: string;
+  saleType: SaleType;
+  salePrice: number;
+  vehicleCost: number;
+  reconditioning: number;
+  totalExpenses: number;
+  totalCost: number;
+  grossProfit: number;
+  grossProfitPercent: number;
+  paymentStatus: TransactionPaymentStatus;
+  paymentMethod: TransactionPaymentMethod;
+  dealNumber: string;
+  salesperson?: string;
+  documents: { id: string; name: string; uploadedAt: string }[];
+  notes: string;
+};
+
+export type SoldVehicleKpiStrip = {
+  totalSold: DealerKpi;
+  totalSales: DealerKpi;
+  totalGrossProfit: DealerKpi;
+  averageGrossProfit: DealerKpi;
+  soldThisMonth: DealerKpi;
+  pendingPayments: DealerKpi;
+};
+
 export type DealerDashboardData = {
   profile: DealerProfile;
   kpis: DealerKpi[];
+  transactionKpis: TransactionKpiStrip;
+  soldVehicleKpis: SoldVehicleKpiStrip;
   vehicles: WholesaleVehicle[];
   transactions: DealerTransaction[];
+  soldVehicles: SoldVehicleRecord[];
   expenses: WholesaleExpense[];
   documents: VaultDocument[];
   activity: ActivityItem[];

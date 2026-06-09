@@ -23,7 +23,8 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-const DEFAULT_SHELL_CLASS = "border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
+const DEFAULT_SHELL_CLASS =
+  "min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
 
 export default function ProfitLossSummaryPanel({
   data,
@@ -55,7 +56,7 @@ export default function ProfitLossSummaryPanel({
   return (
     <CardShell className={shellClass}>
       <CardHead title="PROFIT & LOSS SUMMARY" pill="This Month" />
-      <div className="h-44 w-full">
+      <div className="h-44 min-w-0 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" vertical={false} />
