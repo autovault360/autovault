@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
-import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/layout/sidebar";
 import type { SidebarItem, SidebarGroup } from "@/components/layout/sidebar";
 import { DEALER_NAV_GROUPS, type DealerNavItem } from "./dealer-nav";
@@ -22,7 +21,6 @@ function toSidebarItem(item: DealerNavItem): SidebarItem {
     color: item.color,
     href: item.href,
     sectionId: item.sectionId,
-    href: item.href,
     comingSoon: item.comingSoon,
   };
 }
@@ -36,7 +34,6 @@ export default function DealerSidebar({
 }) {
   const pathname = usePathname();
   const { navigateToSection, activeSection } = useDealerNavigation();
-  const pathname = usePathname();
 
   const groups: SidebarGroup[] = DEALER_NAV_GROUPS.map((g) => ({
     label: g.label,
