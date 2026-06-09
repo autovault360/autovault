@@ -31,15 +31,15 @@ if (!email || !password || !fullName) {
 }
 
 async function main() {
-  console.log("╔══════════════════════════════════════════╗");
+  console.log("╔══════════════════════════════════════════�—");
   console.log("║   AutoVault360 — Super Admin Seeder     ║");
-  console.log("╚══════════════════════════════════════════╝\n");
+  console.log("╚══════════════════════════════════════════�—\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("❌ Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
+    console.error("�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
     process.exit(1);
   }
 
@@ -59,7 +59,7 @@ async function main() {
   });
 
   if (authError) {
-    console.error("❌ Failed to create auth user:", authError.message);
+    console.error("�—� Failed to create auth user:", authError.message);
     process.exit(1);
   }
 
@@ -74,7 +74,7 @@ async function main() {
   });
 
   if (dbError) {
-    console.error("❌ Failed to create user record:", dbError.message);
+    console.error("�—� Failed to create user record:", dbError.message);
     await supabase.auth.admin.deleteUser(authUser.user.id);
     console.log("🧹 Cleaned up auth user.");
     process.exit(1);

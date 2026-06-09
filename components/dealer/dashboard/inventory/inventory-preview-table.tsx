@@ -177,7 +177,7 @@ export default function InventoryPreviewTable({
   ];
 
   return (
-    <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <CardShell className="min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <CardHead title="INVENTORY OVERVIEW" />
         <div className="flex flex-wrap items-center gap-2">
@@ -214,15 +214,17 @@ export default function InventoryPreviewTable({
         </div>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={vehicles}
-        rowKey="id"
-        addPagination
-        pageSize={8}
-        loading={loading}
-        paginationSummaryLabel="vehicles"
-      />
+      <div className="min-w-0 max-w-full overflow-x-auto">
+        <DataTable
+          columns={columns}
+          data={vehicles}
+          rowKey="id"
+          addPagination
+          pageSize={8}
+          loading={loading}
+          paginationSummaryLabel="vehicles"
+        />
+      </div>
 
       <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-t border-[#1e293b] pt-3 text-[11px]">
         <span className="text-[#64748b]">

@@ -1,20 +1,27 @@
 "use client";
 
 import {
+  BadgeCheck,
   BarChart3,
   Car,
+  CircleAlert,
   DollarSign,
+  Gavel,
   Handshake,
   Landmark,
   Leaf,
   Percent,
   PieChart,
+  RefreshCw,
+  Shield,
   ShoppingCart,
+  TriangleAlert,
   Tag,
   TrendingDown,
   TrendingUp,
   UserPlus,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -40,7 +47,14 @@ export type KPIIconName =
   | "user-plus"
   | "handshake"
   | "percent"
-  | "landmark";
+  | "landmark"
+  | "shield"
+  | "gavel"
+  | "wallet"
+  | "circle-alert"
+  | "badge-check"
+  | "triangle-alert"
+  | "refresh-cw";
 
 const iconMap: Record<KPIIconName, LucideIcon> = {
   car: Car,
@@ -57,6 +71,13 @@ const iconMap: Record<KPIIconName, LucideIcon> = {
   handshake: Handshake,
   percent: Percent,
   landmark: Landmark,
+  shield: Shield,
+  gavel: Gavel,
+  wallet: Wallet,
+  "circle-alert": CircleAlert,
+  "badge-check": BadgeCheck,
+  "triangle-alert": TriangleAlert,
+  "refresh-cw": RefreshCw,
 };
 
 export type KPIPeriodMetric = {
@@ -166,7 +187,7 @@ export default function PeriodKPICard({
   return (
     <Card
       className={cn(
-        "flex flex-col rounded-lg border border-slate-700 bg-transparent p-4 text-slate-200 shadow-none w-full",
+        "flex min-w-0 max-w-full flex-col rounded-lg border border-slate-700 bg-transparent p-4 text-slate-200 shadow-none w-full",
         className,
       )}
     >
@@ -256,7 +277,7 @@ export function KPICard({
   return (
     <Card
       className={cn(
-        "flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
+        "flex h-full min-w-0 max-w-full flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
         className,
       )}
     >
@@ -329,4 +350,5 @@ const iconBg: Record<string, string> = {
   amber: "bg-amber-500/15 text-amber-400",
   orange: "bg-orange-500/15 text-orange-400",
   red: "bg-red-400/15 text-red-500",
+  teal: "bg-teal-500/15 text-teal-400",
 };

@@ -1,3 +1,9 @@
+export const DEALER_ROUTES = {
+  dashboard: "/dealer/dashboard",
+  transactions: "/dealer/transactions",
+  soldVehicles: "/dealer/sold-vehicles",
+} as const;
+
 export const DEALER_SECTION_IDS = {
   dashboard: "dashboard-top",
   inventory: "inventory-overview",

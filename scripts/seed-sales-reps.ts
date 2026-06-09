@@ -378,16 +378,16 @@ async function seedMetrics(
 async function main() {
   const { dealershipId: requestedDealershipId, withMetrics } = parseArgs();
 
-  console.log("╔══════════════════════════════════════════╗");
+  console.log("╔══════════════════════════════════════════�—");
   console.log("║     AutoVault360 — Sales Reps Seeder     ║");
-  console.log("╚══════════════════════════════════════════╝\n");
+  console.log("╚══════════════════════════════════════════�—\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
     console.error(
-      "❌ Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
+      "�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
     );
     process.exit(1);
   }
@@ -459,6 +459,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("❌ Seed failed:", err instanceof Error ? err.message : err);
+  console.error("�—� Seed failed:", err instanceof Error ? err.message : err);
   process.exit(1);
 });

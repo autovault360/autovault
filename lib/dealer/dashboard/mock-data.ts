@@ -1,5 +1,9 @@
 import type { DealerDashboardData, WholesaleVehicle } from "./types";
 import { formatCurrency, potentialProfit, totalVehicleCost } from "./calculations";
+import { buildSoldVehicleKpiStrip } from "./sold-vehicle-calculations";
+import { soldVehiclesMockData } from "./sold-vehicles-mock-data";
+import { buildTransactionKpiStrip } from "./transaction-calculations";
+import { transactionsMockData } from "./transactions-mock-data";
 
 const sparkPoints =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
@@ -278,121 +282,10 @@ export const dealerDashboardMock: DealerDashboardData = {
     },
   ],
   vehicles,
-  transactions: [
-    {
-      id: "t1",
-      inventoryId: "v2",
-      dateSold: "2024-05-20",
-      buyerDealer: "Precision Auto Group",
-      contactPerson: "James Miller",
-      vehicleLabel: "2019 Audi A4 Premium",
-      stockNumber: "WC360-1002",
-      salePrice: 22450,
-      paymentStatus: "settled",
-      documents: [
-        { id: "d1", name: "Bill of Sale.pdf", uploadedAt: "2024-05-20T14:30:00Z" },
-      ],
-      notes: "Wire transfer received same day.",
-      auditEvents: [
-        { at: "2024-05-18T10:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-20T14:30:00Z", action: "Document uploaded: Bill of Sale", actor: "West Coast Motors" },
-        { at: "2024-05-20T16:00:00Z", action: "Payment status: Settled", actor: "James Miller" },
-      ],
-    },
-    {
-      id: "t2",
-      inventoryId: "v7",
-      dateSold: "2024-05-18",
-      buyerDealer: "Metro Wholesale LLC",
-      contactPerson: "Sarah Chen",
-      vehicleLabel: "2019 Hyundai Sonata SEL",
-      stockNumber: "WC360-1007",
-      salePrice: 16800,
-      paymentStatus: "funded",
-      documents: [
-        { id: "d2", name: "Title Transfer.pdf", uploadedAt: "2024-05-18T11:00:00Z" },
-      ],
-      notes: "Floor plan funded.",
-      auditEvents: [
-        { at: "2024-05-16T09:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-18T11:00:00Z", action: "Document uploaded: Title Transfer", actor: "West Coast Motors" },
-        { at: "2024-05-18T15:30:00Z", action: "Payment status: Funded", actor: "Sarah Chen" },
-      ],
-    },
-    {
-      id: "t3",
-      inventoryId: "v3",
-      dateSold: "2024-05-15",
-      buyerDealer: "Elite Motor Exchange",
-      contactPerson: "Robert Davis",
-      vehicleLabel: "2020 Mercedes-Benz C300",
-      stockNumber: "WC360-1003",
-      salePrice: 30960,
-      paymentStatus: "pending",
-      documents: [],
-      notes: "Awaiting buyer wire confirmation.",
-      auditEvents: [
-        { at: "2024-05-14T08:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-15T12:00:00Z", action: "Payment status: Pending", actor: "Robert Davis" },
-      ],
-    },
-    {
-      id: "t4",
-      inventoryId: "v1",
-      dateSold: "2024-05-12",
-      buyerDealer: "Pacific Auto Traders",
-      contactPerson: "Lisa Wong",
-      vehicleLabel: "2021 BMW 330i Sedan 4D",
-      stockNumber: "WC360-1001",
-      salePrice: 32400,
-      paymentStatus: "settled",
-      documents: [
-        { id: "d3", name: "Auction Invoice.pdf", uploadedAt: "2024-05-12T10:00:00Z" },
-        { id: "d4", name: "Bill of Sale.pdf", uploadedAt: "2024-05-12T10:15:00Z" },
-      ],
-      notes: "",
-      auditEvents: [
-        { at: "2024-05-10T14:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-12T10:00:00Z", action: "Documents uploaded (2)", actor: "West Coast Motors" },
-        { at: "2024-05-12T17:00:00Z", action: "Payment status: Settled", actor: "Lisa Wong" },
-      ],
-    },
-    {
-      id: "t5",
-      inventoryId: "v4",
-      dateSold: "2024-05-08",
-      buyerDealer: "Summit Wholesale",
-      contactPerson: "Mark Thompson",
-      vehicleLabel: "2021 Honda Accord Sport",
-      stockNumber: "WC360-1004",
-      salePrice: 23100,
-      paymentStatus: "funded",
-      documents: [{ id: "d5", name: "Bill of Sale.pdf", uploadedAt: "2024-05-08T09:30:00Z" }],
-      notes: "ACH pending clearance.",
-      auditEvents: [
-        { at: "2024-05-07T11:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-08T09:30:00Z", action: "Document uploaded: Bill of Sale", actor: "West Coast Motors" },
-        { at: "2024-05-08T14:00:00Z", action: "Payment status: Funded", actor: "Mark Thompson" },
-      ],
-    },
-    {
-      id: "t6",
-      inventoryId: "v6",
-      dateSold: "2024-05-05",
-      buyerDealer: "Valley Auto Network",
-      contactPerson: "Chris Anderson",
-      vehicleLabel: "2021 Ford F-150 XLT",
-      stockNumber: "WC360-1006",
-      salePrice: 18400,
-      paymentStatus: "pending",
-      documents: [],
-      notes: "Buyer requested 48hr hold.",
-      auditEvents: [
-        { at: "2024-05-04T16:00:00Z", action: "Transaction created", actor: "System" },
-        { at: "2024-05-05T10:00:00Z", action: "Payment status: Pending", actor: "Chris Anderson" },
-      ],
-    },
-  ],
+  transactionKpis: buildTransactionKpiStrip(transactionsMockData),
+  soldVehicleKpis: buildSoldVehicleKpiStrip(soldVehiclesMockData),
+  transactions: transactionsMockData,
+  soldVehicles: soldVehiclesMockData,
   expenses: [
     { id: "e1", category: "auction_fees", description: "Manheim Dallas lane fees", amount: 12450, date: "2024-05-01" },
     { id: "e2", category: "auction_fees", description: "ADESA Chicago buyer fees", amount: 8920, date: "2024-05-08" },

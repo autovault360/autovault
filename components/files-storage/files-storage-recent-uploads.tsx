@@ -12,7 +12,7 @@ type Props = {
 
 export default function FilesStorageRecentUploads({ uploads }: Props) {
   return (
-    <Card className="flex flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+    <Card className="flex max-h-[400px] flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
       <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         Recently Uploaded
       </h2>

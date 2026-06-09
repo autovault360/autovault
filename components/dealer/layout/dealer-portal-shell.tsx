@@ -12,10 +12,10 @@ export default function DealerPortalShell({
   initials: string;
 }) {
   return (
-    <div className="flex h-screen bg-[#060b13]">
+    <div className="flex min-h-screen w-full bg-[#060b13]">
       <DealerSidebar dealershipName={dealershipName} initials={initials} />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 pb-8 pt-16 sm:p-5 lg:pt-5">
-        {children}
+      <main className="min-w-0 flex-1 p-3 pb-8 pt-16 sm:p-5 lg:pt-5">
+        <div className="mx-auto w-full min-w-0 max-w-full">{children}</div>
       </main>
     </div>
   );
