@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
 import AddMissingTitleTrigger from "./add-missing-title-trigger";
 import MissingTitlesStatsCards from "./missing-titles-stats-cards";
 import MissingTitlesTable from "./missing-titles-table";
@@ -36,12 +37,10 @@ export default function MissingTitlesPageContent({
   };
 
   return (
-    <div className="relative min-w-0 overflow-x-hidden">
-      <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
-        <h1 className="text-xl font-bold text-white sm:text-2xl">
-          Missing Titles Center
-        </h1>
-        <div className="flex flex-wrap items-center gap-2">
+    <DealerPageShell
+      title="Missing Titles Center"
+      headerExtra={
+        <>
           <Select value={headerLocation} onValueChange={setHeaderLocation}>
             <SelectTrigger
               theme="dark"
@@ -65,12 +64,12 @@ export default function MissingTitlesPageContent({
             </SelectContent>
           </Select>
           <AddMissingTitleTrigger onClick={handleAddRecord} />
-        </div>
-      </section>
-
+        </>
+      }
+    >
       <MissingTitlesStatsCards stats={stats} />
 
       <MissingTitlesTable records={records} locations={locations} />
-    </div>
+    </DealerPageShell>
   );
 }

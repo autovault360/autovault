@@ -5,6 +5,7 @@ import type {
   DealerPlTimeframe,
   DealerProfitLossData,
 } from "@/lib/dealer/profit-loss/types";
+import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
 import ProfitLossBreakdownBars from "./profit-loss-breakdown-bars";
 import ProfitLossExpenseDonut from "./profit-loss-expense-donut";
 import ProfitLossHeaderToolbar from "./profit-loss-header-toolbar";
@@ -39,14 +40,7 @@ export default function ProfitLossPageContent({
   const [timeframe, setTimeframe] = useState<DealerPlTimeframe>("this_month");
 
   return (
-    <div className="relative min-w-0 overflow-x-hidden">
-      <ProfitLossHeaderToolbar
-        period={period}
-        timeframeOptions={timeframeOptions}
-        timeframe={timeframe}
-        onTimeframeChange={setTimeframe}
-      />
-
+    <DealerPageShell headerExtra={<ProfitLossHeaderToolbar period={period} timeframeOptions={timeframeOptions} timeframe={timeframe} onTimeframeChange={setTimeframe} />}>
       <ProfitLossKpiStrip kpis={kpis} />
 
       <div className="mb-3.5 grid grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -69,6 +63,6 @@ export default function ProfitLossPageContent({
           variant="expense"
         />
       </div>
-    </div>
+    </DealerPageShell>
   );
 }

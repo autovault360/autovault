@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
-import DealerHeader from "@/components/dealer/layout/dealer-header";
+import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
 import type { DealerTransaction } from "@/lib/dealer/dashboard/types";
 import AddDealerTransactionWorkspace from "./add-dealer-transaction-workspace";
 import TransactionsCenter from "./transactions-center";
@@ -69,14 +69,7 @@ export default function DealerTransactionsPageContent() {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100 antialiased selection:bg-blue-500/30">
-      <section className="mb-3.5 flex flex-wrap items-center justify-end gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
-        <DealerHeader
-          profile={dashboardData.profile}
-          notificationCount={dashboardData.notificationCount}
-        />
-      </section>
-
+    <DealerPageShell>
       <TransactionsCenter
         transactions={dashboardData.transactions}
         transactionKpis={dashboardData.transactionKpis}
@@ -94,6 +87,6 @@ export default function DealerTransactionsPageContent() {
           onClose={closeWorkspace}
         />
       )}
-    </div>
+    </DealerPageShell>
   );
 }
