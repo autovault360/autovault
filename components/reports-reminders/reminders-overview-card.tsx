@@ -89,26 +89,26 @@ type Props = {
 
 export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
   return (
-    <ReportCardShell className="flex flex-col">
+    <ReportCardShell className="@container flex min-w-0 flex-col overflow-hidden">
       <h2 className="mb-2.5 text-[11px] font-bold tracking-[0.08em] text-white uppercase">
         REMINDERS OVERVIEW
       </h2>
 
-      <div className="mb-3 grid grid-cols-5 gap-1">
+      <div className="mb-3 grid min-w-0 grid-cols-2 gap-2 @min-[480px]:grid-cols-3 @min-[640px]:grid-cols-5">
         {kpis.map((kpi) => (
           <div
             key={kpi.id}
             className={cn(
-              "flex min-w-0 flex-col items-center rounded border px-0.5 py-2 text-center",
+              "flex min-w-0 flex-col items-center rounded border px-1.5 py-2.5 text-center",
               boxStyles[kpi.color],
             )}
           >
-            <div className="text-[7.5px] font-semibold leading-tight text-slate-400">
+            <div className="w-full text-[9px] font-semibold leading-tight text-slate-400 @min-[480px]:text-[8px] @min-[640px]:text-[7.5px]">
               {formatKpiLabel(kpi.label)}
             </div>
             <div
               className={cn(
-                "my-0.5 text-[18px] font-bold leading-none tabular-nums",
+                "my-1 text-[20px] font-bold leading-none tabular-nums @min-[640px]:my-0.5 @min-[640px]:text-[18px]",
                 countStyles[kpi.color],
               )}
             >
@@ -116,7 +116,7 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
             </div>
             <button
               type="button"
-              className="text-[7.5px] font-medium text-blue-400 hover:text-blue-300"
+              className="text-[9px] font-medium text-blue-400 hover:text-blue-300 @min-[640px]:text-[7.5px]"
             >
               View All ...
             </button>
@@ -129,15 +129,15 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
         {topReminders.map((item) => (
           <li
             key={item.id}
-            className="flex items-center gap-2 border-b border-slate-800/50 py-2 last:border-0"
+            className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 gap-y-1.5 border-b border-slate-800/50 py-2.5 last:border-0 @min-[400px]:grid-cols-[auto_minmax(0,1fr)_auto] @min-[400px]:items-center @min-[400px]:gap-y-0"
           >
             <ReminderListIcon tone={item.iconTone} />
-            <span className="min-w-0 flex-1 text-[11px] leading-snug text-slate-200">
+            <span className="col-start-2 min-w-0 text-[11px] leading-snug text-slate-200 @min-[400px]:col-start-2">
               {item.title}
             </span>
             <span
               className={cn(
-                "shrink-0 rounded border px-1.5 py-0.5 text-[9px] font-semibold whitespace-nowrap",
+                "col-start-2 w-fit rounded border px-1.5 py-0.5 text-[9px] font-semibold whitespace-nowrap @min-[400px]:col-start-3",
                 toneStyles[item.statusTone],
               )}
             >
