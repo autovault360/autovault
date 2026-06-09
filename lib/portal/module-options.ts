@@ -18,8 +18,13 @@ export const DEFAULT_PORTAL_MODULE_OPTIONS: Required<PortalModuleOptions> = {
 export function resolvePortalModuleOptions(
   options?: PortalModuleOptions,
 ): Required<PortalModuleOptions> {
+  const defined = options
+    ? (Object.fromEntries(
+        Object.entries(options).filter(([, v]) => v !== undefined),
+      ) as PortalModuleOptions)
+    : {};
   return {
     ...DEFAULT_PORTAL_MODULE_OPTIONS,
-    ...options,
+    ...defined,
   };
 }
