@@ -29,6 +29,8 @@ import ReceiptsTab from "./tabs/receipts-tab";
 import HistoryTab from "./tabs/history-tab";
 import NotesTab from "./tabs/notes-tab";
 import type { DealJacketListItem } from "@/lib/deal-jackets/types";
+import type { PortalModuleOptions } from "@/lib/portal/module-options";
+import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 
 const TABS: {
   id: DealJacketDetailTab;
@@ -43,11 +45,18 @@ const TABS: {
   { id: "notes", label: "Notes", countKey: "notes" },
 ];
 
-type Props = {
+type Props = PortalModuleOptions & {
   detail: DealJacketDetail;
 };
 
-export default function DealJacketDetailShell({ detail }: Props) {
+export default function DealJacketDetailShell({
+  detail,
+  readOnly,
+  showAdminHeader,
+  basePath,
+}: Props) {
+  const { readOnly: isReadOnly, showAdminHeader: showHeader, basePath: portalBasePath } =
+    resolvePortalModuleOptions({ readOnly, showAdminHeader, basePath });
   const [activeTab, setActiveTab] = useState<DealJacketDetailTab>("overview");
 
   const handleExport = () => {
@@ -77,10 +86,10 @@ export default function DealJacketDetailShell({ detail }: Props) {
 
   return (
     <div className="relative pb-8">
-      <AdminHeader />
+      {showHeader && <AdminHeader />}
 
       <Link
-        href="/dashboard/deal-jackets"
+        href={`${portalBasePath}/deal-jackets`}
         className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
@@ -116,24 +125,26 @@ export default function DealJacketDetailShell({ detail }: Props) {
             <Download className="h-3.5 w-3.5" />
             Export
           </Button>
-          <div className="inline-flex overflow-hidden rounded-md">
-            <Button
-              type="button"
-              size="lg"
-              className="h-9 gap-1.5 rounded-r-none px-4 text-[12px] font-semibold"
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              Edit
-            </Button>
-            <Button
-              type="button"
-              size="lg"
-              className="h-9 w-9 rounded-l-none border-l border-primary-foreground/20 px-0"
-              aria-label="Edit options"
-            >
-              <ChevronDown className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+          {!isReadOnly && (
+            <div className="inline-flex overflow-hidden rounded-md">
+              <Button
+                type="button"
+                size="lg"
+                className="h-9 gap-1.5 rounded-r-none px-4 text-[12px] font-semibold"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Edit
+              </Button>
+              <Button
+                type="button"
+                size="lg"
+                className="h-9 w-9 rounded-l-none border-l border-primary-foreground/20 px-0"
+                aria-label="Edit options"
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -168,12 +179,14 @@ export default function DealJacketDetailShell({ detail }: Props) {
                   <h2 className="text-[16px] font-semibold text-[var(--text-primary)] tracking-wide">
                     {detail.vehicle.displayName}
                   </h2>
-                  <Link
-                    href={`/dashboard/vehicles/${detail.vehicleId}`}
-                    className="text-[11px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors ml-1"
-                  >
-                    View Vehicle
-                  </Link>
+                  {!isReadOnly && (
+                    <Link
+                      href={`/dashboard/vehicles/${detail.vehicleId}`}
+                      className="text-[11px] font-medium text-[var(--accent)] hover:text-[var(--accent-hover)] transition-colors ml-1"
+                    >
+                      View Vehicle
+                    </Link>
+                  )}
                 </div>
 
                 {/* Metadata Grid: Snug spacing matching image layout */}

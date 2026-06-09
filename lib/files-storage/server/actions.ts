@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser, uploadFile, trackFile, getSignedUrl } from "@/lib/vehicles/server/utils";
+import { assertNotReadOnlyPortalUser } from "@/lib/portal/assert-not-read-only";
 import { getNormalizedFileType } from "../file-type-utils";
 import type { FilesStorageFilters, FilesStorageReport, FolderFileDetail } from "../types";
 import { getFilesStorageReport } from "./get-files-storage-report";
@@ -21,6 +22,9 @@ export async function uploadFileToStorageAction(
   formData: FormData,
 ): Promise<UploadFileActionResult> {
   try {
+    const readOnlyCheck = await assertNotReadOnlyPortalUser();
+    if (!readOnlyCheck.ok) return { success: false, error: readOnlyCheck.error };
+
     const auth = await authenticateUser();
     if (!auth.ok) return { success: false, error: auth.error };
 
@@ -62,6 +66,7 @@ export async function uploadFileToStorageAction(
     });
 
     revalidatePath("/dashboard/files-storage");
+    revalidatePath("/cpa/files");
     return { success: true, fileId: fileId ?? "" };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Upload failed";

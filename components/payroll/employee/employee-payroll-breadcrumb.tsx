@@ -1,14 +1,20 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
-export default function EmployeePayrollBreadcrumb() {
+type Props = {
+  payrollBasePath?: string;
+};
+
+export default function EmployeePayrollBreadcrumb({
+  payrollBasePath = "/dashboard/payroll",
+}: Props) {
   return (
     <nav
       aria-label="Breadcrumb"
       className="mb-3 flex items-center gap-1.5 text-[12px] text-slate-400"
     >
       <Link
-        href="/dashboard/payroll"
+        href={payrollBasePath}
         className="transition hover:text-slate-200"
       >
         Payroll Dashboard

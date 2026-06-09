@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { PayrollDashboardData } from "@/lib/payroll/types";
+import type { PortalModuleOptions } from "@/lib/portal/module-options";
+import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 import PayrollKpiStrip from "./payroll-kpi-strip";
 import PayrollSummaryTable from "./payroll-summary-table";
 import PayrollReportsGrid from "./payroll-reports-grid";
@@ -29,11 +31,18 @@ import PayrollUpcomingPayments from "./payroll-upcoming-payments";
 import PayrollRunHistory from "./payroll-run-history";
 import PayrollCpaSync from "./payroll-cpa-sync";
 
-type Props = {
+type Props = PortalModuleOptions & {
   data: PayrollDashboardData;
 };
 
-export default function PayrollDashboardContent({ data }: Props) {
+export default function PayrollDashboardContent({
+  data,
+  readOnly,
+  showAdminHeader,
+  basePath,
+}: Props) {
+  const { readOnly: isReadOnly, showAdminHeader: showHeader, basePath: portalBasePath } =
+    resolvePortalModuleOptions({ readOnly, showAdminHeader, basePath });
   const [runDialogOpen, setRunDialogOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [tableLoading, setTableLoading] = useState(false);
@@ -88,7 +97,7 @@ export default function PayrollDashboardContent({ data }: Props) {
 
   return (
     <div className="relative">
-      <AdminHeader />
+      {showHeader && <AdminHeader />}
 
       {(isPending || tableLoading) && (
         <div className="absolute left-0 right-0 top-0 z-50 h-0.5 animate-pulse bg-blue-500" />
@@ -109,27 +118,31 @@ export default function PayrollDashboardContent({ data }: Props) {
             <Calendar className="h-3.5 w-3.5 text-slate-400" />
             {data.kpis.periodLabel}
           </button>
-          <Button
-            className="h-9 bg-blue-600 px-4 text-[12.5px] hover:bg-blue-500"
-            onClick={() => setRunDialogOpen(true)}
-          >
-            Run Payroll
-          </Button>
-          <Button
-            variant="outline"
-            className="h-9 border-slate-700 bg-transparent px-4 text-[12.5px] text-slate-300 hover:bg-slate-800"
-            onClick={() => importInputRef.current?.click()}
-          >
-            <Upload className="mr-1.5 h-3.5 w-3.5" />
-            Import Hours
-          </Button>
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".csv,.xlsx,.xls"
-            className="hidden"
-            onChange={handleImportHours}
-          />
+          {!isReadOnly && (
+            <>
+              <Button
+                className="h-9 bg-blue-600 px-4 text-[12.5px] hover:bg-blue-500"
+                onClick={() => setRunDialogOpen(true)}
+              >
+                Run Payroll
+              </Button>
+              <Button
+                variant="outline"
+                className="h-9 border-slate-700 bg-transparent px-4 text-[12.5px] text-slate-300 hover:bg-slate-800"
+                onClick={() => importInputRef.current?.click()}
+              >
+                <Upload className="mr-1.5 h-3.5 w-3.5" />
+                Import Hours
+              </Button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                className="hidden"
+                onChange={handleImportHours}
+              />
+            </>
+          )}
           <div className="relative" ref={exportRef}>
             <Button
               variant="outline"
@@ -162,11 +175,15 @@ export default function PayrollDashboardContent({ data }: Props) {
 
       <div className="grid gap-3.5 xl:grid-cols-[1fr_320px]">
         <div className="min-w-0">
-          <PayrollSummaryTable rows={data.summaryRows} loading={tableLoading} />
+          <PayrollSummaryTable
+            rows={data.summaryRows}
+            loading={tableLoading}
+            employeeBasePath={`${portalBasePath}/payroll/employee`}
+          />
           <div className="grid grid-cols-3 gap-3.5">
             <div className="col-span-2">
               <PayrollReportsGrid reports={data.reports} />
-              <PayrollFileUpload />
+              {!isReadOnly && <PayrollFileUpload />}
             </div>
             <div className="col-span-1">
               <PayrollRunHistory runs={data.payrollRuns} />
@@ -180,7 +197,8 @@ export default function PayrollDashboardContent({ data }: Props) {
         </div>
       </div>
 
-      <Dialog open={runDialogOpen} onOpenChange={setRunDialogOpen}>
+      {!isReadOnly && (
+        <Dialog open={runDialogOpen} onOpenChange={setRunDialogOpen}>
         <DialogContent className="border-slate-700 bg-[#0e1626] text-slate-200 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Run Payroll</DialogTitle>
@@ -206,6 +224,7 @@ export default function PayrollDashboardContent({ data }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 }
