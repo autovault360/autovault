@@ -17,7 +17,7 @@ export default function TopPerformersRow({
   onAddVehicle: () => void;
 }) {
   return (
-    <div className="grid grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
+    <div className="grid min-w-0 grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
       <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
         <div className="flex items-start gap-2.5">
           <div className="grid h-9 w-9 place-items-center rounded-full bg-amber-500/15 text-amber-400">

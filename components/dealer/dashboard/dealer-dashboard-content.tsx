@@ -9,7 +9,6 @@ import ProfitLossSummaryPanel from "./profit-loss-summary-panel";
 import RecentActivityPanel from "./recent-activity-panel";
 import TopPerformersRow from "./top-performers-row";
 import InventoryOverviewSection from "./inventory/inventory-overview-section";
-import DealerTransactionsSection from "./transactions/dealer-transactions-section";
 import ExpenseHubSection from "./expenses/expense-hub-section";
 import DocumentVaultSection from "./documents/document-vault-section";
 import DealerDashboardSkeleton from "./dealer-dashboard-skeleton";
@@ -30,7 +29,7 @@ export default function DealerDashboardContent() {
   return (
     <div
       id={DEALER_SECTION_IDS.dashboard}
-      className="min-h-screen bg-[#060b13] text-slate-100 antialiased selection:bg-blue-500/30"
+      className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100 antialiased selection:bg-blue-500/30"
     >
       <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
         <div>
@@ -51,7 +50,7 @@ export default function DealerDashboardContent() {
         <DealerKpiStrip kpis={dashboardData.kpis} loading={loading.kpis} />
       </section>
 
-      <section className="mb-3.5 grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <section className="mb-3.5 grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
         <InventoryMiniPanel
           vehicles={dashboardData.vehicles}
           loading={loading.inventory}
@@ -79,7 +78,6 @@ export default function DealerDashboardContent() {
 
       <div className="flex flex-col gap-3.5">
         <InventoryOverviewSection />
-        <DealerTransactionsSection />
         <ExpenseHubSection />
         <DocumentVaultSection />
       </div>

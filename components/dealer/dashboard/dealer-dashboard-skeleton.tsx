@@ -24,7 +24,7 @@ function SkeletonCard({
 
 export default function DealerDashboardSkeleton() {
   return (
-    <div className="min-h-screen bg-[#060b13] text-slate-100 antialiased">
+    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100 antialiased">
       <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
         <div className="flex-1">
           <SkeletonBar className="mb-2 h-7 w-80" />
@@ -37,7 +37,7 @@ export default function DealerDashboardSkeleton() {
         </div>
       </section>
 
-      <div className="mb-3.5 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+      <div className="mb-3.5 grid min-w-0 grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
         {Array.from({ length: 7 }).map((_, i) => (
           <SkeletonCard key={i}>
             <div className="flex items-start gap-2.5">
@@ -51,7 +51,7 @@ export default function DealerDashboardSkeleton() {
         ))}
       </div>
 
-      <div className="mb-3.5 grid grid-cols-1 gap-3 lg:grid-cols-3">
+      <div className="mb-3.5 grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <SkeletonCard key={i}>
             <SkeletonBar className="mb-3 h-3 w-32" />

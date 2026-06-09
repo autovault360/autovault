@@ -61,7 +61,7 @@ export function ReportCardHeaderWithLink({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-2",
+        "flex flex-wrap items-start justify-between gap-x-2 gap-y-1",
         compact ? "mb-1" : "mb-2",
         className,
       )}

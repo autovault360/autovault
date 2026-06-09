@@ -490,7 +490,7 @@ async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   if (!url || !serviceRoleKey) {
-    console.error("âŒ Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
+    console.error("ââ€”Œ Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
     process.exit(1);
   }
 
@@ -542,6 +542,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("âŒ", err instanceof Error ? err.message : err);
+  console.error("ââ€”Œ", err instanceof Error ? err.message : err);
   process.exit(1);
 });

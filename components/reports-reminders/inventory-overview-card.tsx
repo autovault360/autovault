@@ -25,7 +25,7 @@ function InventoryAgeDonut({
   });
 
   return (
-    <div className="relative h-[108px] w-[108px] shrink-0">
+    <div className="relative mx-auto h-[108px] w-[108px] shrink-0 @min-[520px]:mx-0">
       <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
         <circle
           cx={CENTER}
@@ -75,27 +75,27 @@ export default function InventoryOverviewCard({ inventory }: Props) {
   ];
 
   return (
-    <ReportCardShell className="flex flex-col">
+    <ReportCardShell className="@container flex min-w-0 flex-col overflow-hidden">
       <ReportCardHeaderWithLink title="INVENTORY OVERVIEW" />
       <p className="mb-3 text-[9.5px] font-bold tracking-[0.1em] text-slate-500 uppercase">
         Inventory Age Breakdown
       </p>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-[108px_1fr_auto] sm:items-center">
+      <div className="flex min-w-0 flex-col gap-4 @min-[520px]:grid @min-[520px]:grid-cols-[108px_minmax(0,1fr)_auto] @min-[520px]:items-start @min-[520px]:gap-4">
         <InventoryAgeDonut segments={inventory.breakdown} />
 
         <ul className="min-w-0 space-y-2">
           {inventory.breakdown.map((seg) => (
             <li
               key={seg.id}
-              className="flex items-center gap-2 text-[13px] leading-tight"
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 text-[12px] leading-snug @min-[520px]:text-[13px]"
             >
               <span
                 className="h-2 w-2 shrink-0 rounded-full"
                 style={{ backgroundColor: seg.color }}
               />
-              <span className="min-w-0 flex-1 text-slate-400">{seg.label}:</span>
-              <span className="shrink-0 font-semibold text-slate-200 tabular-nums">
+              <span className="min-w-0 truncate text-slate-400">{seg.label}:</span>
+              <span className="shrink-0 text-right font-semibold text-slate-200 tabular-nums">
                 {seg.count}{" "}
                 <span className="font-normal text-slate-500">
                   ({seg.percent}%)
@@ -105,11 +105,13 @@ export default function InventoryOverviewCard({ inventory }: Props) {
           ))}
         </ul>
 
-        <dl className="space-y-3 sm:min-w-[120px]">
+        <dl className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-3 border-t border-slate-800/50 pt-4 @min-[520px]:col-auto @min-[520px]:grid-cols-1 @min-[520px]:border-t-0 @min-[520px]:pt-0 @min-[520px]:min-w-[120px]">
           {stats.map((stat) => (
-            <div key={stat.label}>
-              <dt className="text-[9.5px] text-slate-500">{stat.label}</dt>
-              <dd className="mt-0.5 text-[15px] font-bold leading-tight text-white tabular-nums">
+            <div key={stat.label} className="min-w-0">
+              <dt className="text-[9.5px] leading-snug text-slate-500">
+                {stat.label}
+              </dt>
+              <dd className="mt-0.5 break-all text-[14px] font-bold leading-tight text-white tabular-nums @min-[520px]:text-[15px] @min-[520px]:break-normal">
                 {stat.value}
               </dd>
             </div>

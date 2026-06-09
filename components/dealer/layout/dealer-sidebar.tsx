@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ChevronRight } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { AppSidebar } from "@/components/layout/sidebar";
 import type { SidebarItem, SidebarGroup } from "@/components/layout/sidebar";
 import { DEALER_NAV_GROUPS, type DealerNavItem } from "./dealer-nav";
@@ -12,6 +13,7 @@ function toSidebarItem(item: DealerNavItem): SidebarItem {
     label: item.label,
     icon: item.icon,
     color: item.color,
+    href: item.href,
     sectionId: item.sectionId,
     comingSoon: item.comingSoon,
   };
@@ -24,6 +26,7 @@ export default function DealerSidebar({
   dealershipName: string;
   initials: string;
 }) {
+  const pathname = usePathname();
   const { navigateToSection, activeSection } = useDealerNavigation();
 
   const groups: SidebarGroup[] = DEALER_NAV_GROUPS.map((g) => ({
@@ -57,11 +60,15 @@ export default function DealerSidebar({
       groups={groups}
       logoLabel="WHOLESALE DEALER PORTAL"
       profile={profileSection}
-      isActive={(item) =>
-        item.sectionId != null && activeSection === item.sectionId
-      }
+      isActive={(item) => {
+        if (item.href) {
+          const base = item.href.split("?")[0]!;
+          return pathname === item.href || pathname === base || pathname.startsWith(`${base}/`);
+        }
+        return item.sectionId != null && activeSection === item.sectionId;
+      }}
       onNavigate={(item) => {
-        // find the original nav item for expandAction
+        if (item.href) return;
         for (const g of DEALER_NAV_GROUPS) {
           for (const orig of g.items) {
             if (orig.label === item.label && orig.sectionId) {

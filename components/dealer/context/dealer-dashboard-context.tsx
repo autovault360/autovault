@@ -11,8 +11,10 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { useRouter } from "next/navigation";
 import { fetchDealerDashboardMock } from "@/lib/dealer/dashboard/mock-data";
 import {
+  DEALER_ROUTES,
   DEALER_SECTION_IDS,
   parseHashSection,
   pushSectionHash,
@@ -26,6 +28,7 @@ import type {
   DealerDashboardData,
   DealerTransaction,
   ExpandedSection,
+  SoldVehicleRecord,
   WholesaleVehicle,
 } from "@/lib/dealer/dashboard/types";
 
@@ -37,12 +40,14 @@ type DealerDashboardContextValue = {
   expandedSection: ExpandedSection;
   selectedVehicle: WholesaleVehicle | null;
   selectedTransaction: DealerTransaction | null;
+  selectedSoldVehicle: SoldVehicleRecord | null;
   inventoryRef: RefObject<HTMLDivElement | null>;
   transactionsRef: RefObject<HTMLDivElement | null>;
   expensesRef: RefObject<HTMLDivElement | null>;
   documentsRef: RefObject<HTMLDivElement | null>;
   setSelectedVehicle: (vehicle: WholesaleVehicle | null) => void;
   setSelectedTransaction: (transaction: DealerTransaction | null) => void;
+  setSelectedSoldVehicle: (record: SoldVehicleRecord | null) => void;
   navigateToSection: (
     sectionId: DealerSectionId,
     expandAction?: DealerExpandAction,
@@ -63,6 +68,7 @@ const defaultLoading: DashboardLoadingState = {
   kpis: true,
   inventory: true,
   transactions: true,
+  soldVehicles: true,
   expenses: true,
   documents: true,
   activity: true,
@@ -115,8 +121,11 @@ export function DealerDashboardProvider({
     useState<WholesaleVehicle | null>(null);
   const [selectedTransaction, setSelectedTransaction] =
     useState<DealerTransaction | null>(null);
+  const [selectedSoldVehicle, setSelectedSoldVehicle] =
+    useState<SoldVehicleRecord | null>(null);
   const [workspaceSaving, setWorkspaceSaving] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const router = useRouter();
 
   const inventoryRef = useRef<HTMLDivElement | null>(null);
   const transactionsRef = useRef<HTMLDivElement | null>(null);
@@ -148,6 +157,7 @@ export function DealerDashboardProvider({
       "activity",
       "inventory",
       "transactions",
+      "soldVehicles",
       "expenses",
       "documents",
     ];
@@ -175,18 +185,23 @@ export function DealerDashboardProvider({
           break;
         case "transaction-add":
           setSelectedTransaction(null);
-          setExpandedSection("transaction");
+          router.push(`${DEALER_ROUTES.transactions}?add=true`);
           break;
         case "expense-add":
           setIsExpenseModalOpen(true);
           break;
       }
     },
-    [],
+    [router],
   );
 
   const navigateToSection = useCallback(
     (sectionId: DealerSectionId, expandAction?: DealerExpandAction) => {
+      if (expandAction === "transaction-add") {
+        handleExpandAction(expandAction);
+        return;
+      }
+
       setActiveSection(sectionId);
       pushSectionHash(sectionId);
       handleExpandAction(expandAction);
@@ -235,10 +250,13 @@ export function DealerDashboardProvider({
   const expandTransaction = useCallback(
     (transaction?: DealerTransaction | null) => {
       if (transaction !== undefined) setSelectedTransaction(transaction);
-      setExpandedSection("transaction");
-      navigateToSection(DEALER_SECTION_IDS.transactions);
+      router.push(
+        transaction
+          ? DEALER_ROUTES.transactions
+          : `${DEALER_ROUTES.transactions}?add=true`,
+      );
     },
-    [navigateToSection],
+    [router],
   );
 
   const openExpenseModal = useCallback(() => {
@@ -274,12 +292,14 @@ export function DealerDashboardProvider({
       expandedSection,
       selectedVehicle,
       selectedTransaction,
+      selectedSoldVehicle,
       inventoryRef,
       transactionsRef,
       expensesRef,
       documentsRef,
       setSelectedVehicle,
       setSelectedTransaction,
+      setSelectedSoldVehicle,
       navigateToSection,
       expandInventory,
       expandTransaction,
@@ -300,6 +320,7 @@ export function DealerDashboardProvider({
       expandedSection,
       selectedVehicle,
       selectedTransaction,
+      selectedSoldVehicle,
       navigateToSection,
       expandInventory,
       expandTransaction,

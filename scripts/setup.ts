@@ -14,15 +14,15 @@ import { readFileSync } from "node:fs";
 const rl = readline.createInterface({ input, output });
 
 async function main() {
-  console.log("╔══════════════════════════════════════════════╗");
+  console.log("╔══════════════════════════════════════════════�—");
   console.log("║        AutoVault360 — Setup Script           ║");
-  console.log("╚══════════════════════════════════════════════╝\n");
+  console.log("╚══════════════════════════════════════════════�—\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("❌ Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
+    console.error("�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
     process.exit(1);
   }
 
@@ -80,7 +80,7 @@ async function main() {
       );
       console.log("✅ Schema applied via direct DB connection!\n");
     } catch {
-      console.error("❌ Failed to apply migration.");
+      console.error("�—� Failed to apply migration.");
       console.log("\n👉 Paste supabase/migrations/00001_initial_schema.sql into your Supabase SQL Editor, then re-run this script.\n");
       rl.close();
       return;
@@ -139,7 +139,7 @@ async function main() {
       });
 
       if (insertError) {
-        console.error("❌ Failed to create user record:", insertError.message);
+        console.error("�—� Failed to create user record:", insertError.message);
         process.exit(1);
       }
 
@@ -151,7 +151,7 @@ async function main() {
       return;
     }
 
-    console.error("❌ Auth user creation failed:", authError.message);
+    console.error("�—� Auth user creation failed:", authError.message);
     process.exit(1);
   }
 
@@ -166,7 +166,7 @@ async function main() {
   });
 
   if (dbError) {
-    console.error("❌ User record failed:", dbError.message);
+    console.error("�—� User record failed:", dbError.message);
     await supabase.auth.admin.deleteUser(authUser.user.id);
     process.exit(1);
   }

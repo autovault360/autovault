@@ -244,7 +244,7 @@ export default function AppSidebar({
         </div>
       )}
 
-      <div className="sticky top-0 hidden h-screen lg:block">{sidebar}</div>
+      <div className="sticky top-0 hidden h-screen shrink-0 self-start lg:block">{sidebar}</div>
     </>
   );
 }

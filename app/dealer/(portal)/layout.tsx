@@ -4,7 +4,6 @@ import {
   DealerDashboardProvider,
 } from "@/components/dealer/context/dealer-dashboard-context";
 import DealerPortalShell from "@/components/dealer/layout/dealer-portal-shell";
-import DealerDashboardContent from "@/components/dealer/dashboard/dealer-dashboard-content";
 
 const WHOLESALE_DEALER_ROLES = new Set(["wholesale_dealer"]);
 

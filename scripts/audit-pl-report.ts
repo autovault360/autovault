@@ -331,14 +331,14 @@ async function main() {
 
   // ── ALL CHECKS ────────────────────────────────────────────────────────
   const allPass = runAllVerifications(t, p, current);
-  console.log(`\n  Verdict: ${allPass ? "✅ ALL CHECKS PASSED" : "❌ SOME CHECKS FAILED"}`);
+  console.log(`\n  Verdict: ${allPass ? "✅ ALL CHECKS PASSED" : "�—� SOME CHECKS FAILED"}`);
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────
 function verify(expected: number, actual: number, precision = 2) {
   const diff = Math.abs(expected - actual);
   if (diff > 0.01) {
-    console.log(`  ❌ MISMATCH: expected=${fmt$(expected)}  actual=${fmt$(actual)}  diff=${fmt$(diff)}`);
+    console.log(`  �—� MISMATCH: expected=${fmt$(expected)}  actual=${fmt$(actual)}  diff=${fmt$(diff)}`);
   } else {
     console.log(`  ✅ OK`);
   }
@@ -363,7 +363,7 @@ function runAllVerifications(t: typeof EMPTY_PERIOD_TOTALS, p: typeof EMPTY_PERI
   for (const c of checks) {
     const ok = Math.abs(c.expected - c.actual) <= 0.01;
     if (!ok) {
-      console.log(`  ❌ ${c.label}: expected ${fmt$(c.expected)}, got ${fmt$(c.actual)}`);
+      console.log(`  �—� ${c.label}: expected ${fmt$(c.expected)}, got ${fmt$(c.actual)}`);
       allOk = false;
     }
   }

@@ -451,15 +451,15 @@ async function main() {
   const args = parseArgs();
   const ids = emptyTracker();
 
-  console.log("\n╔══════════════════════════════════════════╗");
+  console.log("\n╔══════════════════════════════════════════�—");
   console.log("║     AutoVault360 — Full System Seeder    ║");
-  console.log("╚══════════════════════════════════════════╝\n");
+  console.log("╚══════════════════════════════════════════�—\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("❌ Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
+    console.error("�—� Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
     process.exit(1);
   }
 
@@ -971,9 +971,9 @@ async function main() {
     log("✅", `${sampleFiles.length} file records`);
 
     // ── Summary ──
-    console.log("\n╔══════════════════════════════════════════╗");
+    console.log("\n╔══════════════════════════════════════════�—");
     console.log("║           Seed Complete! 🎉             ║");
-    console.log("╚══════════════════════════════════════════╝");
+    console.log("╚══════════════════════════════════════════�—");
     console.log(`   Dealership ID:  ${dealershipId}`);
     console.log(`   Auth users:     ${ids.authUserIds.length}`);
     console.log(`   User profiles:  ${ids.userIds.length}`);
@@ -987,10 +987,10 @@ async function main() {
     console.log("");
 
   } catch (err) {
-    console.error("\n❌ Seed failed:", err instanceof Error ? err.message : err);
+    console.error("\n�—� Seed failed:", err instanceof Error ? err.message : err);
     console.log("\n🔄 Rolling back...");
     await cleanup(supabase, ids);
-    console.log("\n❌ Seed rolled back.\n");
+    console.log("\n�—� Seed rolled back.\n");
     process.exit(1);
   }
 }

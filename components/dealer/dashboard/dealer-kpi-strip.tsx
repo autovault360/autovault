@@ -21,7 +21,7 @@ export default function DealerKpiStrip({
 }) {
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+      <div className="grid min-w-0 grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
         {Array.from({ length: 7 }).map((_, i) => (
           <div
             key={i}
@@ -42,7 +42,7 @@ export default function DealerKpiStrip({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+    <div className="grid min-w-0 grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
       {kpis.map((kpi) => (
         <KPICard
           key={kpi.label}

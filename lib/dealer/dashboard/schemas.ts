@@ -60,3 +60,70 @@ export const wholesaleExpenseSchema = z.object({
 });
 
 export type WholesaleExpenseFormValues = z.infer<typeof wholesaleExpenseSchema>;
+
+const transactionTypeEnum = z.enum([
+  "dealer_sale",
+  "auction_sale",
+  "dealer_purchase",
+  "auction_purchase",
+]);
+
+export const addDealerTransactionSchema = z.object({
+  transactionType: transactionTypeEnum,
+  vehicleId: z.string().min(1, "Vehicle is required"),
+  stockNumber: z.string().optional(),
+  dealerAuctionName: z.string().min(1, "Dealer / Auction name is required"),
+  contactPerson: z.string().optional(),
+  dealerLicense: z.string().optional(),
+  phone: z.string().optional(),
+  email: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      "Enter a valid email",
+    ),
+  transactionDate: z.string().min(1, "Date is required"),
+  salePurchasePrice: currencyField.refine((v) => v > 0, "Price is required"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
+  paymentStatus: z.enum(["paid", "partial", "pending"]),
+  notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
+  commonDocuments: z.array(z.string()).optional(),
+  addAnotherDocument: z.boolean().optional(),
+});
+
+export type AddDealerTransactionFormValues = z.infer<
+  typeof addDealerTransactionSchema
+>;
+
+const saleTypeEnum = z.enum(["wholesale", "retail", "dealer_trade", "auction"]);
+const buyerTypeEnum = z.enum(["dealer", "auction", "private", "other"]);
+
+export const addSoldVehicleSchema = z.object({
+  saleType: saleTypeEnum,
+  vehicleId: z.string().min(1, "Vehicle is required"),
+  stockNumber: z.string().optional(),
+  buyerName: z.string().min(1, "Buyer / Business name is required"),
+  contactPerson: z.string().optional(),
+  phone: z.string().optional(),
+  email: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      "Enter a valid email",
+    ),
+  dealerLicense: z.string().optional(),
+  buyerType: buyerTypeEnum,
+  saleDate: z.string().min(1, "Sale date is required"),
+  salePrice: currencyField.refine((v) => v > 0, "Sale price is required"),
+  paymentMethod: z.string().min(1, "Payment method is required"),
+  paymentStatus: z.enum(["paid", "partial", "pending"]),
+  dealNumber: z.string().optional(),
+  salesperson: z.string().optional(),
+  notes: z.string().max(1000, "Notes must be 1000 characters or less").optional(),
+  commonDocuments: z.array(z.string()).optional(),
+  addAnotherDocument: z.boolean().optional(),
+});
+
+export type AddSoldVehicleFormValues = z.infer<typeof addSoldVehicleSchema>;

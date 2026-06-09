@@ -19,7 +19,7 @@ export function CardShell({
   return (
     <Card
       className={cn(
-        "flex flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 text-slate-200 shadow-none",
+        "flex min-w-0 max-w-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 text-slate-200 shadow-none",
         className,
       )}
     >
