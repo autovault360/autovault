@@ -4,7 +4,12 @@ import type {
   ExpenseCategoryBreakdown,
   DealJacketFileItem,
 } from "./detail-types";
-import type { CommissionStatus, PaymentMethod } from "./types";
+import type {
+  CommissionStatus,
+  PaymentMethod,
+  DealJacketStatus,
+  DealJacketActivityRow,
+} from "./types";
 
 const CATEGORY_COLORS: Record<string, string> = {
   repairs: "#3b82f6",
@@ -98,7 +103,11 @@ function mapFileItems(
 
 export function mapDealJacketDetailFromDto(
   dto: DealJacketDetailDto,
-  options?: { rosNumber?: string | null; dealNotes?: string | null },
+  options?: {
+    rosNumber?: string | null;
+    dealNotes?: string | null;
+    workflowActivities?: DealJacketActivityRow[];
+  },
 ): DealJacketDetail {
   const fees = dto.fees ?? {};
   const licenseFee = Number(fees.license ?? 0);
@@ -150,11 +159,21 @@ export function mapDealJacketDetailFromDto(
     });
   }
 
+  const workflowActivities = options?.workflowActivities ?? [];
+  const workStatus = dto.workflowStatus as DealJacketStatus;
+
   return {
     id: dto.id,
     jacketNumber: dto.jacketNumber,
     vehicleId: dto.vehicleId,
     soldStatus: "sold",
+    workflowStatus: workStatus,
+    workflowActivities,
+    reviewNotes: dto.reviewNotes,
+    reviewedBy: dto.reviewedBy,
+    reviewedAt: dto.reviewedAt,
+    changeCategories: dto.changeCategories,
+    rejectionReason: dto.rejectionReason,
     vehicle: {
       imageUrl: dto.vehicle.imageUrl,
       year: dto.vehicle.year,
@@ -235,7 +254,7 @@ export function mapDealJacketDetailFromDto(
       documents: Math.max(documents.length, 1),
       expenses: Math.max(expenses.length, 1),
       receipts: Math.max(receipts.length, 1),
-      history: activities.length,
+      history: Math.max(workflowActivities.length, 1),
       notes: options?.dealNotes?.trim() ? 1 : 0,
     },
   };

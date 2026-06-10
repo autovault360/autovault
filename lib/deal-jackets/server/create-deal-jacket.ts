@@ -4,6 +4,7 @@ import {
   normalizeFees,
   sumVehicleExpenses,
 } from "./calculate-financials";
+import { logDealJacketActivity } from "./activity";
 import type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,
@@ -169,6 +170,7 @@ export async function createDealJacket(
       profit_gross: financials.profitGross,
       profit_net: financials.profitNet,
       date_sold: dateSold,
+      workflow_status: "pending_review",
       created_by: createdBy,
     })
     .select("*")
@@ -217,6 +219,19 @@ export async function createDealJacket(
       console.error("deal_jacket_documents insert failed:", docError.message);
     }
   }
+
+  await logDealJacketActivity({
+    dealJacketId: inserted.id,
+    action: "created",
+    actorId: createdBy,
+    actorName: createdBy,
+    newStatus: "pending_review",
+    detail: {
+      jacketNumber,
+      vehicleId: sale.vehicleId,
+      soldPrice: sale.soldPrice,
+    },
+  });
 
   await supabase.from("audit_logs").insert({
     dealership_id: dealershipId,

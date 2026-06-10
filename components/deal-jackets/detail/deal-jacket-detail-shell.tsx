@@ -12,12 +12,15 @@ import {
 } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
 import SoldStatusBadge from "@/components/deal-jackets/sold-status-badge";
+import WorkflowStatusBadge from "@/components/deal-jackets/workflow-status-badge";
+import ReviewActionsBar from "@/components/deal-jackets/review-actions-bar";
 import { downloadDealJacketsCsv } from "@/lib/deal-jackets/export-deal-jackets";
 import { formatCurrency, formatDisplayDate } from "@/lib/deal-jackets/types";
 import type {
   DealJacketDetail,
   DealJacketDetailTab,
 } from "@/lib/deal-jackets/detail-types";
+import type { DealJacketStatus, DealJacketListItem } from "@/lib/deal-jackets/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,7 +31,6 @@ import ExpensesTab from "./tabs/expenses-tab";
 import ReceiptsTab from "./tabs/receipts-tab";
 import HistoryTab from "./tabs/history-tab";
 import NotesTab from "./tabs/notes-tab";
-import type { DealJacketListItem } from "@/lib/deal-jackets/types";
 import type { PortalModuleOptions } from "@/lib/portal/module-options";
 import { resolvePortalModuleOptions } from "@/lib/portal/module-options";
 
@@ -58,6 +60,9 @@ export default function DealJacketDetailShell({
   const { readOnly: isReadOnly, showAdminHeader: showHeader, basePath: portalBasePath } =
     resolvePortalModuleOptions({ readOnly, showAdminHeader, basePath });
   const [activeTab, setActiveTab] = useState<DealJacketDetailTab>("overview");
+  const [workflowStatus, setWorkflowStatus] = useState<DealJacketStatus>(
+    detail.workflowStatus,
+  );
 
   const handleExport = () => {
     const row: DealJacketListItem = {
@@ -102,6 +107,7 @@ export default function DealJacketDetailShell({
             Deal Jacket #{detail.jacketNumber}
           </h1>
           <SoldStatusBadge />
+          <WorkflowStatusBadge status={workflowStatus} />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -147,6 +153,13 @@ export default function DealJacketDetailShell({
           )}
         </div>
       </section>
+
+      <ReviewActionsBar
+        dealJacketId={detail.id}
+        workflowStatus={workflowStatus}
+        isManager={!isReadOnly}
+        onStatusChange={setWorkflowStatus}
+      />
 
       <Card className="mb-4 gap-0 rounded-lg border border-slate-800/90 bg-transparent py-0 shadow-none ring-0">
         <CardContent className="p-4">

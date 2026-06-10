@@ -28,6 +28,12 @@ export type DealJacketRow = {
   profit_gross: number;
   profit_net: number;
   date_sold: string;
+  workflow_status: string;
+  review_notes: string | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  change_categories: string[] | null;
+  rejection_reason: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
