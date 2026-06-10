@@ -52,7 +52,7 @@ export default function NotesCard({
                 type="button"
                 onClick={handleCancel}
                 disabled={saving}
-                className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[13px] text-slate-400 transition hover:border-slate-600 disabled:opacity-50"
+                className="rounded-md border border-slate-700 bg-card px-2.5 py-1 text-[13px] text-slate-400 transition hover:border-slate-600 disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -69,7 +69,7 @@ export default function NotesCard({
             <button
               type="button"
               onClick={() => setEditing(true)}
-              className="rounded-md border border-slate-700 bg-[#0e1626] px-2.5 py-1 text-[13px] text-slate-300 transition hover:border-slate-600"
+              className="rounded-md border border-slate-700 bg-card px-2.5 py-1 text-[13px] text-slate-300 transition hover:border-slate-600"
             >
               Edit
             </button>
@@ -82,7 +82,7 @@ export default function NotesCard({
           onChange={(e) => setValue(e.target.value)}
           maxLength={500}
           rows={4}
-          className="w-full resize-none rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11.5px] leading-relaxed text-slate-200 outline-none placeholder:text-slate-500 focus:border-blue-500"
+          className="w-full resize-none rounded-md border border-slate-700 bg-slate-800/50 px-3 py-2 text-[11.5px] leading-relaxed text-slate-200 outline-none placeholder:text-slate-500 focus:border-blue-500"
           placeholder="Add notes about this vehicle..."
           autoFocus
         />

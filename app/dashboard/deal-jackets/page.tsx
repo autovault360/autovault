@@ -9,6 +9,7 @@ export default async function DealJacketsPage() {
     <DealJacketsPageContent
       dealJackets={dealJackets}
       salesRepFilterOptions={salesRepFilterOptions}
+      showAdminHeader={false}
     />
   );
 }

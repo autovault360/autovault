@@ -14,5 +14,5 @@ export default async function EmployeePayrollPage({ params }: Props) {
     notFound();
   }
 
-  return <EmployeePayrollShell profile={profile} />;
+  return <EmployeePayrollShell profile={profile} showAdminHeader={false} />;
 }

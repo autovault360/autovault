@@ -24,7 +24,7 @@ export default function EmployeePaycheckMiniCalendar({
   });
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="PAYCHECK CALENDAR" />
       <div className="mb-2 text-center text-[11px] font-semibold text-slate-300">May 2026</div>
       <div className="grid grid-cols-7 gap-0.5">

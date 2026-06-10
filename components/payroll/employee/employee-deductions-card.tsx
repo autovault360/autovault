@@ -9,7 +9,7 @@ export default function EmployeeDeductionsCard({
   const total = deductions.reduce((sum, d) => sum + d.amount, 0);
 
   return (
-    <DetailCard className="bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="DEDUCTIONS" />
       <table className="w-full text-[13px]">
         <thead>

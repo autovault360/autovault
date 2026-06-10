@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Mail, MapPin, Phone, User } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import AddCustomerModal from "@/components/customers/add/add-customer-modal";
 import CustomerStatusBadge from "@/components/customers/customer-status-badge";
 import ActiveCustomerBadge from "@/components/customers/detail/active-customer-badge";
@@ -98,8 +97,6 @@ export default function CustomerDetailShell({
 
   return (
     <div className="relative pb-8">
-      <AdminHeader />
-
       <Link
         href={backHref}
         className="mb-3 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition hover:text-[var(--text-primary)]"

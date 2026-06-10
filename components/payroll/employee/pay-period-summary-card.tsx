@@ -129,7 +129,7 @@ export default function PayPeriodSummaryCard({
   };
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead
         title="PAY SUMMARY FOR PERIOD"
         action={<PayrollStatusBadge status={localSummary.status} />}
@@ -164,7 +164,7 @@ export default function PayPeriodSummaryCard({
           <SelectTrigger className="h-8 w-fit gap-1 border-slate-700 text-[11px] text-slate-300">
             <SelectValue placeholder="Add Deduction" />
           </SelectTrigger>
-          <SelectContent className="border-slate-800 bg-[#0e1626] text-[11px]">
+          <SelectContent className="border-slate-800 bg-card text-[11px]">
             <SelectItem value="Health Insurance">Health Insurance</SelectItem>
             <SelectItem value="Union Dues">Union Dues</SelectItem>
             <SelectItem value="Other">Other</SelectItem>
@@ -175,7 +175,7 @@ export default function PayPeriodSummaryCard({
       <div className="mt-3 border-t border-slate-800 pt-3">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Upload Payment Type</div>
         <div
-          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700 bg-[#050708]/40 px-3 py-3 transition hover:border-blue-500/40"
+          className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700 bg-card/40 px-3 py-3 transition hover:border-blue-500/40"
           onDragOver={(e) => e.preventDefault()}
           onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) validateAndAdd(f); }}
           onClick={() => fileInputRef.current?.click()}
@@ -194,7 +194,7 @@ export default function PayPeriodSummaryCard({
         {uploadedFiles.length > 0 && (
           <ul className="mt-2 space-y-1.5">
             {uploadedFiles.map((f) => (
-              <li key={f.id} className="flex items-center justify-between rounded border border-slate-800 bg-[#0e1626] px-2 py-1.5">
+              <li key={f.id} className="flex items-center justify-between rounded border border-slate-800 bg-card px-2 py-1.5">
                 <span className="flex items-center gap-1.5 truncate text-[13px] text-slate-300">
                   <FileText className="h-3.5 w-3.5 shrink-0 text-red-400" />
                   {f.name}
@@ -209,7 +209,7 @@ export default function PayPeriodSummaryCard({
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="border-slate-700 bg-[#0e1626] sm:max-w-md">
+        <DialogContent className="border-slate-700 bg-card sm:max-w-md">
           <DialogHeader><DialogTitle className="text-white">Edit Payroll</DialogTitle></DialogHeader>
           <div className="space-y-2 text-[11px]">
             <div className="flex justify-between"><span className="text-slate-500">Base Pay</span><span className="font-mono text-white">{formatPayrollCurrency(localSummary.basePay)}</span></div>
@@ -222,7 +222,7 @@ export default function PayPeriodSummaryCard({
       </Dialog>
 
       <Dialog open={bonusOpen} onOpenChange={setBonusOpen}>
-        <DialogContent className="border-slate-700 bg-[#0e1626] sm:max-w-sm">
+        <DialogContent className="border-slate-700 bg-card sm:max-w-sm">
           <DialogHeader><DialogTitle className="text-white">Add Bonus</DialogTitle></DialogHeader>
           <div><Label className="text-slate-400">Amount</Label><Input type="number" min="0" step="0.01" value={bonusAmount} onChange={(e) => setBonusAmount(e.target.value)} className="mt-1 border-slate-700 bg-slate-900" /></div>
           <DialogFooter>
@@ -233,7 +233,7 @@ export default function PayPeriodSummaryCard({
       </Dialog>
 
       <Dialog open={deductionOpen} onOpenChange={setDeductionOpen}>
-        <DialogContent className="border-slate-700 bg-[#0e1626] sm:max-w-sm">
+        <DialogContent className="border-slate-700 bg-card sm:max-w-sm">
           <DialogHeader>          <DialogTitle className="text-white">Add Deduction — {deductionType}</DialogTitle></DialogHeader>
           <div><Label className="text-slate-400">Amount</Label><Input type="number" min="0" step="0.01" value={deductionAmount} onChange={(e) => setDeductionAmount(e.target.value)} className="mt-1 border-slate-700 bg-slate-900" /></div>
           <DialogFooter>

@@ -545,7 +545,7 @@ export default function EditVehicleModal({
             isSubmitting={isSubmitting}
             disabled={isDuplicateVin}
             submitIcon={<Save className="mr-2 h-4 w-4" />}
-            className="sticky bottom-0 bg-[#1a2332]"
+            className="sticky bottom-0 bg-card"
           />
         </form>
       </Form>

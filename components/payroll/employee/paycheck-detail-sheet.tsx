@@ -39,7 +39,7 @@ export default function PaycheckDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full overflow-y-auto border-slate-800 bg-[#0b1322] sm:max-w-md">
+      <SheetContent side="right" className="w-full overflow-y-auto border-slate-800 bg-card sm:max-w-md">
         <SheetHeader>
           <SheetTitle className="text-white">Paycheck Details</SheetTitle>
           <p className="font-mono text-[11px] tabular-nums text-slate-400">{selectedDate}</p>
@@ -53,7 +53,7 @@ export default function PaycheckDetailSheet({
             </span>
           </div>
 
-          <div className="rounded-md border border-slate-800 bg-[#070c14]/60 p-3 text-[11px]">
+          <div className="rounded-md border border-slate-800 bg-card/60 p-3 text-[11px]">
             <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-slate-500">Pay Period</div>
             <p className="text-slate-300">{paycheck.period}</p>
             <p className="mt-1 font-mono tabular-nums text-slate-400">Pay Date: {paycheck.payDate}</p>
@@ -76,7 +76,7 @@ export default function PaycheckDetailSheet({
 
           <div>
             <div className="mb-2 text-[10px] font-bold uppercase tracking-wide text-slate-500">Admin Note</div>
-            <p className="rounded-md border border-slate-800 bg-[#0e1626] p-2.5 text-[13px] text-slate-300">{paycheck.adminNote}</p>
+            <p className="rounded-md border border-slate-800 bg-card p-2.5 text-[13px] text-slate-300">{paycheck.adminNote}</p>
           </div>
 
           {paycheck.documents.length > 0 && (

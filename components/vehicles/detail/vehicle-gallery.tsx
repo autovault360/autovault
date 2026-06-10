@@ -54,7 +54,7 @@ export default function VehicleGallery({
         <button
           type="button"
           onClick={prev}
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-slate-800 bg-[#0e1626] text-slate-400 transition hover:text-white"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-slate-800 bg-card text-slate-400 transition hover:text-white"
           aria-label="Previous image"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -114,7 +114,7 @@ export default function VehicleGallery({
         <button
           type="button"
           onClick={next}
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-slate-800 bg-[#0e1626] text-slate-400 transition hover:text-white"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-slate-800 bg-card text-slate-400 transition hover:text-white"
           aria-label="Next image"
         >
           <ChevronRight className="h-4 w-4" />

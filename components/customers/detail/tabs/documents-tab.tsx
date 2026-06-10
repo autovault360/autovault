@@ -71,7 +71,7 @@ export default function ProfileDocumentsTab({
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-col items-center gap-2 rounded-md border border-slate-700/80 bg-[#0b121f]/50 p-4 transition hover:border-slate-600"
+              className="flex flex-col items-center gap-2 rounded-md border border-slate-700/80 bg-card p-4 transition hover:border-slate-600"
             >
               <div className="grid h-11 w-11 place-items-center rounded-md bg-red-500/15">
                 <FileText className="h-5 w-5 text-red-400" />

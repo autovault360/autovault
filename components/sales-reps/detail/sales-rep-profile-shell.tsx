@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import type {
   SalesRepProfileDateRange,
   SalesRepProfileDetail,
@@ -40,8 +39,6 @@ export default function SalesRepProfileShell({ profile: initialProfile }: Props)
 
   return (
     <div className="relative pb-8">
-      <AdminHeader />
-
       <SalesRepProfileBreadcrumb repName={profile.summary.fullName} />
 
       <section className="mb-3.5 flex flex-col gap-3.5 xl:flex-row xl:items-start xl:gap-4">

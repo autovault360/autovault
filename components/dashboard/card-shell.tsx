@@ -19,7 +19,7 @@ export function CardShell({
   return (
     <Card
       className={cn(
-        "flex min-w-0 max-w-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 text-slate-200 shadow-none",
+        "flex min-w-0 max-w-full flex-col rounded-sm border border-slate-700 bg-card p-3.5 text-slate-200 shadow-none",
         className,
       )}
     >
@@ -48,7 +48,7 @@ export function CardHead({
           <SelectTrigger className="max-w-32 h-7 border-slate-800 bg-slate-900 px-2.5 py-1 text-[11px] text-slate-300">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="border-slate-800 bg-[#0e1626] text-slate-300 text-[11px]">
+          <SelectContent className="border-slate-800 bg-card text-slate-300 text-[11px]">
             <SelectItem value="This Month">This Month</SelectItem>
             <SelectItem value="Last Month">Last Month</SelectItem>
             <SelectItem value="This Quarter">This Quarter</SelectItem>

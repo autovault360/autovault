@@ -96,10 +96,10 @@
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
-  --card: #011321;
+  --card: #071425c8;
   --card-foreground: #e8edf5;
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(1 0 0);
   --primary: #3b9229;
   --primary-foreground: oklch(1 0 0);
   --secondary: #4bc43b;
@@ -131,7 +131,7 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: #011321;
+  --card: #05132c5b;
   --card-foreground: #e8edf5;
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);

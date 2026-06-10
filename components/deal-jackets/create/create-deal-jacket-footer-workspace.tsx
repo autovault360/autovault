@@ -101,7 +101,7 @@ export default function CreateDealJacketFooterWorkspace({
   return (
     <div className="mt-4 space-y-3 select-none text-[#94a3b8]">
       {/* HOW IT WORKS PIPELINE */}
-      <section className="rounded-lg border border-slate-800/80 bg-[#050708]/40 p-4 backdrop-blur-md">
+      <section className="rounded-lg border border-slate-800/80 bg-card/40 p-4 backdrop-blur-md">
         <div className="mb-3.5 text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase">
           Pipeline Flow Architecture
         </div>
@@ -109,7 +109,7 @@ export default function CreateDealJacketFooterWorkspace({
         <div className="flex flex-wrap items-center justify-start gap-2">
           {FLOW_STEPS.map((step, i) => (
             <div key={step.label} className="flex items-center gap-2">
-              <div className="flex items-center gap-2 rounded border border-slate-800 bg-[#0c1017]/90 px-3 py-1.5 shadow-sm">
+              <div className="flex items-center gap-2 rounded border border-slate-800 bg-card/90 px-3 py-1.5 shadow-sm">
                 <step.icon className="h-3.5 w-3.5 text-blue-500" />
                 <span className="text-[11px] font-medium text-slate-300">{step.label}</span>
               </div>
@@ -139,7 +139,7 @@ export default function CreateDealJacketFooterWorkspace({
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-12">
         
         {/* MY DEAL JACKETS */}
-        <section className="rounded-lg border border-slate-800/80 bg-[#050708]/40 p-3.5 backdrop-blur-md lg:col-span-5 flex flex-col justify-between">
+        <section className="rounded-lg border border-slate-800/80 bg-card/40 p-3.5 backdrop-blur-md lg:col-span-5 flex flex-col justify-between">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase">
@@ -227,7 +227,7 @@ export default function CreateDealJacketFooterWorkspace({
         </section>
 
         {/* ADMIN REVIEW QUEUE */}
-        <section className="rounded-lg border border-slate-800/80 bg-[#050708]/40 p-3.5 backdrop-blur-md lg:col-span-4 flex flex-col justify-between">
+        <section className="rounded-lg border border-slate-800/80 bg-card/40 p-3.5 backdrop-blur-md lg:col-span-4 flex flex-col justify-between">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase">
@@ -238,7 +238,7 @@ export default function CreateDealJacketFooterWorkspace({
               </Badge>
             </div>
 
-            <div className="space-y-3 rounded-lg border border-slate-800/60 bg-[#070c14]/40 p-3.5">
+            <div className="space-y-3 rounded-lg border border-slate-800/60 bg-card/40 p-3.5">
               <div>
                 <div className="text-[11px] font-mono text-slate-500 uppercase font-semibold tracking-wider">
                   {data.adminReviewDeal.id}
@@ -313,7 +313,7 @@ export default function CreateDealJacketFooterWorkspace({
         </section>
 
         {/* RECENTLY APPROVED */}
-        <section className="rounded-lg border border-slate-800/80 bg-[#050708]/40 p-3.5 backdrop-blur-md lg:col-span-3 flex flex-col justify-between">
+        <section className="rounded-lg border border-slate-800/80 bg-card/40 p-3.5 backdrop-blur-md lg:col-span-3 flex flex-col justify-between">
           <div>
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[10px] font-bold tracking-[0.2em] text-slate-500 uppercase">

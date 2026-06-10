@@ -18,7 +18,7 @@ export default function PayrollCycleToggle({
   onChange: (cycle: PayrollCycle) => void;
 }) {
   return (
-    <div className="mb-3.5 inline-flex rounded-md border border-slate-800 bg-[#0e1626] p-0.5">
+    <div className="mb-3.5 inline-flex rounded-md border border-slate-800 bg-card p-0.5">
       {CYCLES.map((cycle) => (
         <button
           key={cycle.id}

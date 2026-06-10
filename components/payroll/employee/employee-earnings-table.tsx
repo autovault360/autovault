@@ -9,7 +9,7 @@ export default function EmployeeEarningsTable({
   const total = earnings.reduce((sum, e) => sum + e.amount, 0);
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="EARNINGS BREAKDOWN" />
       <div className="overflow-x-auto">
         <table className="min-w-full text-[13px]">

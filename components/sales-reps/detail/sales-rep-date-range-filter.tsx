@@ -36,7 +36,7 @@ export default function SalesRepDateRangeFilter({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <div className="inline-flex items-center overflow-hidden rounded-lg border border-slate-700 bg-[#0a101c]/60">
+      <div className="inline-flex items-center overflow-hidden rounded-lg border border-slate-700 bg-card">
         <button
           type="button"
           onClick={handlePrev}

@@ -55,7 +55,7 @@ export function PhotoGalleryUpload({
           "flex flex-col items-center justify-center rounded-md border-2 border-dashed px-4 py-6 transition-colors",
           dragOver
             ? "border-blue-400 bg-blue-950/30"
-            : "border-slate-600 bg-[#151d2b]/50",
+            : "border-slate-600 bg-card/50",
         )}
         onDragOver={(e) => {
           e.preventDefault();
@@ -123,7 +123,7 @@ export function PhotoGalleryUpload({
                 setDropTarget(null);
               }}
               className={cn(
-                "relative h-16 w-16 overflow-hidden rounded-md border bg-[#1a2332] transition-shadow",
+                "relative h-16 w-16 overflow-hidden rounded-md border bg-card transition-shadow",
                 dragIndex === index ? "opacity-40 border-blue-400" : "border-slate-600",
                 dropTarget === index && dragIndex !== index
                   ? "ring-2 ring-blue-400 border-blue-400"
@@ -164,7 +164,7 @@ export function PhotoGalleryUpload({
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="flex h-16 w-16 flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-600 bg-[#151d2b] text-slate-400 transition hover:border-slate-500 hover:text-slate-300"
+              className="flex h-16 w-16 flex-col items-center justify-center rounded-md border-2 border-dashed border-slate-600 bg-card text-slate-400 transition hover:border-slate-500 hover:text-slate-300"
             >
               <Plus className="h-4 w-4" />
               <span className="mt-0.5 text-[9px] font-medium">Add More</span>

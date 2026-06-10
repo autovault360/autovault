@@ -13,7 +13,7 @@ export function CalendarCardShell({
   return (
     <Card
       className={cn(
-        "flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 text-slate-200 shadow-none",
+        "flex h-full flex-col rounded-sm border border-slate-700 bg-card p-3.5 text-slate-200 shadow-none",
         className,
       )}
     >

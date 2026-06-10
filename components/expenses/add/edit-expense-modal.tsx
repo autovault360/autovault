@@ -457,7 +457,7 @@ export default function EditExpenseModal({
                           placeholder="Enter description of this expense"
                           rows={5}
                           aria-invalid={!!fieldState.error}
-                          className="min-h-[88px] resize-none rounded-[6px] border-slate-600 bg-[#1a2332] px-3 py-2.5 text-[13px] text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:border-blue-500 focus-visible:ring-0"
+                          className="min-h-[88px] resize-none rounded-[6px] border-slate-600 bg-slate-800/50 px-3 py-2.5 text-[13px] text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:border-blue-500 focus-visible:ring-0"
                         />
                       </FormControl>
                     </FormItem>
@@ -522,7 +522,7 @@ export default function EditExpenseModal({
             </div>
           </ModalBody>
 
-          <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-700/80 bg-[#0f1621] px-6 py-3.5 sm:flex-row sm:items-center sm:justify-end">
+          <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-700/80 bg-card px-6 py-3.5 sm:flex-row sm:items-center sm:justify-end">
             <Button
               type="button"
               theme="dark"

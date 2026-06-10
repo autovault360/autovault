@@ -24,7 +24,7 @@ export default function DocumentsTab({
           href={doc.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3 transition hover:border-slate-600"
+          className="flex items-center gap-3 rounded-sm border border-slate-700 bg-card p-3 transition hover:border-slate-600"
         >
           <div className="grid h-9 w-9 place-items-center rounded-md bg-blue-500/10">
             <FileText className="h-4 w-4 text-blue-400" />

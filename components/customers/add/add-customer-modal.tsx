@@ -294,7 +294,7 @@ export default function AddCustomerModal({
               </FormGrid>
             </div>
                 <div className="flex flex-col items-center gap-2">
-                  <div className="flex h-[150px] w-[200px] items-center justify-center overflow-hidden rounded-md border border-slate-600 bg-[#1a2332]">
+                  <div className="flex h-[150px] w-[200px] items-center justify-center overflow-hidden rounded-md border border-slate-600 bg-card">
                     {displayPhoto && !imgError ? (
                       <img
                         src={displayPhoto}
@@ -319,7 +319,7 @@ export default function AddCustomerModal({
                   />
                   <button
                     type="button"
-                    className="flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-slate-600 bg-[#1a2332] text-[11px] text-slate-200 hover:bg-slate-800"
+                    className="flex h-8 w-full items-center justify-center gap-1.5 rounded-md border border-slate-600 bg-card text-[11px] text-slate-200 hover:bg-slate-800"
                     onClick={() => inputRef.current?.click()}
                   >
                     <Camera className="h-3.5 w-3.5" />
@@ -484,7 +484,7 @@ export default function AddCustomerModal({
             isSubmitting={isSubmitting}
             disabled={isDuplicatePhone}
             submitIcon={<Save className="h-4 w-4" />}
-            className="sticky bottom-0 bg-[#1a2332]"
+            className="sticky bottom-0 bg-card"
           />
         </form>
       </Form>

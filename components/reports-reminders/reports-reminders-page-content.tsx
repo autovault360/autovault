@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import { filterReminders } from "@/lib/reminders/filter-reminders";
 import { DEFAULT_REMINDERS_FILTERS } from "@/lib/reminders/types";
 import type { RemindersReport } from "@/lib/reminders/types";
@@ -47,12 +46,6 @@ export default function ReportsRemindersPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader
-        searchValue={reminderFilters.searchQuery}
-        onSearchChange={handleSearchChange}
-        searchPlaceholder="Search VIN, Stock #, Customer, Deal, or Tag..."
-      />
-
       <div className="flex items-start gap-3.5">
         <div className="min-w-0 flex-1">
           <ReportsRemindersHeader />

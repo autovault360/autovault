@@ -165,7 +165,7 @@ export default function DataTable<T extends Record<string, unknown>>({
   const colSpan = columns.length + (enableSelection ? 1 : 0);
 
   return (
-    <div className="w-full border border-slate-800 rounded-sm">
+    <div className="w-full border border-slate-800 bg-card rounded-sm">
       <div className="overflow-x-auto">
         <table className="min-w-[960px] w-full text-[11.5px]">
           <thead className="text-slate-500 bg-background/5">
@@ -249,7 +249,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                     key={key}
                     onClick={() => onRowClick?.(row as T)}
                     className={cn(
-                      "border-b border-slate-800/60 transition last:border-0",
+                      "border-b border-slate-800/60 bg-card transition last:border-0",
                       onRowClick && "cursor-pointer",
                       isActive
                         ? "bg-blue-500/10 hover:bg-blue-500/10"

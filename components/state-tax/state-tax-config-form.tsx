@@ -50,7 +50,7 @@ export default function StateTaxConfigForm({ config, options }: Props) {
   };
 
   return (
-    <Card className="mb-3.5 rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+    <Card className="mb-3.5 rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
       <div className="mb-4 flex flex-wrap items-start gap-3">
         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-blue-500/15 text-blue-400">
           <FilePenLine className="h-5 w-5" />

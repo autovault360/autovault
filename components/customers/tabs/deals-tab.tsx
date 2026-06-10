@@ -20,7 +20,7 @@ export default function DealsTab({ customer }: { customer: CustomerDetail }) {
       {customer.deals.map((deal) => (
         <div
           key={deal.id}
-          className="rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3"
+          className="rounded-sm border border-slate-700 bg-card p-3"
         >
           <div className="flex items-start justify-between gap-2">
             <div>

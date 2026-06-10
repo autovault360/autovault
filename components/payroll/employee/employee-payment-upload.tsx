@@ -42,10 +42,10 @@ export default function EmployeePaymentUpload({
   };
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="UPLOAD PAYMENT TYPE" />
       <div
-        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700 bg-[#050708]/40 px-3 py-3 transition hover:border-blue-500/40"
+        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700 bg-card/40 px-3 py-3 transition hover:border-blue-500/40"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) validateAndAdd(f); }}
         onClick={() => fileInputRef.current?.click()}
@@ -64,7 +64,7 @@ export default function EmployeePaymentUpload({
       {files.length > 0 && (
         <ul className="mt-2 space-y-1.5">
           {files.map((f) => (
-            <li key={f.id} className="flex items-center justify-between rounded border border-slate-800 bg-[#0e1626] px-2 py-1.5">
+            <li key={f.id} className="flex items-center justify-between rounded border border-slate-800 bg-card px-2 py-1.5">
               <span className="flex items-center gap-1.5 truncate text-[13px] text-slate-300">
                 <FileText className="h-3.5 w-3.5 shrink-0 text-red-400" />
                 {f.name}

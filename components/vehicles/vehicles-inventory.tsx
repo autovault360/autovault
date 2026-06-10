@@ -333,7 +333,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
               setActivePopover(null);
               window.history.replaceState(null, "", `?edit=${v.id}`);
             }}
-            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-card text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit vehicle"
             disabled={editLoading && editingId === v.id}
           >
@@ -349,7 +349,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
               onClick={() =>
                 setActivePopover(activePopover === v.id ? null : v.id)
               }
-              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
+              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-card text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
               aria-label="More actions"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />

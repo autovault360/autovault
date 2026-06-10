@@ -92,7 +92,7 @@ export default function LinkedVehicleSection({
   };
 
   return (
-    <div className="rounded-[6px] border border-slate-700/70 bg-[#0b121c]/80 p-3.5">
+    <div className="rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5">
       <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
         Linked Vehicle <span className="text-red-500">*</span>
       </p>
@@ -167,7 +167,7 @@ export default function LinkedVehicleSection({
 
       {vehicle && (
         <>
-          <div className="relative mt-3 flex gap-3 rounded-md border border-slate-700/80 bg-[#101722] p-2.5">
+          <div className="relative mt-3 flex gap-3 rounded-md border border-slate-700/80 bg-card p-2.5">
             {!readOnly && (
               <button
                 type="button"

@@ -136,19 +136,19 @@ function ExpandedDealActivity({
         <DealStatusFilter current={activeFilter} onChange={onFilterChange} />
       </div>
       <div className="flex gap-4">
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
+        <div className="rounded-lg border border-slate-700 bg-card px-4 py-3">
           <div className="text-xs text-slate-500">Total Deals</div>
           <div className="text-xl font-bold text-white">{deals.length}</div>
         </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
+        <div className="rounded-lg border border-slate-700 bg-card px-4 py-3">
           <div className="text-xs text-slate-500">Total Sales</div>
           <div className="text-xl font-bold text-emerald-400">${totalSales.toLocaleString()}</div>
         </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
+        <div className="rounded-lg border border-slate-700 bg-card px-4 py-3">
           <div className="text-xs text-slate-500">Total Profit</div>
           <div className="text-xl font-bold text-emerald-400">${totalProfit.toLocaleString()}</div>
         </div>
-        <div className="rounded-lg border border-slate-700 bg-[#0e1626] px-4 py-3">
+        <div className="rounded-lg border border-slate-700 bg-card px-4 py-3">
           <div className="text-xs text-slate-500">Avg Profit/Deal</div>
           <div className="text-xl font-bold text-blue-400">${deals.length > 0 ? Math.round(totalProfit / deals.length).toLocaleString() : "0"}</div>
         </div>

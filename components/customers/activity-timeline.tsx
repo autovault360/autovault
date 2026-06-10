@@ -41,7 +41,7 @@ export default function ActivityTimeline({
             {i < items.length - 1 && (
               <span className="absolute left-[13px] top-7 h-[calc(100%-12px)] w-px bg-slate-700" />
             )}
-            <div className="relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-slate-700 bg-[#0e1626]">
+            <div className="relative z-10 grid h-7 w-7 shrink-0 place-items-center rounded-full border border-slate-700 bg-card">
               <Icon className="h-3.5 w-3.5 text-blue-400" />
             </div>
             <div className="min-w-0 flex-1 pt-0.5">

@@ -709,7 +709,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
             isSubmitting={isSubmitting}
             disabled={isDuplicateVin}
             submitIcon={<Save className="mr-2 h-4 w-4" />}
-            className="sticky bottom-0 bg-[#1a2332]"
+            className="sticky bottom-0 bg-card"
             leftSlot={
               <FormField
                 control={form.control}
@@ -722,7 +722,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                         type="checkbox"
                         checked={field.value}
                         onChange={(e) => field.onChange(e.target.checked)}
-                        className="h-4 w-4 rounded border-slate-600 bg-[#1a2332] accent-[#16a34a]"
+                        className="h-4 w-4 rounded border-slate-600 bg-card accent-[#16a34a]"
                       />
                     </FormControl>
                     <label

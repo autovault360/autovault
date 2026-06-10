@@ -37,7 +37,7 @@ export default function PayrollNotesCard({
 
   return (
     <>
-      <DetailCard className="mt-3.5 bg-[#070c14]/60 border-slate-800/80 h-auto">
+      <DetailCard className="mt-3.5 bg-card/60 border-slate-800/80 h-auto">
         <DetailCardHead
           title="NOTES"
           action={
@@ -51,7 +51,7 @@ export default function PayrollNotesCard({
       </DetailCard>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="border-slate-700 bg-[#0e1626] sm:max-w-md">
+        <DialogContent className="border-slate-700 bg-card sm:max-w-md">
           <DialogHeader><DialogTitle className="text-white">Edit Note</DialogTitle></DialogHeader>
           <Textarea theme="dark" value={draft} onChange={(e) => setDraft(e.target.value)} className="min-h-[100px] border-slate-700 bg-slate-900 text-[11px]" />
           <DialogFooter>

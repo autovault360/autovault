@@ -14,5 +14,5 @@ export default async function DealJacketDetailPage({ params }: Props) {
     notFound();
   }
 
-  return <DealJacketDetailShell detail={detail} />;
+  return <DealJacketDetailShell detail={detail} showAdminHeader={false} />;
 }

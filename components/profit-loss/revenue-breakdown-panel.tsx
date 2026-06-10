@@ -15,7 +15,7 @@ export default function RevenueBreakdownPanel({ items, title }: Props) {
   const total = items.reduce((sum, i) => sum + i.amount, 0);
 
   return (
-    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-transparent shadow-none">
+    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-card shadow-none">
       <div className="border-b border-slate-800 px-3.5 py-3">
         <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-400">
           {title}
@@ -88,7 +88,7 @@ export function ExpenseBreakdownPanel({ items, title }: Props) {
   const total = items.reduce((sum, i) => sum + i.amount, 0);
 
   return (
-    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-transparent shadow-none">
+    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-card shadow-none">
       <div className="border-b border-slate-800 px-3.5 py-3">
         <h3
           className={cn(

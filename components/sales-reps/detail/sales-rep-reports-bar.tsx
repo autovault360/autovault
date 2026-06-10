@@ -55,7 +55,7 @@ export default function SalesRepReportsBar({ actions }: Props) {
               <button
                 key={action.id}
                 type="button"
-                className="flex h-full min-h-[88px] items-center gap-2.5 rounded-md border border-slate-700/80 bg-[#0a101c]/40 p-2.5 text-left transition hover:border-slate-600 hover:bg-slate-800/30"
+                className="flex h-full min-h-[88px] items-center gap-2.5 rounded-md border border-slate-700/80 bg-card/40 p-2.5 text-left transition hover:border-slate-600 hover:bg-slate-800/30"
               >
                 <div
                   className={cn(

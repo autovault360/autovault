@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import AddSalesRepTrigger from "@/components/sales-reps/add/add-sales-rep-trigger";
 import AddSalesRepModal from "@/components/sales-reps/add/add-sales-rep-modal";
 import SalesRepStatsCards from "@/components/sales-reps/sales-rep-stats-cards";
@@ -92,8 +91,6 @@ export default function SalesRepsPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader />
-
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div>
           <h1 className="text-2xl font-bold text-white">Sales Reps</h1>

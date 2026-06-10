@@ -33,7 +33,7 @@ function TrendTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11px] shadow-lg">
+    <div className="rounded-md border border-slate-700 bg-card px-3 py-2 text-[11px] shadow-lg">
       <div className="mb-1 text-slate-400">{label}</div>
       {payload.map((entry) => (
         <div key={entry.name} className="font-medium" style={{ color: entry.color }}>

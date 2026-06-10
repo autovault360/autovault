@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Sparkles } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import {
   Dialog,
   DialogContent,
@@ -78,12 +77,6 @@ export default function RemindersPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader
-        searchValue={filters.searchQuery}
-        onSearchChange={handleSearchChange}
-        searchPlaceholder="Search reminders by title, category, or description..."
-      />
-
       <div className="flex gap-3.5">
         <div className="min-w-0 flex-1">
           <ReminderCenterHeader

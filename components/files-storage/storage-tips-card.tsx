@@ -12,7 +12,7 @@ type Props = {
 
 export default function StorageTipsCard({ usagePercent, tips, breakdown }: Props) {
   return (
-    <Card className="rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+    <Card className="rounded-sm border border-slate-700 bg-card p-4 shadow-none">
       <h2 className="mb-4 text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
         Storage Breakdown
       </h2>

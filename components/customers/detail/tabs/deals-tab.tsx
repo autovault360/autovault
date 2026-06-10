@@ -27,7 +27,7 @@ export default function ProfileDealsTab({
       {customer.deals.map((deal) => (
         <div
           key={deal.id}
-          className="flex flex-col gap-3 rounded-md border border-slate-700/80 bg-[#0b121f]/40 p-4 sm:flex-row sm:items-start"
+          className="flex flex-col gap-3 rounded-md border border-slate-700/80 bg-card p-4 sm:flex-row sm:items-start"
         >
           <div className="relative h-[72px] w-[110px] shrink-0 overflow-hidden rounded-md border border-slate-800 bg-[var(--bg-primary)]">
             {deal.imageUrl ? (

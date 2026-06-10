@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
-import AdminHeader from "@/components/layout/AdminHeader";
 import VehicleDetailHeader from "@/components/vehicles/detail/vehicle-detail-header";
 import VehicleGallery from "@/components/vehicles/detail/vehicle-gallery";
 import VehicleSummaryCard from "@/components/vehicles/detail/vehicle-summary-card";
@@ -48,7 +47,6 @@ export default function VehicleDetailShell({
 
   return (
     <div>
-      <AdminHeader />
       <VehicleDetailHeader
         vehicle={vehicle}
         editOpen={editOpen}

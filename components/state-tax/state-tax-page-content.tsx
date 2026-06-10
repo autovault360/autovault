@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import type { StateTaxReport, StateTaxTab } from "@/lib/state-tax/types";
 import StateTaxConfigForm from "./state-tax-config-form";
 import StateTaxHeader from "./state-tax-header";
@@ -19,8 +18,6 @@ export default function StateTaxPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader searchPlaceholder="Search transactions, invoices, or vehicles..." />
-
       <StateTaxHeader />
 
       <StateTaxTabs
@@ -46,7 +43,7 @@ export default function StateTaxPageContent({
       )}
 
       {activeTab !== "overview" && (
-        <div className="rounded-sm border border-slate-700 bg-transparent p-8 text-center">
+        <div className="rounded-sm border border-slate-700 bg-card p-8 text-center">
           <p className="text-[13px] font-medium text-slate-300">
             {report.tabs.find((t) => t.id === activeTab)?.label}
           </p>
