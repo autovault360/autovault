@@ -1,4 +1,3 @@
-import CpaHeader from "@/components/cpa/layout/cpa-header";
 import FilesStoragePageContent from "@/components/files-storage/files-storage-page-content";
 import { getCpaSession } from "@/lib/cpa/server/get-cpa-session";
 import { getFilesStorageReport } from "@/lib/files-storage/server/get-files-storage-report";
@@ -12,7 +11,6 @@ export default async function CpaFilesPage() {
 
   return (
     <>
-      <CpaHeader />
       <FilesStoragePageContent
         initialReport={initialReport}
         readOnly={session?.isReadOnly ?? true}

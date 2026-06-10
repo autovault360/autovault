@@ -163,6 +163,7 @@ export default function AppSidebar({
           alt="AutoVault Logo"
           width={logoWidth}
           height={logoHeight}
+          loading="eager"
           className="object-contain"
           style={{ width: "auto", height: "auto" }}
         />

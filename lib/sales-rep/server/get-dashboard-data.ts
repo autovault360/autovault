@@ -201,7 +201,7 @@ async function buildDashboard(
       .from("vehicles")
       .select("id, vin, stock_number, make, model, year, trim, mileage, exterior_color, asking_price, status, body_style")
       .eq("dealership_id", dealershipId)
-      .in("status", ["in_stock", "available"])
+      .in("status", ["in_stock", "needs_attention"])
       .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(50),
@@ -264,7 +264,7 @@ async function buildDashboard(
         type: v.body_style ?? "N/A",
         color: v.exterior_color ?? "N/A",
         price: Number(v.asking_price ?? 0),
-        status: v.status === "in_stock" || v.status === "available" ? "Available" : "Sold",
+        status: v.status === "in_stock" || v.status === "needs_attention" ? "Available" : "Sold",
         imageUrl: imgUrl,
       } as IVehicleCard;
     }),

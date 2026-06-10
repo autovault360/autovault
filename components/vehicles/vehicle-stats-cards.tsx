@@ -65,7 +65,7 @@ export default function VehicleStatsCards({ stats }: { stats: VehicleStats }) {
   const cards = buildCards(stats);
 
   return (
-    <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+    <section className="mb-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-5">
       {cards.map((card) => (
         <KPICard key={card.label} data={card} />
       ))}

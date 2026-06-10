@@ -1,6 +1,12 @@
 "use client";
 
-import SalesRepSidebar from "./sales-rep-sidebar";
+import { ChevronRight } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AppLayout from "@/components/layout/app-layout";
+import AppFooter from "@/components/layout/app-footer";
+import UnifiedSidebar from "@/components/layout/unified-sidebar";
+import SalesRepHeader from "./sales-rep-header";
+import { SALES_REP_NAV_GROUPS } from "./sales-rep-nav";
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
 type Props = {
@@ -9,12 +15,44 @@ type Props = {
 };
 
 export default function SalesRepPortalShell({ children, profile }: Props) {
-  return (
-    <div className="flex h-screen bg-[#010d19]">
-      <SalesRepSidebar profile={profile} />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 pb-8 pt-16 sm:p-5 lg:pt-5">
-        {children}
-      </main>
+  const profileSection = (
+    <div>
+      <div className="px-1.5 pb-1.5 pt-2 text-[10px] font-semibold tracking-[0.12em] text-slate-500">
+        SALES REP PORTAL
+      </div>
+      <div className="space-y-1">
+        <div className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left">
+          <Avatar className="h-9 w-9">
+            {profile.imageUrl ? (
+              <AvatarImage src={profile.imageUrl} alt={profile.name} />
+            ) : null}
+            <AvatarFallback className="bg-slate-800 text-sm text-white">
+              {profile.initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[13px] font-semibold text-white">
+              {profile.name}
+            </div>
+            <div className="truncate text-[9.5px] tracking-wider text-slate-500">
+              {profile.title.toUpperCase()}
+            </div>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
+        </div>
+      </div>
     </div>
+  );
+
+  return (
+    <AppLayout
+      sidebar={
+        <UnifiedSidebar groups={SALES_REP_NAV_GROUPS} profile={profileSection} />
+      }
+      header={<SalesRepHeader profile={profile} />}
+      footer={<AppFooter />}
+    >
+      {children}
+    </AppLayout>
   );
 }

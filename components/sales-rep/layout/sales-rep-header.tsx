@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, LogOut, MessageCircle } from "lucide-react";
+import { Bell, LogOut, MessageCircle, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import { createClient } from "@/lib/supabase/client";
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
@@ -40,8 +41,17 @@ export default function SalesRepHeader({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3">
-      <button
+    <div className="flex flex-wrap items-center justify-between gap-3 mb-3.5 border-b border-slate-800/60 pb-3.5">
+      <div className="relative max-w-100 w-full">
+        <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+        <Input
+          placeholder="Search VIN, Stock #, Customer, or Vehicle..."
+          className="h-10 border-slate-800 bg-[#0e1626] pl-9 text-[12.5px] text-slate-200 placeholder:text-slate-500 max-w-300 w-full"
+        />
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button
         type="button"
         className="relative p-1.5 text-slate-400 transition hover:text-white"
         aria-label="Team chat"
@@ -104,6 +114,7 @@ export default function SalesRepHeader({
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

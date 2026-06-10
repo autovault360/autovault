@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import CpaHeader from "@/components/cpa/layout/cpa-header";
 import EmployeePayrollShell from "@/components/payroll/employee/employee-payroll-shell";
 import { getCpaSession } from "@/lib/cpa/server/get-cpa-session";
 import { getEmployeePayrollProfile } from "@/lib/payroll/employee-mock-data";
@@ -21,7 +20,6 @@ export default async function CpaEmployeePayrollPage({ params }: Props) {
 
   return (
     <>
-      <CpaHeader />
       <EmployeePayrollShell
         profile={profile}
         readOnly={session?.isReadOnly ?? true}

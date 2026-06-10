@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import CpaHeader from "@/components/cpa/layout/cpa-header";
 import DealJacketDetailShell from "@/components/deal-jackets/detail/deal-jacket-detail-shell";
 import { getCpaSession } from "@/lib/cpa/server/get-cpa-session";
 import { getDealJacketDetail } from "@/lib/deal-jackets/get-deal-jacket-detail";
@@ -21,7 +20,6 @@ export default async function CpaDealJacketDetailPage({ params }: Props) {
 
   return (
     <>
-      <CpaHeader />
       <DealJacketDetailShell
         detail={detail}
         readOnly={session?.isReadOnly ?? true}

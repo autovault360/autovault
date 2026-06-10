@@ -104,6 +104,7 @@ export default function LoginPage() {
             <Image
               src="/logo.webp"
               alt="AutoVault Logo"
+              loading="eager"
               width={220}
               height={45}
               className="p-2 object-cover"
@@ -219,6 +220,7 @@ export default function LoginPage() {
               <Image
                 src="/logo.webp"
                 alt="AutoVault Logo"
+                loading="eager"
                 width={150}
                 height={40}
                 className="object-contain"

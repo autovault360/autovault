@@ -32,7 +32,7 @@ export default function DealerTransactionsPageContent() {
 
   if (isInitialLoading || !dashboardData) {
     return (
-      <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100">
+      <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100">
         <TransactionsCenterSkeleton />
       </div>
     );
@@ -62,7 +62,7 @@ export default function DealerTransactionsPageContent() {
 
   if (loading.transactions) {
     return (
-      <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100">
+      <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100">
         <TransactionsCenterSkeleton />
       </div>
     );

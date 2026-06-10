@@ -1,6 +1,5 @@
 "use client";
 
-import AdminHeader from "@/components/layout/AdminHeader";
 import StickyNotesCard from "@/components/reports-reminders/sticky-notes-card";
 import type { AdminDashboardContentProps } from "@/lib/dashboard/admin/types";
 import AnalyticsRow from "./analytics-row";
@@ -13,8 +12,6 @@ import SalesRepSection from "./sales-rep-section";
 export default function AdminDashboardContent(props: AdminDashboardContentProps) {
   return (
     <div>
-      <AdminHeader />
-
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div>
           <h1 className="text-xl font-bold tracking-[0.12em] text-white">

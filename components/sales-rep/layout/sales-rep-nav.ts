@@ -50,11 +50,10 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
     label: "INVENTORY",
     items: [
       {
-        href: "/sales-rep/inventory",
+        href: "/sales-rep/dashboard/inventory",
         label: "Browse Inventory",
         icon: Car,
         color: "text-emerald-500",
-        comingSoon: true,
       },
       {
         href: "/sales-rep/sold-vehicles",

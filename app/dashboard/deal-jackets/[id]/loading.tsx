@@ -1,9 +1,7 @@
-import AdminHeader from "@/components/layout/AdminHeader";
 
 export default function DealJacketDetailLoading() {
   return (
     <div className="relative pb-8 animate-pulse">
-      <AdminHeader />
       <div className="mb-3 inline-flex items-center gap-1.5">
         <div className="h-3.5 w-3.5 rounded bg-slate-800/80" />
         <div className="h-3 w-36 rounded bg-slate-800/80" />

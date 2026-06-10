@@ -1,23 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import NProgress from "nprogress";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
   Search,
+  Copy,
   SlidersHorizontal,
   Download,
-  Pencil,
-  MoreHorizontal,
   X,
-  Eye,
-  Loader2,
-  Copy,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { InputGroup, InputGroupInput, InputGroupAddon } from "@/components/ui/input-group";
 import {
   Select,
@@ -40,62 +32,18 @@ import {
   type VehicleStatus,
 } from "@/lib/vehicles/types";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
-import { Button } from "../ui/button";
-import EditVehicleModal from "@/components/vehicles/detail/edit-vehicle-modal";
-import type { VehicleDetail } from "@/lib/vehicles/detail-types";
+import { Button } from "@/components/ui/button";
 
-type VehiclesInventoryProps = {
+type Props = {
   vehicles: Vehicle[];
-  defaultEditId?: string;
 };
 
-export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesInventoryProps) {
-  const pathname = usePathname();
+export default function SalesRepInventory({ vehicles }: Props) {
   const [search, setSearch] = useState("");
   const [make, setMake] = useState("all");
   const [model, setModel] = useState("all");
   const [status, setStatus] = useState("all");
   const [location, setLocation] = useState("all");
-  const [activePopover, setActivePopover] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingVehicle, setEditingVehicle] = useState<VehicleDetail | null>(null);
-  const [editLoading, setEditLoading] = useState(false);
-  const popoverRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (defaultEditId) setEditingId(defaultEditId);
-  }, [defaultEditId]);
-
-  useEffect(() => {
-    if (!editingId) {
-      setEditingVehicle(null);
-      return;
-    }
-    NProgress.start();
-    setEditLoading(true);
-    fetch(`/api/vehicles/${editingId}`)
-      .then((r) => r.json())
-      .then((data) => {
-        setEditingVehicle(data);
-        setEditLoading(false);
-        NProgress.done();
-      })
-      .catch(() => {
-        setEditLoading(false);
-        NProgress.done();
-      });
-  }, [editingId]);
-
-  useEffect(() => {
-    if (!activePopover) return;
-    const handler = (e: MouseEvent) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
-        setActivePopover(null);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [activePopover]);
 
   const makes = useMemo(
     () => [...new Set(vehicles.map((v) => v.make).filter(Boolean))].sort(),
@@ -203,7 +151,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       accessor: (v) => getVehicleName(v),
       cell: (v) => (
         <Link
-          href={`/dashboard/vehicles/${v.id}`}
+          href={`/sales-rep/dashboard/inventory/${v.id}`}
           className="flex items-center gap-2.5 transition hover:opacity-80"
         >
           {v.image ? (
@@ -319,59 +267,6 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       header: "Location",
       sortable: true,
       cell: (v) => <span className="text-slate-400">{formatField("location", v.location)}</span>,
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      headerClassName: "text-right",
-      cell: (v) => (
-        <div className="flex items-center justify-end gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(v.id);
-              setActivePopover(null);
-              window.history.replaceState(null, "", `?edit=${v.id}`);
-            }}
-            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
-            aria-label="Edit vehicle"
-            disabled={editLoading && editingId === v.id}
-          >
-            {editLoading && editingId === v.id ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Pencil className="h-3.5 w-3.5" />
-            )}
-          </button>
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() =>
-                setActivePopover(activePopover === v.id ? null : v.id)
-              }
-              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
-              aria-label="More actions"
-            >
-              <MoreHorizontal className="h-3.5 w-3.5" />
-            </button>
-            {activePopover === v.id && (
-              <div
-                ref={popoverRef}
-                className="absolute right-0 top-full z-50 mt-1 w-32 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
-              >
-                <Link
-                  href={`/dashboard/vehicles/${v.id}`}
-                  onClick={() => setActivePopover(null)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-slate-800"
-                >
-                  <Eye className="h-3.5 w-3.5" />
-                  View
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      ),
     },
   ];
 
@@ -500,23 +395,6 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
         addPagination
         emptyMessage="No vehicles match your filters."
       />
-
-      {editingVehicle && (
-        <EditVehicleModal
-          vehicle={editingVehicle}
-          open={!!editingVehicle}
-          onOpenChange={(open) => {
-            if (!open) {
-              setEditingVehicle(null);
-              setEditingId(null);
-              window.history.replaceState(null, "", pathname);
-            }
-          }}
-          onVehicleUpdated={setEditingVehicle}
-        />
-      )}
     </div>
   );
 }
-
-
