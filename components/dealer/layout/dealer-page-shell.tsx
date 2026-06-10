@@ -1,8 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
-import DealerHeader from "./dealer-header";
 
 type Props = {
   title?: string;
@@ -20,8 +18,6 @@ export default function DealerPageShell({
   headerExtra,
   headerSection,
 }: Props) {
-  const { dashboardData } = useDealerDashboard();
-
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       {headerSection ?? (
@@ -36,15 +32,11 @@ export default function DealerPageShell({
               <p className="mt-0.5 text-[12px] text-[#64748b]">{description}</p>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {headerExtra}
-            {dashboardData && (
-              <DealerHeader
-                profile={dashboardData.profile}
-                notificationCount={dashboardData.notificationCount}
-              />
-            )}
-          </div>
+          {headerExtra && (
+            <div className="flex flex-wrap items-center gap-2">
+              {headerExtra}
+            </div>
+          )}
         </section>
       )}
 

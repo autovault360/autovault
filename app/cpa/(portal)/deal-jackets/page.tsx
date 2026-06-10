@@ -1,4 +1,3 @@
-import CpaHeader from "@/components/cpa/layout/cpa-header";
 import DealJacketsPageContent from "@/components/deal-jackets/deal-jackets-page-content";
 import { getCpaSession } from "@/lib/cpa/server/get-cpa-session";
 import { getDealJacketsForDashboard } from "@/lib/deal-jackets/get-deal-jackets-for-dashboard";
@@ -11,7 +10,6 @@ export default async function CpaDealJacketsPage() {
 
   return (
     <>
-      <CpaHeader />
       <DealJacketsPageContent
         dealJackets={dealJackets}
         salesRepFilterOptions={salesRepFilterOptions}

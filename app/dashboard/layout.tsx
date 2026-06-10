@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import AdminSidebar from "@/components/layout/AdminSidebar";
+import AppLayout from "@/components/layout/app-layout";
+import AdminSidebarContent from "@/components/dashboard/admin-sidebar-content";
+import AdminHeader from "@/components/layout/AdminHeader";
+import AppFooter from "@/components/layout/app-footer";
 
 const ADMIN_ALLOWED_ROLES = new Set(["super_admin", "owner", "manager"]);
 
@@ -37,11 +40,12 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-[#010d19]">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 sm:p-5 pb-8 pt-16 lg:pt-5">
-        {children}
-      </main>
-    </div>
+    <AppLayout
+      sidebar={<AdminSidebarContent />}
+      header={<AdminHeader />}
+      footer={<AppFooter />}
+    >
+      {children}
+    </AppLayout>
   );
 }

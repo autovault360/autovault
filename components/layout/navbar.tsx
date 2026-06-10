@@ -11,6 +11,7 @@ export default function Navbar() {
             alt="AutoVault Logo"
             width={150}
             height={40}
+            loading="eager"
             className="object-contain"
             style={{ width: 'auto', height: 'auto' }}
           />

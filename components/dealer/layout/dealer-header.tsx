@@ -42,7 +42,7 @@ export default function DealerHeader({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3">
+    <div className="flex flex-wrap items-center justify-end gap-3 mb-3.5 border-b border-slate-800/60 pb-3.5">
       <button
         type="button"
         className="flex items-center gap-1.5 rounded-md border border-[#1e293b] bg-[#070c14]/60 px-2.5 py-1.5 text-[11px] text-slate-400 transition hover:text-white"

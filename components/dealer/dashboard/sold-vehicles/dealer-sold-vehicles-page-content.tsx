@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
-import DealerHeader from "@/components/dealer/layout/dealer-header";
 import type { SoldVehicleRecord } from "@/lib/dealer/dashboard/types";
 import AddSoldVehicleWorkspace from "./add-sold-vehicle-workspace";
 import SoldVehiclesCenter from "./sold-vehicles-center";
@@ -32,7 +31,7 @@ export default function DealerSoldVehiclesPageContent() {
 
   if (isInitialLoading || !dashboardData) {
     return (
-      <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100">
+      <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100">
         <SoldVehiclesCenterSkeleton />
       </div>
     );
@@ -62,21 +61,14 @@ export default function DealerSoldVehiclesPageContent() {
 
   if (loading.soldVehicles) {
     return (
-      <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100">
+      <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100">
         <SoldVehiclesCenterSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100 antialiased selection:bg-blue-500/30">
-      <section className="mb-3.5 flex flex-wrap items-center justify-end gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
-        <DealerHeader
-          profile={dashboardData.profile}
-          notificationCount={dashboardData.notificationCount}
-        />
-      </section>
-
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100 antialiased selection:bg-blue-500/30">
       <SoldVehiclesCenter
         soldVehicles={dashboardData.soldVehicles}
         soldVehicleKpis={dashboardData.soldVehicleKpis}

@@ -60,6 +60,7 @@ export default function ForgotPasswordPage() {
             <Image
               src="/logo.webp"
               alt="AutoVault Logo"
+              loading="eager"
               width={170}
               height={45}
               className="object-contain"
@@ -175,6 +176,7 @@ export default function ForgotPasswordPage() {
               <Image
                 src="/logo.webp"
                 alt="AutoVault Logo"
+                loading="eager"
                 width={150}
                 height={40}
                 className="object-contain"

@@ -1,10 +1,15 @@
 "use client";
 
+import { ChevronRight } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import AppLayout from "@/components/layout/app-layout";
+import UnifiedSidebar from "@/components/layout/unified-sidebar";
+import CpaHeader from "./cpa-header";
+import CpaFooter from "./cpa-footer";
+import { CPA_NAV_GROUPS } from "./cpa-nav";
 import type { CpaSession } from "@/lib/cpa/types";
 import { CpaPortalProvider } from "../context/cpa-portal-context";
 import CpaNotesModal from "../notes/cpa-notes-modal";
-import CpaFooter from "./cpa-footer";
-import CpaSidebar from "./cpa-sidebar";
 
 export default function CpaPortalShell({
   session,
@@ -13,15 +18,41 @@ export default function CpaPortalShell({
   session: CpaSession;
   children: React.ReactNode;
 }) {
+  const profileSection = session ? (
+    <div>
+      <div className="px-1.5 pb-1.5 pt-2 text-[10px] font-semibold tracking-[0.12em] text-slate-500">
+        CPA ACCOUNT
+      </div>
+      <div className="space-y-1">
+        <div className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left">
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="bg-slate-800 text-sm text-white">
+              {session.initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[13px] font-semibold text-white">
+              {session.fullName}
+            </div>
+            <div className="truncate text-[9.5px] tracking-wider text-slate-500">
+              CPA ACCOUNT
+            </div>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
+        </div>
+      </div>
+    </div>
+  ) : undefined;
+
   return (
     <CpaPortalProvider session={session}>
-      <div className="flex h-screen bg-[#010d19]">
-        <CpaSidebar />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 pb-8 pt-16 sm:p-5 lg:pt-5">
-          {children}
-          <CpaFooter />
-        </main>
-      </div>
+      <AppLayout
+        sidebar={<UnifiedSidebar groups={CPA_NAV_GROUPS} profile={profileSection} />}
+        header={<CpaHeader />}
+        footer={<CpaFooter />}
+      >
+        {children}
+      </AppLayout>
       <CpaNotesModal />
     </CpaPortalProvider>
   );

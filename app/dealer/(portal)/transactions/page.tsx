@@ -6,7 +6,7 @@ export default function DealerTransactionsPage() {
   return (
     <Suspense
       fallback={
-        <div className="w-full min-w-0 max-w-full overflow-x-hidden bg-[#060b13] text-slate-100">
+        <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100">
           <TransactionsCenterSkeleton />
         </div>
       }

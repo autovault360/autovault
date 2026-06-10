@@ -1,4 +1,3 @@
-import CpaHeader from "@/components/cpa/layout/cpa-header";
 import AuditReadinessPageContent from "@/components/reports-reminders/audit-readiness-page-content";
 import { getCpaSession } from "@/lib/cpa/server/get-cpa-session";
 import { getReportsRemindersData } from "@/lib/reports-reminders/server/get-reports-reminders-data";
@@ -11,7 +10,6 @@ export default async function CpaAuditPage() {
 
   return (
     <>
-      <CpaHeader />
       <AuditReadinessPageContent
         report={report}
         showAdminHeader={false}

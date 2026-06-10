@@ -1,6 +1,3 @@
-import AddVehicleTrigger from "@/components/vehicles/add/add-vehicle-trigger";
-import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
-import VehiclesInventory from "@/components/vehicles/vehicles-inventory";
 import {
   computeVehicleStats,
   type Vehicle,
@@ -9,6 +6,8 @@ import {
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
+import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
+import SalesRepInventory from "@/components/sales-rep/dashboard/sales-rep-inventory";
 
 function mapStatus(dbStatus: string): VehicleStatus {
   switch (dbStatus) {
@@ -32,19 +31,12 @@ function formatISO(date: string | null | undefined): string {
   return date.split("T")[0];
 }
 
-export default async function VehiclesPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ add?: string; edit?: string }> | { add?: string; edit?: string };
-}) {
-  const resolved = searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
-  const defaultOpen = resolved.add === "true";
-  const defaultEditId = resolved.edit;
+export default async function SalesRepInventoryPage() {
   const auth = await authenticateUser();
   const vehicles: Vehicle[] = [];
 
   if (!auth.ok) {
-    console.warn("VehiclesPage: auth failed", auth.error);
+    console.warn("SalesRepInventoryPage: auth failed", auth.error);
   } else {
     const { dealershipId } = auth.user;
     const supabase = await createClient();
@@ -57,7 +49,7 @@ export default async function VehiclesPage({
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.warn("VehiclesPage: query error", error.message);
+      console.warn("SalesRepInventoryPage: query error", error.message);
     } else if (rows) {
       for (const row of rows) {
         const r = row as Record<string, unknown>;
@@ -104,18 +96,17 @@ export default async function VehiclesPage({
   return (
     <div>
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
-    <div>
-          <h1 className="text-2xl font-bold text-white">Vehicles Inventory</h1>
+        <div>
+          <h1 className="text-2xl font-bold text-white">Browse Inventory</h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
-            Manage your vehicle inventory, pricing, and status.
+            View dealership vehicle inventory.
           </p>
         </div>
-        <AddVehicleTrigger defaultOpen={defaultOpen} />
       </section>
 
       <VehicleStatsCards stats={stats} />
 
-      <VehiclesInventory vehicles={vehicles} defaultEditId={defaultEditId} />
+      <SalesRepInventory vehicles={vehicles} />
     </div>
   );
 }
