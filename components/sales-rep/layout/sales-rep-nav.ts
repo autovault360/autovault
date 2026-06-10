@@ -81,7 +81,6 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         label: "Create Deal Jacket",
         icon: FolderPlus,
         color: "text-blue-500",
-        comingSoon: true,
       },
       {
         href: "/sales-rep/deal-jackets",

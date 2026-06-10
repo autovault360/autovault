@@ -32,6 +32,8 @@ export type DealJacketFileItem = {
   icon: "contract" | "license" | "insurance" | "receipt" | "generic";
 };
 
+import type { DealJacketStatus, DealJacketActivityRow } from "./types";
+
 export type DealJacketActivityItem = {
   id: string;
   label: string;
@@ -120,6 +122,14 @@ export type DealJacketDetail = {
   receipts: DealJacketFileItem[];
   documentChecklist: { label: string; uploaded: boolean }[];
   activities: DealJacketActivityItem[];
+  workflowStatus: DealJacketStatus;
+  workflowActivities: DealJacketActivityRow[];
+  reviewNotes: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  changeCategories: string[] | null;
+  rejectionReason: string | null;
+
   dealNotes: string;
   internalNotes: string;
   lastNoteBy: string;

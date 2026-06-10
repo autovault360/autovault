@@ -1,5 +1,61 @@
 export type CommissionStatus = "paid" | "pending";
 
+export const DEAL_JACKET_STATUSES = [
+  "pending_review",
+  "changes_requested",
+  "resubmitted",
+  "approved",
+  "rejected",
+] as const;
+
+export type DealJacketStatus = (typeof DEAL_JACKET_STATUSES)[number];
+
+export const DEAL_JACKET_STATUS_LABELS: Record<DealJacketStatus, string> = {
+  pending_review: "Pending Review",
+  changes_requested: "Changes Requested",
+  resubmitted: "Resubmitted",
+  approved: "Approved",
+  rejected: "Rejected",
+};
+
+export function getWorkflowStatusStyle(status: DealJacketStatus): string {
+  const styles: Record<DealJacketStatus, string> = {
+    pending_review:
+      "bg-amber-500/15 text-amber-400 border-amber-500/30",
+    changes_requested:
+      "bg-orange-500/15 text-orange-400 border-orange-500/30",
+    resubmitted:
+      "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    approved:
+      "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    rejected:
+      "bg-red-500/15 text-red-400 border-red-500/30",
+  };
+  return styles[status];
+}
+
+export type WorkflowAction =
+  | "created"
+  | "submitted"
+  | "changes_requested"
+  | "resubmitted"
+  | "approved"
+  | "rejected"
+  | "note_added"
+  | "document_uploaded";
+
+export type DealJacketActivityRow = {
+  id: string;
+  deal_jacket_id: string;
+  action: WorkflowAction;
+  actor_id: string;
+  actor_name: string;
+  old_status: string | null;
+  new_status: string | null;
+  detail: Record<string, unknown> | null;
+  created_at: string;
+};
+
 export type PaymentMethod = "cash" | "finance" | "check" | "wire" | "credit_card";
 
 export type DealJacketTab =

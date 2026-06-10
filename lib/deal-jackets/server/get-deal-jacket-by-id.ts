@@ -65,6 +65,12 @@ export type DealJacketDetailDto = {
   }[];
   dealRosNumber: string | null;
   dealNotes: string | null;
+  workflowStatus: string;
+  reviewNotes: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  changeCategories: string[] | null;
+  rejectionReason: string | null;
 };
 
 async function signDocumentPath(path: string): Promise<string> {
@@ -205,6 +211,12 @@ export async function getDealJacketById(
     profitNet: Number(row.profit_net),
     dateSold: row.date_sold,
     createdAt: row.created_at,
+    workflowStatus: row.workflow_status ?? "pending_review",
+    reviewNotes: row.review_notes ?? null,
+    reviewedBy: row.reviewed_by ?? null,
+    reviewedAt: row.reviewed_at ?? null,
+    changeCategories: row.change_categories ?? null,
+    rejectionReason: row.rejection_reason ?? null,
     vehicle: {
       id: vehicle?.id ?? row.vehicle_id,
       year: vehicle?.year ?? 0,
