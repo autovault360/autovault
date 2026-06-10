@@ -317,7 +317,10 @@ async function getSalesRepPerformance(
 
   const { data: reps } = await supabase
     .from("users")
-    .select("id, full_name, commission_rate")
+    .select(
+      `id, full_name,
+       sales_rep_profile:sales_rep_profiles(commission_rate)`,
+    )
     .eq("dealership_id", dealershipId)
     .in("role", ["owner", "manager", "sales_rep"])
     .order("full_name");

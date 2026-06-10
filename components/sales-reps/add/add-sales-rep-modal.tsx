@@ -95,15 +95,18 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                     name="fullName"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FieldLabel label="Full Name" required />
+                        <div className="flex items-center gap-1 justify-between">
+                          <FieldLabel label="Full Name" required />
+                          <FormMessage />
+                        </div>
                         <FormControl>
                           <Input
                             {...field}
+                            placeholder="John Doe"
                             theme="dark"
                             aria-invalid={!!fieldState.error}
                           />
                         </FormControl>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />
@@ -113,7 +116,10 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                       name="phone"
                       render={({ field, fieldState }) => (
                         <FormItem>
-                          <FieldLabel label="Phone" required />
+                          <div className="flex items-center gap-1 justify-between">
+                            <FieldLabel label="Phone" required />
+                            <FormMessage />
+                          </div>
                           <FormControl>
                             <Input
                               value={field.value}
@@ -124,7 +130,6 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                               aria-invalid={!!fieldState.error}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -133,16 +138,19 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                       name="email"
                       render={({ field, fieldState }) => (
                         <FormItem>
-                          <FieldLabel label="Email" required />
+                          <div className="flex items-center gap-1 justify-between">
+                            <FieldLabel label="Email" required />
+                            <FormMessage />
+                          </div>
                           <FormControl>
                             <Input
                               {...field}
                               type="email"
+                              placeholder="john@dealership.com"
                               theme="dark"
                               aria-invalid={!!fieldState.error}
                             />
                           </FormControl>
-                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -271,6 +279,7 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                     <FormControl>
                       <Input
                         {...field}
+                        placeholder="123 Main St"
                         theme="dark"
                         aria-invalid={!!fieldState.error}
                       />
@@ -290,6 +299,7 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                     <FormControl>
                       <Input
                         {...field}
+                        placeholder="Apt, Suite, Floor, etc."
                         theme="dark"
                         aria-invalid={!!fieldState.error}
                       />
@@ -310,6 +320,7 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                       <FormControl>
                         <Input
                           {...field}
+                          placeholder="New York"
                           theme="dark"
                           aria-invalid={!!fieldState.error}
                         />
@@ -322,7 +333,10 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                   name="state"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FieldLabel label="State" />
+                      <div className="flex items-center gap-1 justify-between">
+                        <FieldLabel label="State" />
+                        <FormMessage />
+                      </div>
                       <Select value={field.value ?? ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
@@ -333,7 +347,6 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                            <SelectOptions options={US_STATES} label="State" theme="dark" />
                          </SelectContent>
                        </Select>
-                       <FormMessage />
                      </FormItem>
                    )}
                  />
@@ -349,6 +362,7 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                       <FormControl>
                         <Input
                           {...field}
+                          placeholder="10001"
                           theme="dark"
                           aria-invalid={!!fieldState.error}
                         />
@@ -366,20 +380,23 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                   name="commissionRate"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FieldLabel label="Commission Rate (%)" required />
+                      <div className="flex items-center gap-1 justify-between">
+                        <FieldLabel label="Commission Rate (%)" required />
+                        <FormMessage />
+                      </div>
                       <FormControl>
                         <Input
                           type="number"
                           min={0}
                           max={100}
                           step={0.1}
+                          placeholder="10"
                           theme="dark"
                           value={field.value}
                           onChange={(e) => field.onChange(Number(e.target.value))}
                           aria-invalid={!!fieldState.error}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
@@ -388,17 +405,20 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
                   name="monthlyGoal"
                   render={({ field, fieldState }) => (
                     <FormItem>
-                      <FieldLabel label="Monthly Sales Goal" required />
+                      <div className="flex items-center gap-1 justify-between">
+                        <FieldLabel label="Monthly Sales Goal" required />
+                        <FormMessage />
+                      </div>
                       <FormControl>
                         <Input
                           mode="currency"
+                          placeholder="$50,000"
                           theme="dark"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
                         />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />

@@ -10,7 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { fetchSalesRepDashboardMock } from "@/mock-data/sales-rep-dashboard.mock";
+import { getSalesRepDashboardData } from "@/lib/sales-rep/server/get-dashboard-data";
 import type {
   DashboardLoadingState,
   DashboardSectionKey,
@@ -28,6 +28,7 @@ type SalesRepDashboardContextValue = {
   dealJacketRef: React.RefObject<HTMLDivElement | null>;
   refreshSection: (section: DashboardSectionKey) => Promise<void>;
   isInitialLoading: boolean;
+  error: string | null;
 };
 
 const defaultLoading: DashboardLoadingState = {
@@ -52,12 +53,25 @@ export function SalesRepDashboardProvider({ children }: { children: ReactNode })
   );
   const [isDealJacketExpanded, setIsDealJacketExpanded] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const dealJacketRef = useRef<HTMLDivElement | null>(null);
 
   const loadDashboard = useCallback(async () => {
-    const data = await fetchSalesRepDashboardMock(800);
-    setDashboardData(data);
-    setSelectedVehicle(data.inventory[0] ?? null);
+    try {
+      const result = await getSalesRepDashboardData();
+      if ("data" in result) {
+        setDashboardData(result.data);
+        setSelectedVehicle(result.data.inventory[0] ?? null);
+        setError(null);
+      } else {
+        setError(result.error ?? "Failed to load dashboard data");
+        console.error("Dashboard data error:", result.error);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(msg);
+      console.error("Dashboard data exception:", err);
+    }
     setIsInitialLoading(false);
 
     const sections: DashboardSectionKey[] = [
@@ -83,7 +97,15 @@ export function SalesRepDashboardProvider({ children }: { children: ReactNode })
   const refreshSection = useCallback(
     async (section: DashboardSectionKey) => {
       setLoading((prev) => ({ ...prev, [section]: true }));
-      await fetchSalesRepDashboardMock(400);
+      try {
+        const result = await getSalesRepDashboardData();
+        if ("data" in result) {
+          setDashboardData(result.data);
+          setError(null);
+        }
+      } catch (err) {
+        console.error("Dashboard refresh error:", err);
+      }
       setLoading((prev) => ({ ...prev, [section]: false }));
     },
     [],
@@ -100,6 +122,7 @@ export function SalesRepDashboardProvider({ children }: { children: ReactNode })
       dealJacketRef,
       refreshSection,
       isInitialLoading,
+      error,
     }),
     [
       dashboardData,
@@ -108,6 +131,7 @@ export function SalesRepDashboardProvider({ children }: { children: ReactNode })
       isDealJacketExpanded,
       refreshSection,
       isInitialLoading,
+      error,
     ],
   );
 

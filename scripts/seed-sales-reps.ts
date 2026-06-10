@@ -119,14 +119,6 @@ for (const line of envContent.split("\n")) {
   if (!process.env[key]) process.env[key] = value;
 }
 
-function isMissingColumnError(message: string): boolean {
-  return (
-    message.includes("does not exist") ||
-    message.includes("Could not find") ||
-    message.includes("column")
-  );
-}
-
 function parseArgs() {
   const args = process.argv.slice(2);
   let dealershipId: string | undefined;
@@ -223,52 +215,55 @@ async function upsertSalesRep(
     console.log(`   ℹ️  Auth user exists: ${rep.email}`);
   }
 
-  const basePayload = {
+  const insertPayload = {
     auth_user_id: authUser.id,
     dealership_id: dealershipId,
     email: rep.email,
     full_name: rep.fullName,
     role: rep.role,
     is_active: rep.isActive,
-  };
-
-  const extendedPayload = {
-    ...basePayload,
     phone: rep.phone,
-    address: rep.address,
-    address2: rep.address2 ?? null,
-    city: rep.city,
-    state: rep.state,
-    zip: rep.zip,
-    hire_date: rep.hireDate,
-    commission_rate: rep.commissionRate,
-    monthly_goal: rep.monthlyGoal,
   };
 
-  let insertResult = await supabase
+  const { data: insertResult, error: insertError } = await supabase
     .from("users")
-    .insert(extendedPayload)
+    .insert(insertPayload)
     .select("id")
     .single();
 
-  if (insertResult.error && isMissingColumnError(insertResult.error.message)) {
-    insertResult = await supabase
-      .from("users")
-      .insert(basePayload)
-      .select("id")
-      .single();
+  if (insertError || !insertResult) {
+    throw new Error(
+      `Profile insert failed for ${rep.email}: ${insertError?.message}`,
+    );
   }
 
-  if (insertResult.error || !insertResult.data) {
-    throw new Error(
-      `Profile insert failed for ${rep.email}: ${insertResult.error?.message}`,
+  const userId = insertResult.id;
+
+  const { error: salepProfileError } = await supabase
+    .from("sales_rep_profiles")
+    .upsert(
+      {
+        user_id: userId,
+        address: rep.address,
+        address2: rep.address2 ?? null,
+        city: rep.city,
+        state: rep.state,
+        zip: rep.zip,
+        hire_date: rep.hireDate,
+        commission_rate: rep.commissionRate,
+        monthly_goal: rep.monthlyGoal,
+      },
+      { onConflict: "user_id" },
     );
+
+  if (salepProfileError) {
+    console.warn(`   ⚠️ Failed to insert sales_rep_profile: ${salepProfileError.message}`);
   }
 
   console.log(
     `   ✅ Profile: ${rep.fullName} (${rep.role}, ${rep.isActive ? "active" : "inactive"})`,
   );
-  return { userId: insertResult.data.id, skipped: false };
+  return { userId, skipped: false };
 }
 
 async function seedMetrics(
@@ -378,16 +373,16 @@ async function seedMetrics(
 async function main() {
   const { dealershipId: requestedDealershipId, withMetrics } = parseArgs();
 
-  console.log("╔══════════════════════════════════════════�—");
+  console.log("╔══════════════════════════════════════════�—");
   console.log("║     AutoVault360 — Sales Reps Seeder     ║");
-  console.log("╚══════════════════════════════════════════�—\n");
+  console.log("╚══════════════════════════════════════════�—\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
     console.error(
-      "�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
+      "�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
     );
     process.exit(1);
   }
@@ -459,6 +454,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("�—� Seed failed:", err instanceof Error ? err.message : err);
+  console.error("�—� Seed failed:", err instanceof Error ? err.message : err);
   process.exit(1);
 });

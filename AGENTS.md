@@ -324,6 +324,10 @@ Agents MUST NOT:
 
 > "Every operation must preserve financial accuracy, tenant isolation, and auditability."
 
+# 15. Placeholders for the input fields 
+
+> "If you find any input field without a placeholder must add a proper placeholder too and for the future input field placeholder is necessary."
+
 ---
 
 END OF FILE

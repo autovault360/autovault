@@ -97,7 +97,11 @@ export async function getDealJacketById(
       ),
       deal:deals(ros_number, notes),
       customer:customers(id, name, phone, email, address, city, state, zip),
-      sales_rep:users!deal_jackets_sales_rep_id_fkey(id, full_name, commission_rate)
+      sales_rep:users!deal_jackets_sales_rep_id_fkey(
+        id,
+        full_name,
+        sales_rep_profile:sales_rep_profiles(commission_rate)
+      )
     `,
     )
     .eq("id", id)
@@ -229,7 +233,12 @@ export async function getDealJacketById(
       ? {
           id: salesRep.id,
           name: salesRep.full_name ?? "...",
-          commissionRate: salesRep.commission_rate,
+          commissionRate: (() => {
+            const profile = Array.isArray(salesRep.sales_rep_profile)
+              ? salesRep.sales_rep_profile[0]
+              : salesRep.sales_rep_profile;
+            return profile?.commission_rate ?? null;
+          })(),
         }
       : null,
     expenses,

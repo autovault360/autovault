@@ -226,9 +226,9 @@ export default function SalesRepsInventory({
       header: "Actions",
       headerClassName: "text-right pr-4 w-[100px]",
       cellClassName: "text-right pr-4 w-[100px]",
-      cell: () => (
+      cell: (row) => (
         <div onClick={(e) => e.stopPropagation()} role="presentation">
-          <SalesRepRowActions />
+          <SalesRepRowActions salesRepId={row.id} />
         </div>
       ),
     },
