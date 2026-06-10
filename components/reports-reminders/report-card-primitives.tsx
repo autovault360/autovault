@@ -24,7 +24,7 @@ export function ReportCardShell({
   return (
     <Card
       className={cn(
-        "flex flex-col rounded-sm border border-slate-700 bg-transparent text-slate-200 shadow-none",
+        "flex flex-col rounded-sm border border-slate-700 bg-card text-slate-200 shadow-none",
         compact ? "h-full p-2.5" : "h-full p-3.5",
         className,
       )}

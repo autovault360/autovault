@@ -217,10 +217,10 @@ export default function ProfitLossBreakdownTable({ report, search = "" }: Props)
   };
 
   return (
-    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-transparent shadow-none">
+    <Card className="overflow-hidden rounded-sm py-0! border border-slate-700 bg-card shadow-none">
       <div className="overflow-auto">
         <table className="w-full min-w-[520px]">
-          <thead className="sticky top-0 z-10 bg-[#0a101c]">
+          <thead className="sticky top-0 z-10 bg-card">
             <tr className="border-b border-slate-800">
               {(
                 [

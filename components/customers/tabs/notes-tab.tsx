@@ -45,7 +45,7 @@ export default function NotesTab({
     <div className="space-y-4">
       <form
         onSubmit={handleSubmit}
-        className="rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3 space-y-2"
+        className="rounded-sm border border-slate-700 bg-card p-3 space-y-2"
       >
         <h4 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Add Note
@@ -55,7 +55,7 @@ export default function NotesTab({
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}
-          className="border-slate-700 bg-[#010d19] text-[11.5px] text-slate-200"
+          className="border-slate-700 bg-slate-800/50 text-[11.5px] text-slate-200"
           required
         />
         <Button
@@ -76,7 +76,7 @@ export default function NotesTab({
           customer.notes.map((note) => (
             <div
               key={note.id}
-              className="rounded-sm border border-slate-700 bg-[#0e1626]/30 p-3"
+              className="rounded-sm border border-slate-700 bg-card p-3"
             >
               <p className="text-[11.5px] leading-relaxed text-slate-300">
                 {note.body}

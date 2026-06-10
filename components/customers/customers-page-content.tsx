@@ -4,7 +4,6 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import NProgress from "nprogress";
-import AdminHeader from "@/components/layout/AdminHeader";
 import AddCustomerTrigger from "@/components/customers/add/add-customer-trigger";
 import AddCustomerModal from "@/components/customers/add/add-customer-modal";
 import CustomerStatsCards from "@/components/customers/customer-stats-cards";
@@ -116,8 +115,6 @@ export default function CustomersPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader onAddCustomer={() => handleAddOpenChange(true)} />
-
       <div className="flex items-start gap-5">
         <div className="min-w-0 flex-1">
           <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">

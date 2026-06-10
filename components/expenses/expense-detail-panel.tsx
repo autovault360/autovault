@@ -87,7 +87,7 @@ export default function ExpenseDetailPanel({
       <aside
         className={cn(
           "flex w-[430px] shrink-0 flex-col",
-          "border border-slate-800/60 bg-[#0b1322] p-4 text-slate-200",
+          "border border-slate-800/60 bg-card p-4 text-slate-200",
           "rounded-xl overflow-hidden shadow-2xl",
           "sticky top-4 z-50",
           "h-[calc(100vh-2rem)]",
@@ -154,7 +154,7 @@ export default function ExpenseDetailPanel({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 rounded-lg border border-slate-800/80 bg-[#0b121f]/40 p-3.5">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 rounded-lg border border-slate-800/80 bg-card/40 p-3.5">
               <DetailField label="Date" value={formatDisplayDate(expense.date)} />
 
               {expense.expenseKind === "vehicle" ? (

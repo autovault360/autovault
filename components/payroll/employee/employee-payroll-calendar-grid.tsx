@@ -61,7 +61,7 @@ export default function EmployeePayrollCalendarGrid({
   events.forEach((e) => eventMap.set(e.date, e));
 
   return (
-    <div className="rounded-sm border border-slate-800/80 bg-[#070c14]/60 p-4">
+    <div className="rounded-sm border border-slate-800/80 bg-card/60 p-4">
       <div className="mb-3 text-center text-[13px] font-semibold text-slate-200">May 2026</div>
       <div className="grid grid-cols-7 gap-1">
         {WEEKDAYS.map((d) => (

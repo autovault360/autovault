@@ -65,7 +65,7 @@ export default function VehicleDetailHeader({
             <button
               type="button"
               onClick={() => setEditOpen(true)}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#0e1626] px-3 py-2 text-[12.5px] text-slate-300 transition hover:border-slate-600"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-card px-3 py-2 text-[12.5px] text-slate-300 transition hover:border-slate-600"
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit Vehicle
@@ -73,7 +73,7 @@ export default function VehicleDetailHeader({
             <button
               type="button"
               onClick={() => window.open(`/dashboard/vehicles/${vehicle.id}/print`, "_blank")}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-[#0e1626] px-3 py-2 text-[12.5px] text-slate-300 transition hover:border-slate-600"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-card px-3 py-2 text-[12.5px] text-slate-300 transition hover:border-slate-600"
             >
               <Printer className="h-3.5 w-3.5" />
               Print Info

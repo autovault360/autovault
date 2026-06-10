@@ -225,7 +225,7 @@ export default function CustomersInventory({
                   NProgress.done();
                 });
             }}
-            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-[#0a1220] text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
+            className="grid h-8 w-8 place-items-center rounded-md border border-blue-500/50 bg-card text-blue-400 transition-colors hover:border-blue-400 hover:bg-blue-500/10 hover:text-blue-300"
             aria-label="Edit customer"
             disabled={editLoadingId === row.id}
           >
@@ -242,7 +242,7 @@ export default function CustomersInventory({
                 e.stopPropagation();
                 setActivePopover(activePopover === row.id ? null : row.id);
               }}
-              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-[#0a1220] text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
+              className="grid h-8 w-8 place-items-center rounded-md border border-slate-700 bg-card text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
               aria-label="More actions"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
@@ -250,7 +250,7 @@ export default function CustomersInventory({
             {activePopover === row.id && (
               <div
                 ref={popoverRef}
-                className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-[#0e1626] py-1 shadow-xl"
+                className="absolute right-0 top-full z-20 mt-1 w-40 rounded-md border border-slate-700 bg-card py-1 shadow-xl"
               >
                 <ActionItem
                   icon={User}

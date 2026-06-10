@@ -168,7 +168,7 @@ export default function DayDetailPanel({
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 h-8 border-slate-800 bg-[#0e1626] text-[11px]"
+              className="mt-1 h-8 border-slate-800 bg-slate-800/50 text-[11px]"
             />
           </div>
           <div>
@@ -177,7 +177,7 @@ export default function DayDetailPanel({
               <SelectTrigger theme="dark" className="mt-1 h-8 text-[11px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-slate-800 bg-[#0e1626]">
+              <SelectContent className="border-slate-800 bg-card">
                 <SelectItem value="compliance">Compliance</SelectItem>
                 <SelectItem value="appointment">Appointment</SelectItem>
                 <SelectItem value="payroll">Payroll</SelectItem>
@@ -192,7 +192,7 @@ export default function DayDetailPanel({
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
-              className="mt-1 h-8 border-slate-800 bg-[#0e1626] text-[11px]"
+              className="mt-1 h-8 border-slate-800 bg-slate-800/50 text-[11px]"
             />
           </div>
           <div>
@@ -200,7 +200,7 @@ export default function DayDetailPanel({
             <Textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="mt-1 min-h-[60px] border-slate-800 bg-[#0e1626] text-[11px]"
+              className="mt-1 min-h-[60px] border-slate-800 bg-slate-800/50 text-[11px]"
             />
           </div>
           <div className="flex gap-2">

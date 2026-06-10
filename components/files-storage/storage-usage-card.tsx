@@ -10,7 +10,7 @@ type Props = {
 
 export default function StorageUsageCard({ report }: Props) {
   return (
-    <Card className="mb-3.5 rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+    <Card className="mb-3.5 rounded-sm border border-slate-700 bg-card p-4 shadow-none">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
           Storage Overview

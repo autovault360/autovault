@@ -19,7 +19,7 @@ function CollectedBadge() {
 
 export default function StateTaxTransactionsTable({ transactions }: Props) {
   return (
-    <Card className="flex h-full flex-col rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+    <Card className="flex h-full flex-col rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="text-[13px] font-bold text-white">
           Recent State Tax Transactions

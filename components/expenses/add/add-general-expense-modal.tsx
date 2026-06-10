@@ -226,7 +226,7 @@ export default function AddGeneralExpenseModal({
                           placeholder="Enter expense description"
                           rows={5}
                           aria-invalid={!!fieldState.error}
-                          className="min-h-[88px] resize-none rounded-[6px] border-slate-600 bg-[#1a2332] px-3 py-2.5 text-[13px] text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:border-blue-500 focus-visible:ring-0"
+                          className="min-h-[88px] resize-none rounded-[6px] border-slate-600 bg-slate-800/50 px-3 py-2.5 text-[13px] text-slate-100 shadow-none placeholder:text-slate-500 focus-visible:border-blue-500 focus-visible:ring-0"
                         />
                       </FormControl>
                     </FormItem>

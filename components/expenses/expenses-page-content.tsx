@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from "react"
 import dynamic from "next/dynamic";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Calendar, SlidersHorizontal } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import AddExpenseModal from "@/components/expenses/add/add-expense-modal";
 import ExpenseStatsCards from "@/components/expenses/expense-stats-cards";
 import ExpensesInventory from "@/components/expenses/expenses-inventory";
@@ -81,8 +80,6 @@ export default function ExpensesPageContent({
 
   return (
     <div className="relative">
-      <AdminHeader />
-
       {isPending && (
         <div className="absolute left-0 right-0 top-0 z-50 h-0.5 animate-pulse bg-blue-500" />
       )}
@@ -98,7 +95,7 @@ export default function ExpensesPageContent({
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                className="flex h-9 items-center gap-1.5 rounded-md border border-slate-800 bg-[#0e1626] px-3.5 text-[12.5px] text-slate-300"
+                className="flex h-9 items-center gap-1.5 rounded-md border border-slate-800 bg-slate-800/50 px-3.5 text-[12.5px] text-slate-300"
               >
                 <Calendar className="h-3.5 w-3.5 text-slate-400" />
                 May 1 ... May 31, 2025

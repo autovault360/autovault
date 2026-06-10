@@ -20,7 +20,7 @@ export default function EmployeePayrollBanner({
   profile: EmployeePayrollProfile;
 }) {
   return (
-    <div className="mb-3.5 rounded-sm border border-slate-800/80 bg-[#070c14]/60 p-4">
+    <div className="mb-3.5 rounded-sm border border-slate-800/80 bg-card/60 p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16 border-2 border-slate-700">

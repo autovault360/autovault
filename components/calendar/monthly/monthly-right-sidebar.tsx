@@ -118,7 +118,7 @@ export default function MonthlyRightSidebar({
             <Textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              className="min-h-[80px] border-slate-800 bg-[#0e1626] text-[11px]"
+              className="min-h-[80px] border-slate-800 bg-slate-800/50 text-[11px]"
             />
             <div className="flex gap-2">
               <button

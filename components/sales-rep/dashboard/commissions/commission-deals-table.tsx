@@ -21,9 +21,9 @@ import {
 import type { ISalesRepCommissionRow } from "@/lib/sales-rep/commissions/types";
 
 const TABLE_WRAPPER_CLASS =
-  "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-[#0a101c]/40 " +
+  "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-card " +
   "[&_table]:min-w-[1200px] [&_table]:w-full [&_table]:text-[11px] " +
-  "[&_thead]:bg-[#0c1424] [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
+  "[&_thead]:bg-card [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
   "[&_th]:px-2.5 [&_th]:py-2.5 [&_th]:text-[9.5px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-slate-500 " +
   "[&_td]:px-2.5 [&_td]:py-2.5 [&_td]:align-middle " +
   "[&_tbody_tr]:border-b [&_tbody_tr]:border-slate-800/50 [&_tbody_tr]:transition-colors [&_tbody_tr:last-child]:border-0 " +
@@ -178,7 +178,7 @@ export default function CommissionDealsTable({
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <button
           type="button"
-          className="flex h-8 min-w-[220px] flex-1 items-center gap-2 rounded-md border border-[#1e293b] bg-[#070c14]/60 px-2.5 text-[11px] text-slate-300 sm:max-w-[280px]"
+          className="flex h-8 min-w-[220px] flex-1 items-center gap-2 rounded-md border border-slate-700/80 bg-slate-800/50 px-2.5 text-[11px] text-slate-300 sm:max-w-[280px]"
         >
           <Calendar className="h-3.5 w-3.5 shrink-0 text-slate-500" />
           <span className="truncate">{periodLabel}</span>
@@ -188,13 +188,13 @@ export default function CommissionDealsTable({
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger
             theme="dark"
-            className="h-8 w-[120px] border-[#1e293b] bg-[#070c14]/60 text-[11px]"
+            className="h-8 w-[120px] border-slate-700/80 bg-slate-800/50 text-[11px]"
           >
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent
             theme="dark"
-            className="border-[#1e293b] bg-[#0a101d]"
+            className="border-slate-700/80 bg-card"
           >
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="paid">Paid</SelectItem>
@@ -205,13 +205,13 @@ export default function CommissionDealsTable({
         <Select value={dealFilter} onValueChange={setDealFilter}>
           <SelectTrigger
             theme="dark"
-            className="h-8 w-[140px] border-[#1e293b] bg-[#070c14]/60 text-[11px]"
+            className="h-8 w-[140px] border-slate-700/80 bg-slate-800/50 text-[11px]"
           >
             <SelectValue placeholder="All Deal Jackets" />
           </SelectTrigger>
           <SelectContent
             theme="dark"
-            className="border-[#1e293b] bg-[#0a101d]"
+            className="border-slate-700/80 bg-card"
           >
             <SelectItem value="all">All Deal Jackets</SelectItem>
             {entries.map((row) => (
@@ -229,7 +229,7 @@ export default function CommissionDealsTable({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Deal Jacket #, Vehicle, or Buyer..."
-            className="h-8 border-[#1e293b] bg-[#070c14]/60 pl-8 text-[11px]"
+            className="h-8 border-slate-700/80 bg-slate-800/50 pl-8 text-[11px]"
           />
         </div>
       </div>

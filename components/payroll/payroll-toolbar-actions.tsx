@@ -134,7 +134,7 @@ export default function PayrollToolbarActions({
               payouts for {employeeCount} employees.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className="border-slate-800 bg-transparent">
+          <DialogFooter className="border-slate-800 bg-card">
             <Button
               variant="outline"
               className="border-slate-700 text-slate-300"

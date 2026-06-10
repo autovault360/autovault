@@ -17,7 +17,7 @@ export default function CommissionSection({ data, loading }: Props) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <CardShell className="border-slate-700/80 bg-card backdrop-blur-sm">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <span className="text-[11px] font-bold tracking-[0.14em] text-white">
           MY COMMISSIONS

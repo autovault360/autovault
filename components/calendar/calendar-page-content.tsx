@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
-import AdminHeader from "@/components/layout/AdminHeader";
 import { filterCalendar } from "@/lib/calendar/filter-calendar";
 import {
   DEFAULT_CALENDAR_FILTERS,
@@ -172,11 +171,6 @@ export default function CalendarPageContent({
       {isPending && (
         <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-blue-500/80 animate-pulse" />
       )}
-
-      <AdminHeader
-        searchValue={filters.searchQuery}
-        onSearchChange={(q) => setFilters((p) => ({ ...p, searchQuery: q }))}
-      />
 
       <CalendarModuleHeader
         viewMode={viewMode}

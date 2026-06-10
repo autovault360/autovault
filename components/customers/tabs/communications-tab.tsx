@@ -64,7 +64,7 @@ export default function CommunicationsTab({
     <div className="space-y-4">
       <form
         onSubmit={handleSubmit}
-        className="rounded-sm border border-slate-700 bg-[#0e1626]/50 p-3 space-y-2"
+        className="rounded-sm border border-slate-700 bg-card p-3 space-y-2"
       >
         <h4 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-slate-500">
           Log Communication
@@ -85,14 +85,14 @@ export default function CommunicationsTab({
           placeholder="Subject (optional)"
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          className="h-8 border-slate-700 bg-[#010d19] text-[11.5px] text-slate-200"
+          className="h-8 border-slate-700 bg-slate-800/50 text-[11.5px] text-slate-200"
         />
         <Textarea
           placeholder="Message or call notes..."
           value={body}
           onChange={(e) => setBody(e.target.value)}
           rows={3}
-          className="border-slate-700 bg-[#010d19] text-[11.5px] text-slate-200"
+          className="border-slate-700 bg-slate-800/50 text-[11.5px] text-slate-200"
           required
         />
         <Button
@@ -113,7 +113,7 @@ export default function CommunicationsTab({
           customer.communications.map((comm) => (
             <div
               key={comm.id}
-              className="rounded-sm border border-slate-700 bg-[#0e1626]/30 p-3"
+              className="rounded-sm border border-slate-700 bg-card p-3"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-medium text-blue-400">

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, FolderPlus } from "lucide-react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import { Button } from "@/components/ui/button";
 import { fetchCreateDealJacketMock } from "@/mock-data/create-deal-jacket.mock";
 import type { CreateDealJacketPageData } from "@/lib/sales-rep/deal-jacket/types";
@@ -30,11 +29,9 @@ export default function CreateDealJacketPageContent() {
 
   return (
     <div className="min-h-full">
-      <AdminHeader />
-
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 grid h-10 w-10 place-items-center rounded-lg border border-slate-700 bg-[#0e1626]">
+          <div className="mt-0.5 grid h-10 w-10 place-items-center rounded-lg border border-slate-700 bg-card">
             <FolderPlus className="h-5 w-5 text-blue-400" />
           </div>
           <div>
@@ -50,7 +47,7 @@ export default function CreateDealJacketPageContent() {
         <Button
           variant="outline"
           asChild
-          className="h-8 border-slate-700 bg-transparent text-[12px] text-slate-300 hover:bg-[#0e1626]"
+          className="h-8 border-slate-700 bg-transparent text-[12px] text-slate-300 hover:bg-card"
         >
           <Link href="/dashboard/sales-reps">
             <ChevronLeft className="mr-1 h-3.5 w-3.5" />

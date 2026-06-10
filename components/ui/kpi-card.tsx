@@ -187,7 +187,7 @@ export default function PeriodKPICard({
   return (
     <Card
       className={cn(
-        "flex min-w-0 max-w-full flex-col rounded-lg border border-slate-700 bg-transparent p-4 text-slate-200 shadow-none w-full",
+        "flex bg-card min-w-0 max-w-full flex-col rounded-lg border border-slate-700 p-4 text-slate-200 shadow-none w-full",
         className,
       )}
     >
@@ -277,7 +277,7 @@ export function KPICard({
   return (
     <Card
       className={cn(
-        "flex h-full min-w-0 max-w-full flex-col rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none",
+        "flex h-full bg-card min-w-0 max-w-full flex-col rounded-sm border border-slate-700 p-3 text-slate-200 shadow-none",
         className,
       )}
     >

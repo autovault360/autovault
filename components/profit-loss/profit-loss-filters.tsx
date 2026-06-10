@@ -46,12 +46,12 @@ function FilterSelect({
       <Select value={value} onValueChange={onValueChange}>
         <SelectTrigger
           theme="dark"
-          className="h-9 min-w-[130px] gap-1.5 border-slate-800 bg-[#0e1626] px-3 text-[11.5px] text-slate-300"
+          className="h-9 min-w-[130px] gap-1.5 border-slate-800 bg-card px-3 text-[11.5px] text-slate-300"
         >
           {icon}
           <SelectValue placeholder={label} />
         </SelectTrigger>
-        <SelectContent className="border-slate-800 bg-[#0e1626] text-slate-300">
+        <SelectContent className="border-slate-800 bg-card text-slate-300">
           <SelectGroup>
             <SelectLabel>
               {label}
@@ -135,7 +135,7 @@ export default function ProfitLossFilters({
         <button
           type="button"
           onClick={() => setMoreOpen(true)}
-          className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 bg-[#0e1626] px-3.5 text-[11.5px] text-slate-400 hover:bg-slate-800/50 hover:text-slate-300"
+          className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 bg-card px-3.5 text-[11.5px] text-slate-400 hover:bg-slate-800/50 hover:text-slate-300"
         >
           <SlidersHorizontal className="h-3.5 w-3.5" />
           More Filters
@@ -154,7 +154,7 @@ export default function ProfitLossFilters({
       <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
         <SheetContent
           side="right"
-          className="border-slate-800 bg-[#0b1322] text-slate-200 sm:max-w-md"
+          className="border-slate-800 bg-card text-slate-200 sm:max-w-md"
         >
           <SheetHeader>
             <SheetTitle className="text-white">More Filters</SheetTitle>
@@ -164,7 +164,7 @@ export default function ProfitLossFilters({
               <label className="mb-1.5 block text-[11px] font-medium text-slate-400">
                 Search categories
               </label>
-              <InputGroup className="border-slate-700 bg-[#0e1626]">
+              <InputGroup className="border-slate-700 bg-slate-800/50">
                 <InputGroupInput
                   theme="dark"
                   placeholder="Search P&L categories..."

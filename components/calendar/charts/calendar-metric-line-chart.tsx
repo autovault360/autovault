@@ -47,7 +47,7 @@ function LineTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11px] shadow-lg">
+    <div className="rounded-md border border-slate-700 bg-card px-3 py-2 text-[11px] shadow-lg">
       <div className="mb-1 text-slate-400">{label}</div>
       {payload.map((p) => (
         <div key={p.name} style={{ color: p.color }} className="font-semibold">
@@ -138,7 +138,7 @@ function BarTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11px] shadow-lg">
+    <div className="rounded-md border border-slate-700 bg-card px-3 py-2 text-[11px] shadow-lg">
       <div className="text-slate-400">{String(label ?? "")}</div>
       <div className="font-semibold text-white">{formatter(payload[0]!.value)}</div>
     </div>
@@ -232,7 +232,7 @@ export function CalendarCommissionsAreaChart({
             content={({ active, payload, label }) => {
               if (!active || !payload?.length) return null;
               return (
-                <div className="rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11px]">
+                <div className="rounded-md border border-slate-700 bg-card px-3 py-2 text-[11px]">
                   <div className="text-slate-400">{label}</div>
                   <div className="font-semibold text-purple-400">
                     {formatCurrency(payload[0]!.value as number)}

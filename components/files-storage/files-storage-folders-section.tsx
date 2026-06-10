@@ -41,7 +41,7 @@ export default function FilesStorageFoldersSection({
   return (
     <>
       <section className="mb-3.5 grid gap-3.5 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_340px]">
-        <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+        <Card className="rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500">
               Folders

@@ -36,7 +36,7 @@ export default function StorageFolderCard({ folder, onClick }: Props) {
           : undefined
       }
       className={cn(
-        "rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none transition-colors",
+        "rounded-sm border border-slate-700 bg-card p-3.5 shadow-none transition-colors",
         onClick && "cursor-pointer hover:border-slate-600 hover:bg-slate-800/20",
       )}
     >

@@ -70,7 +70,7 @@ export default function SalesRepLoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col justify-between bg-[#020403] font-sans text-zinc-300 antialiased selection:bg-primary/30 selection:text-white overflow-x-hidden">
+    <div className="relative flex min-h-screen flex-col justify-between bg-card font-sans text-zinc-300 antialiased selection:bg-primary/30 selection:text-white overflow-x-hidden">
       {/* Main Content Body */}
       <div
         className="relative mx-auto w-full flex items-center gap-6"
@@ -206,12 +206,12 @@ export default function SalesRepLoginPage() {
         </div>
 
         {/* RIGHT SIDE: Deep Form Void Box Backdrop */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-[#020403] relative z-10">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-card relative z-10">
           {/* Subtle Glow Spill Ambient Layer directly behind the card */}
           <div className="absolute top-1/2 left-0 -translate-y-1/2 w-72 h-72 bg-[#3ea436]/5 rounded-full blur-[100px] pointer-events-none hidden lg:block" />
 
           {/* Form Card */}
-          <div className="w-full max-w-[450px] rounded-xl border border-zinc-900/80 bg-[#0c0e10]/60 p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-[4px] sm:p-10 relative">
+          <div className="w-full max-w-[450px] rounded-xl border border-zinc-900/80 bg-card p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9)] backdrop-blur-[4px] sm:p-10 relative">
             {/* Mobile Logo */}
             <div className="flex lg:hidden justify-center mb-8">
               <Image
@@ -323,7 +323,7 @@ export default function SalesRepLoginPage() {
               {/* Or Split */}
               <div className="relative flex items-center justify-center py-2">
                 <div className="w-full border-t border-zinc-900/60" />
-                <span className="absolute bg-[#0c0e10] px-4 text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
+                <span className="absolute bg-card px-4 text-[10px] font-bold tracking-widest text-zinc-600 uppercase">
                   OR
                 </span>
               </div>

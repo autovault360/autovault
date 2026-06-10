@@ -57,7 +57,7 @@ export default function SalesRepMessageBar({ repName }: Props) {
           rows={1}
           maxLength={MAX_MESSAGE_LENGTH}
           className={cn(
-            "h-full w-full resize-none rounded-md border border-slate-700 bg-[#0a101c]/60 px-3 py-3 pr-[7.5rem] text-[12px] leading-normal text-slate-200 placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/30",
+            "h-full w-full resize-none rounded-md border border-slate-700 bg-slate-800/50 px-3 py-3 pr-[7.5rem] text-[12px] leading-normal text-slate-200 placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/30",
             error && "border-red-500/50",
           )}
         />

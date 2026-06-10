@@ -256,7 +256,7 @@ function CustomerDetailPanelSkeleton() {
 
       <div className="grid grid-cols-3 gap-2 border-y border-slate-800/80 py-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="space-y-2 rounded-lg border border-slate-800/80 bg-[#0b121f]/40 p-3">
+          <div key={i} className="space-y-2 rounded-lg border border-slate-800/80 bg-card p-3">
             <div className="h-3 w-16 rounded bg-slate-800" />
             <div className="h-5 w-20 rounded bg-slate-800" />
             <div className="h-3 w-12 rounded bg-slate-800/60" />
@@ -295,7 +295,7 @@ function MiniStat({
   sub: string;
 }) {
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-slate-800/80 bg-[#0b121f]/40 p-3">
+    <div className="flex flex-col justify-between rounded-lg border border-slate-800/80 bg-card p-3">
       <div>
         <div className="flex items-center gap-1 text-[10px] font-medium text-slate-500">
           <span className="inline-block h-1 w-1 rounded-full bg-slate-600" />

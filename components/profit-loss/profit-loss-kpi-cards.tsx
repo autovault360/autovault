@@ -43,7 +43,7 @@ export default function ProfitLossKPICards({ kpis }: Props) {
         return (
           <Card
             key={kpi.id}
-            className="flex h-full flex-col gap-1 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-none"
+            className="flex h-full flex-col gap-1 rounded-sm border border-slate-700 bg-card p-3 text-slate-200 shadow-none"
           >
             <div className="flex items-start gap-2.5">
               <div

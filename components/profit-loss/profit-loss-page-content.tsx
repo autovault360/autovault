@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState, useTransition } from "react";
-import AdminHeader from "@/components/layout/AdminHeader";
 import { applyPlFilters } from "@/lib/profit-loss/filter-pl-data";
 import { fetchProfitLossReportAction } from "@/lib/profit-loss/server/actions";
 import type { PlFilterOptions, PlFilters, PlTab, ProfitLossReport } from "@/lib/profit-loss/types";
@@ -72,8 +71,6 @@ export default function ProfitLossPageContent({
 
   return (
     <div className="profit-loss-page relative print:bg-white">
-      <AdminHeader />
-
       {isPending && (
         <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-blue-500/80 animate-pulse" />
       )}

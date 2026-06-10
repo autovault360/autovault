@@ -26,7 +26,7 @@ export default function OverviewTab({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+      <section className="rounded-md border border-slate-700/80 bg-card p-4">
         <h4 className="mb-3 text-[11px] font-semibold text-white">Profile</h4>
         <div className="mb-3 flex items-center gap-3">
           {customer.imageUrl ? (
@@ -53,7 +53,7 @@ export default function OverviewTab({
         </div>
       </section>
 
-      <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+      <section className="rounded-md border border-slate-700/80 bg-card p-4">
         <h4 className="mb-3 text-[11px] font-semibold text-white">
           Contact Information
         </h4>
@@ -90,7 +90,7 @@ export default function OverviewTab({
       </section>
 
       {latestNote && (
-        <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+        <section className="rounded-md border border-slate-700/80 bg-card p-4">
           <h4 className="mb-2 text-[11px] font-semibold text-white">
             Customer Notes
           </h4>
@@ -105,7 +105,7 @@ export default function OverviewTab({
       )}
 
       {customer.purchaseHistory.length > 0 && (
-        <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+        <section className="rounded-md border border-slate-700/80 bg-card p-4">
           <h4 className="mb-3 text-[11px] font-semibold text-white">
             Purchase History
           </h4>
@@ -156,7 +156,7 @@ export default function OverviewTab({
         </section>
       )}
 
-      <section className="rounded-md border border-slate-700/80 bg-[#0e1626]/60 p-4">
+      <section className="rounded-md border border-slate-700/80 bg-card p-4">
         <h4 className="mb-3 text-[11px] font-semibold text-white">
           Recent Activity
         </h4>

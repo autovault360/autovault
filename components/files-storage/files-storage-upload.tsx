@@ -91,7 +91,7 @@ export default function FilesStorageUpload({ onUpload }: Props) {
   };
 
   return (
-    <Card className="rounded-sm border border-slate-700 bg-transparent p-4 shadow-none">
+    <Card className="rounded-sm border border-slate-700 bg-card p-4 shadow-none">
       <div
         role="button"
         tabIndex={0}

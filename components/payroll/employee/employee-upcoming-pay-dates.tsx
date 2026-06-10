@@ -7,7 +7,7 @@ export default function EmployeeUpcomingPayDates({
   dates: EmployeeUpcomingPayDate[];
 }) {
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="UPCOMING PAY DATES" />
       <ul className="space-y-2">
         {dates.map((item) => (

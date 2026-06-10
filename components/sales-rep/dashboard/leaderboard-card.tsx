@@ -18,7 +18,7 @@ type Props = {
 export default function LeaderboardCard({ entries, loading }: Props) {
   if (loading) {
     return (
-      <ReportCardShell className="p-4 bg-[#0b1329]/40 border border-slate-800/60 rounded-xl">
+      <ReportCardShell className="p-4 bg-card border border-slate-800/60 rounded-xl">
         <div className="flex justify-between items-center mb-3">
           <SkeletonBar className="h-3 w-24" />
           <SkeletonBar className="h-3 w-28" />
@@ -31,7 +31,7 @@ export default function LeaderboardCard({ entries, loading }: Props) {
   }
 
   return (
-    <ReportCardShell className="p-4 flex flex-col justify-between h-full bg-[#0b1329]/40 border border-slate-800/60 rounded-xl">
+    <ReportCardShell className="p-4 flex flex-col justify-between h-full bg-card border border-slate-800/60 rounded-xl">
       <div>
         {/* Header Ribbon Actions */}
         <div className="flex items-center justify-between mb-2">

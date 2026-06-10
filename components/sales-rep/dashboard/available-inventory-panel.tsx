@@ -167,7 +167,7 @@ export default function AvailableInventoryPanel({
       <div className="mt-4 pt-1">
         <button
           type="button"
-          className="w-full h-8 flex items-center justify-center rounded-md border border-slate-800/80 bg-[#0c1427]/40 text-[11px] font-bold text-blue-400 hover:bg-[#0c1427]/80 hover:text-blue-300 transition-colors"
+          className="w-full h-8 flex items-center justify-center rounded-md border border-slate-800/80 bg-card/40 text-[11px] font-bold text-blue-400 hover:bg-card/80 hover:text-blue-300 transition-colors"
         >
           View All Inventory
         </button>

@@ -48,14 +48,14 @@ const PERIOD_OPTIONS: { value: SalesRepPeriod; label: string }[] = [
 ];
 
 const TABLE_WRAPPER_CLASS =
-  "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-[#0a101c]/40 " +
+  "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-card " +
   "[&_table]:min-w-[1180px] [&_table]:w-full [&_table]:text-[11.5px] " +
-  "[&_thead]:bg-[#0c1424] [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
+  "[&_thead]:bg-card [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
   "[&_th]:px-3 [&_th]:py-3 [&_th]:text-[10px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-slate-500 " +
   "[&_td]:px-3 [&_td]:py-4 [&_td]:align-middle " +
   "[&_tbody_tr]:border-b [&_tbody_tr]:border-slate-800/50 [&_tbody_tr]:transition-colors [&_tbody_tr:last-child]:border-0 " +
   "[&_tbody_tr:hover]:bg-slate-800/25 " +
-  "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800 [&>div>div:last-child]:bg-[#0a101c]/30";
+  "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800 [&>div>div:last-child]:bg-card";
 
 export default function SalesRepsInventory({
   salesReps,
@@ -312,7 +312,7 @@ export default function SalesRepsInventory({
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center rounded-sm border border-slate-800 bg-[#0a101c]/40 px-6 py-16 text-center">
+    <div className="flex flex-col items-center justify-center rounded-sm border border-slate-800 bg-card px-6 py-16 text-center">
       <div className="mb-3 grid h-12 w-12 place-items-center rounded-full bg-slate-800/80">
         <Users className="h-6 w-6 text-slate-500" />
       </div>

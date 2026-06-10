@@ -13,7 +13,7 @@ export default function EmployeePayHistoryTable({
   history: PayHistoryEntry[];
 }) {
   return (
-    <DetailCard className="bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="PAY HISTORY (LAST 6 PAY PERIODS)" />
       <div className="overflow-x-auto">
         <table className="min-w-full text-[13px]">

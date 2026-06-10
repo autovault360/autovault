@@ -42,7 +42,7 @@ function CustomTooltip({
   if (!active || !payload?.length) return null;
   const point = payload[0]!;
   return (
-    <div className="rounded-md border border-slate-700 bg-[#0e1626] px-3 py-2 text-[11px] shadow-lg">
+    <div className="rounded-md border border-slate-700 bg-card px-3 py-2 text-[11px] shadow-lg">
       <div className="text-slate-400">{point.payload.label}</div>
       <div className="font-semibold text-emerald-400">
         {formatCurrency(point.value)}
@@ -60,7 +60,7 @@ export default function ProfitLossCharts({
   onPeriodChange,
 }: Props) {
   return (
-    <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+    <Card className="rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
           {title}
@@ -73,7 +73,7 @@ export default function ProfitLossCharts({
             >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-slate-800 bg-[#0e1626] text-slate-300">
+            <SelectContent className="border-slate-800 bg-card text-slate-300">
               <SelectGroup>
                 <SelectLabel className="text-[11px] text-slate-400">Period</SelectLabel>
                 <SelectItem value="this_month" className="text-[11px]">

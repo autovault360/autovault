@@ -33,7 +33,7 @@ export default function ProfitLossSummary({ insights, meta, periodEnd }: Props) 
 
   return (
     <div className="space-y-3.5">
-      <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+      <Card className="rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
         <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
           Summary Insights
         </h3>
@@ -59,7 +59,7 @@ export default function ProfitLossSummary({ insights, meta, periodEnd }: Props) 
         </ul>
       </Card>
 
-      <Card className="rounded-sm border border-slate-700 bg-transparent p-3.5 shadow-none">
+      <Card className="rounded-sm border border-slate-700 bg-card p-3.5 shadow-none">
         <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em] text-slate-500">
           Report Details
         </h3>

@@ -23,7 +23,7 @@ export default function QuickActionCard({ onDeskDeal }: Props) {
   };
 
   return (
-    <CardShell className="p-4 bg-[#0b1329]/40 border border-slate-800/60 rounded-xl">
+    <CardShell className="p-4 bg-card border border-slate-800/60 rounded-xl">
       {/* Small Section Header */}
       <div className="mb-2 text-[13px] font-bold tracking-[0.15em] text-slate-500">
         QUICK ACTION

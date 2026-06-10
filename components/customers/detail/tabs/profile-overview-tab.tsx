@@ -89,7 +89,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
               customer.deals.slice(0, 2).map((deal) => (
                 <div
                   key={deal.id}
-                  className="flex gap-3 rounded-sm border border-slate-800/80 bg-[#0b121f]/40 p-3"
+                  className="flex gap-3 rounded-sm border border-slate-800/80 bg-card p-3"
                 >
                   <div className="relative h-[56px] w-[84px] shrink-0 overflow-hidden rounded-md border border-slate-800 bg-[var(--bg-primary)]">
                     {deal.imageUrl ? (
@@ -263,7 +263,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex w-[120px] shrink-0 flex-col items-center gap-2 rounded-md border border-slate-700/80 bg-[#0b121f]/50 p-3 transition hover:border-slate-600"
+              className="flex w-[120px] shrink-0 flex-col items-center gap-2 rounded-md border border-slate-700/80 bg-card p-3 transition hover:border-slate-600"
             >
               <div className="grid h-10 w-10 place-items-center rounded-md bg-red-500/15">
                 <FileText className="h-5 w-5 text-red-400" />
@@ -345,7 +345,7 @@ export default function ProfileOverviewTab({ customer, onTabChange }: Props) {
                     key={comm.id}
                     className={
                       i % 2 === 0
-                        ? "border-b border-slate-800/60 bg-[#0b121f]/20"
+                        ? "border-b border-slate-800/60 bg-card"
                         : "border-b border-slate-800/60"
                     }
                   >

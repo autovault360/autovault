@@ -19,7 +19,7 @@ export default function EmployeeYtdSummaryCard({
   const [year, setYear] = useState(String(ytd.year));
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead
         title="YEAR TO DATE SUMMARY"
         action={
@@ -27,7 +27,7 @@ export default function EmployeeYtdSummaryCard({
             <SelectTrigger className="h-7 w-20 border-slate-800 bg-slate-900 text-[10px]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="border-slate-800 bg-[#0e1626] text-[11px]">
+            <SelectContent className="border-slate-800 bg-card text-[11px]">
               <SelectItem value="2026">2026</SelectItem>
               <SelectItem value="2025">2025</SelectItem>
             </SelectContent>

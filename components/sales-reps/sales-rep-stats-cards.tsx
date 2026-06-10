@@ -38,7 +38,7 @@ export default function SalesRepStatsCards({ stats }: { stats: SalesRepStats }) 
 
   return (
     <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3">
-      <Card className="flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-transparent p-3 text-slate-200 shadow-[0_0_0_1px_rgba(148,163,184,0.08)] shadow-none">
+      <Card className="flex h-full flex-col gap-1.5 rounded-sm border border-slate-700 bg-card p-3 text-slate-200 shadow-[0_0_0_1px_rgba(148,163,184,0.08)] shadow-none">
         <div className="flex items-start gap-2.5">
           <div className="grid h-10 w-10 place-items-center rounded-full bg-blue-500/15 text-blue-400">
             <Users className="h-6 w-6" />

@@ -11,7 +11,7 @@ export default function EmployeeCommissionSummary({
   const totalCommission = deals.reduce((s, d) => s + d.commission, 0);
 
   return (
-    <DetailCard className="mb-2 bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="mb-2 bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="COMMISSION SUMMARY (THIS PERIOD)" />
       <div className="overflow-x-auto">
         <table className="min-w-full text-[13px]">

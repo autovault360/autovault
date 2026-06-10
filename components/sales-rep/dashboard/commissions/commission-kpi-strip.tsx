@@ -87,7 +87,7 @@ export default function CommissionKpiStrip({ summary, loading }: Props) {
           showSparkline={false}
           showLink={false}
           valueClassName={card.valueClassName}
-          className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm"
+          className="border-slate-700/80 bg-card backdrop-blur-sm"
         />
       ))}
     </div>

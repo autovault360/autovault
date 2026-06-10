@@ -55,7 +55,7 @@ function SkeletonBar({ className }: { className?: string }) {
 
 function fieldClassName(hasError: boolean) {
   return cn(
-    "h-8 border-[#1e293b] bg-[#070c14]/60 text-[12px] text-white",
+    "h-8 border-slate-700/80 bg-slate-800/50 text-[12px] text-slate-100",
     hasError && "border-red-500",
   );
 }
@@ -109,7 +109,7 @@ function AttachmentBadge({
   uploaded: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2 rounded border border-[#1e293b] bg-[#070c14]/60 px-2.5 py-2">
+            <div className="flex items-center gap-2 rounded border border-slate-700/80 bg-slate-800/50 px-2.5 py-2">
       <FileText className="h-3.5 w-3.5 shrink-0 text-slate-500" />
       <div className="min-w-0 flex-1">
         <div className="text-[10px] text-[#64748b]">{label}</div>
@@ -201,7 +201,7 @@ export default function UnifiedDealJacketFormEngine({
   return (
     <div
       className={cn(
-        "rounded-lg border border-[#1e293b] bg-[#0a101d]/60 p-3 backdrop-blur-sm",
+        "rounded-lg border border-slate-700/80 bg-card p-3",
         shake && "animate-[shake_0.4s_ease-in-out]",
       )}
     >
@@ -214,7 +214,7 @@ export default function UnifiedDealJacketFormEngine({
             <FormSection
               title="Vehicle Information"
               theme="dark"
-              className="border-[#1e293b] bg-[#0a101d]/40"
+              className="border-slate-700/80"
               headerRight={
                 viewMode === "create" ? (
                   <span className="flex items-center gap-1 text-blue-400">
@@ -246,7 +246,7 @@ export default function UnifiedDealJacketFormEngine({
                             <SelectValue placeholder="Choose a vehicle" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="border-[#1e293b] bg-[#0a101d] text-slate-300">
+                        <SelectContent className="border-slate-700/80 bg-card text-slate-300">
                           {vehicles.map((v) => (
                             <SelectItem key={v.id} value={v.id}>
                               {v.stockNo} - {v.yearModel}
@@ -260,7 +260,7 @@ export default function UnifiedDealJacketFormEngine({
               )}
 
               <div className="flex gap-3">
-                <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded border border-[#1e293b] bg-[#070c14]">
+                <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded border border-slate-700/80 bg-slate-800/50">
                   {selectedVehicle?.imageUrl ? (
                     <Image
                       src={selectedVehicle.imageUrl}
@@ -288,7 +288,7 @@ export default function UnifiedDealJacketFormEngine({
                 </div>
               </div>
 
-              <div className="space-y-1.5 border-t border-[#1e293b] pt-2">
+              <div className="space-y-1.5 border-t border-slate-700/80 pt-2">
                 <KeyValueRow
                   label="Mileage"
                   value={
@@ -345,7 +345,7 @@ export default function UnifiedDealJacketFormEngine({
             <FormSection
               title="Buyer Information"
               theme="dark"
-              className="border-[#1e293b] bg-[#0a101d]/40"
+              className="border-slate-700/80"
             >
               {(
                 [
@@ -398,7 +398,7 @@ export default function UnifiedDealJacketFormEngine({
                           <SelectValue placeholder="Select state" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="border-[#1e293b] bg-[#0a101d] text-slate-300">
+                      <SelectContent className="border-slate-700/80 bg-card text-slate-300">
                         {US_STATES.map((s) => (
                           <SelectItem key={s} value={s}>
                             {s}
@@ -410,7 +410,7 @@ export default function UnifiedDealJacketFormEngine({
                 )}
               />
 
-              <div className="space-y-2 border-t border-[#1e293b] pt-2">
+              <div className="space-y-2 border-t border-slate-700/80 pt-2">
                 <AttachmentBadge
                   label="Driver License Upload"
                   fileName={buyerAttachments.driverLicense.fileName}
@@ -430,7 +430,7 @@ export default function UnifiedDealJacketFormEngine({
             <FormSection
               title="Deal Information"
               theme="dark"
-              className="h-full border-[#1e293b] bg-[#0a101d]/40"
+              className="h-full border-slate-700/80 bg-card/40"
             >
               <div className="grid grid-cols-2 gap-x-3 gap-y-2.5">
                 <FormField
@@ -591,7 +591,7 @@ export default function UnifiedDealJacketFormEngine({
                             <SelectValue />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="border-[#1e293b] bg-[#0a101d] text-slate-300">
+                        <SelectContent className="border-slate-700/80 bg-card text-slate-300">
                           {DEAL_TYPES.map((t) => (
                             <SelectItem key={t} value={t}>
                               {t}
@@ -617,7 +617,7 @@ export default function UnifiedDealJacketFormEngine({
                       <Textarea
                         {...field}
                         placeholder="Add deal notes..."
-                        className="min-h-[72px] border-[#1e293b] bg-[#070c14]/60 text-[12px] text-slate-300 placeholder:text-[#475569]"
+                        className="min-h-[72px] border-slate-700/80 bg-slate-800/50 text-[12px] text-slate-100 placeholder:text-slate-500"
                       />
                     </FormControl>
                   </FormItem>
@@ -631,7 +631,7 @@ export default function UnifiedDealJacketFormEngine({
             <FormSection
               title="Commission Preview"
               theme="dark"
-              className="border-[#1e293b] bg-[#0a101d]/40"
+              className="border-slate-700/80"
             >
               <div className="mb-2 flex items-center justify-center gap-1.5 rounded border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1.5 text-[11px] font-medium text-emerald-400">
                 <CheckCircle2 className="h-3.5 w-3.5" />
@@ -661,7 +661,7 @@ export default function UnifiedDealJacketFormEngine({
                   highlight
                 />
               </div>
-              <div className="my-2 border-t border-[#1e293b]" />
+              <div className="my-2 border-t border-slate-700/80" />
               <div className="space-y-1.5">
                 <SummaryRow
                   label="Commission Structure"
@@ -691,13 +691,13 @@ export default function UnifiedDealJacketFormEngine({
             <FormSection
               title="Documents Upload"
               theme="dark"
-              className="border-[#1e293b] bg-[#0a101d]/40"
+              className="border-slate-700/80"
             >
               <div className="max-h-[220px] space-y-1.5 overflow-y-auto pr-0.5">
                 {documents.map((doc) => (
                   <div
                     key={doc.key}
-                    className="flex items-center gap-2 rounded border border-[#1e293b] bg-[#070c14]/40 px-2 py-1.5"
+                    className="flex items-center gap-2 rounded border border-slate-700/80 bg-slate-800/30 px-2 py-1.5"
                   >
                     <FileText className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                     <div className="min-w-0 flex-1">
@@ -721,7 +721,7 @@ export default function UnifiedDealJacketFormEngine({
                 {extraFiles.map((name) => (
                   <div
                     key={name}
-                    className="flex items-center gap-2 rounded border border-[#1e293b] bg-[#070c14]/40 px-2 py-1.5"
+                    className="flex items-center gap-2 rounded border border-slate-700/80 bg-slate-800/30 px-2 py-1.5"
                   >
                     <FileText className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                     <span className="truncate text-[11px] text-slate-300">
@@ -733,7 +733,7 @@ export default function UnifiedDealJacketFormEngine({
               </div>
 
               <div
-                className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-[#1e293b] bg-[#070c14]/30 px-3 py-5 transition hover:border-blue-500/40 hover:bg-[#070c14]/50"
+                className="mt-2 flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700/80 bg-slate-800/20 px-3 py-5 transition hover:border-blue-500/40 hover:bg-slate-800/40"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
@@ -768,7 +768,7 @@ export default function UnifiedDealJacketFormEngine({
                 />
               </div>
 
-              <div className="mt-3 flex flex-col items-end gap-2 border-t border-[#1e293b] pt-3">
+              <div className="mt-3 flex flex-col items-end gap-2 border-t border-slate-700/80 pt-3">
                 <p className="w-full text-center text-[10px] text-[#475569]">
                   Deal will be saved and sent for admin review.
                 </p>
@@ -778,7 +778,7 @@ export default function UnifiedDealJacketFormEngine({
                     variant="outline"
                     disabled={isSubmitting}
                     onClick={saveDraft}
-                    className="h-8 border-[#1e293b] bg-transparent text-[12px] text-slate-300 hover:bg-[#070c14]"
+                    className="h-8 border-slate-700/80 bg-transparent text-[12px] text-slate-300 hover:bg-slate-800/50"
                   >
                     {isSubmitting ? (
                       <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />

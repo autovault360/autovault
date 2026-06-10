@@ -83,7 +83,7 @@ export function SideCard({
   return (
     <div
       className={cn(
-        "rounded-[6px] border border-slate-700/70 bg-[#0b121c]/80 p-3.5",
+        "rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5",
         className,
       )}
     >
@@ -152,7 +152,7 @@ export function ReceiptUploadSection({
       contentClassName="flex-1 min-h-0"
     >
       {receiptPreview ? (
-        <div className="group relative h-full min-h-[220px] overflow-hidden rounded-md border border-slate-600/90 bg-[#0d1420]">
+        <div className="group relative h-full min-h-[220px] overflow-hidden rounded-md border border-slate-600/90 bg-card">
           <img
             src={receiptPreview}
             alt="Receipt preview"
@@ -190,7 +190,7 @@ export function ReceiptUploadSection({
             e.key === "Enter" && fileInputRef.current?.click()
           }
           onClick={() => fileInputRef.current?.click()}
-          className="flex min-h-[220px] flex-1 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-slate-600/90 bg-[#0d1420] px-4 py-6 text-center transition hover:border-slate-500"
+          className="flex min-h-[220px] flex-1 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-slate-600/90 bg-card px-4 py-6 text-center transition hover:border-slate-500"
         >
           <p className="text-[12px] font-medium text-slate-200">
             Drag & drop your file here
@@ -239,7 +239,7 @@ export function ModalFooterActions({
   saving?: boolean;
 }) {
   return (
-    <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-700/80 bg-[#0f1621] px-6 py-3.5 sm:flex-row sm:items-center sm:justify-end">
+    <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-slate-700/80 bg-card px-6 py-3.5 sm:flex-row sm:items-center sm:justify-end">
       <Button
         type="button"
         theme="dark"

@@ -11,11 +11,11 @@ export default function EmployeeDocumentsVault({
   documents: PayrollDocument[];
 }) {
   return (
-    <DetailCard className="bg-[#070c14]/60 border-slate-800/80 h-auto">
+    <DetailCard className="bg-card/60 border-slate-800/80 h-auto">
       <DetailCardHead title="EMPLOYEE PAYROLL DOCUMENTS" />
       <ul className="space-y-1.5">
         {documents.map((doc) => (
-          <li key={doc.id} className="flex items-center gap-2.5 rounded border border-slate-800/60 bg-[#0e1626]/40 px-2.5 py-2">
+          <li key={doc.id} className="flex items-center gap-2.5 rounded border border-slate-800/60 bg-card/40 px-2.5 py-2">
             <FileText className="h-4 w-4 shrink-0 text-red-400" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[11px] font-medium text-slate-200">{doc.name}</div>
