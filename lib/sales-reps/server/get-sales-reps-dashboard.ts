@@ -62,25 +62,6 @@ type DealRow = {
   vehicle: { total_invested: number } | { total_invested: number }[] | null;
 };
 
-type UserRow = {
-  id: string;
-  full_name: string | null;
-  email: string;
-  phone?: string | null;
-  is_active: boolean;
-  commission_rate?: number | null;
-  monthly_goal?: number | null;
-  image_url?: string | null;
-};
-
-function isMissingColumnError(message: string): boolean {
-  return (
-    message.includes("does not exist") ||
-    message.includes("Could not find") ||
-    message.includes("column")
-  );
-}
-
 function unwrapJoin<T>(value: T | T[] | null): T | null {
   if (value == null) return null;
   return Array.isArray(value) ? (value[0] ?? null) : value;
@@ -114,70 +95,48 @@ function mapDealRow(row: DealRow): RawDeal {
   };
 }
 
-function normalizeUser(row: UserRow): RawUser {
-  return {
-    id: row.id,
-    full_name: row.full_name ?? "",
-    email: row.email,
-    is_active: row.is_active,
-    phone: row.phone ?? null,
-    commission_rate: row.commission_rate ?? null,
-    monthly_goal: row.monthly_goal ?? null,
-    image_url: row.image_url ?? null,
-  };
-}
-
 async function fetchSalesRepUsers(
   dealershipId: string,
 ): Promise<{ users: RawUser[]; error: string | null }> {
   const supabase = await createClient();
 
-  const extended = await supabase
+  const { data: usersData, error: usersError } = await supabase
     .from("users")
     .select(
-      "id, full_name, email, phone, is_active, commission_rate, monthly_goal, image_url",
+      `id, full_name, email, phone, is_active, image_url,
+       sales_rep_profile:sales_rep_profiles(
+         commission_rate, monthly_goal, address, address2, city, state, zip, hire_date
+       )`,
     )
     .eq("dealership_id", dealershipId)
     .in("role", ["owner", "manager", "sales_rep"])
     .order("full_name");
 
-  if (!extended.error) {
-    return {
-      users: (extended.data ?? []).map((row) => normalizeUser(row as UserRow)),
-      error: null,
-    };
+  if (usersError) {
+    return { users: [], error: usersError.message };
   }
 
-  if (isMissingColumnError(extended.error.message)) {
-    console.warn(
-      "getSalesRepsDashboard: profile columns missing, using base user fields. Apply migration 00013.",
-    );
-    const basic = await supabase
-      .from("users")
-      .select("id, full_name, email, is_active")
-      .eq("dealership_id", dealershipId)
-      .in("role", ["owner", "manager", "sales_rep"])
-      .order("full_name");
-
-    if (basic.error) {
-      return { users: [], error: basic.error.message };
-    }
-
-    return {
-      users: (basic.data ?? []).map((row) =>
-        normalizeUser({
-          ...(row as UserRow),
-          phone: null,
-          commission_rate: null,
-          monthly_goal: null,
-          image_url: null,
-        }),
-      ),
-      error: null,
-    };
-  }
-
-  return { users: [], error: extended.error.message };
+  return {
+    users: ((usersData ?? []) as any[]).map((row) => ({
+      id: row.id,
+      full_name: row.full_name ?? "",
+      email: row.email,
+      is_active: row.is_active,
+      phone: row.phone ?? null,
+      image_url: row.image_url ?? null,
+      commission_rate:
+        row.sales_rep_profile?.commission_rate ?? null,
+      monthly_goal:
+        row.sales_rep_profile?.monthly_goal ?? null,
+      address: row.sales_rep_profile?.address ?? null,
+      address2: row.sales_rep_profile?.address2 ?? null,
+      city: row.sales_rep_profile?.city ?? null,
+      state: row.sales_rep_profile?.state ?? null,
+      zip: row.sales_rep_profile?.zip ?? null,
+      hire_date: row.sales_rep_profile?.hire_date ?? null,
+    })),
+    error: null,
+  };
 }
 
 function computeStatsFromDeals(

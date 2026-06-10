@@ -62,9 +62,9 @@ async function resolveCommissionRate(
   if (!salesRepId) return 0.1;
 
   const { data: rep } = await supabase
-    .from("users")
+    .from("sales_rep_profiles")
     .select("commission_rate")
-    .eq("id", salesRepId)
+    .eq("user_id", salesRepId)
     .maybeSingle();
 
   const rate = Number(rep?.commission_rate);

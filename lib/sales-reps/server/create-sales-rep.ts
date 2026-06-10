@@ -8,26 +8,27 @@ import {
   assertEmailAvailable,
   findAuthUserByEmail,
 } from "./utils";
+import { sendTransactionalEmail } from "@/services/brevo.service";
+import { salesRepWelcomeEmail } from "@/lib/email/email-template";
 
 export type SalesRepActionResult =
   | { success: true; userId: string }
   | { success: false; error: string };
 
 function generateTempPassword(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$";
-  let password = "";
-  for (let i = 0; i < 24; i++) {
-    password += chars[Math.floor(Math.random() * chars.length)];
+  const prefix = "AV";
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
+  let suffix = "";
+  const bytes = new Uint8Array(18);
+  crypto.getRandomValues(bytes);
+  for (let i = 0; i < 18; i++) {
+    suffix += chars[bytes[i] % chars.length];
   }
-  return password;
-}
-
-function isMissingColumnError(message: string): boolean {
-  return (
-    message.includes("does not exist") ||
-    message.includes("Could not find") ||
-    message.includes("column")
-  );
+  const shuffled = suffix
+    .split("")
+    .sort(() => (crypto.getRandomValues(new Uint8Array(1))[0] > 127 ? 1 : -1))
+    .join("");
+  return prefix + "@" + shuffled;
 }
 
 export async function createSalesRep(
@@ -63,12 +64,13 @@ export async function createSalesRep(
     }
 
     let authUserId = existingAuth?.id;
+    const password = generateTempPassword();
 
     if (!authUserId) {
       const { data: authUser, error: authError } =
         await service.auth.admin.createUser({
           email: data.email.trim(),
-          password: generateTempPassword(),
+          password,
           email_confirm: true,
           user_metadata: {
             full_name: data.fullName,
@@ -80,54 +82,79 @@ export async function createSalesRep(
         throw new Error(authError?.message ?? "Failed to create login account");
       }
       authUserId = authUser.user.id;
+    } else {
+      await service.auth.admin.updateUserById(authUserId, { password });
     }
 
-    const basePayload = {
+    const insertPayload = {
       auth_user_id: authUserId,
       dealership_id: auth.user.dealershipId,
       email: data.email.trim(),
       full_name: data.fullName,
       role: data.role,
       is_active: data.isActive,
-    };
-
-    const extendedPayload = {
-      ...basePayload,
       phone: data.phone,
-      address: data.address || null,
-      address2: data.address2 || null,
-      city: data.city || null,
-      state: data.state || null,
-      zip: data.zip || null,
-      hire_date: data.hireDate || null,
-      commission_rate: data.commissionRate / 100,
-      monthly_goal: data.monthlyGoal,
     };
 
-    let insertResult = await service
+    const { data: insertResult, error: insertError } = await service
       .from("users")
-      .insert(extendedPayload)
+      .insert(insertPayload)
       .select("id")
       .single();
 
-    if (insertResult.error && isMissingColumnError(insertResult.error.message)) {
-      insertResult = await service
-        .from("users")
-        .insert(basePayload)
-        .select("id")
-        .single();
-    }
-
-    if (insertResult.error || !insertResult.data) {
+    if (insertError || !insertResult) {
       if (!existingAuth && authUserId) {
         await service.auth.admin.deleteUser(authUserId);
       }
-      throw new Error(insertResult.error?.message ?? "Failed to create sales rep");
+      throw new Error(insertError?.message ?? "Failed to create sales rep");
+    }
+
+    const userId = insertResult.id;
+
+    if (data.role === "sales_rep" || data.role === "manager") {
+      const { error: profileError } = await service.from("sales_rep_profiles").upsert(
+        {
+          user_id: userId,
+          address: data.address || null,
+          address2: data.address2 || null,
+          city: data.city || null,
+          state: data.state || null,
+          zip: data.zip || null,
+          hire_date: data.hireDate || null,
+          commission_rate: data.commissionRate / 100,
+          monthly_goal: data.monthlyGoal,
+        },
+        { onConflict: "user_id" },
+      );
+
+      if (profileError) {
+        console.error("Failed to create sales_rep_profile:", profileError.message);
+      }
+    }
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const emailResult = await sendTransactionalEmail({
+      to: [{ email: data.email, name: data.fullName }],
+      subject: `Welcome to AutoVault360 — Your Account Has Been Created`,
+      htmlContent: salesRepWelcomeEmail({
+        fullName: data.fullName,
+        email: data.email,
+        tempPassword: password,
+        role: data.role,
+        userId,
+        authUserId,
+        dealershipId: auth.user.dealershipId,
+        loginUrl: `${appUrl}/sales-rep/login`,
+      }),
+    });
+
+    if (!emailResult.success) {
+      console.error("Welcome email failed to send:", emailResult.error);
     }
 
     revalidatePath("/dashboard/sales-reps");
     revalidatePath("/dashboard/customers");
-    return { success: true, userId: insertResult.data.id };
+    return { success: true, userId };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return { success: false, error: message };

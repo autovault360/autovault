@@ -51,10 +51,10 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "h-8 flex w-full items-center justify-between gap-1.5 rounded-[4px] border bg-transparent px-3 text-[13px] whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-100 aria-invalid:border-red-400 data-placeholder:text-gray-400 data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[4px] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-gray-400",
+        "h-8 flex w-full items-center justify-between gap-1.5 rounded-[4px] border px-3 text-[13px] whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-100 aria-invalid:border-red-400 data-placeholder:text-gray-400 data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[4px] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-gray-400",
         theme === "dark"
-          ? "border-slate-600 text-slate-100 data-placeholder:text-slate-500 focus-visible:border-blue-500"
-          : "border-[#E0E0E0] text-gray-900 focus-visible:border-[#2563eb]",
+          ? "border-slate-600 bg-slate-800/50 text-slate-100 data-placeholder:text-slate-500 focus-visible:border-blue-500"
+          : "border-[#E0E0E0] bg-white text-gray-900 focus-visible:border-[#2563eb]",
         className
       )}
       {...props}

@@ -26,9 +26,31 @@ function DashboardInner() {
     setIsDealJacketExpanded,
     dealJacketRef,
     isInitialLoading,
+    error,
   } = useSalesRepDashboard();
 
-  if (isInitialLoading || !dashboardData) {
+  if (isInitialLoading) {
+    return <SalesRepDashboardSkeleton />;
+  }
+
+  if (error && !dashboardData) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center text-center">
+        <div className="max-w-md">
+          <p className="text-lg text-red-400">Failed to load dashboard</p>
+          <p className="mt-2 text-sm text-slate-500">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-md bg-slate-800 px-4 py-2 text-sm text-slate-300 hover:bg-slate-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
     return <SalesRepDashboardSkeleton />;
   }
 

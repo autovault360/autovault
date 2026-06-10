@@ -49,6 +49,12 @@ export type RawUser = {
   monthly_goal?: number | null;
   image_url?: string | null;
   phone?: string | null;
+  address?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+  hire_date?: string | null;
 };
 
 export function getCommissionRate(user: RawUser): number {

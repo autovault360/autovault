@@ -29,7 +29,7 @@ function buildDefaults(): SalesRepFormValues {
     city: "",
     state: "",
     zip: "",
-    hireDate: "",
+    hireDate: new Date().toISOString().slice(0, 10),
     commissionRate: DEFAULT_COMMISSION_RATE,
     monthlyGoal: DEFAULT_MONTHLY_GOAL,
   };
@@ -137,7 +137,7 @@ export function useSalesRepForm(open: boolean, onSuccess: () => void) {
           }
         }
         toast.success(
-          "Sales rep added successfully. They can sign in using their email and reset their password.",
+          "Sales rep added successfully. A welcome email with login instructions has been sent to their email.",
         );
         router.refresh();
         onSuccess();
