@@ -151,11 +151,10 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         comingSoon: true,
       },
       {
-        href: "/sales-rep/payroll",
-        label: "Payroll & Payouts",
+        href: "/sales-rep/dashboard/payroll-earnings",
+        label: "Payroll & Earnings",
         icon: Wallet,
         color: "text-emerald-500",
-        comingSoon: true,
       },
       {
         href: "/sales-rep/commission-reports",
