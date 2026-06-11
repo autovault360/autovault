@@ -105,11 +105,10 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         comingSoon: true,
       },
       {
-        href: "/sales-rep/send-document",
+        href: "/sales-rep/dashboard/send-document",
         label: "Send Document",
         icon: FileUp,
         color: "text-cyan-500",
-        comingSoon: true,
       },
     ],
   },

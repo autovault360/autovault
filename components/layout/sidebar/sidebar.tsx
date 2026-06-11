@@ -181,10 +181,14 @@ export default function AppSidebar({
 
   const allHrefs = useMemo(() => {
     const hrefs: string[] = [];
-    for (const group of groups) {
-      for (const item of group.items) {
+    const collect = (items: SidebarItem[]) => {
+      for (const item of items) {
         if (item.href) hrefs.push(item.href);
+        if (item.subItems?.length) collect(item.subItems);
       }
+    };
+    for (const group of groups) {
+      collect(group.items);
     }
     return hrefs;
   }, [groups]);

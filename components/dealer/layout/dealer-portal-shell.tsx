@@ -13,6 +13,9 @@ import { useDealerDashboard, useDealerNavigation } from "../context/dealer-dashb
 import type { SidebarItem } from "@/components/layout/sidebar";
 
 function isRouteActive(pathname: string, item: SidebarItem): boolean {
+  if (item.subItems?.length) {
+    return item.subItems.some((sub) => isRouteActive(pathname, sub));
+  }
   if (!item.href) return false;
   if (item.exact) return pathname === item.href;
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
