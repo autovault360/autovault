@@ -14,8 +14,11 @@ type Props = {
 };
 
 const TAB_BADGE_COLORS: Partial<Record<DealJacketTab, string>> = {
-  pending_commission: "bg-amber-500/20 text-amber-400",
-  commission_paid: "bg-emerald-500/20 text-emerald-400",
+  pending_review: "bg-amber-500/20 text-amber-400",
+  changes_requested: "bg-orange-500/20 text-orange-400",
+  resubmitted: "bg-blue-500/20 text-blue-400",
+  approved: "bg-emerald-500/20 text-emerald-400",
+  rejected: "bg-red-500/20 text-red-400",
 };
 
 export default function DealJacketFilterTabs({

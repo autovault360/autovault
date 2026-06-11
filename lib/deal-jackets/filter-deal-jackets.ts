@@ -1,27 +1,30 @@
-import type { DealJacketListItem, DealJacketTab } from "./types";
-import {
-  isSoldInReferenceMonth,
-  isSoldInReferenceYear,
-} from "./period-utils";
+import type {
+  DealJacketListItem,
+  DealJacketTab,
+  DealJacketTabCounts,
+} from "./types";
+import { DEAL_JACKET_STATUSES } from "./types";
+
+export function computeDealJacketTabCounts(
+  items: DealJacketListItem[],
+): DealJacketTabCounts {
+  const counts = {
+    all: items.length,
+  } as DealJacketTabCounts;
+
+  for (const status of DEAL_JACKET_STATUSES) {
+    counts[status] = items.filter((i) => i.workflowStatus === status).length;
+  }
+
+  return counts;
+}
 
 export function filterByTab(
   items: DealJacketListItem[],
   tab: DealJacketTab,
 ): DealJacketListItem[] {
-  switch (tab) {
-    case "sold_this_month":
-      return items.filter((i) => isSoldInReferenceMonth(i.saleDate));
-    case "sold_this_year":
-      return items.filter((i) => isSoldInReferenceYear(i.saleDate));
-    case "pending_commission":
-      return items.filter((i) =>
-        i.commissionStatus !== "paid" && i.commissionStatus !== "rejected"
-      );
-    case "commission_paid":
-      return items.filter((i) => i.commissionStatus === "paid");
-    default:
-      return items;
-  }
+  if (tab === "all") return items;
+  return items.filter((i) => i.workflowStatus === tab);
 }
 
 export function filterDealJackets(

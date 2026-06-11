@@ -21,6 +21,7 @@ export type DealJacketDetailDto = {
   additionalExpenses: number;
   commissionAmount: number;
   commissionStatus: string;
+  commissionPaidAt: string | null;
   profitGross: number;
   profitNet: number;
   dateSold: string;
@@ -222,6 +223,7 @@ export async function getDealJacketById(
     additionalExpenses: Number(row.additional_expenses),
     commissionAmount,
     commissionStatus,
+    commissionPaidAt: commissionRow?.paid_at ?? null,
     profitGross: Number(row.profit_gross),
     profitNet: Number(row.profit_net),
     dateSold: row.date_sold,

@@ -11,7 +11,6 @@ import {
   Pencil,
 } from "lucide-react";
 import AdminHeader from "@/components/layout/AdminHeader";
-import SoldStatusBadge from "@/components/deal-jackets/sold-status-badge";
 import WorkflowStatusBadge from "@/components/deal-jackets/workflow-status-badge";
 import ReviewActionsBar from "@/components/deal-jackets/review-actions-bar";
 import { downloadDealJacketsCsv } from "@/lib/deal-jackets/export-deal-jackets";
@@ -84,7 +83,6 @@ export default function DealJacketDetailShell({
       commissionAmount: detail.salesRep.commissionAmount,
       commissionStatus: detail.salesRep.commissionStatus,
       paymentMethod: detail.sale.paymentMethod,
-      soldStatus: "sold",
       workflowStatus: detail.workflowStatus,
     };
     downloadDealJacketsCsv([row], `${detail.jacketNumber}.csv`);
@@ -107,7 +105,6 @@ export default function DealJacketDetailShell({
           <h1 className="text-[22px] font-bold tracking-tight text-[var(--text-primary)]">
             Deal Jacket #{detail.jacketNumber}
           </h1>
-          <SoldStatusBadge />
           <WorkflowStatusBadge status={workflowStatus} />
         </div>
 

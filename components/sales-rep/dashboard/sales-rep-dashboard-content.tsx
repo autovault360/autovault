@@ -77,7 +77,7 @@ function DashboardInner() {
       </section>
 
       {/* MASTER TWO-COLUMN GRID SYSTEM */}
-      <section className="grid grid-cols-1 xl:grid-cols-[1fr_360px] 2xl:grid-cols-[1fr_400px] gap-3.5 items-start">
+      <section className="grid grid-cols-1 2xl:grid-cols-[1fr_360px] 3xl:grid-cols-[1fr_400px] gap-3.5 items-start">
         
         {/* LEFT WORKSPACE FLOW BLOCK COLUMN CONTAINER */}
         <div className="flex flex-col gap-3.5 min-w-0">
@@ -122,8 +122,6 @@ function DashboardInner() {
           <SalesRepDealJacketWorkspace
             expanded={isDealJacketExpanded}
             onCollapse={() => setIsDealJacketExpanded(false)}
-            selectedVehicle={selectedVehicle}
-            inventory={dashboardData.inventory}
             pricing={dashboardData.pricing}
             panelRef={dealJacketRef}
           />
@@ -131,7 +129,7 @@ function DashboardInner() {
         </div>
 
         {/* RIGHT STANDALONE COMMUNICATIONS COLUMN - STICKY */}
-        <div className="flex flex-col gap-3.5 w-full xl:w-[360px] 2xl:w-[400px] shrink-0 sticky top-3.5">
+        <div className="flex flex-col gap-3.5 w-full 2xl:w-[360px] 3xl:w-[400px] shrink-0 sticky top-3.5">
           {/* STANDALONE ROW BLOCK A: MESSAGE CELL TILES */}
           <TeamMessagesCard
             messages={dashboardData.teamMessages}

@@ -24,14 +24,14 @@ for (const line of envContent.split("\n")) {
   if (!process.env[key]) process.env[key] = value;
 }
 
-// ── Import P&L functions ────────────────────────────────────────────────
+// ------ Import P&L functions ------------------------------------------------------------------------------------------------------------------------------------------------
 import { finalizePeriodTotals, EMPTY_PERIOD_TOTALS, buildProfitLossReport, buildDailyTrendFromEvents } from "../lib/profit-loss/build-report";
 import { aggregatePeriodTotals, buildDailyNetMap, matchesDealType } from "../lib/profit-loss/server/aggregate-pl-data";
 import type { PlFilters } from "../lib/profit-loss/types";
 import { DEFAULT_PL_FILTERS } from "../lib/profit-loss/types";
 import { resolveCurrentPeriod, resolveComparisonPeriod } from "../lib/profit-loss/server/pl-period-utils";
 
-// ── Helpers ─────────────────────────────────────────────────────────────
+// ------ Helpers ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function fmt$(n: number): string {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 }).format(n);
 }
@@ -68,7 +68,7 @@ async function main() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-  // ── 1. Resolve dealership ─────────────────────────────────────────────
+  // ------ 1. Resolve dealership ---------------------------------------------------------------------------------------------------------------------------------------
   let dealershipId = reqDid;
   if (!dealershipId) {
     const { data: d } = await supabase
@@ -83,16 +83,16 @@ async function main() {
     console.log(`Dealership: ${d.name} (${d.id})`);
   }
 
-  // ── 2. Resolve periods ────────────────────────────────────────────────
+  // ------ 2. Resolve periods ------------------------------------------------------------------------------------------------------------------------------------------------
   const period = resolveCurrentPeriod(dateRange as PlFilters["dateRange"]);
   const comparison = resolveComparisonPeriod(period, "last_month", dateRange as PlFilters["dateRange"]);
 
-  console.log(`Period:         ${period.label}  [${period.start} → ${period.end}]`);
-  console.log(`Comparison:     ${comparison.label}  [${comparison.start} → ${comparison.end}]`);
+  console.log(`Period:         ${period.label}  [${period.start} --- ${period.end}]`);
+  console.log(`Comparison:     ${comparison.label}  [${comparison.start} --- ${comparison.end}]`);
 
-  // ── 3. Fetch raw data ─────────────────────────────────────────────────
+  // ------ 3. Fetch raw data ---------------------------------------------------------------------------------------------------------------------------------------------------
   async function fetchPeriod(desc: string, from: string, to: string) {
-    console.log(`\n── Fetching ${desc} (${from} → ${to}) ──`);
+    console.log(`\n------ Fetching ${desc} (${from} --- ${to}) ------`);
 
     const { data: jackets } = await supabase
       .from("deal_jackets")
@@ -143,7 +143,7 @@ async function main() {
     console.log(`  Dealership exp: ${dealershipExpenses.length}`);
 
     if (mappedJackets.length > 0) {
-      console.log(`\n  ── Jackets ──`);
+      console.log(`\n  ------ Jackets ------`);
       for (const j of mappedJackets) {
         const date = j.date_sold.slice(0, 10);
         console.log(`    ${date}  sold=$${fmt(j.sold_price)}  acq=${j.acquisition_cost != null ? "$"+fmt(j.acquisition_cost) : "null(70%rule)"}  invested=$${fmt(j.total_invested)}  gross=$${fmt(j.profit_gross)}  comm=$${fmt(j.commission_amount)}`);
@@ -151,13 +151,13 @@ async function main() {
     }
 
     if (vehicleExpenses.length > 0) {
-      console.log(`\n  ── Vehicle Expenses ──`);
+      console.log(`\n  ------ Vehicle Expenses ------`);
       for (const e of vehicleExpenses) {
         console.log(`    ${e.vehicle_id}  cost=$${fmt(e.total_cost)}  type="${e.repair_type}"  cat="${e.category}"`);
       }
     }
     if (dealershipExpenses.length > 0) {
-      console.log(`\n  ── Dealership Expenses ──`);
+      console.log(`\n  ------ Dealership Expenses ------`);
       for (const e of dealershipExpenses) {
         console.log(`    ${e.expense_date?.slice(0, 10)}  cat="${e.category}"  amount=$${fmt(e.amount)}`);
       }
@@ -172,11 +172,11 @@ async function main() {
   const current = await fetchPeriod("current period", period.start, period.end);
   const previous = await fetchPeriod("comparison period", comparison.start, comparison.end);
 
-  // ── 4. Build daily trends ─────────────────────────────────────────────
+  // ------ 4. Build daily trends ---------------------------------------------------------------------------------------------------------------------------------------
   const dailyTrend = buildDailyTrendFromEvents(period.start, period.end, current.dailyNet);
   const comparisonDailyTrend = buildDailyTrendFromEvents(comparison.start, comparison.end, previous.dailyNet);
 
-  // ── 5. Build report ───────────────────────────────────────────────────
+  // ------ 5. Build report ---------------------------------------------------------------------------------------------------------------------------------------------------------
   const report = buildProfitLossReport({
     thisMonth: current.totals,
     lastMonth: previous.totals,
@@ -187,7 +187,7 @@ async function main() {
     soldVehicleCount: current.soldVehicleCount,
   });
 
-  // ── 6. PRINT REPORT ───────────────────────────────────────────────────
+  // ------ 6. PRINT REPORT ---------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("PROFIT & LOSS STATEMENT");
 
   console.log(`\nRevenue Section:`);
@@ -226,13 +226,13 @@ async function main() {
   const npRow = report.statementRows.find(r => r.id === "net-profit")!;
   console.log(`  ${npRow.label.padEnd(25)} this=${fmt$(npRow.thisMonth!).padStart(12)}  last=${fmt$(npRow.lastMonth!).padStart(12)}`);
 
-  // ── 7. VERIFICATION ───────────────────────────────────────────────────
+  // ------ 7. VERIFICATION ---------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("FORMULA VERIFICATION");
 
   const t = current.totals;
   const p = previous.totals;
 
-  console.log(`\n🔢 Derived Totals (Current Period):`);
+  console.log(`\n---- Derived Totals (Current Period):`);
   console.log(`  total_revenue         = vehicle_sales + other_income`);
   console.log(`                         = ${fmt$(t.vehicle_sales)} + ${fmt$(t.other_income)}`);
   console.log(`                         = ${fmt$(t.total_revenue)}`);
@@ -265,7 +265,7 @@ async function main() {
   console.log(`                         = ${fmt$(t.net_profit)}`);
   verify(t.net_operating_income - t.tax_expense, t.net_profit);
 
-  // ── 8. KPI VERIFICATION ───────────────────────────────────────────────
+  // ------ 8. KPI VERIFICATION ---------------------------------------------------------------------------------------------------------------------------------------------
   hr("KPI ANALYSIS");
 
   const margin = t.total_revenue ? (t.net_profit / t.total_revenue) * 100 : 0;
@@ -284,10 +284,10 @@ async function main() {
   for (const k of kpiData) {
     const delta = k.isMargin ? marginDelta : computePct(k.cur, k.prev);
     const expected = k.isMargin ? `${k.cur.toFixed(1)}%` : fmt$(k.cur);
-    console.log(`  ${k.label.padEnd(25)} ${expected.padStart(14)}  vs ${fmt$(k.prev).padStart(12)}  Δ ${k.isMargin ? `${k.cur >= 0 ? "+" : ""}${(k.cur).toFixed(1)}%` : fmtPct(delta)}`);
+    console.log(`  ${k.label.padEnd(25)} ${expected.padStart(14)}  vs ${fmt$(k.prev).padStart(12)}  -- ${k.isMargin ? `${k.cur >= 0 ? "+" : ""}${(k.cur).toFixed(1)}%` : fmtPct(delta)}`);
   }
 
-  // ── 9. BREAKDOWNS ─────────────────────────────────────────────────────
+  // ------ 9. BREAKDOWNS ---------------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("BREAKDOWNS");
 
   console.log(`\nRevenue Breakdown:`);
@@ -300,20 +300,20 @@ async function main() {
     console.log(`  ${item.label.padEnd(25)} ${fmt$(item.amount).padStart(12)}  ${item.percentOfTotal.toFixed(1)}% of total`);
   }
 
-  // ── 10. INSIGHTS ──────────────────────────────────────────────────────
+  // ------ 10. INSIGHTS ------------------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("INSIGHTS");
   for (const ins of report.insights) {
     console.log(`  [${ins.icon}] ${ins.text}`);
   }
 
-  // ── 11. DAILY TREND ───────────────────────────────────────────────────
+  // ------ 11. DAILY TREND ---------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("DAILY NET PROFIT TREND");
-  console.log(`  (${dailyTrend.length} data points, sampled from ${period.start} → ${period.end})`);
+  console.log(`  (${dailyTrend.length} data points, sampled from ${period.start} --- ${period.end})`);
   for (const pt of dailyTrend) {
     console.log(`  ${pt.date}  ${pt.label.padEnd(10)}  ${fmt$(pt.netProfit)}`);
   }
 
-  // ── 12. SUMMARY ───────────────────────────────────────────────────────
+  // ------ 12. SUMMARY ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
   hr("SUMMARY");
   console.log(`  Vehicles Sold:       ${current.soldVehicleCount}`);
   console.log(`  Total Revenue:       ${fmt$(t.total_revenue)}`);
@@ -329,18 +329,18 @@ async function main() {
   console.log(`  Period:              ${period.label}`);
   console.log(`  Comparison:          ${comparison.label}`);
 
-  // ── ALL CHECKS ────────────────────────────────────────────────────────
+  // ------ ALL CHECKS ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   const allPass = runAllVerifications(t, p, current);
-  console.log(`\n  Verdict: ${allPass ? "✅ ALL CHECKS PASSED" : "�—� SOME CHECKS FAILED"}`);
+  console.log(`\n  Verdict: ${allPass ? "--- ALL CHECKS PASSED" : "----- SOME CHECKS FAILED"}`);
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────
+// ------ Helpers ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 function verify(expected: number, actual: number, precision = 2) {
   const diff = Math.abs(expected - actual);
   if (diff > 0.01) {
-    console.log(`  �—� MISMATCH: expected=${fmt$(expected)}  actual=${fmt$(actual)}  diff=${fmt$(diff)}`);
+    console.log(`  ----- MISMATCH: expected=${fmt$(expected)}  actual=${fmt$(actual)}  diff=${fmt$(diff)}`);
   } else {
-    console.log(`  ✅ OK`);
+    console.log(`  --- OK`);
   }
 }
 
@@ -363,7 +363,7 @@ function runAllVerifications(t: typeof EMPTY_PERIOD_TOTALS, p: typeof EMPTY_PERI
   for (const c of checks) {
     const ok = Math.abs(c.expected - c.actual) <= 0.01;
     if (!ok) {
-      console.log(`  �—� ${c.label}: expected ${fmt$(c.expected)}, got ${fmt$(c.actual)}`);
+      console.log(`  ----- ${c.label}: expected ${fmt$(c.expected)}, got ${fmt$(c.actual)}`);
       allOk = false;
     }
   }

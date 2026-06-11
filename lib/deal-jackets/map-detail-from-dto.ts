@@ -153,12 +153,12 @@ export function mapDealJacketDetailFromDto(
     },
   ];
 
-  if (commissionStatus === "paid") {
+  if (commissionStatus === "paid" && dto.commissionPaidAt) {
     activities.unshift({
       id: "act-commission",
       label: "Commission paid",
       detail: formatCurrency(dto.commissionAmount),
-      occurredAt: dto.createdAt,
+      occurredAt: dto.commissionPaidAt,
       actor: repName,
     });
   }
@@ -170,7 +170,6 @@ export function mapDealJacketDetailFromDto(
     id: dto.id,
     jacketNumber: dto.jacketNumber,
     vehicleId: dto.vehicleId,
-    soldStatus: "sold",
     workflowStatus: workStatus,
     workflowActivities,
     reviewNotes: dto.reviewNotes,
@@ -227,12 +226,11 @@ export function mapDealJacketDetailFromDto(
       commissionPercent,
       commissionAmount: dto.commissionAmount,
       commissionStatus,
-      commissionPaidDate: commissionStatus === "paid" ? saleDate : null,
-      commissionPaymentMethod: commissionStatus === "paid" ? "ACH" : "...",
-      transactionId:
-        commissionStatus === "paid"
-          ? `TXN-${dto.jacketNumber.replace(/\D/g, "").slice(-6)}`
-          : null,
+      commissionPaidDate: dto.commissionPaidAt
+        ? dto.commissionPaidAt.split("T")[0]
+        : null,
+      commissionPaymentMethod: "—",
+      transactionId: null,
     },
     financial: {
       purchasePrice,

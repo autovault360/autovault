@@ -6,6 +6,7 @@ import { checkVehicleHasDealJacket } from "./check-deal-jacket";
 import { createDealJacket } from "./create-deal-jacket";
 import { logDealJacketActivity } from "./activity";
 import { uploadFile } from "@/lib/vehicles/server/utils";
+import { isVehicleAvailableForDeal } from "@/lib/vehicles/map-db-status";
 import type { CreateDealJacketSaleData } from "./db-types";
 
 export type SubmitDealJacketFormData = {
@@ -131,7 +132,7 @@ export async function submitDealJacket(
 
   const { data: vehicle } = await supabase
     .from("vehicles")
-    .select("id, acquisition_cost, total_invested, created_by, dealership_id")
+    .select("id, status, acquisition_cost, total_invested, created_by, dealership_id")
     .eq("id", formData.linkedVehicleId)
     .eq("dealership_id", dealershipId)
     .is("deleted_at", null)
@@ -139,6 +140,20 @@ export async function submitDealJacket(
 
   if (!vehicle) {
     return { success: false, error: "Vehicle not found in your dealership" };
+  }
+
+  const vehicleStatus = vehicle.status as string;
+  if (vehicleStatus === "pending_deal") {
+    return {
+      success: false,
+      error: "This vehicle already has a deal in progress",
+    };
+  }
+  if (vehicleStatus === "sold" || vehicleStatus === "loss") {
+    return { success: false, error: "Vehicle is already marked as sold" };
+  }
+  if (!isVehicleAvailableForDeal(vehicleStatus)) {
+    return { success: false, error: "Vehicle is not available for a deal jacket" };
   }
 
   const jacketCheck = await checkVehicleHasDealJacket(formData.linkedVehicleId);

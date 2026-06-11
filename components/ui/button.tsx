@@ -67,7 +67,7 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
-  theme = "light",
+  theme = "dark",
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {

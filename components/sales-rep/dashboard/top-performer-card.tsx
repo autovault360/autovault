@@ -30,13 +30,13 @@ function StatColumn({
 }) {
   return (
     <div className="flex flex-col gap-0.5 border-l border-slate-800/70 pl-4 pr-1 first:border-0 first:pl-0">
-      <span className="text-[12px] font-bold uppercase tracking-wider text-slate-500">
+      <span className="text-[8px] lg:text-[10px] xl:text-[12px] font-bold uppercase tracking-wider text-slate-500">
         {label}
       </span>
-      <span className="text-[20px] font-extrabold text-white tracking-tight tabular-nums">
+      <span className="text-[16px] lg:text-[20px] xl:text-[24px] font-extrabold text-white tracking-tight tabular-nums">
         {value}
       </span>
-      <span className="flex items-center gap-0.5 text-[12px] font-medium text-emerald-400">
+      <span className="flex items-center gap-0.5 text-[12px] lg:text-[14px] xl:text-[16px] font-medium text-emerald-400">
         <TrendingUp className="h-2.5 w-2.5 shrink-0" />
         <span>{delta}%</span>
         <span className="text-slate-500 font-normal ml-0.5 text-[10px] tracking-tight ">vs last month</span>

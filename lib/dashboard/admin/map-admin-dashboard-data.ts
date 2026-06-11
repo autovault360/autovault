@@ -37,7 +37,12 @@ function formatDelta(change: string, positive: boolean): string {
 
 function mapVehicleStatus(status: string): VehicleStatus {
   if (status === "sold") return "sold";
-  if (status === "pending" || status === "in_recon" || status === "needs_attention") {
+  if (
+    status === "pending" ||
+    status === "pending_deal" ||
+    status === "in_recon" ||
+    status === "needs_attention"
+  ) {
     return "pending";
   }
   return "in_inventory";

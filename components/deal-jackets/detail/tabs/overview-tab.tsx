@@ -13,6 +13,7 @@ import {
   formatCurrency,
   formatDisplayDate,
 } from "@/lib/deal-jackets/types";
+import CommissionStatusBadge from "@/components/deal-jackets/commission-status-badge";
 import type { DealJacketDetail, DealJacketFileItem } from "@/lib/deal-jackets/detail-types";
 import type { FolderFileDetail } from "@/lib/files-storage/types";
 import DocumentViewerModal from "@/components/files-storage/document-viewer-modal";
@@ -213,7 +214,12 @@ export default function OverviewTab({
               label="Commission Amount"
               value={formatCurrency(detail.salesRep.commissionAmount)}
             />
-            <DetailRow label="Commission Paid" value={<YesBadge />} />
+            <DetailRow
+              label="Commission Status"
+              value={
+                <CommissionStatusBadge status={detail.salesRep.commissionStatus} />
+              }
+            />
             <DetailRow
               label="Date Sold"
               value={formatDisplayDate(detail.sale.dateSold)}
@@ -250,25 +256,28 @@ export default function OverviewTab({
               label="Commission Amount"
               value={formatCurrency(detail.salesRep.commissionAmount)}
             />
-            <DetailRow label="Commission Paid" value={<YesBadge />} />
+            <DetailRow
+              label="Commission Status"
+              value={
+                <CommissionStatusBadge status={detail.salesRep.commissionStatus} />
+              }
+            />
+            <DetailRow
+              label="Commission Paid"
+              value={
+                detail.salesRep.commissionStatus === "paid" ? (
+                  <YesBadge />
+                ) : (
+                  <span className="text-slate-400">No</span>
+                )
+              }
+            />
             <DetailRow
               label="Date Paid"
               value={
                 detail.salesRep.commissionPaidDate
                   ? formatDisplayDate(detail.salesRep.commissionPaidDate)
-                  : "..."
-              }
-            />
-            <DetailRow
-              label="Payment Method"
-              value={detail.salesRep.commissionPaymentMethod}
-            />
-            <DetailRow
-              label="Transaction ID"
-              value={
-                <span className="font-mono text-[10px] text-slate-300">
-                  {detail.salesRep.transactionId ?? "..."}
-                </span>
+                  : "—"
               }
             />
           </DetailCardBody>

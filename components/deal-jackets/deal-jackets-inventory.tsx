@@ -25,11 +25,10 @@ import {
 } from "@/components/ui/select";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import CommissionStatusBadge from "@/components/deal-jackets/commission-status-badge";
-import SoldStatusBadge from "@/components/deal-jackets/sold-status-badge";
+import WorkflowStatusBadge from "@/components/deal-jackets/workflow-status-badge";
 import ViewJacketButton from "@/components/deal-jackets/view-jacket-button";
 import DealJacketFilterTabs from "@/components/deal-jackets/deal-jacket-filter-tabs";
-import { filterDealJackets } from "@/lib/deal-jackets/filter-deal-jackets";
-import { computeDealJacketTabCounts } from "@/lib/deal-jackets/mock-data";
+import { filterDealJackets, computeDealJacketTabCounts } from "@/lib/deal-jackets/filter-deal-jackets";
 import {
   PAYMENT_METHODS,
   formatCurrency,
@@ -199,10 +198,12 @@ export default function DealJacketsInventory({
       key: "status",
       header: "Status",
       sortable: true,
-      accessor: (row) => row.soldStatus,
+      accessor: (row) => row.workflowStatus,
       cellClassName: "hidden sm:table-cell",
       headerClassName: "hidden sm:table-cell",
-      cell: () => <SoldStatusBadge />,
+      cell: (row) => (
+        <WorkflowStatusBadge status={row.workflowStatus} size="sm" />
+      ),
     },
     {
       key: "actions",

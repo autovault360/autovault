@@ -64,12 +64,7 @@ export type DealJacketActivityRow = {
 
 export type PaymentMethod = "cash" | "finance" | "check" | "wire" | "credit_card";
 
-export type DealJacketTab =
-  | "all"
-  | "sold_this_month"
-  | "sold_this_year"
-  | "pending_commission"
-  | "commission_paid";
+export type DealJacketTab = "all" | DealJacketStatus;
 
 export type DealJacketListItem = {
   id: string;
@@ -90,7 +85,6 @@ export type DealJacketListItem = {
   commissionAmount: number;
   commissionStatus: CommissionStatus;
   paymentMethod: PaymentMethod;
-  soldStatus: "sold";
   workflowStatus: DealJacketStatus;
 };
 
@@ -98,10 +92,10 @@ export type DealJacketTabCounts = Record<DealJacketTab, number>;
 
 export const DEAL_JACKET_TABS: { key: DealJacketTab; label: string }[] = [
   { key: "all", label: "All Deal Jackets" },
-  { key: "sold_this_month", label: "Sold This Month" },
-  { key: "sold_this_year", label: "Sold This Year" },
-  { key: "pending_commission", label: "Pending Commission" },
-  { key: "commission_paid", label: "Commission Paid" },
+  ...DEAL_JACKET_STATUSES.map((status) => ({
+    key: status,
+    label: DEAL_JACKET_STATUS_LABELS[status],
+  })),
 ];
 
 export const PAYMENT_METHODS: PaymentMethod[] = [

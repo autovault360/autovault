@@ -24,6 +24,8 @@ export default function PricingActionsCard({
 }) {
   const [openModal, setOpenModal] = useState<OpenModal>(null);
   const isSold = vehicle.status === "Marked Sold";
+  const isPendingDeal = vehicle.status === "Pending Deal";
+  const isLocked = isSold || isPendingDeal;
 
   const actions: {
     key: string;
@@ -40,18 +42,18 @@ export default function PricingActionsCard({
       icon: DollarSign,
       className: "bg-blue-600 hover:bg-blue-500 text-white",
       modal: "pricing",
-      disabled: isSold,
-      badge: isSold ? "Sold" : undefined,
+      disabled: isLocked,
+      badge: isPendingDeal ? "Pending Deal" : isSold ? "Sold" : undefined,
     },
     {
       key: "sold",
       label: isSold ? "Marked as Sold" : "Mark as Sold",
       icon: Check,
-      className: isSold
+      className: isLocked
         ? "bg-slate-700 text-slate-400 cursor-not-allowed"
         : "bg-emerald-600 hover:bg-emerald-500 text-white",
       modal: "sold",
-      disabled: isSold,
+      disabled: isLocked,
     },
     {
       key: "loss",
@@ -59,8 +61,8 @@ export default function PricingActionsCard({
       icon: AlertCircle,
       className: "bg-red-600 hover:bg-red-500 text-white",
       modal: "loss",
-      disabled: isSold,
-      badge: isSold ? "Sold" : undefined,
+      disabled: isLocked,
+      badge: isPendingDeal ? "Pending Deal" : isSold ? "Sold" : undefined,
     },
     {
       key: "repair",
@@ -68,8 +70,8 @@ export default function PricingActionsCard({
       icon: Wrench,
       className: "bg-orange-500 hover:bg-orange-400 text-white",
       modal: "repair",
-      disabled: isSold,
-      badge: isSold ? "Sold" : undefined,
+      disabled: isLocked,
+      badge: isPendingDeal ? "Pending Deal" : isSold ? "Sold" : undefined,
     },
   ];
 

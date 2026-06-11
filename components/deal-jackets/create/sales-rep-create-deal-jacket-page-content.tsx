@@ -2,19 +2,39 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCurrentSalesRepCommissionRate } from "@/lib/sales-rep/server/get-commission-rate";
+import { getRecentlyApprovedDeal } from "@/lib/deal-jackets/server/get-create-deal-jacket-page-data";
+import type { IRecentlyApprovedDeal } from "@/lib/sales-rep/deal-jacket/types";
 import DealJacketFormEngine from "./deal-jacket-form-engine";
+import CreateDealJacketFooterWorkspace from "./create-deal-jacket-footer-workspace";
+
+const EMPTY_RECENTLY_APPROVED: IRecentlyApprovedDeal = {
+  id: "-",
+  vehicleDesc: "No recently approved deals",
+  buyerName: "-",
+  salePrice: 0,
+  grossProfit: 0,
+  approvedOn: "-",
+};
 
 export default function SalesRepCreateDealJacketPageContent() {
+  const router = useRouter();
   const [commissionRate, setCommissionRate] = useState(0.1);
   const [loading, setLoading] = useState(true);
+  const [recentlyApproved, setRecentlyApproved] = useState<IRecentlyApprovedDeal>(EMPTY_RECENTLY_APPROVED);
+  const [footerLoading, setFooterLoading] = useState(true);
 
   useEffect(() => {
     getCurrentSalesRepCommissionRate().then((rate) => {
       setCommissionRate(rate);
       setLoading(false);
+    });
+    getRecentlyApprovedDeal().then((deal) => {
+      setRecentlyApproved(deal);
+      setFooterLoading(false);
     });
   }, []);
 
@@ -47,7 +67,17 @@ export default function SalesRepCreateDealJacketPageContent() {
         </Button>
       </div>
 
-      <DealJacketFormEngine vinLookup commissionRate={commissionRate} loading={loading} />
+      <DealJacketFormEngine
+        vinLookup
+        commissionRate={commissionRate}
+        loading={loading}
+        onSuccess={() => router.push("/sales-rep/deal-jackets")}
+      />
+
+      <CreateDealJacketFooterWorkspace
+        recentlyApproved={recentlyApproved}
+        loading={footerLoading}
+      />
     </div>
   );
 }

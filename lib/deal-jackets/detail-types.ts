@@ -48,7 +48,6 @@ export type DealJacketDetail = {
   id: string;
   jacketNumber: string;
   vehicleId: string;
-  soldStatus: "sold";
 
   vehicle: {
     imageUrl: string | null;

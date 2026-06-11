@@ -1,5 +1,6 @@
 import type { DealJacketListItem } from "./types";
 import {
+  DEAL_JACKET_STATUS_LABELS,
   formatCommissionStatus,
   formatCurrency,
   formatDisplayDate,
@@ -45,7 +46,7 @@ export function buildDealJacketsCsv(items: DealJacketListItem[]): string {
     formatCurrency(item.commissionAmount),
     formatCommissionStatus(item.commissionStatus),
     formatPaymentMethod(item.paymentMethod),
-    "Sold",
+    DEAL_JACKET_STATUS_LABELS[item.workflowStatus],
   ]);
 
   return [headers, ...rows]

@@ -64,6 +64,7 @@ export default function SalesRepInventory({ vehicles }: Props) {
   const statuses: VehicleStatus[] = [
     "In Stock",
     "Needs Attention",
+    "Pending Deal",
     "Marked Sold",
   ];
 
