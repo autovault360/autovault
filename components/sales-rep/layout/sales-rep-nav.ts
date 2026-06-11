@@ -93,9 +93,6 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         label: "Messages",
         icon: MessageSquare,
         color: "text-blue-500",
-        comingSoon: true,
-        badge: 3,
-        badgeColor: "blue",
       },
       {
         href: "/sales-rep/team-chat",

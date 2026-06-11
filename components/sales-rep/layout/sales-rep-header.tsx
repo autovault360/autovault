@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Bell, LogOut, MessageCircle, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,7 +21,17 @@ export default function SalesRepHeader({
 }: Props) {
   const router = useRouter();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [messageUnread, setMessageUnread] = useState(0);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/messages/unread-count")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.count !== undefined) setMessageUnread(data.count);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!profileOpen) return;
@@ -51,14 +62,18 @@ export default function SalesRepHeader({
       </div>
 
       <div className="flex items-center gap-3">
-        <button
-        type="button"
-        className="relative p-1.5 text-slate-400 transition hover:text-white"
-        aria-label="Team chat"
-      >
-        <MessageCircle className="h-5 w-5" />
-        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
-      </button>
+        <Link
+          href="/sales-rep/messages"
+          className="relative p-1.5 text-slate-400 transition hover:text-white"
+          aria-label="Messages"
+        >
+          <MessageCircle className="h-5 w-5" />
+          {messageUnread > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white">
+              {messageUnread > 99 ? "99+" : messageUnread}
+            </span>
+          )}
+        </Link>
 
       <button
         type="button"

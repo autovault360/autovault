@@ -18,6 +18,8 @@ import type {
   IPricingConstants,
 } from "@/lib/sales-rep/dashboard/types";
 import type { ISalesRepCommissionsData, ISalesRepCommissionRow } from "@/lib/sales-rep/commissions/types";
+import { getRecentTeamMessages } from "@/lib/sales-rep/messages/server/get-recent-messages";
+import { getTotalUnreadCount } from "@/lib/sales-rep/messages/server/list-conversations";
 
 async function getSignedUrl(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -417,6 +419,11 @@ async function buildDashboard(
     commissionRate: Number(dbUser.commission_rate ?? 0.1),
   };
 
+  const [teamMessages, messageUnreadCount] = await Promise.all([
+    getRecentTeamMessages(3),
+    getTotalUnreadCount(),
+  ]);
+
   return {
     data: {
       profile,
@@ -425,12 +432,12 @@ async function buildDashboard(
       inventory,
       leaderboard,
       recentDealJackets,
-      teamMessages: [],
+      teamMessages,
       recentActivity,
       tradeInOptions: [],
       pricing,
       commissions,
-      notificationCount: 0,
+      notificationCount: messageUnreadCount,
     },
   };
 }
