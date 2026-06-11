@@ -85,6 +85,7 @@ export default function DealJacketDetailShell({
       commissionStatus: detail.salesRep.commissionStatus,
       paymentMethod: detail.sale.paymentMethod,
       soldStatus: "sold",
+      workflowStatus: detail.workflowStatus,
     };
     downloadDealJacketsCsv([row], `${detail.jacketNumber}.csv`);
   };
@@ -336,7 +337,12 @@ export default function DealJacketDetailShell({
         })}
       </div>
 
-      {activeTab === "overview" && <OverviewTab detail={detail} />}
+      {activeTab === "overview" && (
+        <OverviewTab
+          detail={detail}
+          onViewAllDocuments={() => setActiveTab("documents")}
+        />
+      )}
       {activeTab === "documents" && <DocumentsTab detail={detail} />}
       {activeTab === "expenses" && <ExpensesTab detail={detail} />}
       {activeTab === "receipts" && <ReceiptsTab detail={detail} />}

@@ -1,4 +1,10 @@
-export type CommissionStatus = "paid" | "pending";
+export type CommissionStatus =
+  | "pending_review"
+  | "changes_requested"
+  | "resubmitted"
+  | "approved"
+  | "rejected"
+  | "paid";
 
 export const DEAL_JACKET_STATUSES = [
   "pending_review",
@@ -85,6 +91,7 @@ export type DealJacketListItem = {
   commissionStatus: CommissionStatus;
   paymentMethod: PaymentMethod;
   soldStatus: "sold";
+  workflowStatus: DealJacketStatus;
 };
 
 export type DealJacketTabCounts = Record<DealJacketTab, number>;
@@ -140,14 +147,35 @@ export function getVehicleDisplayName(item: DealJacketListItem): string {
   return `${item.year} ${item.make} ${item.model}`;
 }
 
+const COMMISSION_STATUS_LABELS: Record<CommissionStatus, string> = {
+  pending_review: "Pending Review",
+  changes_requested: "Changes Requested",
+  resubmitted: "Resubmitted",
+  approved: "Approved",
+  rejected: "Rejected",
+  paid: "Paid",
+};
+
 export function formatCommissionStatus(status: CommissionStatus): string {
-  return status === "paid" ? "Paid" : "Pending";
+  return COMMISSION_STATUS_LABELS[status] ?? status;
 }
 
 export function getCommissionStatusStyle(status: CommissionStatus): string {
-  return status === "paid"
-    ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-    : "bg-amber-500/15 text-amber-400 border-amber-500/30";
+  const styles: Record<CommissionStatus, string> = {
+    pending_review:
+      "bg-amber-500/15 text-amber-400 border-amber-500/30",
+    changes_requested:
+      "bg-orange-500/15 text-orange-400 border-orange-500/30",
+    resubmitted:
+      "bg-blue-500/15 text-blue-400 border-blue-500/30",
+    approved:
+      "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    rejected:
+      "bg-red-500/15 text-red-400 border-red-500/30",
+    paid:
+      "bg-green-500/15 text-green-400 border-green-500/30",
+  };
+  return styles[status] ?? styles.pending_review;
 }
 
 export function getSoldStatusStyle(): string {

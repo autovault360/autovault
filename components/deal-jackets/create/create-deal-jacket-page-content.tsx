@@ -6,7 +6,7 @@ import { ChevronLeft, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchCreateDealJacketMock } from "@/mock-data/create-deal-jacket.mock";
 import type { CreateDealJacketPageData } from "@/lib/sales-rep/deal-jacket/types";
-import UnifiedDealJacketFormEngine from "./unified-deal-jacket-form-engine";
+import DealJacketFormEngine from "./deal-jacket-form-engine";
 import CreateDealJacketFooterWorkspace from "./create-deal-jacket-footer-workspace";
 
 export default function CreateDealJacketPageContent() {
@@ -56,16 +56,10 @@ export default function CreateDealJacketPageContent() {
         </Button>
       </div>
 
-      <UnifiedDealJacketFormEngine
+      <DealJacketFormEngine
         viewMode="create"
         vehicles={data?.vehicles ?? []}
         documents={data?.documents ?? []}
-        buyerAttachments={
-          data?.buyerAttachments ?? {
-            driverLicense: { fileName: "", uploaded: false },
-            insurance: { fileName: "", uploaded: false },
-          }
-        }
         commissionRate={data?.commissionRate ?? 0.1}
         loading={loading}
         defaultVehicleId={data?.vehicles[0]?.id}

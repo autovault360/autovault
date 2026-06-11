@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import UnifiedDealJacketFormEngine from "@/components/deal-jackets/create/unified-deal-jacket-form-engine";
+import DealJacketFormEngine from "@/components/deal-jackets/create/deal-jacket-form-engine";
 import { CREATE_DEAL_JACKET_MOCK } from "@/mock-data/create-deal-jacket.mock";
 import { inventoryToLinkedVehicles } from "@/lib/sales-rep/deal-jacket/map-vehicles";
 import type {
@@ -57,11 +57,10 @@ export default function SalesRepDealJacketWorkspace({
         </button>
       </div>
 
-      <UnifiedDealJacketFormEngine
+      <DealJacketFormEngine
         viewMode="linked"
         vehicles={linkedVehicles}
         documents={CREATE_DEAL_JACKET_MOCK.documents}
-        buyerAttachments={CREATE_DEAL_JACKET_MOCK.buyerAttachments}
         commissionRate={pricing.commissionRate}
         defaultVehicleId={defaultVehicleId}
       />

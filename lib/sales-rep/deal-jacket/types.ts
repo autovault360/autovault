@@ -1,5 +1,16 @@
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
+export type SalesRepDealJacketKpiSummary = {
+  total: number;
+  pendingReview: number;
+  changesRequested: number;
+  resubmitted: number;
+  approved: number;
+  rejected: number;
+  totalCommission: number;
+  totalProfit: number;
+};
+
 export interface ILinkedVehicle {
   id: string;
   stockNo: string;

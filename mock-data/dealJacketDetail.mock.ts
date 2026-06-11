@@ -43,6 +43,8 @@ export function buildReferenceDocuments(
     type: "document" as const,
     uploadedAt: `2025-05-${String(28 - i).padStart(2, "0")}`,
     icon: names[i].icon,
+    fileUrl: "",
+    fileType: "application/pdf",
   }));
 }
 
@@ -62,6 +64,8 @@ export function buildReferenceReceipts(
     type: "receipt" as const,
     uploadedAt: `2025-05-${String(27 - i).padStart(2, "0")}`,
     icon: names[i].icon,
+    fileUrl: "",
+    fileType: "application/pdf",
   }));
 }
 

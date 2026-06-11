@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
+  AlertTriangle,
   CheckCircle2,
   ChevronDown,
   CloudUpload,
@@ -10,7 +11,9 @@ import {
   Info,
   Link2,
   Loader2,
+  X,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,10 +43,29 @@ import {
   SALES_TAX_RATE,
   US_STATES,
 } from "@/lib/sales-rep/deal-jacket/constants";
+import { lookupVehicle } from "@/lib/expenses/server/lookup-vehicle";
+import { checkVehicleHasDealJacket } from "@/lib/deal-jackets/server/check-deal-jacket";
+import {
+  getVehicleDisplayName,
+  type LinkedVehicleResult,
+} from "@/lib/expenses/server/types";
+import { formatMileage, getStatusStyle } from "@/lib/vehicles/types";
+import { formatPhoneNumber } from "@/lib/vehicles/actions/utils";
 import type {
   IDealJacketDocument,
   ILinkedVehicle,
 } from "@/lib/sales-rep/deal-jacket/types";
+
+const SOLD_STATUSES = ["Sold", "Loss"];
+
+function isSoldStatus(status: string | undefined | null): boolean {
+  return SOLD_STATUSES.includes(status ?? "");
+}
+
+function toVehicleStatus(status: string): "In Stock" | "Needs Attention" | "Marked Sold" {
+  if (status === "Sold" || status === "Loss") return "Marked Sold";
+  return status as "In Stock" | "Needs Attention" | "Marked Sold";
+}
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -60,17 +82,12 @@ function fieldClassName(hasError: boolean) {
   );
 }
 
-type BuyerAttachments = {
-  driverLicense: { fileName: string; uploaded: boolean };
-  insurance: { fileName: string; uploaded: boolean };
-};
-
 type Props = {
+  vinLookup?: boolean;
   viewMode?: "create" | "linked";
-  vehicles: ILinkedVehicle[];
-  documents: IDealJacketDocument[];
-  buyerAttachments: BuyerAttachments;
-  commissionRate: number;
+  vehicles?: ILinkedVehicle[];
+  documents?: IDealJacketDocument[];
+  commissionRate?: number;
   loading?: boolean;
   defaultVehicleId?: string;
 };
@@ -99,25 +116,62 @@ function KeyValueRow({
   );
 }
 
-function AttachmentBadge({
+function AttachmentUploadBadge({
   label,
-  fileName,
-  uploaded,
+  file,
+  onFileSelect,
+  onRemove,
 }: {
   label: string;
-  fileName: string;
-  uploaded: boolean;
+  file: File | null;
+  onFileSelect: (file: File) => void;
+  onRemove: () => void;
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
-            <div className="flex items-center gap-2 rounded border border-slate-700/80 bg-slate-800/50 px-2.5 py-2">
+    <div
+      className="flex cursor-pointer items-center gap-2 rounded border border-dashed border-slate-700/80 bg-slate-800/30 px-2.5 py-2 transition hover:border-blue-500/40 hover:bg-slate-800/50"
+      onClick={() => inputRef.current?.click()}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+      }}
+    >
       <FileText className="h-3.5 w-3.5 shrink-0 text-slate-500" />
       <div className="min-w-0 flex-1">
         <div className="text-[10px] text-[#64748b]">{label}</div>
-        <div className="truncate text-[11px] text-slate-300">{fileName}</div>
+        <div className="truncate text-[11px] text-slate-300">
+          {file ? file.name : "Tap to upload"}
+        </div>
       </div>
-      {uploaded && (
-        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+      {file ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="shrink-0 rounded p-0.5 text-slate-500 hover:bg-slate-700 hover:text-white"
+          aria-label={`Remove ${label}`}
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
+      ) : (
+        <span className="text-[9px] text-slate-600">Optional</span>
       )}
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,.jpg,.jpeg,.png"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) onFileSelect(f);
+          e.target.value = "";
+        }}
+      />
     </div>
   );
 }
@@ -146,35 +200,225 @@ function SummaryRow({
   );
 }
 
-export default function UnifiedDealJacketFormEngine({
+function VinLookupSection({
+  linkedVehicle,
+  vehicleHasJacket,
+  onVehicleChange,
+  readOnly,
+}: {
+  linkedVehicle: LinkedVehicleResult | null;
+  vehicleHasJacket: boolean;
+  onVehicleChange: (
+    vehicle: LinkedVehicleResult | null,
+    options?: { hasExistingJacket?: boolean; workflowStatus?: string },
+  ) => void;
+  readOnly?: boolean;
+}) {
+  const [vinInput, setVinInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (linkedVehicle) setVinInput(linkedVehicle.vin);
+  }, [linkedVehicle]);
+
+  const handleLookup = async () => {
+    const query = vinInput.trim();
+    if (!query) {
+      toast.error("Enter a VIN to lookup.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await lookupVehicle({ mode: "vin", query });
+      if (!result.success) {
+        toast.error(result.error ?? "No vehicle found for that VIN.");
+        onVehicleChange(null);
+        return;
+      }
+
+      const check = await checkVehicleHasDealJacket(result.vehicle.id);
+      if (check.error) {
+        toast.error(check.error);
+        onVehicleChange(null);
+        return;
+      }
+
+      onVehicleChange(result.vehicle, {
+        hasExistingJacket: check.hasJacket,
+        workflowStatus: check.workflowStatus,
+      });
+      setVinInput(result.vehicle.vin);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const vehicleIsSold = isSoldStatus(linkedVehicle?.status);
+
+  return (
+    <div className="rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+        Linked Vehicle <span className="text-red-500">*</span>
+      </p>
+
+      {!readOnly && (
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <Input
+            theme="dark"
+            value={vinInput}
+            onChange={(e) => setVinInput(e.target.value.toUpperCase())}
+            placeholder="Enter VIN number"
+            className="h-9 flex-1 bg-slate-800/50 uppercase text-[12px]"
+            onKeyDown={(e) => e.key === "Enter" && handleLookup()}
+          />
+          <Button
+            type="button"
+            className="h-9 shrink-0 bg-blue-600 px-4 text-[12px] hover:bg-blue-500"
+            onClick={handleLookup}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                Looking up...
+              </>
+            ) : (
+              "Lookup Vehicle"
+            )}
+          </Button>
+        </div>
+      )}
+
+      {readOnly && !linkedVehicle && (
+        <p className="mt-2 text-[12px] text-slate-500">No vehicle linked</p>
+      )}
+
+      {linkedVehicle && (
+        <>
+          <div className="relative mt-3 flex gap-3 rounded-md border border-slate-700/80 bg-card p-2.5">
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() => onVehicleChange(null)}
+                className="absolute right-2 top-2 rounded p-0.5 text-slate-500 transition hover:bg-slate-800 hover:text-slate-300"
+                aria-label="Remove linked vehicle"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <div className="relative h-[52px] w-[72px] shrink-0 overflow-hidden rounded-md bg-slate-800">
+              <Image
+                src={linkedVehicle.image}
+                alt={getVehicleDisplayName(linkedVehicle)}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <div className="min-w-0 flex-1 pr-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-[13px] font-semibold text-white">
+                  {getVehicleDisplayName(linkedVehicle)}
+                </p>
+                <span
+                  className={cn(
+                    "inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    getStatusStyle(toVehicleStatus(linkedVehicle.status)),
+                  )}
+                >
+                  {linkedVehicle.status}
+                </span>
+              </div>
+              <p className="mt-1 text-[11px] text-slate-400">
+                Stock #{linkedVehicle.stockNumber} ... VIN: {linkedVehicle.vin}
+              </p>
+              <p className="mt-0.5 text-[11px] text-slate-500">
+                Mileage: {formatMileage(linkedVehicle.mileage)} mi
+                {linkedVehicle.color !== "..." ? ` ... Color: ${linkedVehicle.color}` : ""}
+              </p>
+            </div>
+          </div>
+
+          {vehicleHasJacket && (
+            <div className="mt-2 flex items-start gap-2.5 rounded-md border border-red-500/40 bg-red-500/10 p-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+              <div>
+                <p className="text-[13px] font-medium text-red-300">
+                  Deal jacket already exists
+                </p>
+                <p className="mt-0.5 text-[12px] leading-relaxed text-red-400/80">
+                  This vehicle already has a deal jacket. Remove the vehicle link
+                  or select a different vehicle.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {vehicleIsSold && (
+            <div className="mt-2 flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+              <p className="text-[12px] leading-relaxed text-red-300">
+                This vehicle is marked as{" "}
+                <strong>{linkedVehicle.status.toLowerCase()}</strong>. Deal
+                jackets cannot be created for sold or loss vehicles.
+              </p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default function DealJacketFormEngine({
+  vinLookup = false,
   viewMode = "create",
-  vehicles,
-  documents,
-  buyerAttachments,
-  commissionRate,
+  vehicles = [],
+  documents = [],
+  commissionRate = 0,
   loading = false,
   defaultVehicleId,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [extraFiles, setExtraFiles] = useState<string[]>([]);
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
+  const [driverLicenseFile, setDriverLicenseFile] = useState<File | null>(null);
+  const [insuranceFile, setInsuranceFile] = useState<File | null>(null);
 
   const {
     form,
     derived,
     selectedVehicle,
+    linkedVehicle,
+    handleLinkedVehicleChange,
+    vehicleHasJacket,
     isSubmitting,
     shake,
     saveDraft,
     saveDealJacket,
-  } = useUnifiedDealJacketForm(vehicles, commissionRate, defaultVehicleId);
+    setFiles,
+  } = useUnifiedDealJacketForm(vehicles, commissionRate, defaultVehicleId, vinLookup);
+
+  const vehicleRejected =
+    isSoldStatus(linkedVehicle?.status) || vehicleHasJacket;
+
+  const collectAllFiles = (
+    extra: File[],
+    dl: File | null,
+    ins: File | null,
+  ) => {
+    const all = [...extra];
+    if (dl) all.push(dl);
+    if (ins) all.push(ins);
+    return all;
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      setExtraFiles((prev) => [
-        ...prev,
-        ...Array.from(files).map((f) => f.name),
-      ]);
+      const next = [...extraFiles, ...Array.from(files)];
+      setExtraFiles(next);
+      setFiles(collectAllFiles(next, driverLicenseFile, insuranceFile));
     }
   };
 
@@ -208,7 +452,37 @@ export default function UnifiedDealJacketFormEngine({
       <Form {...form}>
         <ModalThemeProvider theme="dark">
         <form className="grid grid-cols-1 gap-3 xl:grid-cols-12 items-start">
-          
+
+          {vinLookup && vehicleHasJacket && (
+            <div className="flex items-start gap-2.5 rounded-md border border-red-500/40 bg-red-500/10 p-3 xl:col-span-12">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+              <div>
+                <p className="text-[13px] font-medium text-red-300">
+                  Deal jacket already exists
+                </p>
+                <p className="mt-0.5 text-[12px] leading-relaxed text-red-400/80">
+                  This vehicle already has a deal jacket. Remove the vehicle link
+                  or select a different vehicle.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {vinLookup && isSoldStatus(linkedVehicle?.status) && (
+            <div className="flex items-start gap-2.5 rounded-md border border-red-500/40 bg-red-500/10 p-3 xl:col-span-12">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
+              <div>
+                <p className="text-[13px] font-medium text-red-300">
+                  Vehicle is already marked as sold
+                </p>
+                <p className="mt-0.5 text-[12px] leading-relaxed text-red-400/80">
+                  This vehicle is no longer available for deal jackets. Remove the
+                  vehicle link or select a different vehicle.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* COLUMN 1: Vehicle & Buyer Information */}
           <div className="space-y-3 xl:col-span-4">
             <FormSection
@@ -216,7 +490,7 @@ export default function UnifiedDealJacketFormEngine({
               theme="dark"
               className="border-slate-700/80"
               headerRight={
-                viewMode === "create" ? (
+                !vinLookup && viewMode === "create" ? (
                   <span className="flex items-center gap-1 text-blue-400">
                     <Link2 className="h-3 w-3" />
                     Linked Vehicle
@@ -224,122 +498,167 @@ export default function UnifiedDealJacketFormEngine({
                 ) : undefined
               }
             >
-              {viewMode === "create" && (
-                <FormField
-                  control={form.control}
-                  name="linkedVehicleId"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <div className="flex items-center gap-1 justify-between">
-                        <FieldLabel label="Select Vehicle" required />
-                        <FormMessage className="text-[10px] text-red-500" />
-                      </div>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
+              {vinLookup ? (
+                <>
+                  <VinLookupSection
+                    linkedVehicle={linkedVehicle}
+                    vehicleHasJacket={vehicleHasJacket}
+                    onVehicleChange={handleLinkedVehicleChange}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="linkedVehicleId"
+                    render={({ field }) => (
+                      <FormItem className="hidden">
                         <FormControl>
-                          <SelectTrigger
-                            className={fieldClassName(!!fieldState.error)}
-                            aria-invalid={!!fieldState.error}
-                          >
-                            <SelectValue placeholder="Choose a vehicle" />
-                          </SelectTrigger>
+                          <Input {...field} />
                         </FormControl>
-                        <SelectContent className="border-slate-700/80 bg-card text-slate-300">
-                          {vehicles.map((v) => (
-                            <SelectItem key={v.id} value={v.id}>
-                              {v.stockNo} - {v.yearModel}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              <div className="flex gap-3">
-                <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded border border-slate-700/80 bg-slate-800/50">
-                  {selectedVehicle?.imageUrl ? (
-                    <Image
-                      src={selectedVehicle.imageUrl}
-                      alt={selectedVehicle.yearModel}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="stockNo"
+                    render={({ field }) => (
+                      <FormItem className="hidden">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="vin"
+                    render={({ field }) => (
+                      <FormItem className="hidden">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </>
+              ) : (
+                <>
+                  {viewMode === "create" && (
+                    <FormField
+                      control={form.control}
+                      name="linkedVehicleId"
+                      render={({ field, fieldState }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-1 justify-between">
+                            <FieldLabel label="Select Vehicle" required />
+                            <FormMessage className="text-[10px] text-red-500" />
+                          </div>
+                          <Select
+                            onValueChange={field.onChange}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger
+                                className={fieldClassName(!!fieldState.error)}
+                                aria-invalid={!!fieldState.error}
+                              >
+                                <SelectValue placeholder="Choose a vehicle" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="border-slate-700/80 bg-card text-slate-300">
+                              {vehicles.map((v) => (
+                                <SelectItem key={v.id} value={v.id}>
+                                  {v.stockNo} - {v.yearModel}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormItem>
+                      )}
                     />
-                  ) : null}
-                </div>
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <KeyValueRow
-                    label="Stock #"
-                    value={selectedVehicle?.stockNo ?? emptyDash}
-                    mono
-                  />
-                  <KeyValueRow
-                    label="VIN"
-                    value={selectedVehicle?.vin ?? emptyDash}
-                    mono
-                  />
-                  <div className="text-[12px] font-semibold text-white">
-                    {selectedVehicle?.yearModel ?? "No vehicle selected"}
+                  )}
+
+                  <div className="flex gap-3">
+                    <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded border border-slate-700/80 bg-slate-800/50">
+                      {selectedVehicle?.imageUrl ? (
+                        <Image
+                          src={selectedVehicle.imageUrl}
+                          alt={selectedVehicle.yearModel}
+                          fill
+                          className="object-cover"
+                          sizes="96px"
+                        />
+                      ) : null}
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <KeyValueRow
+                        label="Stock #"
+                        value={selectedVehicle?.stockNo ?? emptyDash}
+                        mono
+                      />
+                      <KeyValueRow
+                        label="VIN"
+                        value={selectedVehicle?.vin ?? emptyDash}
+                        mono
+                      />
+                      <div className="text-[12px] font-semibold text-white">
+                        {selectedVehicle?.yearModel ?? "No vehicle selected"}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="space-y-1.5 border-t border-slate-700/80 pt-2">
-                <KeyValueRow
-                  label="Mileage"
-                  value={
-                    selectedVehicle?.mileage
-                      ? `${selectedVehicle.mileage} mi`
-                      : emptyDash
-                  }
-                  mono
-                />
-                <KeyValueRow
-                  label="Purchase Cost"
-                  value={
-                    selectedVehicle
-                      ? formatCurrency(selectedVehicle.purchaseCost)
-                      : emptyDash
-                  }
-                  mono
-                />
-                <KeyValueRow
-                  label="Asking Price"
-                  value={
-                    selectedVehicle
-                      ? formatCurrency(selectedVehicle.askingPrice)
-                      : emptyDash
-                  }
-                  mono
-                />
-              </div>
+                  <div className="space-y-1.5 border-t border-slate-700/80 pt-2">
+                    <KeyValueRow
+                      label="Mileage"
+                      value={
+                        selectedVehicle?.mileage
+                          ? `${selectedVehicle.mileage} mi`
+                          : emptyDash
+                      }
+                      mono
+                    />
+                    <KeyValueRow
+                      label="Purchase Cost"
+                      value={
+                        selectedVehicle
+                          ? formatCurrency(selectedVehicle.purchaseCost)
+                          : emptyDash
+                      }
+                      mono
+                    />
+                    <KeyValueRow
+                      label="Asking Price"
+                      value={
+                        selectedVehicle
+                          ? formatCurrency(selectedVehicle.askingPrice)
+                          : emptyDash
+                      }
+                      mono
+                    />
+                  </div>
 
-              <FormField
-                control={form.control}
-                name="stockNo"
-                render={({ field }) => (
-                  <FormItem className="hidden">
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="vin"
-                render={({ field }) => (
-                  <FormItem className="hidden">
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
+                  <FormField
+                    control={form.control}
+                    name="stockNo"
+                    render={({ field }) => (
+                      <FormItem className="hidden">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="vin"
+                    render={({ field }) => (
+                      <FormItem className="hidden">
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </FormSection>
 
             <FormSection
@@ -350,7 +669,6 @@ export default function UnifiedDealJacketFormEngine({
               {(
                 [
                   ["buyerName", "Buyer Name", true, "text"],
-                  ["buyerPhone", "Phone", true, "text"],
                   ["buyerEmail", "Email", true, "email"],
                   ["buyerAddress", "Address", false, "text"],
                   ["driverLicenseNo", "Driver License #", true, "text"],
@@ -379,6 +697,32 @@ export default function UnifiedDealJacketFormEngine({
                   )}
                 />
               ))}
+              <FormField
+                control={form.control}
+                name="buyerPhone"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <div className="flex items-center gap-1 justify-between">
+                      <FieldLabel label="Phone" required />
+                      <FormMessage className="text-[10px] text-red-500" />
+                    </div>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="text"
+                        theme="dark"
+                        placeholder="(123) 456-7890"
+                        className={fieldClassName(!!fieldState.error)}
+                        aria-invalid={!!fieldState.error}
+                        onChange={(e) => {
+                          const formatted = formatPhoneNumber(e.target.value);
+                          field.onChange(formatted);
+                        }}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -411,15 +755,29 @@ export default function UnifiedDealJacketFormEngine({
               />
 
               <div className="space-y-2 border-t border-slate-700/80 pt-2">
-                <AttachmentBadge
-                  label="Driver License Upload"
-                  fileName={buyerAttachments.driverLicense.fileName}
-                  uploaded={buyerAttachments.driverLicense.uploaded}
+                <AttachmentUploadBadge
+                  label="Driver License"
+                  file={driverLicenseFile}
+                  onFileSelect={(f) => {
+                    setDriverLicenseFile(f);
+                    setFiles(collectAllFiles(extraFiles, f, insuranceFile));
+                  }}
+                  onRemove={() => {
+                    setDriverLicenseFile(null);
+                    setFiles(collectAllFiles(extraFiles, null, insuranceFile));
+                  }}
                 />
-                <AttachmentBadge
-                  label="Insurance Upload"
-                  fileName={buyerAttachments.insurance.fileName}
-                  uploaded={buyerAttachments.insurance.uploaded}
+                <AttachmentUploadBadge
+                  label="Insurance Card"
+                  file={insuranceFile}
+                  onFileSelect={(f) => {
+                    setInsuranceFile(f);
+                    setFiles(collectAllFiles(extraFiles, driverLicenseFile, f));
+                  }}
+                  onRemove={() => {
+                    setInsuranceFile(null);
+                    setFiles(collectAllFiles(extraFiles, driverLicenseFile, null));
+                  }}
                 />
               </div>
             </FormSection>
@@ -718,14 +1076,14 @@ export default function UnifiedDealJacketFormEngine({
                     )}
                   </div>
                 ))}
-                {extraFiles.map((name) => (
+                {extraFiles.map((file, idx) => (
                   <div
-                    key={name}
+                    key={`${file.name}-${file.lastModified}-${idx}`}
                     className="flex items-center gap-2 rounded border border-slate-700/80 bg-slate-800/30 px-2 py-1.5"
                   >
                     <FileText className="h-3.5 w-3.5 shrink-0 text-slate-500" />
                     <span className="truncate text-[11px] text-slate-300">
-                      {name}
+                      {file.name}
                     </span>
                     <CheckCircle2 className="ml-auto h-4 w-4 shrink-0 text-emerald-500" />
                   </div>
@@ -737,10 +1095,10 @@ export default function UnifiedDealJacketFormEngine({
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
-                  const names = Array.from(e.dataTransfer.files).map(
-                    (f) => f.name,
-                  );
-                  setExtraFiles((prev) => [...prev, ...names]);
+                  const dropped = Array.from(e.dataTransfer.files);
+                  const next = [...extraFiles, ...dropped];
+                  setExtraFiles(next);
+                  setFiles(collectAllFiles(next, driverLicenseFile, insuranceFile));
                 }}
                 onClick={() => fileInputRef.current?.click()}
                 role="button"
@@ -776,7 +1134,7 @@ export default function UnifiedDealJacketFormEngine({
                   <Button
                     type="button"
                     variant="outline"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || vehicleRejected}
                     onClick={saveDraft}
                     className="h-8 border-slate-700/80 bg-transparent text-[12px] text-slate-300 hover:bg-slate-800/50"
                   >
@@ -787,7 +1145,7 @@ export default function UnifiedDealJacketFormEngine({
                   </Button>
                   <Button
                     type="button"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || vehicleRejected}
                     onClick={saveDealJacket}
                     className="h-8 bg-[#3b82f6] text-[12px] text-white hover:bg-blue-500"
                   >

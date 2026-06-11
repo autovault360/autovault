@@ -351,13 +351,13 @@ async function buildDashboard(
       grossProfit: Number(j.profit_gross ?? 0),
       commissionRate: Number(dbUser.commission_rate ?? 0.1),
       commissionEarned: Number(j.commission_amount ?? 0),
-      status: j.commission_status === "paid" ? "paid" : "pending",
+      status: j.commission_status === "paid" ? "paid" : "pending_review",
     } as ISalesRepCommissionRow;
   });
 
   const total = commissionEntries.reduce((s, e) => s + e.commissionEarned, 0);
   const paid = commissionEntries.filter((e) => e.status === "paid").reduce((s, e) => s + e.commissionEarned, 0);
-  const pnd = commissionEntries.filter((e) => e.status === "pending").reduce((s, e) => s + e.commissionEarned, 0);
+  const pnd = commissionEntries.filter((e) => e.status !== "paid").reduce((s, e) => s + e.commissionEarned, 0);
 
   const commissions: ISalesRepCommissionsData = {
     summary: {

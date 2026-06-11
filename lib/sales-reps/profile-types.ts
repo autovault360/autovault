@@ -1,6 +1,5 @@
 import type { KPIIconName } from "@/components/ui/kpi-card";
-
-export type SalesRepCommissionStatus = "paid" | "pending";
+import type { SalesRepCommissionStatus } from "@/lib/sales-rep/commissions/types";
 
 export type SalesRepProfileDateRange = {
   start: string;

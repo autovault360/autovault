@@ -1,8 +1,9 @@
 import SalesRepSoldVehiclesContent from "@/components/sales-rep/sold-vehicles/sales-rep-sold-vehicles-content";
-import { SALES_REP_SOLD_VEHICLES_MOCK } from "@/lib/sales-rep/sold-vehicles/mock-data";
+import { getSalesRepSoldVehicles } from "@/lib/sales-rep/sold-vehicles/server/get-sold-vehicles";
 
-export default function SalesRepMySoldVehiclesPage() {
+export default async function SalesRepMySoldVehiclesPage() {
+  const { vehicles } = await getSalesRepSoldVehicles();
   return (
-    <SalesRepSoldVehiclesContent vehicles={SALES_REP_SOLD_VEHICLES_MOCK} />
+    <SalesRepSoldVehiclesContent vehicles={vehicles} />
   );
 }

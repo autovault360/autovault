@@ -1,4 +1,9 @@
-import type { DealJacketListItem, DealJacketTabCounts } from "./types";
+import type {
+  CommissionStatus,
+  DealJacketListItem,
+  DealJacketStatus,
+  DealJacketTabCounts,
+} from "./types";
 import {
   isSoldInReferenceMonth,
   isSoldInReferenceYear,
@@ -39,6 +44,15 @@ const PAYMENT_METHODS = [
   "credit_card",
 ] as const;
 
+const COMMISSION_STATUSES: CommissionStatus[] = [
+  "pending_review",
+  "changes_requested",
+  "resubmitted",
+  "approved",
+  "rejected",
+  "paid",
+];
+
 const PENDING_INDICES = new Set([
   4, 7, 12, 18, 25, 31, 38, 44, 52, 61, 68, 75, 82, 91, 98, 105, 112, 120,
   128, 135, 142, 149, 155,
@@ -64,6 +78,14 @@ function saleDateForIndex(index: number): string {
   return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
+const WORKFLOW_STATUSES: DealJacketStatus[] = [
+  "pending_review",
+  "changes_requested",
+  "resubmitted",
+  "approved",
+  "rejected",
+];
+
 export const DEAL_JACKETS_MOCK: DealJacketListItem[] = Array.from(
   { length: 156 },
   (_, index) => {
@@ -74,8 +96,11 @@ export const DEAL_JACKETS_MOCK: DealJacketListItem[] = Array.from(
     const totalProfit =
       Math.round(salePrice * (0.08 + (index % 5) * 0.015) * 100) / 100;
     const commissionAmount = Math.round(totalProfit * 0.2 * 100) / 100;
-    const commissionStatus = PENDING_INDICES.has(index) ? "pending" : "paid";
+    const commissionStatus = PENDING_INDICES.has(index)
+      ? "pending_review"
+      : COMMISSION_STATUSES[index % COMMISSION_STATUSES.length];
     const stockNum = 1001 + index;
+    const workflowStatus = WORKFLOW_STATUSES[index % WORKFLOW_STATUSES.length];
 
     return {
       id: `deal-${String(index + 1).padStart(4, "0")}`,
@@ -97,6 +122,7 @@ export const DEAL_JACKETS_MOCK: DealJacketListItem[] = Array.from(
       commissionStatus,
       paymentMethod: PAYMENT_METHODS[index % PAYMENT_METHODS.length],
       soldStatus: "sold",
+      workflowStatus,
     };
   },
 );
@@ -131,8 +157,9 @@ export function computeDealJacketTabCounts(
       .length,
     sold_this_year: items.filter((i) => isSoldInReferenceYear(i.saleDate))
       .length,
-    pending_commission: items.filter((i) => i.commissionStatus === "pending")
-      .length,
+    pending_commission: items.filter((i) =>
+      i.commissionStatus !== "paid" && i.commissionStatus !== "rejected"
+    ).length,
     commission_paid: items.filter((i) => i.commissionStatus === "paid").length,
   };
 }

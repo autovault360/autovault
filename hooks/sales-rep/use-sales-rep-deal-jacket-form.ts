@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ import {
   unifiedDealJacketSchema,
   type UnifiedDealJacketFormValues,
 } from "@/lib/sales-rep/deal-jacket/unified-schemas";
+import { submitDealJacket } from "@/lib/deal-jackets/server/submit-deal-jacket";
 import type { LinkedVehicleResult } from "@/lib/expenses/server/types";
 
 function buildDefaults(): UnifiedDealJacketFormValues {
@@ -44,6 +45,7 @@ export function useSalesRepDealJacketForm(
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shake, setShake] = useState(false);
   const [linkedVehicle, setLinkedVehicle] = useState<LinkedVehicleResult | null>(null);
+  const filesRef = useRef<File[]>([]);
 
   const form = useForm<UnifiedDealJacketFormValues>({
     resolver: zodResolver(
@@ -52,6 +54,10 @@ export function useSalesRepDealJacketForm(
     defaultValues: buildDefaults(),
     mode: "onBlur",
   });
+
+  const setFiles = (files: File[]) => {
+    filesRef.current = files;
+  };
 
   useEffect(() => {
     if (linkedVehicle) {
@@ -148,11 +154,52 @@ export function useSalesRepDealJacketForm(
     toast.success("Deal jacket saved as draft.");
   }, onValidationError);
 
-  const saveDealJacket = form.handleSubmit(async () => {
+  const saveDealJacket = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setIsSubmitting(false);
-    toast.success("Deal jacket saved and sent for admin review.");
+    try {
+      const result = await submitDealJacket(
+        {
+          linkedVehicleId: values.linkedVehicleId,
+          buyerName: values.buyerName,
+          buyerPhone: values.buyerPhone,
+          buyerEmail: values.buyerEmail,
+          buyerAddress: values.buyerAddress,
+          driverLicenseNo: values.driverLicenseNo,
+          buyerState: values.buyerState,
+          salePrice: values.salePrice,
+          saleDate: values.saleDate,
+          downPayment: values.downPayment,
+          tradeInAllowance: values.tradeInAllowance,
+          dmvFees: values.dmvFees,
+          registrationFees: values.registrationFees,
+          documentationFees: values.documentationFees,
+          warrantyAmount: values.warrantyAmount,
+          gapAmount: values.gapAmount,
+          lender: values.lender,
+          rosNumber: values.rosNumber,
+          dealType: values.dealType,
+          notes: values.notes,
+        },
+        filesRef.current,
+      );
+
+      if (result.success) {
+        toast.success(
+          `Deal jacket ${result.jacketNumber} created and sent for review.`,
+        );
+        form.reset(buildDefaults());
+        setLinkedVehicle(null);
+        filesRef.current = [];
+      } else {
+        toast.error(result.error);
+        triggerShake();
+      }
+    } catch {
+      toast.error("Failed to create deal jacket. Please try again.");
+      triggerShake();
+    } finally {
+      setIsSubmitting(false);
+    }
   }, onValidationError);
 
   return {
@@ -164,5 +211,6 @@ export function useSalesRepDealJacketForm(
     shake,
     saveDraft,
     saveDealJacket,
+    setFiles,
   };
 }

@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireDealJacketAuth, canManageDealJackets } from "./auth";
 import { logDealJacketActivity } from "./activity";
+import { updateCommissionStatus } from "@/lib/sales-rep/commissions/server/update-commission-status";
 import type { DealJacketStatus } from "../types";
 import type { DealJacketRow } from "./db-types";
 
@@ -81,6 +82,40 @@ export async function approveDealJacket(
 
   if (!updated) return { success: false, error: "Failed to approve deal jacket" };
 
+  await supabase
+    .from("vehicles")
+    .update({ status: "sold" })
+    .eq("id", row.vehicle_id)
+    .eq("dealership_id", auth.user.dealershipId);
+
+  const { data: vehicleRow } = await supabase
+    .from("vehicles")
+    .select("status")
+    .eq("id", row.vehicle_id)
+    .single();
+
+  await supabase.from("status_history").insert({
+    vehicle_id: row.vehicle_id,
+    dealership_id: auth.user.dealershipId,
+    from_status: vehicleRow?.status ?? "in_stock",
+    to_status: "sold",
+    notes: `Deal jacket ${row.jacket_number} approved`,
+    changed_by: auth.user.userId,
+  });
+
+  await supabase.from("audit_logs").insert({
+    dealership_id: auth.user.dealershipId,
+    entity_type: "deal_jackets",
+    entity_id: dealJacketId,
+    action: "APPROVED",
+    new_values: {
+      jacket_number: row.jacket_number,
+      vehicle_id: row.vehicle_id,
+      customer_id: row.customer_id,
+    },
+    changed_by: auth.user.userId,
+  });
+
   await logDealJacketActivity({
     dealJacketId,
     action: "approved",
@@ -90,6 +125,8 @@ export async function approveDealJacket(
     newStatus: "approved",
     detail: reviewNotes ? { reviewNotes } : null,
   });
+
+  await updateCommissionStatus(dealJacketId, "approved");
 
   return { success: true, dealJacket: updated };
 }
@@ -133,6 +170,8 @@ export async function rejectDealJacket(
     newStatus: "rejected",
     detail: { rejectionReason },
   });
+
+  await updateCommissionStatus(dealJacketId, "rejected");
 
   return { success: true, dealJacket: updated };
 }
@@ -183,6 +222,8 @@ export async function requestChangesOnDealJacket(
     detail: { reviewNotes, changeCategories },
   });
 
+  await updateCommissionStatus(dealJacketId, "changes_requested");
+
   return { success: true, dealJacket: updated };
 }
 
@@ -221,6 +262,8 @@ export async function resubmitDealJacket(
     newStatus: "resubmitted",
     detail: resubmissionNotes ? { resubmissionNotes } : null,
   });
+
+  await updateCommissionStatus(dealJacketId, "resubmitted");
 
   return { success: true, dealJacket: updated };
 }

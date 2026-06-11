@@ -27,6 +27,12 @@ export {
   type FinancialResult,
 } from "@/lib/deal-jackets/server/calculate-financials";
 
+export {
+  submitDealJacket,
+  type SubmitDealJacketFormData,
+  type SubmitDealJacketResult,
+} from "@/lib/deal-jackets/server/submit-deal-jacket";
+
 export type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,

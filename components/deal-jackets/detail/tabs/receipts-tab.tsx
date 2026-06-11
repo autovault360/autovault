@@ -24,6 +24,8 @@ export default function ReceiptsTab({ detail }: { detail: DealJacketDetail }) {
         type: "receipt" as const,
         uploadedAt: detail.sale.dateSold,
         icon: "receipt" as const,
+        fileUrl: "",
+        fileType: "application/octet-stream",
         amount: 50 + i * 25,
       }),
     ),

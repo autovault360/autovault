@@ -186,7 +186,7 @@ const MIKE_JOHNSON_PROFILE: SalesRepProfileDetail = {
       vehicle: "2020 Ford F-150",
       grossProfit: 3200,
       commission: 640,
-      status: "pending",
+      status: "pending_review",
     },
     {
       id: "ch-4",
@@ -202,7 +202,7 @@ const MIKE_JOHNSON_PROFILE: SalesRepProfileDetail = {
       vehicle: "2022 Nissan Altima",
       grossProfit: 2250,
       commission: 450,
-      status: "pending",
+      status: "pending_review",
     },
     {
       id: "ch-6",
@@ -226,7 +226,7 @@ const MIKE_JOHNSON_PROFILE: SalesRepProfileDetail = {
       vehicle: "2019 Mazda CX-5",
       grossProfit: 2350,
       commission: 470,
-      status: "pending",
+      status: "pending_review",
     },
   ],
   commissionSummary: {

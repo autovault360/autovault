@@ -13,6 +13,7 @@ import {
 import {
   formatSoldDate,
   getVehicleLabel,
+  VEHICLE_IMAGE_PLACEHOLDER,
 } from "@/lib/sales-rep/payroll-earnings/calculations";
 import type { IEarningsByVehicle } from "@/lib/sales-rep/payroll-earnings/types";
 import PayrollPaymentStatusBadge from "./payroll-payment-status-badge";
@@ -58,7 +59,7 @@ export default function PayrollEarningsDetailDialog({
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <img
-              src={row.vehicleImageUrl}
+              src={row.vehicleImageUrl || VEHICLE_IMAGE_PLACEHOLDER}
               alt={getVehicleLabel(row)}
               className="h-16 w-24 rounded-md object-cover"
             />

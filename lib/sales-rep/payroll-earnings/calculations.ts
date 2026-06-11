@@ -5,6 +5,9 @@ import type {
   PayrollEarningsFilterState,
 } from "./types";
 
+export const VEHICLE_IMAGE_PLACEHOLDER =
+  "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=80&h=60&fit=crop";
+
 export function getVehicleLabel(row: IEarningsByVehicle): string {
   const trim = row.trim ? ` ${row.trim}` : "";
   return `${row.year} ${row.make} ${row.model}${trim}`;

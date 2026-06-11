@@ -19,6 +19,8 @@ export type LinkedVehicleResult = {
   color: string;
   status: string;
   image: string;
+  acquisitionCost?: number;
+  totalInvested?: number;
 };
 
 export type DbDealershipExpense = {
