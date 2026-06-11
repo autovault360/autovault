@@ -1,35 +1,29 @@
 "use client";
 
-import { useState } from "react";
 import { Send } from "lucide-react";
+import { useState } from "react";
 
 type Props = {
-  onSend: (message: string) => Promise<void>;
+  onSend: (message: string) => void;
   disabled?: boolean;
 };
 
 export default function MessageComposer({ onSend, disabled }: Props) {
   const [text, setText] = useState("");
-  const [sending, setSending] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const value = text.trim();
-    if (!value || sending || disabled) return;
+    if (!value || disabled) return;
 
-    setSending(true);
-    try {
-      await onSend(value);
-      setText("");
-    } finally {
-      setSending(false);
-    }
+    setText("");
+    onSend(value);
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void handleSubmit(e);
+      handleSubmit(e);
     }
   }
 
@@ -45,12 +39,12 @@ export default function MessageComposer({ onSend, disabled }: Props) {
           onKeyDown={handleKeyDown}
           placeholder="Type a message..."
           rows={1}
-          disabled={disabled || sending}
+          disabled={disabled}
           className="max-h-32 min-h-[44px] flex-1 resize-none rounded-xl border border-slate-800 bg-slate-900/80 px-4 py-3 text-[13.5px] text-slate-200 placeholder:text-slate-500 focus:border-blue-500/50 focus:outline-none focus:ring-1 focus:ring-blue-500/30 disabled:opacity-50"
         />
         <button
           type="submit"
-          disabled={!text.trim() || disabled || sending}
+          disabled={!text.trim() || disabled}
           aria-label="Send message"
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
         >

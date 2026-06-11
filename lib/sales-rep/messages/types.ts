@@ -39,6 +39,8 @@ export type ChatMessage = {
   readAt: string | null;
   createdAt: string;
   isOwn: boolean;
+  pending?: boolean;
+  failed?: boolean;
 };
 
 export type ConversationDetail = {

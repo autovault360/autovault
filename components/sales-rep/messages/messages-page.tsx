@@ -15,9 +15,76 @@ import type {
   ConversationDetail,
   ConversationListItem,
   ConversationTab,
+  MessageParticipant,
 } from "@/lib/sales-rep/messages/types";
+import { mapProfileToParticipant } from "@/lib/sales-rep/messages/calculations";
 
 const POLL_INTERVAL_MS = 30_000;
+const LIST_REFRESH_DEBOUNCE_MS = 600;
+
+function createOptimisticMessage(text: string, conversationId: string): ChatMessage {
+  return {
+    id: `pending-${crypto.randomUUID()}`,
+    conversationId,
+    senderId: "",
+    messageText: text,
+    isRead: false,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+    isOwn: true,
+    pending: true,
+  };
+}
+
+function mapRealtimeRow(row: Record<string, unknown>, currentUserId: string): ChatMessage {
+  return {
+    id: row.id as string,
+    conversationId: row.conversation_id as string,
+    senderId: row.sender_id as string,
+    messageText: row.message_text as string,
+    isRead: Boolean(row.is_read),
+    readAt: (row.read_at as string | null) ?? null,
+    createdAt: row.created_at as string,
+    isOwn: row.sender_id === currentUserId,
+  };
+}
+
+function appendOptimisticToDetail(
+  prev: ConversationDetail | null,
+  participant: MessageParticipant,
+  optimisticMessage: ChatMessage,
+  conversationId: string | null,
+): ConversationDetail {
+  const now = optimisticMessage.createdAt;
+  const base: ConversationDetail =
+    prev ??
+    ({
+      id: conversationId ?? "",
+      createdAt: now,
+      participants: [participant],
+      otherParticipant: participant,
+      messages: [],
+      hasMore: false,
+      nextCursor: null,
+      stats: {
+        totalMessages: 0,
+        unreadMessages: 0,
+        conversationStarted: now,
+        lastActiveAt: null,
+      },
+    } satisfies ConversationDetail);
+
+  return {
+    ...base,
+    id: conversationId ?? base.id,
+    messages: [...base.messages, optimisticMessage],
+    stats: {
+      ...base.stats,
+      totalMessages: base.stats.totalMessages + 1,
+      lastActiveAt: now,
+    },
+  };
+}
 
 export default function MessagesPage() {
   const searchParams = useSearchParams();
@@ -30,9 +97,15 @@ export default function MessagesPage() {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [activeRepId, setActiveRepId] = useState<string | null>(null);
   const [conversationDetail, setConversationDetail] = useState<ConversationDetail | null>(null);
+  const [currentUser, setCurrentUser] = useState<MessageParticipant | null>(null);
   const [threadLoading, setThreadLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const realtimeEnabledRef = useRef(true);
+  const currentUserIdRef = useRef<string | null>(null);
+  const activeConversationIdRef = useRef<string | null>(null);
+  const listRefreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  activeConversationIdRef.current = activeConversationId;
 
   const fetchConversations = useCallback(async () => {
     const params = new URLSearchParams({
@@ -49,34 +122,49 @@ export default function MessagesPage() {
     setTotalUnread(data.totalUnread ?? 0);
   }, [activeTab, search]);
 
-  const fetchConversationDetail = useCallback(async (conversationId: string) => {
-    setThreadLoading(true);
-    try {
-      const res = await fetch(`/api/messages/conversation/${conversationId}`);
-      if (!res.ok) return;
-      const data = (await res.json()) as ConversationDetail;
-      setConversationDetail(data);
-      setActiveRepId(data.otherParticipant.id);
-    } finally {
-      setThreadLoading(false);
+  const scheduleListRefresh = useCallback(() => {
+    if (listRefreshTimerRef.current) {
+      clearTimeout(listRefreshTimerRef.current);
     }
-  }, []);
-
-  const markAsRead = useCallback(async (conversationId: string) => {
-    await fetch("/api/messages/read", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ conversationId }),
-    });
-    await fetchConversations();
+    listRefreshTimerRef.current = setTimeout(() => {
+      void fetchConversations();
+    }, LIST_REFRESH_DEBOUNCE_MS);
   }, [fetchConversations]);
+
+  const fetchConversationDetail = useCallback(
+    async (conversationId: string, options?: { silent?: boolean }) => {
+      if (!options?.silent) setThreadLoading(true);
+      try {
+        const res = await fetch(`/api/messages/conversation/${conversationId}`);
+        if (!res.ok) return;
+        const data = (await res.json()) as ConversationDetail;
+        setConversationDetail(data);
+        setActiveRepId(data.otherParticipant.id);
+      } finally {
+        if (!options?.silent) setThreadLoading(false);
+      }
+    },
+    [],
+  );
+
+  const markAsRead = useCallback(
+    async (conversationId: string, refreshList = false) => {
+      await fetch("/api/messages/read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId }),
+      });
+      if (refreshList) scheduleListRefresh();
+    },
+    [scheduleListRefresh],
+  );
 
   const openConversation = useCallback(
     async (conversationId: string, repId?: string) => {
       setActiveConversationId(conversationId);
       if (repId) setActiveRepId(repId);
       await fetchConversationDetail(conversationId);
-      await markAsRead(conversationId);
+      void markAsRead(conversationId, true);
     },
     [fetchConversationDetail, markAsRead],
   );
@@ -97,79 +185,116 @@ export default function MessagesPage() {
   );
 
   const handleSend = useCallback(
-    async (message: string) => {
+    (message: string) => {
       if (!activeRepId && !activeConversationId) return;
 
-      const res = await fetch("/api/messages/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversationId: activeConversationId ?? undefined,
-          recipientId: activeConversationId ? undefined : activeRepId,
-          message,
-        }),
+      const participant =
+        conversationDetail?.otherParticipant ??
+        conversations.find((entry) => entry.repId === activeRepId)?.otherParticipant;
+
+      if (!participant) return;
+
+      const optimisticId = `pending-${crypto.randomUUID()}`;
+      const now = new Date().toISOString();
+      const optimisticMessage: ChatMessage = {
+        ...createOptimisticMessage(message, activeConversationId ?? ""),
+        id: optimisticId,
+        createdAt: now,
+      };
+
+      setConversationDetail((prev) =>
+        appendOptimisticToDetail(prev, participant, optimisticMessage, activeConversationId),
+      );
+
+      setConversations((prev) => {
+        const next = prev.map((entry) =>
+          entry.repId === activeRepId
+            ? {
+                ...entry,
+                lastMessageText: message,
+                lastMessageAt: now,
+              }
+            : entry,
+        );
+        const index = next.findIndex((entry) => entry.repId === activeRepId);
+        if (index <= 0) return next;
+        const [item] = next.splice(index, 1);
+        return [item, ...next];
       });
 
-      if (!res.ok) {
-        const body = (await res.json().catch(() => null)) as { error?: string } | null;
-        toast.error(body?.error ?? "Failed to send message.");
-        return;
-      }
-      const data = await res.json();
-      const conversationId = data.conversationId ?? activeConversationId;
+      void (async () => {
+        const res = await fetch("/api/messages/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            conversationId: activeConversationId ?? undefined,
+            recipientId: activeConversationId ? undefined : activeRepId,
+            message,
+          }),
+        });
 
-      if (conversationId) {
-        setActiveConversationId(conversationId);
-      }
-
-      setConversationDetail((prev) => {
-        const message = data.message as ChatMessage;
-        if (prev) {
-          return {
-            ...prev,
-            messages: [...prev.messages, message],
-            stats: {
-              ...prev.stats,
-              totalMessages: prev.stats.totalMessages + 1,
-            },
-          };
+        if (!res.ok) {
+          const body = (await res.json().catch(() => null)) as { error?: string } | null;
+          toast.error(body?.error ?? "Failed to send message.");
+          setConversationDetail((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              messages: prev.messages.map((item) =>
+                item.id === optimisticId
+                  ? { ...item, pending: false, failed: true }
+                  : item,
+              ),
+            };
+          });
+          return;
         }
 
-        const participant =
-          conversations.find((entry) => entry.repId === activeRepId)?.otherParticipant ??
-          null;
+        const data = await res.json();
+        const conversationId = (data.conversationId as string) ?? activeConversationId;
+        const confirmed = data.message as ChatMessage;
 
-        if (!participant) return prev;
+        if (conversationId) {
+          setActiveConversationId(conversationId);
+        }
 
-        return {
-          id: conversationId,
-          createdAt: new Date().toISOString(),
-          participants: [participant],
-          otherParticipant: participant,
-          messages: [message],
-          hasMore: false,
-          nextCursor: null,
-          stats: {
-            totalMessages: 1,
-            unreadMessages: 0,
-            conversationStarted: new Date().toISOString(),
-            lastActiveAt: message.createdAt,
-          },
-        };
-      });
+        setConversationDetail((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            id: conversationId ?? prev.id,
+            messages: prev.messages.map((item) =>
+              item.id === optimisticId ? { ...confirmed, pending: false, failed: false } : item,
+            ),
+            stats: {
+              ...prev.stats,
+              lastActiveAt: confirmed.createdAt,
+            },
+          };
+        });
 
-      if (conversationId) {
-        await fetchConversationDetail(conversationId);
-      }
+        setConversations((prev) =>
+          prev.map((entry) =>
+            entry.repId === activeRepId
+              ? {
+                  ...entry,
+                  conversationId: conversationId ?? entry.conversationId,
+                  lastMessageText: message,
+                  lastMessageAt: confirmed.createdAt,
+                }
+              : entry,
+          ),
+        );
 
-      await fetchConversations();
+        scheduleListRefresh();
+      })();
     },
     [
       activeConversationId,
       activeRepId,
+      conversationDetail?.otherParticipant,
       conversations,
-      fetchConversationDetail,
-      fetchConversations,
+      scheduleListRefresh,
     ],
   );
 
@@ -205,6 +330,23 @@ export default function MessagesPage() {
   }, [activeConversationId, conversationDetail]);
 
   useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      supabase
+        .from("users")
+        .select("id, full_name, email, phone, image_url, role, updated_at")
+        .eq("auth_user_id", data.user.id)
+        .maybeSingle()
+        .then(({ data: profile }) => {
+          if (!profile) return;
+          currentUserIdRef.current = profile.id;
+          setCurrentUser(mapProfileToParticipant(profile));
+        });
+    });
+  }, []);
+
+  useEffect(() => {
     setListLoading(true);
     fetchConversations().finally(() => setListLoading(false));
   }, [fetchConversations]);
@@ -221,22 +363,56 @@ export default function MessagesPage() {
       .channel("sales-rep-messages")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "messages" },
-        () => {
-          void fetchConversations();
-          if (activeConversationId) {
-            void fetchConversationDetail(activeConversationId);
-            if (document.hasFocus()) {
-              void markAsRead(activeConversationId);
+        { event: "INSERT", schema: "public", table: "messages" },
+        (payload) => {
+          const row = payload.new as Record<string, unknown>;
+          const conversationId = row.conversation_id as string;
+          const currentUserId = currentUserIdRef.current ?? "";
+          const incoming = mapRealtimeRow(row, currentUserId);
+
+          if (conversationId === activeConversationIdRef.current) {
+            setConversationDetail((prev) => {
+              if (!prev) return prev;
+              if (prev.messages.some((item) => item.id === incoming.id)) return prev;
+              const withoutPendingDuplicate = prev.messages.filter(
+                (item) =>
+                  !(
+                    item.pending &&
+                    item.isOwn &&
+                    item.messageText === incoming.messageText
+                  ),
+              );
+              return {
+                ...prev,
+                messages: [...withoutPendingDuplicate, incoming],
+                stats: {
+                  ...prev.stats,
+                  totalMessages: withoutPendingDuplicate.length + 1,
+                  lastActiveAt: incoming.createdAt,
+                },
+              };
+            });
+
+            if (incoming.senderId !== currentUserId && document.hasFocus()) {
+              void markAsRead(conversationId);
             }
           }
+
+          scheduleListRefresh();
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "messages" },
+        () => {
+          scheduleListRefresh();
         },
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "conversations" },
         () => {
-          void fetchConversations();
+          scheduleListRefresh();
         },
       )
       .subscribe((status) => {
@@ -245,25 +421,20 @@ export default function MessagesPage() {
 
     return () => {
       supabase.removeChannel(channel);
+      if (listRefreshTimerRef.current) {
+        clearTimeout(listRefreshTimerRef.current);
+      }
     };
-  }, [
-    activeConversationId,
-    fetchConversations,
-    fetchConversationDetail,
-    markAsRead,
-  ]);
+  }, [markAsRead, scheduleListRefresh]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (realtimeEnabledRef.current) return;
       void fetchConversations();
-      if (activeConversationId) {
-        void fetchConversationDetail(activeConversationId);
-      }
     }, POLL_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [activeConversationId, fetchConversations, fetchConversationDetail]);
+  }, [fetchConversations]);
 
   const participant =
     conversationDetail?.otherParticipant ??
@@ -298,16 +469,14 @@ export default function MessagesPage() {
             ) : (
               <ChatThread
                 messages={conversationDetail?.messages ?? []}
-                participant={participant!}
+                otherParticipant={participant!}
+                currentUser={currentUser ?? participant!}
                 hasMore={conversationDetail?.hasMore ?? false}
                 loadingMore={loadingMore}
                 onLoadMore={handleLoadMore}
               />
             )}
-            <MessageComposer
-              onSend={handleSend}
-              disabled={!activeRepId}
-            />
+            <MessageComposer onSend={handleSend} disabled={!activeRepId} />
           </>
         ) : (
           <EmptyChatState />
