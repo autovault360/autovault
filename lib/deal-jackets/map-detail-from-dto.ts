@@ -98,6 +98,8 @@ function mapFileItems(
       type,
       uploadedAt: doc.uploadedAt.split("T")[0],
       icon: documentIcon(doc.name),
+      fileUrl: doc.fileUrl,
+      fileType: doc.fileType,
     }));
 }
 
@@ -122,7 +124,7 @@ export function mapDealJacketDetailFromDto(
       : Math.max(0, dto.totalInvested - expenseSum);
   const vehicleExpenses = Math.max(0, dto.totalInvested - purchasePrice);
   const commissionStatus: CommissionStatus =
-    dto.commissionStatus === "paid" ? "paid" : "pending";
+    dto.commissionStatus === "paid" ? "paid" : "pending_review";
   const commissionRate = dto.salesRep?.commissionRate ?? 0.1;
   const commissionPercent = Math.round(commissionRate * 1000) / 10;
   const saleDate = dto.dateSold.split("T")[0];

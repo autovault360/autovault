@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -9,7 +9,10 @@ import {
   unifiedDealJacketSchema,
   type UnifiedDealJacketFormValues,
 } from "@/lib/sales-rep/deal-jacket/unified-schemas";
+import { submitDealJacket } from "@/lib/deal-jackets/server/submit-deal-jacket";
+import { checkVehicleHasDealJacket } from "@/lib/deal-jackets/server/check-deal-jacket";
 import type { ILinkedVehicle } from "@/lib/sales-rep/deal-jacket/types";
+import type { LinkedVehicleResult } from "@/lib/expenses/server/types";
 
 function buildDefaults(
   vehicle: ILinkedVehicle | null,
@@ -18,23 +21,23 @@ function buildDefaults(
     linkedVehicleId: vehicle?.id ?? "",
     stockNo: vehicle?.stockNo ?? "",
     vin: vehicle?.vin ?? "",
-    buyerName: "John Smith",
-    buyerPhone: "(555) 123-4567",
-    buyerEmail: "john.smith@email.com",
-    buyerAddress: "1234 Main St, Los Angeles, CA 90001",
-    driverLicenseNo: "S1234567",
-    buyerState: "CA",
+    buyerName: "",
+    buyerPhone: "",
+    buyerEmail: "",
+    buyerAddress: "",
+    driverLicenseNo: "",
+    buyerState: "" as UnifiedDealJacketFormValues["buyerState"],
     salePrice: vehicle?.askingPrice ?? 0,
-    saleDate: "2026-05-20",
-    downPayment: 2500,
-    tradeInAllowance: 1500,
-    dmvFees: 85,
-    registrationFees: 75,
-    documentationFees: 85,
-    warrantyAmount: 895,
-    gapAmount: 595,
-    lender: "Westlake Financial",
-    rosNumber: "1234567890",
+    saleDate: "",
+    downPayment: 0,
+    tradeInAllowance: 0,
+    dmvFees: 0,
+    registrationFees: 0,
+    documentationFees: 0,
+    warrantyAmount: 0,
+    gapAmount: 0,
+    lender: "",
+    rosNumber: "",
     dealType: "Retail",
     notes: "",
   };
@@ -44,9 +47,13 @@ export function useUnifiedDealJacketForm(
   vehicles: ILinkedVehicle[],
   commissionRate: number,
   defaultVehicleId?: string,
+  vinLookup?: boolean,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shake, setShake] = useState(false);
+  const [linkedVehicle, setLinkedVehicle] = useState<LinkedVehicleResult | null>(null);
+  const [vehicleHasJacket, setVehicleHasJacket] = useState(false);
+  const filesRef = useRef<File[]>([]);
 
   const defaultVehicle =
     vehicles.find((v) => v.id === defaultVehicleId) ?? vehicles[0] ?? null;
@@ -58,6 +65,48 @@ export function useUnifiedDealJacketForm(
     defaultValues: buildDefaults(defaultVehicle),
     mode: "onBlur",
   });
+
+  const setFiles = (files: File[]) => {
+    filesRef.current = files;
+  };
+
+  const handleLinkedVehicleChange = (
+    vehicle: LinkedVehicleResult | null,
+    options?: { hasExistingJacket?: boolean; workflowStatus?: string },
+  ) => {
+    setLinkedVehicle(vehicle);
+
+    if (!vehicle) {
+      setVehicleHasJacket(false);
+      return;
+    }
+
+    if (options?.hasExistingJacket !== undefined) {
+      setVehicleHasJacket(options.hasExistingJacket);
+      return;
+    }
+
+    setVehicleHasJacket(false);
+    checkVehicleHasDealJacket(vehicle.id).then((res) => {
+      if (res.hasJacket) setVehicleHasJacket(true);
+    });
+  };
+
+  useEffect(() => {
+    if (linkedVehicle && !vehicleHasJacket) {
+      form.setValue("linkedVehicleId", linkedVehicle.id);
+      form.setValue("stockNo", linkedVehicle.stockNumber);
+      form.setValue("vin", linkedVehicle.vin);
+    } else if (vinLookup && (!linkedVehicle || vehicleHasJacket)) {
+      form.setValue("linkedVehicleId", "");
+      form.setValue("stockNo", "");
+      form.setValue("vin", "");
+    } else if (!vinLookup && !linkedVehicle) {
+      form.setValue("linkedVehicleId", "");
+      form.setValue("stockNo", "");
+      form.setValue("vin", "");
+    }
+  }, [linkedVehicle, vehicleHasJacket, form, vinLookup]);
 
   const linkedVehicleId = form.watch("linkedVehicleId");
   const salePrice = form.watch("salePrice");
@@ -75,24 +124,27 @@ export function useUnifiedDealJacketForm(
   );
 
   useEffect(() => {
-    if (defaultVehicleId) {
+    if (!vinLookup && defaultVehicleId) {
       form.setValue("linkedVehicleId", defaultVehicleId);
     }
-  }, [defaultVehicleId, form]);
+  }, [defaultVehicleId, form, vinLookup]);
 
   useEffect(() => {
-    if (selectedVehicle) {
+    if (!vinLookup && selectedVehicle) {
       form.setValue("stockNo", selectedVehicle.stockNo);
       form.setValue("vin", selectedVehicle.vin);
       if (!form.formState.dirtyFields.salePrice) {
         form.setValue("salePrice", selectedVehicle.askingPrice);
       }
     }
-  }, [selectedVehicle, form]);
+  }, [selectedVehicle, form, vinLookup]);
 
   const derived = useMemo(() => {
     const price = Number(salePrice) || 0;
-    const vehicleCost = selectedVehicle?.purchaseCost ?? 0;
+    const vehicleCost =
+      selectedVehicle?.purchaseCost ??
+      linkedVehicle?.acquisitionCost ??
+      0;
     const salesTax = price * SALES_TAX_RATE;
     const grossProfit = Math.max(price - vehicleCost, 0);
     const totalFeesExtras =
@@ -134,6 +186,7 @@ export function useUnifiedDealJacketForm(
   }, [
     salePrice,
     selectedVehicle,
+    linkedVehicle,
     dmvFees,
     registrationFees,
     documentationFees,
@@ -157,27 +210,80 @@ export function useUnifiedDealJacketForm(
     }
   };
 
+  const vehicleIsSold =
+    linkedVehicle?.status === "Sold" || linkedVehicle?.status === "Loss";
+
   const saveDraft = form.handleSubmit(async () => {
+    if (vehicleHasJacket || vehicleIsSold) return;
     setIsSubmitting(true);
     await new Promise((r) => setTimeout(r, 600));
     setIsSubmitting(false);
     toast.success("Deal jacket saved as draft.");
   }, onValidationError);
 
-  const saveDealJacket = form.handleSubmit(async () => {
+  const saveDealJacket = form.handleSubmit(async (values) => {
+    if (vehicleHasJacket || vehicleIsSold) {
+      triggerShake();
+      return;
+    }
+
     setIsSubmitting(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setIsSubmitting(false);
-    toast.success("Deal jacket saved and sent for admin review.");
+    try {
+      const result = await submitDealJacket(
+        {
+          linkedVehicleId: values.linkedVehicleId,
+          buyerName: values.buyerName,
+          buyerPhone: values.buyerPhone,
+          buyerEmail: values.buyerEmail,
+          buyerAddress: values.buyerAddress,
+          driverLicenseNo: values.driverLicenseNo,
+          buyerState: values.buyerState,
+          salePrice: values.salePrice,
+          saleDate: values.saleDate,
+          downPayment: values.downPayment,
+          tradeInAllowance: values.tradeInAllowance,
+          dmvFees: values.dmvFees,
+          registrationFees: values.registrationFees,
+          documentationFees: values.documentationFees,
+          warrantyAmount: values.warrantyAmount,
+          gapAmount: values.gapAmount,
+          lender: values.lender,
+          rosNumber: values.rosNumber,
+          dealType: values.dealType,
+          notes: values.notes,
+        },
+        filesRef.current,
+      );
+
+      if (result.success) {
+        toast.success(
+          `Deal jacket ${result.jacketNumber} created and sent for review.`,
+        );
+        form.reset(buildDefaults(selectedVehicle));
+        filesRef.current = [];
+      } else {
+        toast.error(result.error);
+        triggerShake();
+      }
+    } catch {
+      toast.error("Failed to create deal jacket. Please try again.");
+      triggerShake();
+    } finally {
+      setIsSubmitting(false);
+    }
   }, onValidationError);
 
   return {
     form,
     derived,
     selectedVehicle,
+    linkedVehicle,
+    handleLinkedVehicleChange,
+    vehicleHasJacket,
     isSubmitting,
     shake,
     saveDraft,
     saveDealJacket,
+    setFiles,
   };
 }

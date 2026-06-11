@@ -21,22 +21,28 @@ export function formatSoldDate(iso: string): string {
 }
 
 export function getMonthRange(year: number, month: number): SoldVehicleDateRange {
-  const lastDay = new Date(year, month, 0).getDate();
+  const d = new Date(year, month - 1, 1);
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  const lastDay = new Date(y, m, 0).getDate();
   return {
-    start: `${year}-${String(month).padStart(2, "0")}-01`,
-    end: `${year}-${String(month).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`,
+    start: `${y}-${String(m).padStart(2, "0")}-01`,
+    end: `${y}-${String(m).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`,
   };
 }
 
 export function getTabDateRange(tab: SoldVehicleTab): SoldVehicleDateRange | null {
   if (tab === "custom") return null;
 
-  if (tab === "this_month") return getMonthRange(2026, 6);
-  if (tab === "last_month") return getMonthRange(2026, 5);
-  if (tab === "this_year") return { start: "2026-01-01", end: "2026-12-31" };
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
 
-  // "all" defaults to this month in the design
-  return getMonthRange(2026, 6);
+  if (tab === "this_month") return getMonthRange(year, month);
+  if (tab === "last_month") return getMonthRange(year, month - 1);
+  if (tab === "this_year") return { start: `${year}-01-01`, end: `${year}-12-31` };
+
+  return getMonthRange(year, month);
 }
 
 export function isDateInRange(
@@ -127,6 +133,30 @@ export function validateSearchQuery(query: string): string | null {
   if (trimmed.length < 2) return "Enter at least 2 characters to search.";
   if (trimmed.length > 100) return "Search query must be 100 characters or less.";
   return null;
+}
+
+export function getSoldVehicleTabCounts(
+  vehicles: ISalesRepSoldVehicle[],
+): Record<SoldVehicleTab, number> {
+  const now = new Date();
+  const year = now.getFullYear();
+  const thisMonthStr = `${year}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const lastMonth = now.getMonth() === 0 ? 12 : now.getMonth();
+  const lastMonthYear = now.getMonth() === 0 ? year - 1 : year;
+  const lastMonthStr = `${lastMonthYear}-${String(lastMonth).padStart(2, "0")}`;
+  const thisYearStr = `${year}`;
+
+  const thisMonth = vehicles.filter((v) => v.soldDate.startsWith(thisMonthStr)).length;
+  const lastMonthV = vehicles.filter((v) => v.soldDate.startsWith(lastMonthStr)).length;
+  const thisYear = vehicles.filter((v) => v.soldDate.startsWith(thisYearStr)).length;
+
+  return {
+    all: vehicles.length,
+    this_month: thisMonth,
+    last_month: lastMonthV,
+    this_year: thisYear,
+    custom: 0,
+  };
 }
 
 export function validateDateRange(

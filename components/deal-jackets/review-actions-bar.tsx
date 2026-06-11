@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, XCircle, AlertTriangle, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { CheckCircle, XCircle, AlertTriangle, RotateCcw, Pencil } from "lucide-react";
 import type { DealJacketStatus } from "@/lib/deal-jackets/types";
 import WorkflowStatusBadge from "./workflow-status-badge";
 import { Button } from "@/components/ui/button";
@@ -92,16 +93,31 @@ export default function ReviewActionsBar({
         )}
 
         {canResubmit && (
-          <Button
-            type="button"
-            size="sm"
-            onClick={handleResubmit}
-            disabled={resubmitting}
-            className="h-8 gap-1.5 bg-blue-600 text-[11px] font-medium text-white hover:bg-blue-500"
-          >
-            <RotateCcw className={resubmitting ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
-            Resubmit for Review
-          </Button>
+          <>
+            {!isManager && (
+              <Button
+                type="button"
+                size="sm"
+                asChild
+                className="h-8 gap-1.5 bg-amber-600 text-[11px] font-medium text-white hover:bg-amber-500"
+              >
+                <Link href={`/sales-rep/deal-jackets/edit/${dealJacketId}`}>
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit Deal Jacket
+                </Link>
+              </Button>
+            )}
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleResubmit}
+              disabled={resubmitting}
+              className="h-8 gap-1.5 bg-blue-600 text-[11px] font-medium text-white hover:bg-blue-500"
+            >
+              <RotateCcw className={resubmitting ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"} />
+              Resubmit for Review
+            </Button>
+          </>
         )}
       </div>
 

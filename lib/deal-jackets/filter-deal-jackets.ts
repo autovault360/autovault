@@ -14,7 +14,9 @@ export function filterByTab(
     case "sold_this_year":
       return items.filter((i) => isSoldInReferenceYear(i.saleDate));
     case "pending_commission":
-      return items.filter((i) => i.commissionStatus === "pending");
+      return items.filter((i) =>
+        i.commissionStatus !== "paid" && i.commissionStatus !== "rejected"
+      );
     case "commission_paid":
       return items.filter((i) => i.commissionStatus === "paid");
     default:

@@ -5,6 +5,7 @@ import {
   sumVehicleExpenses,
 } from "./calculate-financials";
 import { logDealJacketActivity } from "./activity";
+import { createCommission } from "@/lib/sales-rep/commissions/server/create-commission";
 import type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,
@@ -42,8 +43,8 @@ async function nextJacketNumber(
 async function resolveSalesRepId(
   supabase: Awaited<ReturnType<typeof createClient>>,
   customerId: string,
-  vehicleCreatedBy: string,
   explicitRepId?: string | null,
+  defaultRepId?: string | null,
 ): Promise<string | null> {
   if (explicitRepId) return explicitRepId;
 
@@ -53,7 +54,7 @@ async function resolveSalesRepId(
     .eq("id", customerId)
     .maybeSingle();
 
-  return customer?.sales_rep_id ?? vehicleCreatedBy;
+  return customer?.sales_rep_id ?? defaultRepId ?? null;
 }
 
 async function resolveCommissionRate(
@@ -126,13 +127,14 @@ export async function createDealJacket(
   const salesRepId = await resolveSalesRepId(
     supabase,
     sale.customerId,
-    vehicle.created_by,
     sale.salesRepId,
+    createdBy,
   );
 
   const commissionRate = await resolveCommissionRate(supabase, salesRepId);
   const fees = normalizeFees(sale.fees);
   const additionalExpenses = sale.additionalExpenses ?? 0;
+  const notes = sale.notes ?? null;
 
   const financials = calculateDealJacketFinancials({
     soldPrice: sale.soldPrice,
@@ -171,6 +173,7 @@ export async function createDealJacket(
       profit_net: financials.profitNet,
       date_sold: dateSold,
       workflow_status: "pending_review",
+      notes,
       created_by: createdBy,
     })
     .select("*")
@@ -245,6 +248,16 @@ export async function createDealJacket(
       profit_net: financials.profitNet,
     },
     changed_by: createdBy,
+  });
+
+  await createCommission({
+    dealershipId,
+    salesRepId: salesRepId ?? createdBy,
+    dealJacketId: inserted.id,
+    commissionAmount: financials.commissionAmount,
+    commissionRate,
+    grossProfit: financials.profitGross,
+    soldPrice: sale.soldPrice,
   });
 
   return { success: true, dealJacket: inserted as DealJacketRow };

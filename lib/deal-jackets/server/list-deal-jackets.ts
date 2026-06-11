@@ -23,6 +23,7 @@ export type DealJacketListItemDto = {
   commissionAmount: number;
   commissionStatus: string;
   paymentMethod: string;
+  workflowStatus: string;
 };
 
 export type ListDealJacketsResult = {
@@ -35,6 +36,7 @@ export type ListDealJacketsResult = {
 
 export async function listDealJackets(params: {
   dealershipId: string;
+  salesRepId?: string;
   page?: number;
   pageSize?: number;
 }): Promise<ListDealJacketsResult> {
@@ -44,7 +46,7 @@ export async function listDealJackets(params: {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("deal_jackets")
     .select(
       `
@@ -59,14 +61,22 @@ export async function listDealJackets(params: {
       commission_amount,
       commission_status,
       date_sold,
+      workflow_status,
       vehicle:vehicles(year, make, model, stock_number, vin),
       customer:customers(name, phone),
-      sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name)
+      sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name),
+      commissions:sales_rep_commissions!deal_jacket_id(status)
     `,
       { count: "exact" },
     )
     .eq("dealership_id", params.dealershipId)
-    .is("deleted_at", null)
+    .is("deleted_at", null);
+
+  if (params.salesRepId) {
+    query = query.eq("sales_rep_id", params.salesRepId);
+  }
+
+  const { data, error, count } = await query
     .order("date_sold", { ascending: false })
     .range(from, to);
 
@@ -102,6 +112,14 @@ export async function listDealJackets(params: {
         ? row.sales_rep[0]
         : row.sales_rep;
 
+      const commissions = Array.isArray(row.commissions)
+        ? row.commissions
+        : [];
+      const commissionStatus =
+        commissions.length > 0 && commissions[0]?.status
+          ? commissions[0].status
+          : row.commission_status;
+
       const storagePath = imageByVehicle.get(row.vehicle_id);
       let imageUrl: string | null = null;
       if (storagePath) {
@@ -132,8 +150,9 @@ export async function listDealJackets(params: {
         totalSalePrice: Number(row.total_sale_price),
         totalProfit: Number(row.profit_net),
         commissionAmount: Number(row.commission_amount),
-        commissionStatus: row.commission_status,
+        commissionStatus,
         paymentMethod: "...",
+        workflowStatus: row.workflow_status ?? "pending_review",
       };
     }),
   );

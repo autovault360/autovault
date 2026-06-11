@@ -1,11 +1,23 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import SalesRepDealJacketFormEngine from "./sales-rep-deal-jacket-form-engine";
+import { getCurrentSalesRepCommissionRate } from "@/lib/sales-rep/server/get-commission-rate";
+import DealJacketFormEngine from "./deal-jacket-form-engine";
 
 export default function SalesRepCreateDealJacketPageContent() {
+  const [commissionRate, setCommissionRate] = useState(0.1);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCurrentSalesRepCommissionRate().then((rate) => {
+      setCommissionRate(rate);
+      setLoading(false);
+    });
+  }, []);
+
   return (
     <div className="min-h-full">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-0.5">
@@ -35,7 +47,7 @@ export default function SalesRepCreateDealJacketPageContent() {
         </Button>
       </div>
 
-      <SalesRepDealJacketFormEngine />
+      <DealJacketFormEngine vinLookup commissionRate={commissionRate} loading={loading} />
     </div>
   );
 }

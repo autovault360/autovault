@@ -6,12 +6,12 @@ import { CardShell } from "@/components/dashboard/card-shell";
 import {
   buildSoldVehicleKpiSummary,
   filterSoldVehicles,
+  getSoldVehicleTabCounts,
   getUniqueMakes,
   getUniqueModels,
   validateSearchQuery,
 } from "@/lib/sales-rep/sold-vehicles/calculations";
 import { exportSoldVehiclesCsv } from "@/lib/sales-rep/sold-vehicles/export";
-import { getSoldVehicleTabCounts } from "@/lib/sales-rep/sold-vehicles/mock-data";
 import type {
   ISalesRepSoldVehicle,
   SoldVehicleDateRange,

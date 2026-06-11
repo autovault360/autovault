@@ -30,6 +30,8 @@ export type DealJacketFileItem = {
   type: "document" | "receipt";
   uploadedAt: string;
   icon: "contract" | "license" | "insurance" | "receipt" | "generic";
+  fileUrl: string;
+  fileType: string;
 };
 
 import type { DealJacketStatus, DealJacketActivityRow } from "./types";

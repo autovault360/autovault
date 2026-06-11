@@ -205,7 +205,7 @@ export function FormSection({
       <div
         className={cn(
           "shrink-0 flex items-center gap-3 px-1.5",
-          theme === "dark" ? "bg-[#0f1621]" : "bg-white",
+          theme === "dark" ? "bg-card" : "bg-white",
         )}
       >
         <span
@@ -216,7 +216,7 @@ export function FormSection({
         >
           <span className={cn(
             "inline px-2",
-            theme === "dark" ? "bg-[#0f1621]" : "bg-white",
+            theme === "dark" ? "bg-card" : "bg-white",
           )}>
             {title}
           </span>

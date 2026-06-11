@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { DEAL_TYPES, US_STATES } from "./constants";
+import { phoneRegex, phoneSchemaMessage } from "@/lib/shared/phone";
 
-const phoneRegex = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
 const licenseRegex = /^[A-Za-z0-9]{5,15}$/;
 
 export const unifiedDealJacketSchema = z.object({
@@ -21,7 +21,7 @@ export const unifiedDealJacketSchema = z.object({
   buyerPhone: z
     .string()
     .min(1, "Phone is required")
-    .regex(phoneRegex, "Enter a valid phone number"),
+    .regex(phoneRegex, phoneSchemaMessage),
   buyerEmail: z
     .string()
     .min(1, "Email is required")

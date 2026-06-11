@@ -27,6 +27,7 @@ export default function DocumentViewerModal({
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [contentLoading, setContentLoading] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const loadingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevFileIdRef = useRef<string | null>(null);
 
@@ -48,6 +49,11 @@ export default function DocumentViewerModal({
       if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
     }
   }, [currentFile?.id]);
+
+  useEffect(() => {
+    if (!open) return;
+    scrollContainerRef.current?.scrollTo({ top: 0, left: 0 });
+  }, [currentFile?.id, open]);
 
   const handleContentLoaded = useCallback(() => {
     if (loadingTimeoutRef.current) clearTimeout(loadingTimeoutRef.current);
@@ -83,13 +89,13 @@ export default function DocumentViewerModal({
       <DialogContent
         showCloseButton={false}
         overlayClassName="bg-transparent"
-        className="!inset-0 !h-screen !w-screen !max-w-none !translate-x-0 !translate-y-0 flex-col !rounded-none !border-0 !p-0 !ring-0 !bg-transparent text-white"
+        className="!inset-0 !flex !h-[100dvh] !max-h-[100dvh] !w-screen !max-w-none !translate-x-0 !translate-y-0 !flex-col !gap-0 !overflow-hidden !rounded-none !border-0 !p-0 !ring-0 !bg-transparent text-white"
       >
         <DialogTitle className="sr-only">
           {currentFile.fileName}
         </DialogTitle>
 
-        <div className="flex items-center justify-between bg-black/30 px-4 py-3 backdrop-blur-sm max-h-16">
+        <div className="flex shrink-0 items-center justify-between border-b border-white/10 bg-transparent px-4 py-3 backdrop-blur-sm">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <FileIcon className="h-4 w-4 shrink-0 text-slate-400" />
             <div className="min-w-0">
@@ -191,15 +197,18 @@ export default function DocumentViewerModal({
           </div>
         </div>
 
-        <div className="relative flex min-h-full flex-1 items-start justify-center overflow-auto">
+        <div className="relative min-h-0 flex-1">
           {contentLoading && needsLoading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20">
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-transparent">
               <Loader2 className="h-10 w-10 animate-spin text-blue-400" />
             </div>
           )}
 
           {isImage && currentFile.signedUrl && (
-            <div className="flex min-h-full w-full items-center justify-center p-4">
+            <div
+              ref={scrollContainerRef}
+              className="flex h-full items-center justify-center overflow-auto p-4"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={currentFile.signedUrl}
@@ -213,9 +222,10 @@ export default function DocumentViewerModal({
 
           {isPdf && currentFile.signedUrl && (
             <iframe
+              key={currentFile.id}
               ref={iframeRef}
-              src={currentFile.signedUrl}
-              className="h-full w-full border-0"
+              src={`${currentFile.signedUrl}#page=1`}
+              className="absolute inset-0 h-full w-full border-0"
               title={currentFile.fileName}
               onLoad={handleContentLoaded}
             />
@@ -223,16 +233,21 @@ export default function DocumentViewerModal({
 
           {isOffice && googleViewerUrl && (
             <iframe
+              key={currentFile.id}
               ref={iframeRef}
               src={googleViewerUrl}
-              className="h-full w-full border-0"
+              className="absolute inset-0 h-full w-full border-0"
               title={currentFile.fileName}
               onLoad={handleContentLoaded}
             />
           )}
 
           {!isImage && !isPdf && !isOffice && (
-            <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+            <div
+              ref={scrollContainerRef}
+              className="h-full overflow-auto"
+            >
+              <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
               <FileIcon className="h-16 w-16 text-slate-600" />
               <div>
                 <p className="text-[13px] text-slate-400">
@@ -253,6 +268,7 @@ export default function DocumentViewerModal({
                     Download File
                   </a>
                 )}
+              </div>
               </div>
             </div>
           )}

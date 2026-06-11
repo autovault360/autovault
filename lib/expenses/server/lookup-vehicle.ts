@@ -49,6 +49,8 @@ function mapRow(
     mileage: number | null;
     exterior_color: string | null;
     status: string;
+    acquisition_cost: number | null;
+    total_invested: number | null;
   },
   imageUrl: string,
 ): LinkedVehicleResult {
@@ -64,6 +66,8 @@ function mapRow(
     color: row.exterior_color ?? "...",
     status: mapVehicleStatus(row.status),
     image: imageUrl,
+    acquisitionCost: row.acquisition_cost ?? undefined,
+    totalInvested: row.total_invested ?? undefined,
   };
 }
 
@@ -80,7 +84,7 @@ export async function lookupVehicleById(
     const { data: row, error } = await supabase
       .from("vehicles")
       .select(
-        "id, year, make, model, trim, stock_number, vin, mileage, exterior_color, status",
+        "id, year, make, model, trim, stock_number, vin, mileage, exterior_color, status, acquisition_cost, total_invested",
       )
       .eq("id", vehicleId)
       .eq("dealership_id", dealershipId)
@@ -112,7 +116,7 @@ export async function lookupVehicle(
     let query = supabase
       .from("vehicles")
       .select(
-        "id, year, make, model, trim, stock_number, vin, mileage, exterior_color, status",
+        "id, year, make, model, trim, stock_number, vin, mileage, exterior_color, status, acquisition_cost, total_invested",
       )
       .eq("dealership_id", dealershipId)
       .is("deleted_at", null);

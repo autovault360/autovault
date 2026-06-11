@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -8,11 +8,30 @@ import { ChevronDown, ChevronRight, Headphones, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { SidebarItem, SidebarProps } from "./types";
 
-function isItemActive(pathname: string, item: SidebarItem): boolean {
+function isItemActive(
+  pathname: string,
+  item: SidebarItem,
+  allHrefs?: string[],
+): boolean {
   if (!item.href) return false;
   if (item.exact) return pathname === item.href;
   if (item.href === "/") return pathname === "/";
-  return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  if (pathname === item.href) return true;
+  if (pathname.startsWith(`${item.href}/`)) {
+    if (allHrefs) {
+      for (const href of allHrefs) {
+        if (!href || href === item.href) continue;
+        if (
+          href.startsWith(`${item.href}/`) &&
+          (pathname === href || pathname.startsWith(`${href}/`))
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  return false;
 }
 
 function NavItem({
@@ -22,6 +41,7 @@ function NavItem({
   onNavigate,
   depth = 0,
   close,
+  allHrefs,
 }: {
   item: SidebarItem;
   pathname: string;
@@ -29,12 +49,15 @@ function NavItem({
   onNavigate?: (item: SidebarItem) => void;
   depth?: number;
   close: () => void;
+  allHrefs?: string[];
 }) {
   const [subOpen, setSubOpen] = useState(
-    () => !!item.subItems?.some((s) => isItemActive(pathname, s)),
+    () => !!item.subItems?.some((s) => isItemActive(pathname, s, allHrefs)),
   );
   const hasSubItems = !!item.subItems?.length;
-  const active = isActive ? isActive(item) : isItemActive(pathname, item);
+  const active = isActive
+    ? isActive(item)
+    : isItemActive(pathname, item, allHrefs);
   const hasHref = !!item.href;
   const handleClick = () => {
     if (hasSubItems) {
@@ -133,6 +156,7 @@ function NavItem({
               onNavigate={onNavigate}
               depth={depth + 1}
               close={close}
+              allHrefs={allHrefs}
             />
           ))}
         </div>
@@ -154,6 +178,16 @@ export default function AppSidebar({
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
+
+  const allHrefs = useMemo(() => {
+    const hrefs: string[] = [];
+    for (const group of groups) {
+      for (const item of group.items) {
+        if (item.href) hrefs.push(item.href);
+      }
+    }
+    return hrefs;
+  }, [groups]);
 
   const sidebar = (
     <aside className="flex h-full w-64 flex-col gap-3.5 overflow-y-auto border-r border-slate-800 bg-[#0b1322] p-3">
@@ -195,6 +229,7 @@ export default function AppSidebar({
                     isActive={isActive}
                     onNavigate={onNavigate}
                     close={close}
+                    allHrefs={allHrefs}
                   />
                 ));
               }
@@ -206,6 +241,7 @@ export default function AppSidebar({
                   isActive={isActive}
                   onNavigate={onNavigate}
                   close={close}
+                  allHrefs={allHrefs}
                 />
               );
             })}

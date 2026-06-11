@@ -66,7 +66,7 @@ export function ApproveModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-[var(--bg-secondary)]">
+      <DialogContent className="border-slate-800 bg-[var(--bg-secondary)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-[15px] text-white">
             <CheckCircle className="h-5 w-5 text-emerald-400" />
@@ -158,7 +158,7 @@ export function RejectModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-slate-800 bg-[var(--bg-secondary)]">
+      <DialogContent className="border-slate-800 bg-[var(--bg-secondary)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-[15px] text-white">
             <XCircle className="h-5 w-5 text-red-400" />

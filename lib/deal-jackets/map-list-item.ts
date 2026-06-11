@@ -1,11 +1,39 @@
-import type { DealJacketListItem, PaymentMethod } from "./types";
+import type { CommissionStatus, DealJacketListItem, DealJacketStatus, PaymentMethod } from "./types";
 import type { DealJacketListItemDto } from "./server/list-deal-jackets";
 
 const DEFAULT_PAYMENT: PaymentMethod = "finance";
 
+const VALID_COMMISSION_STATUSES: CommissionStatus[] = [
+  "pending_review",
+  "changes_requested",
+  "resubmitted",
+  "approved",
+  "rejected",
+  "paid",
+];
+
 export function mapDealJacketListDto(
   dto: DealJacketListItemDto,
 ): DealJacketListItem {
+  const validStatuses = [
+    "pending_review",
+    "changes_requested",
+    "resubmitted",
+    "approved",
+    "rejected",
+  ];
+  const rawStatus = dto.workflowStatus ?? "pending_review";
+  const workflowStatus: DealJacketStatus = validStatuses.includes(rawStatus)
+    ? (rawStatus as DealJacketStatus)
+    : "pending_review";
+
+  const rawCommission = dto.commissionStatus ?? "pending_review";
+  const commissionStatus: CommissionStatus = VALID_COMMISSION_STATUSES.includes(
+    rawCommission as CommissionStatus,
+  )
+    ? (rawCommission as CommissionStatus)
+    : "pending_review";
+
   return {
     id: dto.id,
     vehicleId: dto.vehicleId,
@@ -23,10 +51,10 @@ export function mapDealJacketListDto(
     salesRepId: dto.salesRepId ?? "unassigned",
     salesRepName: dto.salesRepName,
     commissionAmount: dto.commissionAmount,
-    commissionStatus:
-      dto.commissionStatus === "paid" ? "paid" : "pending",
+    commissionStatus,
     paymentMethod: DEFAULT_PAYMENT,
     soldStatus: "sold",
+    workflowStatus,
   };
 }
 

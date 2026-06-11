@@ -1,19 +1,23 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import Image from "next/image";
 import {
   Check,
   Phone,
   Mail,
   MapPin,
-  FileText,
-  Receipt,
   User,
 } from "lucide-react";
 import {
   formatCurrency,
   formatDisplayDate,
 } from "@/lib/deal-jackets/types";
-import type { DealJacketDetail } from "@/lib/deal-jackets/detail-types";
+import type { DealJacketDetail, DealJacketFileItem } from "@/lib/deal-jackets/detail-types";
+import type { FolderFileDetail } from "@/lib/files-storage/types";
+import DocumentViewerModal from "@/components/files-storage/document-viewer-modal";
+import { mapDealJacketFileToFolderDetail } from "@/lib/deal-jackets/map-deal-jacket-file";
+import DealJacketDocumentListItem from "../deal-jacket-document-list-item";
 import ExpenseDonut from "../expense-donut";
 import {
   DetailCard,
@@ -25,7 +29,25 @@ import {
   YesBadge,
 } from "../detail-primitives";
 
-export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
+export default function OverviewTab({
+  detail,
+  onViewAllDocuments,
+}: {
+  detail: DealJacketDetail;
+  onViewAllDocuments?: () => void;
+}) {
+  const [viewerFile, setViewerFile] = useState<FolderFileDetail | null>(null);
+
+  const folderFiles = useMemo(
+    () => detail.documents.map(mapDealJacketFileToFolderDetail),
+    [detail.documents],
+  );
+
+  const handlePreview = (doc: DealJacketFileItem) => {
+    if (!doc.fileUrl) return;
+    setViewerFile(mapDealJacketFileToFolderDetail(doc));
+  };
+
   const moreDocs = detail.tabCounts.documents - detail.documents.length;
   const moreReceipts = detail.tabCounts.receipts - detail.receipts.length;
 
@@ -257,10 +279,29 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
         <DetailCard>
           <DetailCardHead
             title="Documents"
-            action={<DetailLinkAction href="#" label="View All" />}
+            action={
+              onViewAllDocuments ? (
+                <button
+                  type="button"
+                  onClick={onViewAllDocuments}
+                  className="text-[11px] font-medium text-[var(--accent)] transition-colors hover:text-blue-300"
+                >
+                  View All
+                </button>
+              ) : undefined
+            }
           />
           <DetailCardBody>
-            <FileList items={detail.documents} />
+            <ul>
+              {detail.documents.map((file) => (
+                <DealJacketDocumentListItem
+                  key={file.id}
+                  doc={file}
+                  compact
+                  onPreview={handlePreview}
+                />
+              ))}
+            </ul>
             {moreDocs > 0 && (
               <p className="mt-2.5 text-[13px] font-medium text-[var(--accent)]">
                 + {moreDocs} more documents
@@ -275,7 +316,7 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
             action={<DetailLinkAction href="#" label="View All" />}
           />
           <DetailCardBody>
-            <FileList items={detail.receipts} icon={Receipt} />
+            <FileList items={detail.receipts} />
             {moreReceipts > 0 && (
               <p className="mt-2.5 text-[13px] font-medium text-[var(--accent)]">
                 + {moreReceipts} more receipts
@@ -297,6 +338,15 @@ export default function OverviewTab({ detail }: { detail: DealJacketDetail }) {
           </DetailCardBody>
         </DetailCard>
       </div>
+
+      <DocumentViewerModal
+        file={viewerFile}
+        files={folderFiles}
+        open={!!viewerFile}
+        onOpenChange={(open) => {
+          if (!open) setViewerFile(null);
+        }}
+      />
     </div>
   );
 }
@@ -331,10 +381,8 @@ function InfoLine({
 
 function FileList({
   items,
-  icon: Icon = FileText,
 }: {
   items: DealJacketDetail["documents"];
-  icon?: React.ComponentType<{ className?: string }>;
 }) {
   return (
     <ul>
@@ -343,7 +391,13 @@ function FileList({
           key={file.id}
           className="flex items-center gap-2.5 border-b border-slate-800/60 py-2.5 last:border-0"
         >
-          <Icon className="h-4 w-4 shrink-0 text-slate-500" />
+          <Image
+            src="/expenses/sample-receipt.svg"
+            alt=""
+            width={16}
+            height={16}
+            className="h-4 w-4 shrink-0 opacity-80"
+          />
           <span className="min-w-0 flex-1 truncate text-[11.5px] font-medium text-white">
             {file.name}
           </span>

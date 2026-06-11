@@ -34,6 +34,13 @@ export type DealJacketRow = {
   reviewed_at: string | null;
   change_categories: string[] | null;
   rejection_reason: string | null;
+  trade_in_allowance: number;
+  warranty_amount: number;
+  gap_amount: number;
+  lender: string | null;
+  ros_number: string | null;
+  deal_type: string;
+  notes: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -69,6 +76,7 @@ export type CreateDealJacketSaleData = {
   amountFinanced?: number;
   balanceDue?: number;
   additionalExpenses?: number;
+  notes?: string | null;
 };
 
 export type DealJacketDocumentInput = {

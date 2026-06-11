@@ -1,29 +1,36 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Download, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { CardShell } from "@/components/dashboard/card-shell";
 import { Button } from "@/components/ui/button";
+import DataTable, { type Column } from "@/components/reusable/DataTable";
 import {
   filterEarningsByVehicle,
+  formatSoldDate,
+  getVehicleLabel,
   validateSearchQuery,
+  VEHICLE_IMAGE_PLACEHOLDER,
 } from "@/lib/sales-rep/payroll-earnings/calculations";
+import {
+  formatCommissionCurrency,
+  formatCommissionPrice,
+} from "@/lib/sales-rep/commissions/format";
 import { exportPayrollEarningsCsv } from "@/lib/sales-rep/payroll-earnings/export";
-import { getPayrollEarningsMockData } from "@/lib/sales-rep/payroll-earnings/mock-data";
+import { getPayrollEarnings } from "@/lib/sales-rep/commissions/server/get-payroll-earnings";
 import type {
   IEarningsByVehicle,
+  IPayrollEarningsData,
   PayrollEarningsFilterState,
-  PayrollPeriodMonth,
 } from "@/lib/sales-rep/payroll-earnings/types";
 import PayrollEarningsDetailDialog from "./payroll-earnings-detail-dialog";
 import PayrollEarningsFooterNote from "./payroll-earnings-footer-note";
 import PayrollEarningsKpiStrip from "./payroll-earnings-kpi-strip";
 import PayrollEarningsPaymentHistory from "./payroll-earnings-payment-history";
 import PayrollEarningsSummaryPanel from "./payroll-earnings-summary-panel";
-import PayrollEarningsTable from "./payroll-earnings-table";
 import PayrollEarningsTableToolbar from "./payroll-earnings-table-toolbar";
-import PayrollPeriodPicker from "./payroll-period-picker";
+import PayrollPaymentStatusBadge from "./payroll-payment-status-badge";
 
 const DEFAULT_FILTERS: PayrollEarningsFilterState = {
   search: "",
@@ -32,7 +39,7 @@ const DEFAULT_FILTERS: PayrollEarningsFilterState = {
 };
 
 export default function SalesRepPayrollEarningsContent() {
-  const [periodMonth, setPeriodMonth] = useState<PayrollPeriodMonth>("2026-05");
+  const [periodData, setPeriodData] = useState<IPayrollEarningsData | null>(null);
   const [earningsRows, setEarningsRows] = useState<IEarningsByVehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] =
@@ -42,22 +49,25 @@ export default function SalesRepPayrollEarningsContent() {
   const [selectedRow, setSelectedRow] = useState<IEarningsByVehicle | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  const periodData = useMemo(
-    () => getPayrollEarningsMockData(periodMonth),
-    [periodMonth],
-  );
-
-  useEffect(() => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
-    const timer = setTimeout(() => {
-      setEarningsRows(periodData.earningsByVehicle);
+    try {
+      const data = await getPayrollEarnings();
+      setPeriodData(data);
+      setEarningsRows(data.earningsByVehicle);
       setFilters(DEFAULT_FILTERS);
       setSearchError(null);
       setShowFilters(false);
+    } catch {
+      toast.error("Failed to load earnings data.");
+    } finally {
       setLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [periodData.earningsByVehicle]);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const filteredRows = useMemo(
     () => filterEarningsByVehicle(earningsRows, filters),
@@ -68,6 +78,116 @@ export default function SalesRepPayrollEarningsContent() {
     filters.search.trim() !== "" ||
     filters.paymentStatus !== "all" ||
     filters.payrollCycle !== "all";
+
+  const columns: Column<IEarningsByVehicle>[] = useMemo(
+    () => [
+      {
+        key: "vehicle",
+        header: "Vehicle",
+        sortable: true,
+        accessor: (row) => getVehicleLabel(row),
+        cell: (row) => (
+          <div className="flex min-w-[190px] items-center gap-3">
+            <img
+              src={row.vehicleImageUrl || VEHICLE_IMAGE_PLACEHOLDER}
+              alt={getVehicleLabel(row)}
+              className="h-10 w-[60px] shrink-0 rounded object-cover"
+              loading="lazy"
+            />
+            <div className="min-w-0">
+              <div className="truncate text-[12px] font-semibold text-white">
+                {getVehicleLabel(row)}
+              </div>
+              <div className="truncate text-[10px] text-slate-500">
+                Stock # {row.stockNumber}
+              </div>
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: "customer",
+        header: "Customer",
+        sortable: true,
+        accessor: (row) => row.customerName,
+        cell: (row) => (
+          <div className="min-w-[130px]">
+            <div className="text-[12px] font-medium text-white">
+              {row.customerName}
+            </div>
+            <div className="text-[10px] text-slate-500">
+              {row.customerPhone}
+            </div>
+          </div>
+        ),
+      },
+      {
+        key: "soldDate",
+        header: "Sold Date",
+        sortable: true,
+        accessor: (row) => row.soldDate,
+        cell: (row) => (
+          <span className="whitespace-nowrap text-[12px] text-slate-300">
+            {formatSoldDate(row.soldDate)}
+          </span>
+        ),
+      },
+      {
+        key: "soldPrice",
+        header: "Sold Price",
+        sortable: true,
+        accessor: (row) => row.soldPrice,
+        cell: (row) => (
+          <span className="text-[12px] font-medium tabular-nums text-white">
+            {formatCommissionPrice(row.soldPrice)}
+          </span>
+        ),
+      },
+      {
+        key: "grossProfit",
+        header: "Gross Profit",
+        sortable: true,
+        accessor: (row) => row.grossProfit,
+        cell: (row) => (
+          <span className="text-[12px] font-semibold tabular-nums text-emerald-400">
+            {formatCommissionPrice(row.grossProfit)}
+          </span>
+        ),
+      },
+      {
+        key: "commissionRate",
+        header: "Commission Rate",
+        sortable: true,
+        accessor: (row) => row.commissionRate,
+        cell: (row) => (
+          <span className="text-[12px] tabular-nums text-slate-300">
+            {row.commissionRate}%
+          </span>
+        ),
+      },
+      {
+        key: "commissionEarned",
+        header: "Commission Earned",
+        sortable: true,
+        accessor: (row) => row.commissionEarned,
+        cell: (row) => (
+          <span className="text-[12px] font-semibold tabular-nums text-emerald-400">
+            {formatCommissionCurrency(row.commissionEarned)}
+          </span>
+        ),
+      },
+      {
+        key: "paymentStatus",
+        header: "Payment Status",
+        sortable: true,
+        accessor: (row) => row.paymentStatus,
+        cell: (row) => (
+          <PayrollPaymentStatusBadge status={row.paymentStatus} />
+        ),
+      },
+    ],
+    [],
+  );
 
   const handleSearchChange = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value }));
@@ -87,7 +207,7 @@ export default function SalesRepPayrollEarningsContent() {
     }
     exportPayrollEarningsCsv(
       target,
-      `payroll-earnings-${periodMonth}-${new Date().toISOString().split("T")[0]}.csv`,
+      `payroll-earnings-${new Date().toISOString().split("T")[0]}.csv`,
     );
     toast.success(`Exported ${target.length} records.`);
   };
@@ -103,16 +223,24 @@ export default function SalesRepPayrollEarningsContent() {
             Track your earnings, commissions, and payments.
           </p>
         </div>
-        <PayrollPeriodPicker
-          value={periodMonth}
-          displayLabel={periodData.periodLabel}
-          onChange={setPeriodMonth}
-        />
       </section>
 
       <div className="mb-4">
         <PayrollEarningsKpiStrip
-          summary={periodData.kpiSummary}
+          summary={
+            periodData?.kpiSummary ?? {
+              totalEarnings: 0,
+              totalCommissions: 0,
+              vehiclesSold: 0,
+              avgCommissionPerVehicle: 0,
+              nextPayDate: "",
+              daysUntilPay: 0,
+              totalEarningsTrend: "",
+              totalCommissionsTrend: "",
+              vehiclesSoldTrend: "",
+              avgCommissionTrend: "",
+            }
+          }
           loading={loading}
         />
       </div>
@@ -172,10 +300,15 @@ export default function SalesRepPayrollEarningsContent() {
           </div>
         )}
 
-        <PayrollEarningsTable
-          rows={filteredRows}
-          loading={loading}
+        <DataTable
+          columns={columns}
+          data={filteredRows}
+          rowKey="id"
+          addPagination
           pageSize={6}
+          loading={loading}
+          paginationSummaryLabel="vehicles"
+          emptyMessage="No earnings records match your filters."
           onRowClick={(row) => {
             setSelectedRow(row);
             setDetailOpen(true);
@@ -185,11 +318,19 @@ export default function SalesRepPayrollEarningsContent() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <PayrollEarningsSummaryPanel
-          breakdown={periodData.breakdown}
+          breakdown={
+            periodData?.breakdown ?? {
+              totalCommissions: 0,
+              otherBonuses: 0,
+              adjustments: 0,
+              chargebacks: 0,
+              netPay: 0,
+            }
+          }
           loading={loading}
         />
         <PayrollEarningsPaymentHistory
-          entries={periodData.paymentHistory}
+          entries={periodData?.paymentHistory ?? []}
           loading={loading}
           onViewAll={() => toast.info("Full payment history coming soon.")}
         />
