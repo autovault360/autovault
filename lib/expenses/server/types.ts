@@ -83,6 +83,7 @@ const PAYMENT_LABELS: Record<string, string> = {
 const STATUS_LABELS: Record<string, string> = {
   in_stock: "In Stock",
   needs_attention: "Needs Attention",
+  pending_deal: "Pending Deal",
   sold: "Sold",
   loss: "Loss",
 };

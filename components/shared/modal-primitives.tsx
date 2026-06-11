@@ -233,6 +233,7 @@ export function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
     "In Stock": "bg-emerald-50 text-emerald-700 border-emerald-200",
     "Needs Attention": "bg-amber-100 text-amber-700 border-amber-200",
+    "Pending Deal": "bg-blue-50 text-blue-700 border-blue-200",
     "Marked Sold": "bg-red-50 text-red-700 border-red-200",
   };
   return (

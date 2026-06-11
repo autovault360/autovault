@@ -42,7 +42,6 @@ export function mapDealJacketListDto(
     commissionAmount: dto.commissionAmount,
     commissionStatus,
     paymentMethod: DEFAULT_PAYMENT,
-    soldStatus: "sold",
     workflowStatus,
   };
 }

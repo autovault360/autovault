@@ -1,5 +1,5 @@
 /**
- * AutoVault360 — Setup Script
+ * AutoVault360 - Setup Script
  * Applies SQL migration via Supabase Management API + creates super admin.
  * Uses only the service role key (no db password needed).
  *
@@ -14,21 +14,21 @@ import { readFileSync } from "node:fs";
 const rl = readline.createInterface({ input, output });
 
 async function main() {
-  console.log("╔══════════════════════════════════════════════�—");
-  console.log("║        AutoVault360 — Setup Script           ║");
-  console.log("╚══════════════════════════════════════════════�—\n");
+  console.log("============================================");
+  console.log("        AutoVault360 - Setup Script");
+  console.log("============================================\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
+    console.error("[ERROR] Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env");
     process.exit(1);
   }
 
   const projectRef = new URL(supabaseUrl).hostname.split(".")[0];
-  console.log(`🔧 Project: ${supabaseUrl}`);
-  console.log(`🔧 Project ref: ${projectRef}\n`);
+  console.log(`Project: ${supabaseUrl}`);
+  console.log(`Project ref: ${projectRef}\n`);
 
   // Step 1: Try Management API to apply SQL
   console.log("Step 1: Applying database schema...");
@@ -49,10 +49,10 @@ async function main() {
   );
 
   if (mgmtResponse.ok) {
-    console.log("✅ Schema applied via Management API!\n");
+    console.log("[OK] Schema applied via Management API!\n");
   } else {
     const mgmtError = await mgmtResponse.text();
-    console.log(`⚠️  Management API: ${mgmtResponse.status} - ${mgmtError}`);
+    console.log(`[WARN] Management API: ${mgmtResponse.status} - ${mgmtError}`);
 
     // Fallback: try sending SQL as a query to the project's REST API
     console.log("Trying alternative approach...");
@@ -78,10 +78,10 @@ async function main() {
         `npx supabase db execute --db-url "${dbUrl}" --file "${sqlPath}"`,
         { stdio: "inherit", timeout: 30000 }
       );
-      console.log("✅ Schema applied via direct DB connection!\n");
+      console.log("[OK] Schema applied via direct DB connection!\n");
     } catch {
-      console.error("�—� Failed to apply migration.");
-      console.log("\n👉 Paste supabase/migrations/00001_initial_schema.sql into your Supabase SQL Editor, then re-run this script.\n");
+      console.error("[ERROR] Failed to apply migration.");
+      console.log("\nPaste supabase/migrations/00001_initial_schema.sql into your Supabase SQL Editor, then re-run this script.\n");
       rl.close();
       return;
     }
@@ -98,7 +98,7 @@ async function main() {
   const password = await rl.question("Super Admin password (min 6 chars): ");
   const fullName = await rl.question("Super Admin full name: ");
 
-  console.log("\n⏳ Creating super admin...");
+  console.log("\nCreating super admin...");
 
   const { data: authUser, error: authError } =
     await supabase.auth.admin.createUser({
@@ -113,7 +113,7 @@ async function main() {
     const { data: existing } = await supabase.auth.admin.listUsers();
     const found = existing.users.find((u) => u.email === email);
     if (found) {
-      console.log(`ℹ️  Auth user already exists: ${found.id}`);
+      console.log(`[INFO] Auth user already exists: ${found.id}`);
       console.log("Skipping auth creation, checking user record...");
 
       const { data: existingRecord } = await supabase
@@ -123,8 +123,8 @@ async function main() {
         .single();
 
       if (existingRecord) {
-        console.log("✅ User record already exists.");
-        console.log("\n🎉 System already set up! Login at /login\n");
+        console.log("[OK] User record already exists.");
+        console.log("\nSystem already set up! Login at /login\n");
         rl.close();
         return;
       }
@@ -139,23 +139,23 @@ async function main() {
       });
 
       if (insertError) {
-        console.error("�—� Failed to create user record:", insertError.message);
+        console.error("[ERROR] Failed to create user record:", insertError.message);
         process.exit(1);
       }
 
-      console.log("✅ User record created");
-      console.log(`\n🎉 Super admin ready!`);
+      console.log("[OK] User record created");
+      console.log(`\nSuper admin ready!`);
       console.log(`   Email: ${email}`);
       console.log(`   Login at /login\n`);
       rl.close();
       return;
     }
 
-    console.error("�—� Auth user creation failed:", authError.message);
+    console.error("[ERROR] Auth user creation failed:", authError.message);
     process.exit(1);
   }
 
-  console.log(`✅ Auth user created: ${authUser.user.id}`);
+  console.log(`[OK] Auth user created: ${authUser.user.id}`);
 
   const { error: dbError } = await supabase.from("users").insert({
     auth_user_id: authUser.user.id,
@@ -166,13 +166,13 @@ async function main() {
   });
 
   if (dbError) {
-    console.error("�—� User record failed:", dbError.message);
+    console.error("[ERROR] User record failed:", dbError.message);
     await supabase.auth.admin.deleteUser(authUser.user.id);
     process.exit(1);
   }
 
-  console.log("✅ User record created");
-  console.log(`\n🎉 Setup complete!`);
+  console.log("[OK] User record created");
+  console.log(`\nSetup complete!`);
   console.log(`   Email: ${email}`);
   console.log(`   Role: super_admin`);
   console.log(`   Login at /login\n`);

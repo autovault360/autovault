@@ -116,6 +116,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   const statuses: VehicleStatus[] = [
     "In Stock",
     "Needs Attention",
+    "Pending Deal",
     "Marked Sold",
   ];
 

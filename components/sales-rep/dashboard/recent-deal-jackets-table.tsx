@@ -27,7 +27,7 @@ type Props = {
 
 export default function RecentDealJacketsTable({ deals, loading }: Props) {
   return (
-    <CardShell className="flex-1">
+    <CardShell className="flex-1 max-h-[300px] xl:max-h-[350px] 2xl:max-h-[400px] overflow-y-auto">
       <div className="mb-2.5 text-[11px] font-bold tracking-[0.14em] text-slate-500">
         RECENT DEAL JACKETS
       </div>

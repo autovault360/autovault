@@ -1,17 +1,17 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { AlertTriangle, Loader2, X } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { lookupVehicle } from "@/lib/expenses/server/lookup-vehicle";
-import {
-  getVehicleDisplayName,
-  type LinkedVehicleResult,
-} from "@/lib/expenses/server/types";
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { AlertTriangle, Loader2, X } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { lookupVehicle } from "@/lib/expenses/server/lookup-vehicle";
+import {
+  getVehicleDisplayName,
+  type LinkedVehicleResult,
+} from "@/lib/expenses/server/types";
 import { formatMileage, getStatusStyle } from "@/lib/vehicles/types";
 
 import type { VehicleStatus } from "@/lib/vehicles/types";
@@ -24,17 +24,18 @@ function isSoldStatus(status: string): boolean {
 
 function toVehicleStatus(status: string): VehicleStatus {
   if (status === "Sold" || status === "Loss") return "Marked Sold";
+  if (status === "Pending Deal") return "Pending Deal";
   return status as VehicleStatus;
 }
 
 type SearchTab = "vin" | "stock" | "make";
-
-const TABS: { id: SearchTab; label: string }[] = [
-  { id: "vin", label: "Search by VIN" },
-  { id: "stock", label: "Search by Stock #" },
-  { id: "make", label: "Search by Make & Model" },
-];
-
+
+const TABS: { id: SearchTab; label: string }[] = [
+  { id: "vin", label: "Search by VIN" },
+  { id: "stock", label: "Search by Stock #" },
+  { id: "make", label: "Search by Make & Model" },
+];
+
 export default function LinkedVehicleSection({
 
   vehicle,
@@ -52,51 +53,51 @@ export default function LinkedVehicleSection({
   readOnly?: boolean;
 
 }) {
-  const [activeTab, setActiveTab] = useState<SearchTab>("vin");
-  const [vinInput, setVinInput] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (vehicle) setVinInput(vehicle.vin);
-  }, [vehicle]);
-
-  const handleTabClick = (tab: SearchTab) => {
-    if (tab !== "vin") {
-      toast.info("Coming soon");
-      return;
-    }
-    setActiveTab(tab);
-  };
-
-  const handleLookup = async () => {
-    if (activeTab !== "vin") return;
-    const query = vinInput.trim();
-    if (!query) {
-      toast.error("Enter a VIN to lookup.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const result = await lookupVehicle({ mode: "vin", query });
-      if (!result.success) {
-        toast.error(result.error ?? "No vehicle found for that VIN.");
-        onVehicleChange(null);
-        return;
-      }
-      onVehicleChange(result.vehicle);
-      setVinInput(result.vehicle.vin);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
-        Linked Vehicle <span className="text-red-500">*</span>
-      </p>
-
+  const [activeTab, setActiveTab] = useState<SearchTab>("vin");
+  const [vinInput, setVinInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (vehicle) setVinInput(vehicle.vin);
+  }, [vehicle]);
+
+  const handleTabClick = (tab: SearchTab) => {
+    if (tab !== "vin") {
+      toast.info("Coming soon");
+      return;
+    }
+    setActiveTab(tab);
+  };
+
+  const handleLookup = async () => {
+    if (activeTab !== "vin") return;
+    const query = vinInput.trim();
+    if (!query) {
+      toast.error("Enter a VIN to lookup.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const result = await lookupVehicle({ mode: "vin", query });
+      if (!result.success) {
+        toast.error(result.error ?? "No vehicle found for that VIN.");
+        onVehicleChange(null);
+        return;
+      }
+      onVehicleChange(result.vehicle);
+      setVinInput(result.vehicle.vin);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-400">
+        Linked Vehicle <span className="text-red-500">*</span>
+      </p>
+
       {!readOnly && (
         <>
           <div className="mt-2.5 flex flex-wrap gap-4 border-b border-slate-800/80">
@@ -221,6 +222,6 @@ export default function LinkedVehicleSection({
           )}
         </>
       )}
-    </div>
-  );
-}
+    </div>
+  );
+}

@@ -5,17 +5,12 @@ import type {
   VehicleExpense,
   ActivityLogEntry,
 } from "./detail-types";
-import { formatField } from "./types";
+import { formatField, type VehicleStatus } from "./types";
+import { mapDbVehicleStatus } from "./map-db-status";
 import { authenticateUser } from "./server/utils";
 
-function mapStatus(dbStatus: string): "In Stock" | "Needs Attention" | "Marked Sold" {
-  switch (dbStatus) {
-    case "in_stock": return "In Stock";
-    case "needs_attention": return "Needs Attention";
-    case "sold":
-    case "loss": return "Marked Sold";
-    default: return "In Stock";
-  }
+function mapStatus(dbStatus: string): VehicleStatus {
+  return mapDbVehicleStatus(dbStatus);
 }
 
 function formatDate(date: string | null | undefined): string {

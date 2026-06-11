@@ -275,7 +275,12 @@ async function buildDashboard(
         type: v.body_style ?? "N/A",
         color: v.exterior_color ?? "N/A",
         price: Number(v.asking_price ?? 0),
-        status: v.status === "in_stock" || v.status === "needs_attention" ? "Available" : "Sold",
+        status:
+          v.status === "in_stock" || v.status === "needs_attention"
+            ? "Available"
+            : v.status === "pending_deal"
+              ? "Pending Deal"
+              : "Sold",
         imageUrl: imgUrl,
       } as IVehicleCard;
     }),

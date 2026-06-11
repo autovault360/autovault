@@ -56,15 +56,16 @@ import type {
   ILinkedVehicle,
 } from "@/lib/sales-rep/deal-jacket/types";
 
-const SOLD_STATUSES = ["Sold", "Loss"];
+const UNAVAILABLE_STATUSES = ["Sold", "Loss", "Pending Deal"];
 
-function isSoldStatus(status: string | undefined | null): boolean {
-  return SOLD_STATUSES.includes(status ?? "");
+function isUnavailableForDeal(status: string | undefined | null): boolean {
+  return UNAVAILABLE_STATUSES.includes(status ?? "");
 }
 
-function toVehicleStatus(status: string): "In Stock" | "Needs Attention" | "Marked Sold" {
+function toVehicleStatus(status: string): "In Stock" | "Needs Attention" | "Pending Deal" | "Marked Sold" {
   if (status === "Sold" || status === "Loss") return "Marked Sold";
-  return status as "In Stock" | "Needs Attention" | "Marked Sold";
+  if (status === "Pending Deal") return "Pending Deal";
+  return status as "In Stock" | "Needs Attention" | "Pending Deal" | "Marked Sold";
 }
 
 function SkeletonBar({ className }: { className?: string }) {
@@ -90,6 +91,7 @@ type Props = {
   commissionRate?: number;
   loading?: boolean;
   defaultVehicleId?: string;
+  onSuccess?: () => void;
 };
 
 function KeyValueRow({
@@ -218,7 +220,11 @@ function VinLookupSection({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (linkedVehicle) setVinInput(linkedVehicle.vin);
+    if (linkedVehicle) {
+      setVinInput(linkedVehicle.vin);
+    } else {
+      setVinInput("");
+    }
   }, [linkedVehicle]);
 
   const handleLookup = async () => {
@@ -254,7 +260,7 @@ function VinLookupSection({
     }
   };
 
-  const vehicleIsSold = isSoldStatus(linkedVehicle?.status);
+  const vehicleUnavailable = isUnavailableForDeal(linkedVehicle?.status);
 
   return (
     <div className="rounded-[6px] border border-slate-700/70 bg-card/80 p-3.5">
@@ -355,13 +361,13 @@ function VinLookupSection({
             </div>
           )}
 
-          {vehicleIsSold && (
+          {vehicleUnavailable && (
             <div className="mt-2 flex items-start gap-2 rounded-md border border-red-500/40 bg-red-500/10 p-2.5">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
               <p className="text-[12px] leading-relaxed text-red-300">
                 This vehicle is marked as{" "}
                 <strong>{linkedVehicle.status.toLowerCase()}</strong>. Deal
-                jackets cannot be created for sold or loss vehicles.
+                jackets cannot be created for sold, loss, or pending-deal vehicles.
               </p>
             </div>
           )}
@@ -379,6 +385,7 @@ export default function DealJacketFormEngine({
   commissionRate = 0,
   loading = false,
   defaultVehicleId,
+  onSuccess,
 }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [extraFiles, setExtraFiles] = useState<File[]>([]);
@@ -397,10 +404,10 @@ export default function DealJacketFormEngine({
     saveDraft,
     saveDealJacket,
     setFiles,
-  } = useUnifiedDealJacketForm(vehicles, commissionRate, defaultVehicleId, vinLookup);
+  } = useUnifiedDealJacketForm(vehicles, commissionRate, defaultVehicleId, vinLookup, onSuccess);
 
   const vehicleRejected =
-    isSoldStatus(linkedVehicle?.status) || vehicleHasJacket;
+    isUnavailableForDeal(linkedVehicle?.status) || vehicleHasJacket;
 
   const collectAllFiles = (
     extra: File[],
@@ -468,16 +475,16 @@ export default function DealJacketFormEngine({
             </div>
           )}
 
-          {vinLookup && isSoldStatus(linkedVehicle?.status) && (
+          {vinLookup && isUnavailableForDeal(linkedVehicle?.status) && (
             <div className="flex items-start gap-2.5 rounded-md border border-red-500/40 bg-red-500/10 p-3 xl:col-span-12">
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
               <div>
                 <p className="text-[13px] font-medium text-red-300">
-                  Vehicle is already marked as sold
+                  Vehicle is not available for a deal jacket
                 </p>
                 <p className="mt-0.5 text-[12px] leading-relaxed text-red-400/80">
-                  This vehicle is no longer available for deal jackets. Remove the
-                  vehicle link or select a different vehicle.
+                  This vehicle is sold, marked as a loss, or already has a deal in
+                  progress. Remove the vehicle link or select a different vehicle.
                 </p>
               </div>
             </div>

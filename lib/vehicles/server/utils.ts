@@ -127,6 +127,9 @@ export async function assertVehicleActive(
   if (vehicle.status === "sold" || vehicle.status === "loss") {
     return "Vehicle is already marked as sold/loss and cannot be modified";
   }
+  if (vehicle.status === "pending_deal") {
+    return "Vehicle has a deal jacket in progress and cannot be modified";
+  }
   return null;
 }
 

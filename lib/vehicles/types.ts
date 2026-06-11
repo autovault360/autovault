@@ -12,7 +12,7 @@ import {
   VEHICLE_MODELS,
 } from "@/lib/vehicles/actions/add-vehicle/options";
 
-export type VehicleStatus = "In Stock" | "Needs Attention" | "Marked Sold";
+export type VehicleStatus = "In Stock" | "Needs Attention" | "Pending Deal" | "Marked Sold";
 
 export type Vehicle = {
   id: string;
@@ -132,6 +132,8 @@ export function getStatusStyle(status: VehicleStatus): string {
       return "bg-emerald-500/15 text-emerald-400";
     case "Needs Attention":
       return "bg-amber-500/15 text-amber-400";
+    case "Pending Deal":
+      return "bg-blue-500/15 text-blue-400";
     case "Marked Sold":
       return "bg-red-500/15 text-red-400";
   }
@@ -161,12 +163,17 @@ export type VehicleStats = {
 };
 
 export function computeVehicleStats(vehicles: Vehicle[]): VehicleStats {
-  const inStock = vehicles.filter((v) => v.status !== "Marked Sold");
+  const inStock = vehicles.filter(
+    (v) => v.status !== "Marked Sold" && v.status !== "Pending Deal",
+  );
 
   return {
     totalInventory: vehicles.length,
     newArrivals: vehicles.filter(
-      (v) => v.status !== "Marked Sold" && isNewArrivalThisMonth(v),
+      (v) =>
+        v.status !== "Marked Sold" &&
+        v.status !== "Pending Deal" &&
+        isNewArrivalThisMonth(v),
     ).length,
     agedUnits: vehicles.filter((v) => v.daysInInventory > 25).length,
     totalValue: inStock.reduce((sum, v) => sum + v.price, 0),

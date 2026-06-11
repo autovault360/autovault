@@ -222,6 +222,7 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
     const jacketResult = await createDealJacket({
       dealershipId,
       createdBy: userId,
+      markVehiclePendingDeal: false,
       sale: {
         dealId: dealRow.id,
         vehicleId: data.vehicleId,

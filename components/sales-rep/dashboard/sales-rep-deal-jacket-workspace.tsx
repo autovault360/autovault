@@ -1,21 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import DealJacketFormEngine from "@/components/deal-jackets/create/deal-jacket-form-engine";
-import { CREATE_DEAL_JACKET_MOCK } from "@/mock-data/create-deal-jacket.mock";
-import { inventoryToLinkedVehicles } from "@/lib/sales-rep/deal-jacket/map-vehicles";
-import type {
-  IPricingConstants,
-  IVehicleCard,
-} from "@/lib/sales-rep/dashboard/types";
+import type { IPricingConstants } from "@/lib/sales-rep/dashboard/types";
 
 type Props = {
   expanded: boolean;
   onCollapse: () => void;
-  selectedVehicle: IVehicleCard | null;
-  inventory: IVehicleCard[];
   pricing: IPricingConstants;
   panelRef: React.RefObject<HTMLDivElement | null>;
 };
@@ -23,17 +16,10 @@ type Props = {
 export default function SalesRepDealJacketWorkspace({
   expanded,
   onCollapse,
-  selectedVehicle,
-  inventory,
   pricing,
   panelRef,
 }: Props) {
-  const linkedVehicles = useMemo(
-    () => inventoryToLinkedVehicles(inventory),
-    [inventory],
-  );
-
-  const defaultVehicleId = selectedVehicle?.stockNo;
+  const router = useRouter();
 
   if (!expanded) return null;
 
@@ -58,11 +44,9 @@ export default function SalesRepDealJacketWorkspace({
       </div>
 
       <DealJacketFormEngine
-        viewMode="linked"
-        vehicles={linkedVehicles}
-        documents={CREATE_DEAL_JACKET_MOCK.documents}
+        vinLookup
         commissionRate={pricing.commissionRate}
-        defaultVehicleId={defaultVehicleId}
+        onSuccess={() => router.push("/sales-rep/deal-jackets")}
       />
     </div>
   );

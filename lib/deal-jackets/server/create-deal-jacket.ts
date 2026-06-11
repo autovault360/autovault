@@ -6,6 +6,8 @@ import {
 } from "./calculate-financials";
 import { logDealJacketActivity } from "./activity";
 import { createCommission } from "@/lib/sales-rep/commissions/server/create-commission";
+import { isVehicleAvailableForDeal } from "@/lib/vehicles/map-db-status";
+import { markVehiclePendingDeal } from "@/lib/vehicles/server/sync-vehicle-deal-status";
 import type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,
@@ -17,6 +19,8 @@ export type CreateDealJacketParams = {
   createdBy: string;
   sale: CreateDealJacketSaleData;
   documents?: DealJacketDocumentInput[];
+  /** When true (default), vehicle status becomes pending_deal until the jacket is approved. */
+  markVehiclePendingDeal?: boolean;
 };
 
 export type CreateDealJacketResult =
@@ -81,7 +85,13 @@ export async function createDealJacket(
   params: CreateDealJacketParams,
 ): Promise<CreateDealJacketResult> {
   const supabase = await createClient();
-  const { dealershipId, createdBy, sale, documents = [] } = params;
+  const {
+    dealershipId,
+    createdBy,
+    sale,
+    documents = [],
+    markVehiclePendingDeal: shouldMarkPendingDeal = true,
+  } = params;
 
   const { data: existing } = await supabase
     .from("deal_jackets")
@@ -100,7 +110,7 @@ export async function createDealJacket(
   const { data: vehicle, error: vehicleError } = await supabase
     .from("vehicles")
     .select(
-      "id, dealership_id, acquisition_cost, total_invested, created_by, year, make, model, stock_number, vin",
+      "id, dealership_id, status, acquisition_cost, total_invested, created_by, year, make, model, stock_number, vin",
     )
     .eq("id", sale.vehicleId)
     .eq("dealership_id", dealershipId)
@@ -109,6 +119,23 @@ export async function createDealJacket(
 
   if (vehicleError || !vehicle) {
     return { success: false, error: "Vehicle not found" };
+  }
+
+  const vehicleStatus = vehicle.status as string;
+  if (vehicleStatus === "pending_deal") {
+    return {
+      success: false,
+      error: "This vehicle already has a deal in progress",
+    };
+  }
+  if (vehicleStatus === "sold" || vehicleStatus === "loss") {
+    return { success: false, error: "Vehicle is already marked as sold" };
+  }
+  if (shouldMarkPendingDeal && !isVehicleAvailableForDeal(vehicleStatus)) {
+    return {
+      success: false,
+      error: "Vehicle is not available for a new deal jacket",
+    };
   }
 
   const { data: expenseRows, error: expensesError } = await supabase
@@ -258,6 +285,18 @@ export async function createDealJacket(
     grossProfit: financials.profitGross,
     soldPrice: sale.soldPrice,
   });
+
+  if (shouldMarkPendingDeal) {
+    const pendingResult = await markVehiclePendingDeal(supabase, {
+      vehicleId: sale.vehicleId,
+      dealershipId,
+      changedBy: createdBy,
+      notes: `Deal jacket ${jacketNumber} submitted for review`,
+    });
+    if (!pendingResult.ok) {
+      console.error("Failed to mark vehicle pending deal:", pendingResult.error);
+    }
+  }
 
   return { success: true, dealJacket: inserted as DealJacketRow };
 }

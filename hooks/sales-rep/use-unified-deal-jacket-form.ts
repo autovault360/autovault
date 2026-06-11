@@ -49,6 +49,7 @@ export function useUnifiedDealJacketForm(
   commissionRate: number,
   defaultVehicleId?: string,
   vinLookup?: boolean,
+  onSuccess?: () => void,
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shake, setShake] = useState(false);
@@ -56,8 +57,9 @@ export function useUnifiedDealJacketForm(
   const [vehicleHasJacket, setVehicleHasJacket] = useState(false);
   const filesRef = useRef<File[]>([]);
 
-  const defaultVehicle =
-    vehicles.find((v) => v.id === defaultVehicleId) ?? vehicles[0] ?? null;
+  const defaultVehicle = vinLookup
+    ? null
+    : (vehicles.find((v) => v.id === defaultVehicleId) ?? vehicles[0] ?? null);
 
   const form = useForm<UnifiedDealJacketFormValues>({
     resolver: zodResolver(
@@ -211,11 +213,13 @@ export function useUnifiedDealJacketForm(
     }
   };
 
-  const vehicleIsSold =
-    linkedVehicle?.status === "Sold" || linkedVehicle?.status === "Loss";
+  const vehicleUnavailable =
+    linkedVehicle?.status === "Sold" ||
+    linkedVehicle?.status === "Loss" ||
+    linkedVehicle?.status === "Pending Deal";
 
   const saveDraft = form.handleSubmit(async () => {
-    if (vehicleHasJacket || vehicleIsSold) return;
+    if (vehicleHasJacket || vehicleUnavailable) return;
     setIsSubmitting(true);
     await new Promise((r) => setTimeout(r, 600));
     setIsSubmitting(false);
@@ -223,7 +227,7 @@ export function useUnifiedDealJacketForm(
   }, onValidationError);
 
   const saveDealJacket = form.handleSubmit(async (values) => {
-    if (vehicleHasJacket || vehicleIsSold) {
+    if (vehicleHasJacket || vehicleUnavailable) {
       triggerShake();
       return;
     }
@@ -260,8 +264,11 @@ export function useUnifiedDealJacketForm(
         toast.success(
           `Deal jacket ${result.jacketNumber} created and sent for review.`,
         );
-        form.reset(buildDefaults(selectedVehicle));
+        form.reset(buildDefaults(vinLookup ? null : selectedVehicle));
+        setLinkedVehicle(null);
+        setVehicleHasJacket(false);
         filesRef.current = [];
+        onSuccess?.();
       } else {
         toast.error(result.error);
         triggerShake();

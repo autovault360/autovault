@@ -3,6 +3,7 @@ import {
   type Vehicle,
   type VehicleStatus,
 } from "@/lib/vehicles/types";
+import { mapDbVehicleStatus } from "@/lib/vehicles/map-db-status";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
@@ -10,13 +11,7 @@ import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
 import SalesRepInventory from "@/components/sales-rep/dashboard/sales-rep-inventory";
 
 function mapStatus(dbStatus: string): VehicleStatus {
-  switch (dbStatus) {
-    case "in_stock": return "In Stock";
-    case "needs_attention": return "Needs Attention";
-    case "sold":
-    case "loss": return "Marked Sold";
-    default: return "In Stock";
-  }
+  return mapDbVehicleStatus(dbStatus);
 }
 
 function daysSince(date: string | null | undefined): number {

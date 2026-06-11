@@ -6,6 +6,7 @@ import { logDealJacketActivity } from "./activity";
 import { updateCommissionStatus } from "@/lib/sales-rep/commissions/server/update-commission-status";
 import type { DealJacketStatus } from "../types";
 import type { DealJacketRow } from "./db-types";
+import { releaseVehicleFromPendingDeal } from "@/lib/vehicles/server/sync-vehicle-deal-status";
 
 type WorkflowResult =
   | { success: true; dealJacket: DealJacketRow }
@@ -82,22 +83,24 @@ export async function approveDealJacket(
 
   if (!updated) return { success: false, error: "Failed to approve deal jacket" };
 
-  await supabase
-    .from("vehicles")
-    .update({ status: "sold" })
-    .eq("id", row.vehicle_id)
-    .eq("dealership_id", auth.user.dealershipId);
-
   const { data: vehicleRow } = await supabase
     .from("vehicles")
     .select("status")
     .eq("id", row.vehicle_id)
     .single();
 
+  const fromStatus = vehicleRow?.status ?? "pending_deal";
+
+  await supabase
+    .from("vehicles")
+    .update({ status: "sold" })
+    .eq("id", row.vehicle_id)
+    .eq("dealership_id", auth.user.dealershipId);
+
   await supabase.from("status_history").insert({
     vehicle_id: row.vehicle_id,
     dealership_id: auth.user.dealershipId,
-    from_status: vehicleRow?.status ?? "in_stock",
+    from_status: fromStatus,
     to_status: "sold",
     notes: `Deal jacket ${row.jacket_number} approved`,
     changed_by: auth.user.userId,
@@ -160,6 +163,13 @@ export async function rejectDealJacket(
   });
 
   if (!updated) return { success: false, error: "Failed to reject deal jacket" };
+
+  await releaseVehicleFromPendingDeal(supabase, {
+    vehicleId: row.vehicle_id,
+    dealershipId: auth.user.dealershipId,
+    changedBy: auth.user.userId,
+    notes: `Deal jacket ${row.jacket_number} rejected`,
+  });
 
   await logDealJacketActivity({
     dealJacketId,
