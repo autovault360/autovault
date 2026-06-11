@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { CardShell } from "@/components/dashboard/card-shell";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
@@ -25,12 +26,12 @@ export default function TeamMessagesCard({ messages, loading }: Props) {
         <span className="text-[11px] font-bold tracking-[0.14em] text-slate-500">
           TEAM MESSAGES
         </span>
-        <button
-          type="button"
+        <Link
+          href="/sales-rep/messages"
           className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
         >
           + New Message
-        </button>
+        </Link>
       </div>
 
       {loading ? (
@@ -48,8 +49,9 @@ export default function TeamMessagesCard({ messages, loading }: Props) {
       ) : (
         <div className="space-y-3">
           {messages.map((msg) => (
-            <div
+            <Link
               key={msg.id}
+              href={`/sales-rep/messages?conversation=${msg.id}`}
               className="flex gap-2.5 rounded-lg border border-transparent p-1 transition hover:border-slate-800 hover:bg-slate-800/30"
             >
               <Avatar className="h-8 w-8 shrink-0">
@@ -70,17 +72,17 @@ export default function TeamMessagesCard({ messages, loading }: Props) {
                   {msg.message}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
 
-      <button
-        type="button"
-        className="mt-3 w-full rounded-b-sm border-t border-slate-700 py-2.5 text-center text-[11.5px] font-medium text-blue-400 hover:bg-slate-800/30"
+      <Link
+        href="/sales-rep/messages"
+        className="mt-3 block w-full rounded-b-sm border-t border-slate-700 py-2.5 text-center text-[11.5px] font-medium text-blue-400 hover:bg-slate-800/30"
       >
         View All Messages ...
-      </button>
+      </Link>
     </CardShell>
   );
 }
