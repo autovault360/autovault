@@ -99,7 +99,6 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         label: "Team Chat",
         icon: Users,
         color: "text-purple-500",
-        comingSoon: true,
       },
       {
         href: "/sales-rep/send-document",

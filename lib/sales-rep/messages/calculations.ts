@@ -10,6 +10,27 @@ export function getInitials(name: string): string {
   );
 }
 
+export function mapProfileToParticipant(row: {
+  id: string;
+  full_name: string | null;
+  email: string;
+  phone?: string | null;
+  image_url?: string | null;
+}): import("./types").MessageParticipant {
+  const fullName = row.full_name?.trim() || row.email;
+  return {
+    id: row.id,
+    fullName,
+    email: row.email,
+    phone: row.phone ?? null,
+    imageUrl: null,
+    initials: getInitials(fullName),
+    role: "Sales Representative",
+    isOnline: false,
+    lastActiveAt: null,
+  };
+}
+
 export function formatMessageTime(iso: string | null | undefined): string {
   if (!iso) return "";
   const date = new Date(iso);
