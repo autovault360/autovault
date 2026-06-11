@@ -4,7 +4,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 
-function formatDateLabel(value: string): string {
+function todayISO(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+function formatDateLabel(value: string, placeholder = "Select date"): string {
+  if (!value) return placeholder;
   const date = new Date(`${value}T00:00:00`);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString("en-US", {
@@ -48,6 +53,31 @@ function parseCurrencyInput(value: string): number {
   const cleaned = value.replace(/[^0-9.-]/g, "");
   const parsed = parseFloat(cleaned);
   return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/** Keep only digits and a single decimal, max 2 fractional digits while typing. */
+function sanitizeCurrencyDisplayInput(value: string): string {
+  const normalized = value.replace(/,/g, "");
+  let result = "";
+  let hasDecimal = false;
+  let decimalDigits = 0;
+
+  for (const char of normalized) {
+    if (char >= "0" && char <= "9") {
+      if (hasDecimal) {
+        if (decimalDigits >= 2) continue;
+        decimalDigits += 1;
+      }
+      result += char;
+      continue;
+    }
+    if (char === "." && !hasDecimal) {
+      hasDecimal = true;
+      result += char;
+    }
+  }
+
+  return result;
 }
 
 function CurrencyInput({
@@ -99,6 +129,7 @@ function CurrencyInput({
         id={id}
         type="text"
         inputMode="decimal"
+        autoComplete="off"
         disabled={disabled}
         readOnly={disabled}
         aria-invalid={ariaInvalid}
@@ -107,9 +138,9 @@ function CurrencyInput({
         onChange={(e) => {
           if (disabled) return;
           isEditing.current = true;
-          const raw = e.target.value.replace(/^-\s*/, "");
-          setDisplay(raw);
-          onValueChange(parseCurrencyInput(raw));
+          const sanitized = sanitizeCurrencyDisplayInput(e.target.value);
+          setDisplay(sanitized);
+          onValueChange(parseCurrencyInput(sanitized));
         }}
         onFocus={() => {
           const formatted = formatCurrencyInput(Math.abs(value));
@@ -119,6 +150,82 @@ function CurrencyInput({
           isEditing.current = false;
           setDisplay(formatCurrencyInput(Math.abs(value)));
         }}
+      />
+    </div>
+  );
+}
+
+function DateInput({
+  value,
+  onChange,
+  disabled,
+  tone = "default",
+  theme = "light",
+  className,
+  id,
+  "aria-invalid": ariaInvalid,
+  defaultToToday = true,
+}: {
+  value: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  tone?: InputTone;
+  theme?: "light" | "dark";
+  className?: string;
+  id?: string;
+  "aria-invalid"?: boolean;
+  defaultToToday?: boolean;
+}) {
+  const dateInputRef = React.useRef<HTMLInputElement>(null);
+  const didApplyDefault = React.useRef(false);
+  const resolvedValue =
+    value || (defaultToToday && !disabled ? todayISO() : "");
+
+  React.useEffect(() => {
+    if (
+      defaultToToday &&
+      !disabled &&
+      !value &&
+      onChange &&
+      !didApplyDefault.current
+    ) {
+      didApplyDefault.current = true;
+      onChange({
+        target: { value: todayISO() },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+  }, [defaultToToday, disabled, onChange, value]);
+
+  const dateTone: InputTone = disabled ? "readonly" : tone;
+  const shell = theme === "dark" ? darkShellClass[dateTone] : toneShellClass[dateTone];
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => dateInputRef.current?.showPicker?.()}
+        disabled={disabled}
+        aria-invalid={ariaInvalid}
+        className={cn(
+          "flex h-8 w-full items-center justify-between rounded-[4px] border px-3 text-left text-[13px]",
+          shell,
+          disabled && "cursor-not-allowed",
+          className,
+        )}
+      >
+        {formatDateLabel(resolvedValue, defaultToToday ? formatDateLabel(todayISO()) : "Select date")}
+        <CalendarIcon className="h-4 w-4 shrink-0 text-slate-400" />
+      </button>
+      <input
+        ref={dateInputRef}
+        id={id}
+        type="date"
+        value={resolvedValue}
+        disabled={disabled}
+        onChange={onChange}
+        className="pointer-events-none absolute inset-0 opacity-0"
+        tabIndex={-1}
+        aria-hidden
       />
     </div>
   );
@@ -136,15 +243,15 @@ function Input({
   disabled,
   id,
   "aria-invalid": ariaInvalid,
+  defaultToToday,
   ...props
 }: React.ComponentProps<"input"> & {
   mode?: InputMode;
   tone?: InputTone;
   theme?: "light" | "dark";
   onValueChange?: (value: number) => void;
+  defaultToToday?: boolean;
 }) {
-  const dateInputRef = React.useRef<HTMLInputElement>(null);
-
   if (mode === "currency") {
     return (
       <CurrencyInput
@@ -160,37 +267,19 @@ function Input({
   }
 
   if (mode === "date") {
-    const dateTone: InputTone = disabled ? "readonly" : tone ?? "default";
-    const shell = theme === "dark" ? darkShellClass[dateTone] : toneShellClass[dateTone];
     const dateValue = typeof props.value === "string" ? props.value : "";
-
     return (
-      <div className="relative">
-        <button
-          type="button"
-          onClick={() => dateInputRef.current?.showPicker?.()}
-          disabled={disabled}
-          aria-invalid={ariaInvalid}
-          className={cn(
-            "flex h-8 w-full items-center justify-between rounded-[4px] border px-3 text-left text-[13px]",
-            shell,
-            disabled && "cursor-not-allowed",
-            className,
-          )}
-        >
-          {formatDateLabel(dateValue)}
-          <CalendarIcon className="h-4 w-4 shrink-0 text-slate-400" />
-        </button>
-        <input
-          ref={dateInputRef}
-          type="date"
-          value={dateValue}
-          onChange={(e) => props.onChange?.(e as React.ChangeEvent<HTMLInputElement>)}
-          className="pointer-events-none absolute inset-0 opacity-0"
-          tabIndex={-1}
-          aria-hidden
-        />
-      </div>
+      <DateInput
+        value={dateValue}
+        onChange={props.onChange}
+        disabled={disabled}
+        tone={tone}
+        theme={theme}
+        className={className}
+        id={id}
+        aria-invalid={ariaInvalid as boolean | undefined}
+        defaultToToday={defaultToToday}
+      />
     );
   }
 

@@ -24,11 +24,11 @@ export type DealJacketRow = {
   total_invested: number;
   additional_expenses: number;
   commission_amount: number;
-  commission_status: "pending" | "paid";
   profit_gross: number;
   profit_net: number;
   date_sold: string;
   workflow_status: string;
+  sales_rep_commission_id: string | null;
   review_notes: string | null;
   reviewed_by: string | null;
   reviewed_at: string | null;

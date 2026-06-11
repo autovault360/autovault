@@ -209,7 +209,7 @@ async function resolveDealershipId(
       .eq("id", requestedId)
       .maybeSingle();
     if (error || !data) throw new Error(`Dealership not found: ${requestedId}`);
-    console.log(`🏢 Dealership: ${data.name}`);
+    console.log(`?? Dealership: ${data.name}`);
     return data.id;
   }
   const { data, error } = await supabase
@@ -222,7 +222,7 @@ async function resolveDealershipId(
   if (error || !data) {
     throw new Error("No active dealership found. Pass --dealership-id <uuid>.");
   }
-  console.log(`🏢 Dealership: ${data.name}`);
+  console.log(`?? Dealership: ${data.name}`);
   return data.id;
 }
 
@@ -250,7 +250,7 @@ async function resolveCreatedBy(
     .maybeSingle();
 
   if (error || !anyUser) {
-    throw new Error("No users found for dealership — run setup or seed sales reps first");
+    throw new Error("No users found for dealership ? run setup or seed sales reps first");
   }
   return anyUser.id;
 }
@@ -292,7 +292,7 @@ async function ensureSalesRep(
       throw new Error(`Auth create failed for ${email}: ${error?.message}`);
     }
     authUser = data.user;
-    console.log(`   ✅ Auth user: ${email}`);
+    console.log(`   ? Auth user: ${email}`);
   }
 
   let insertResult = await supabase
@@ -331,7 +331,7 @@ async function ensureSalesRep(
 
   const profile = insertResult.data;
 
-  console.log(`   ✅ Sales rep profile: ${fullName}`);
+  console.log(`   ? Sales rep profile: ${fullName}`);
   return profile.id;
 }
 
@@ -441,7 +441,7 @@ async function upsertDealJacket(
     .maybeSingle();
 
   if (existing && !force) {
-    console.log(`   ↷ Jacket exists: ${row.jacketNumber} (${row.vin})`);
+    console.log(`   ? Jacket exists: ${row.jacketNumber} (${row.vin})`);
     return;
   }
 
@@ -465,7 +465,6 @@ async function upsertDealJacket(
     total_invested: totalInvested,
     additional_expenses: 0,
     commission_amount: row.commissionAmount,
-    commission_status: row.commissionStatus,
     profit_gross: profitGross,
     profit_net: row.profitNet,
     date_sold: dateSold,
@@ -480,9 +479,41 @@ async function upsertDealJacket(
     if (error) throw new Error(error.message);
   }
 
-  const { error } = await supabase.from("deal_jackets").insert(payload);
+  const { data: inserted, error } = await supabase
+    .from("deal_jackets")
+    .insert(payload)
+    .select("id")
+    .single();
   if (error) throw new Error(`Deal jacket insert failed (${row.jacketNumber}): ${error.message}`);
-  console.log(`   ✅ ${row.jacketNumber} — ${row.year} ${row.make} ${row.model}`);
+
+  const commissionRate =
+    row.soldPrice > 0 && profitGross > 0
+      ? round2(row.commissionAmount / profitGross)
+      : 0.1;
+  const commissionStatus = row.commissionStatus === "paid" ? "paid" : "approved";
+  const { data: commission, error: commErr } = await supabase
+    .from("sales_rep_commissions")
+    .insert({
+      dealership_id: dealershipId,
+      sales_rep_id: salesRepId,
+      deal_jacket_id: inserted.id,
+      commission_amount: row.commissionAmount,
+      commission_rate: commissionRate,
+      gross_profit: profitGross,
+      sold_price: row.soldPrice,
+      status: commissionStatus,
+      ...(commissionStatus === "paid" ? { paid_at: dateSold } : {}),
+    })
+    .select("id")
+    .single();
+  if (commErr) throw new Error(`Commission insert failed (${row.jacketNumber}): ${commErr.message}`);
+
+  await supabase
+    .from("deal_jackets")
+    .update({ sales_rep_commission_id: commission.id })
+    .eq("id", inserted.id);
+
+  console.log(`   ? ${row.jacketNumber} ? ${row.year} ${row.make} ${row.model}`);
 }
 
 async function main() {
@@ -490,7 +521,7 @@ async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   if (!url || !serviceRoleKey) {
-    console.error("�—� Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
+    console.error("??? Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
     process.exit(1);
   }
 
@@ -503,7 +534,7 @@ async function main() {
 
   const repCache = new Map<string, string>();
 
-  console.log("\n📁 Seeding deal jackets...\n");
+  console.log("\n?? Seeding deal jackets...\n");
 
   for (const row of SEED_ROWS) {
     let salesRepId = repCache.get(row.salesRepEmail);
@@ -538,10 +569,10 @@ async function main() {
     );
   }
 
-  console.log("\n✅ Done. Open /dashboard/deal-jackets to view seeded data.\n");
+  console.log("\n? Done. Open /dashboard/deal-jackets to view seeded data.\n");
 }
 
 main().catch((err) => {
-  console.error("�—�", err instanceof Error ? err.message : err);
+  console.error("???", err instanceof Error ? err.message : err);
   process.exit(1);
 });

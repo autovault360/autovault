@@ -3,6 +3,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { fetchCommissionsByJacketIds } from "@/lib/sales-rep/commissions/server/fetch-commissions-by-jacket-ids";
 import { getSignedUrl } from "@/lib/vehicles/server/utils";
 
 export {
@@ -145,7 +146,6 @@ export async function fetchJacketsInRangeExtended(
       profit_gross,
       profit_net,
       commission_amount,
-      commission_status,
       total_tax,
       date_sold,
       vehicle_id,
@@ -168,7 +168,13 @@ export async function fetchJacketsInRangeExtended(
     return [];
   }
 
-  return (data ?? []) as unknown as JacketRowExtended[];
+  const rows = (data ?? []) as Array<Record<string, unknown> & { id: string }>;
+  const commissionMap = await fetchCommissionsByJacketIds(rows.map((r) => r.id));
+
+  return rows.map((row) => ({
+    ...row,
+    commission_status: commissionMap.get(row.id)?.status ?? "pending_review",
+  })) as unknown as JacketRowExtended[];
 }
 
 export async function getDealAggregates(
@@ -219,7 +225,7 @@ export async function getRecentDeals(
     .limit(limit);
 
   if (statusFilter && statusFilter !== "all") {
-    query = query.eq("status", statusFilter);
+    query = query.eq("workflow_status", statusFilter);
   }
 
   const { data, error } = await query;
@@ -254,11 +260,11 @@ export async function getRecentDeals(
 export async function getPendingCommissions(dealershipId: string): Promise<number> {
   const supabase = await createClient();
   const { count, error } = await supabase
-    .from("deal_jackets")
+    .from("sales_rep_commissions")
     .select("id", { count: "exact", head: true })
     .eq("dealership_id", dealershipId)
     .is("deleted_at", null)
-    .eq("commission_status", "pending");
+    .in("status", ["pending_review", "changes_requested", "resubmitted", "approved"]);
 
   if (error) {
     console.warn("getPendingCommissions:", error.message);
@@ -273,7 +279,7 @@ export async function getDealJacketStatusCounts(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("deal_jackets")
-    .select("id, commission_status, amount_financed, balance_due")
+    .select("id, amount_financed, balance_due")
     .eq("dealership_id", dealershipId)
     .is("deleted_at", null);
 
@@ -284,7 +290,6 @@ export async function getDealJacketStatusCounts(
 
   const rows = (data ?? []) as Array<{
     id: string;
-    commission_status: string | null;
     amount_financed: number | null;
     balance_due: number | null;
   }>;

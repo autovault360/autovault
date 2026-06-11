@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  fetchCommissionsByJacketIds,
+} from "@/lib/sales-rep/commissions/server/fetch-commissions-by-jacket-ids";
+import { isCommissionPaid } from "@/lib/sales-rep/commissions/normalize-status";
+import {
   aggregatePeriodTotals,
   type RawDealJacket,
   type RawDealershipExpense,
@@ -62,7 +66,6 @@ async function fetchJacketsInRange(
       profit_gross,
       profit_net,
       commission_amount,
-      commission_status,
       total_tax,
       date_sold,
       vehicle_id,
@@ -83,7 +86,12 @@ async function fetchJacketsInRange(
     return [];
   }
 
-  return (data ?? []) as unknown as JacketRow[];
+  const rows = (data ?? []) as unknown as JacketRow[];
+  const commissionMap = await fetchCommissionsByJacketIds(rows.map((r) => r.id));
+  return rows.map((row) => ({
+    ...row,
+    commission_status: commissionMap.get(row.id)?.status ?? "pending_review",
+  }));
 }
 
 async function fetchDealershipExpensesInRange(
@@ -448,7 +456,7 @@ export function countDistinctPayrollEmployees(
 
 export function sumPaidCommissions(jacketRows: JacketRow[]): number {
   return jacketRows.reduce((sum, row) => {
-    if (row.commission_status === "paid") {
+    if (isCommissionPaid(row.commission_status)) {
       return sum + Number(row.commission_amount);
     }
     return sum;
@@ -483,7 +491,6 @@ export async function fetchJacketsInRangeExtended(
       profit_gross,
       profit_net,
       commission_amount,
-      commission_status,
       total_tax,
       date_sold,
       vehicle_id,
@@ -506,7 +513,12 @@ export async function fetchJacketsInRangeExtended(
     return [];
   }
 
-  return (data ?? []) as unknown as ExtendedJacketRow[];
+  const rows = (data ?? []) as unknown as ExtendedJacketRow[];
+  const commissionMap = await fetchCommissionsByJacketIds(rows.map((r) => r.id));
+  return rows.map((row) => ({
+    ...row,
+    commission_status: commissionMap.get(row.id)?.status ?? "pending_review",
+  }));
 }
 
 export type PurchasedVehicleRow = {

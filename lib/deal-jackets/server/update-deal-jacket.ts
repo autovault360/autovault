@@ -220,7 +220,12 @@ export async function updateDealJacket(
     },
   });
 
-  await updateCommissionStatus(dealJacketId, "resubmitted");
+  await updateCommissionStatus(dealJacketId, "resubmitted", {
+    commission_amount: financials.commissionAmount,
+    commission_rate: commissionRate,
+    gross_profit: financials.profitGross,
+    sold_price: formData.salePrice,
+  });
 
   return {
     success: true,

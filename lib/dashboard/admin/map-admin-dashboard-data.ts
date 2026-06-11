@@ -183,7 +183,7 @@ export function buildSalesRepKpis(
     0,
   );
   const pendingCommission = jackets
-    .filter((j) => j.commission_status === "pending")
+    .filter((j) => j.commission_status !== "paid" && j.commission_status !== "rejected")
     .reduce((s, j) => s + Number(j.commission_amount ?? 0), 0);
   const paidCommission = jackets
     .filter((j) => j.commission_status === "paid")
@@ -227,7 +227,7 @@ export function buildSalesRepKpis(
       color: "amber",
       label: "Pending Commission",
       value: formatCurrency(pendingCommission),
-      unit: `${jackets.filter((j) => j.commission_status === "pending").length} Deals Pending`,
+      unit: `${jackets.filter((j) => j.commission_status !== "paid" && j.commission_status !== "rejected").length} Deals Pending`,
       link: "View Details",
       sparkColor: "#f59e0b",
       sparkPoints: EMPTY_SPARK,
@@ -258,9 +258,11 @@ export function buildSalesRepTableRows(
       0,
     );
     const pendingCommission = repJackets
-      .filter((j) => j.commission_status === "pending")
+      .filter((j) => j.commission_status !== "paid" && j.commission_status !== "rejected")
       .reduce((s, j) => s + Number(j.commission_amount ?? 0), 0);
-    const hasPending = repJackets.some((j) => j.commission_status === "pending");
+    const hasPending = repJackets.some(
+      (j) => j.commission_status !== "paid" && j.commission_status !== "rejected",
+    );
 
     return {
       rank: i + 1,

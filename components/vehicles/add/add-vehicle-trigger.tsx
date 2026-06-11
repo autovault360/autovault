@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import AddVehicleModal from "./add-vehicle-modal";
@@ -10,6 +10,7 @@ export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(defaultOpen);
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     setOpen(defaultOpen);
@@ -18,7 +19,11 @@ export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
     window.history.replaceState(null, "", next ? pathname + "?add=true" : pathname);
-    if (!next) router.refresh();
+    if (!next) {
+      startTransition(() => {
+        router.refresh();
+      });
+    }
   };
 
   return (

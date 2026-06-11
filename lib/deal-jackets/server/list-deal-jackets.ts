@@ -1,5 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchCommissionsByJacketIds } from "@/lib/sales-rep/commissions/server/fetch-commissions-by-jacket-ids";
 import { getSignedUrl } from "@/lib/vehicles/server/utils";
+
+export type DealJacketCommissionDto = {
+  id: string;
+  status: string;
+  commissionAmount: number;
+  commissionRate: number;
+  grossProfit: number;
+  soldPrice: number;
+  paidAt: string | null;
+};
 
 export type DealJacketListItemDto = {
   id: string;
@@ -22,6 +33,7 @@ export type DealJacketListItemDto = {
   totalProfit: number;
   commissionAmount: number;
   commissionStatus: string;
+  commission: DealJacketCommissionDto | null;
   paymentMethod: string;
   workflowStatus: string;
 };
@@ -59,13 +71,12 @@ export async function listDealJackets(params: {
       total_sale_price,
       profit_net,
       commission_amount,
-      commission_status,
       date_sold,
       workflow_status,
+      sales_rep_commission_id,
       vehicle:vehicles(year, make, model, stock_number, vin),
       customer:customers(name, phone),
-      sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name),
-      commissions:sales_rep_commissions!deal_jacket_id(status)
+      sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name)
     `,
       { count: "exact" },
     )
@@ -83,6 +94,9 @@ export async function listDealJackets(params: {
   if (error) {
     throw new Error(error.message);
   }
+
+  const jacketIds = (data ?? []).map((r) => r.id);
+  const commissionSnapshots = await fetchCommissionsByJacketIds(jacketIds);
 
   const vehicleIds = (data ?? []).map((r) => r.vehicle_id);
   const imageByVehicle = new Map<string, string>();
@@ -112,13 +126,19 @@ export async function listDealJackets(params: {
         ? row.sales_rep[0]
         : row.sales_rep;
 
-      const commissions = Array.isArray(row.commissions)
-        ? row.commissions
-        : [];
-      const commissionStatus =
-        commissions.length > 0 && commissions[0]?.status
-          ? commissions[0].status
-          : row.commission_status;
+      const snapshot = commissionSnapshots.get(row.id);
+      const commission: DealJacketCommissionDto | null = snapshot
+        ? {
+            id: snapshot.id,
+            status: snapshot.status,
+            commissionAmount: snapshot.commissionAmount,
+            commissionRate: snapshot.commissionRate,
+            grossProfit: snapshot.grossProfit,
+            soldPrice: snapshot.soldPrice,
+            paidAt: snapshot.paidAt,
+          }
+        : null;
+      const commissionStatus = snapshot?.status ?? "pending_review";
 
       const storagePath = imageByVehicle.get(row.vehicle_id);
       let imageUrl: string | null = null;
@@ -149,8 +169,9 @@ export async function listDealJackets(params: {
         salePrice: Number(row.sold_price),
         totalSalePrice: Number(row.total_sale_price),
         totalProfit: Number(row.profit_net),
-        commissionAmount: Number(row.commission_amount),
+        commissionAmount: commission?.commissionAmount ?? Number(row.commission_amount),
         commissionStatus,
+        commission,
         paymentMethod: "...",
         workflowStatus: row.workflow_status ?? "pending_review",
       };

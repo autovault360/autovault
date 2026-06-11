@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { fetchCommissionsByJacketIds } from "@/lib/sales-rep/commissions/server/fetch-commissions-by-jacket-ids";
 
 export type CalendarJacketRow = {
   id: string;
@@ -40,7 +41,6 @@ export async function fetchCalendarJackets(
       profit_gross,
       profit_net,
       commission_amount,
-      commission_status,
       total_tax,
       amount_financed,
       total_invested,
@@ -64,6 +64,7 @@ export async function fetchCalendarJackets(
 
   const jacketIds = (data ?? []).map((r) => r.id as string);
   const docCountByJacket = new Map<string, number>();
+  const commissionMap = await fetchCommissionsByJacketIds(jacketIds);
 
   if (jacketIds.length > 0) {
     const { data: docs } = await supabase
@@ -89,7 +90,7 @@ export async function fetchCalendarJackets(
       profit_gross: Number(row.profit_gross),
       profit_net: Number(row.profit_net),
       commission_amount: Number(row.commission_amount),
-      commission_status: row.commission_status as string,
+      commission_status: commissionMap.get(row.id as string)?.status ?? "pending_review",
       total_tax: Number(row.total_tax),
       amount_financed: Number(row.amount_financed),
       total_invested: Number(row.total_invested),

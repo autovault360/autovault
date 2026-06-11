@@ -527,7 +527,7 @@ export default function SalesRepEditDealJacketPageContent({
                         </div>
                         <Select
                           onValueChange={field.onChange}
-                          value={field.value}
+                          value={field.value || undefined}
                         >
                           <FormControl>
                             <SelectTrigger
@@ -593,6 +593,7 @@ export default function SalesRepEditDealJacketPageContent({
                             <Input
                               mode="date"
                               theme="dark"
+                              defaultToToday={false}
                               value={field.value}
                               onChange={field.onChange}
                               aria-invalid={!!fieldState.error}

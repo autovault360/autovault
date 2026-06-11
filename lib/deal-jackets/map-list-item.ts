@@ -1,16 +1,8 @@
 import type { CommissionStatus, DealJacketListItem, DealJacketStatus, PaymentMethod } from "./types";
 import type { DealJacketListItemDto } from "./server/list-deal-jackets";
+import { normalizeCommissionStatus } from "@/lib/sales-rep/commissions/normalize-status";
 
 const DEFAULT_PAYMENT: PaymentMethod = "finance";
-
-const VALID_COMMISSION_STATUSES: CommissionStatus[] = [
-  "pending_review",
-  "changes_requested",
-  "resubmitted",
-  "approved",
-  "rejected",
-  "paid",
-];
 
 export function mapDealJacketListDto(
   dto: DealJacketListItemDto,
@@ -27,12 +19,9 @@ export function mapDealJacketListDto(
     ? (rawStatus as DealJacketStatus)
     : "pending_review";
 
-  const rawCommission = dto.commissionStatus ?? "pending_review";
-  const commissionStatus: CommissionStatus = VALID_COMMISSION_STATUSES.includes(
-    rawCommission as CommissionStatus,
-  )
-    ? (rawCommission as CommissionStatus)
-    : "pending_review";
+  const commissionStatus: CommissionStatus = normalizeCommissionStatus(
+    dto.commission?.status ?? dto.commissionStatus,
+  );
 
   return {
     id: dto.id,

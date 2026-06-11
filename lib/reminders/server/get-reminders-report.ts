@@ -101,11 +101,15 @@ export async function getRemindersReport(): Promise<RemindersReport> {
         .gte("expiration_date", today)
         .lte("expiration_date", to),
       supabase
-        .from("deal_jackets")
-        .select("id, jacket_number, commission_status, date_sold")
+        .from("sales_rep_commissions")
+        .select(`
+          id,
+          status,
+          deal_jacket:deal_jackets!inner(id, jacket_number, date_sold)
+        `)
         .eq("dealership_id", dealershipId)
         .is("deleted_at", null)
-        .eq("commission_status", "pending")
+        .in("status", ["pending_review", "changes_requested", "resubmitted", "approved"])
         .limit(20),
       supabase
         .from("calendar_events")
@@ -179,7 +183,11 @@ export async function getRemindersReport(): Promise<RemindersReport> {
       });
     }
 
-    for (const jacket of pendingCommissionsResult.data ?? []) {
+    for (const commission of pendingCommissionsResult.data ?? []) {
+      const jacket = Array.isArray(commission.deal_jacket)
+        ? commission.deal_jacket[0]
+        : commission.deal_jacket;
+      if (!jacket) continue;
       const dueDate = (jacket.date_sold as string).slice(0, 10);
       reminders.push({
         id: `jacket-${jacket.id}`,

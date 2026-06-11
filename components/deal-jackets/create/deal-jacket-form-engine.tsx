@@ -733,7 +733,10 @@ export default function DealJacketFormEngine({
                       <FieldLabel label="State" required />
                       <FormMessage className="text-[10px] text-red-500" />
                     </div>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || undefined}
+                    >
                       <FormControl>
                         <SelectTrigger
                           className={fieldClassName(!!fieldState.error)}

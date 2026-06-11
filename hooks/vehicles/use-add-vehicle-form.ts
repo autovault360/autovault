@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import NProgress from "nprogress";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +23,8 @@ import { decodeVin } from "@/lib/vehicles/actions/vin-decoder";
 import { validateFile } from "@/lib/vehicles/actions/utils";
 
 export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isDuplicateVin, setIsDuplicateVin] = useState(false);
@@ -218,6 +221,9 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
 
         if (result.success) {
           toast.success(getAddVehicleSuccessMessage(values.addAnother));
+          startTransition(() => {
+            router.refresh();
+          });
           if (values.addAnother) {
             form.reset(buildAddVehicleDefaults());
             setPhotoUrls([]);

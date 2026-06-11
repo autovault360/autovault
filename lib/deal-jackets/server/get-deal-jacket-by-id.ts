@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { normalizeCommissionStatus } from "@/lib/sales-rep/commissions/normalize-status";
 import { getSignedUrl } from "@/lib/vehicles/server/utils";
 import type { DealJacketFees } from "./db-types";
 
@@ -189,6 +190,20 @@ export async function getDealJacketById(
         .join(", ")
     : null;
 
+  const { data: commissionRow } = await createServiceClient()
+    .from("sales_rep_commissions")
+    .select("id, status, commission_amount, commission_rate, gross_profit, sold_price, paid_at")
+    .eq("deal_jacket_id", id)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  const commissionStatus = commissionRow
+    ? normalizeCommissionStatus(commissionRow.status)
+    : "pending_review";
+  const commissionAmount = commissionRow
+    ? Number(commissionRow.commission_amount)
+    : Number(row.commission_amount);
+
   return {
     id: row.id,
     jacketNumber: row.jacket_number,
@@ -205,8 +220,8 @@ export async function getDealJacketById(
     balanceDue: Number(row.balance_due),
     totalInvested: Number(row.total_invested),
     additionalExpenses: Number(row.additional_expenses),
-    commissionAmount: Number(row.commission_amount),
-    commissionStatus: row.commission_status,
+    commissionAmount,
+    commissionStatus,
     profitGross: Number(row.profit_gross),
     profitNet: Number(row.profit_net),
     dateSold: row.date_sold,

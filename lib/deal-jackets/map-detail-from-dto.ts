@@ -10,6 +10,7 @@ import type {
   DealJacketStatus,
   DealJacketActivityRow,
 } from "./types";
+import { normalizeCommissionStatus } from "@/lib/sales-rep/commissions/normalize-status";
 
 const CATEGORY_COLORS: Record<string, string> = {
   repairs: "#3b82f6",
@@ -123,8 +124,9 @@ export function mapDealJacketDetailFromDto(
       ? dto.vehicle.acquisitionCost
       : Math.max(0, dto.totalInvested - expenseSum);
   const vehicleExpenses = Math.max(0, dto.totalInvested - purchasePrice);
-  const commissionStatus: CommissionStatus =
-    dto.commissionStatus === "paid" ? "paid" : "pending_review";
+  const commissionStatus: CommissionStatus = normalizeCommissionStatus(
+    dto.commissionStatus,
+  );
   const commissionRate = dto.salesRep?.commissionRate ?? 0.1;
   const commissionPercent = Math.round(commissionRate * 1000) / 10;
   const saleDate = dto.dateSold.split("T")[0];
