@@ -447,6 +447,7 @@ export default function AddCustomerModal({
                           {...field}
                           mode="date"
                           theme="dark"
+                          defaultToToday={false}
                           aria-invalid={!!fieldState.error}
                         />
                       </FormControl>

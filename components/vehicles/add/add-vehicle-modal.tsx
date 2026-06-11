@@ -458,6 +458,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                           <Input
                             mode="date"
                             theme="dark"
+                            defaultToToday={false}
                             value={field.value ?? ""}
                             onChange={(e) => field.onChange(e.target.value)}
                           />

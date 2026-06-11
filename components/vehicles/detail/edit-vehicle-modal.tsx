@@ -402,7 +402,7 @@ export default function EditVehicleModal({
                   <FormField control={form.control} name="expirationDate" render={({ field }) => (
                     <FormItem>
                       <FieldLabel label="Expiration Date" />
-                      <FormControl><Input mode="date" theme="dark" value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} /></FormControl>
+                      <FormControl><Input mode="date" theme="dark" defaultToToday={false} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value)} /></FormControl>
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="sellerAuction" render={({ field }) => (

@@ -1,6 +1,7 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
+import { createCommissionOnDealJacket } from "./create-commission";
 import type { SalesRepCommissionRow, SalesRepCommissionStatus } from "../types";
 
 export async function updateCommissionStatus(
@@ -8,7 +9,7 @@ export async function updateCommissionStatus(
   status: SalesRepCommissionStatus,
   extraFields?: Record<string, unknown>,
 ): Promise<SalesRepCommissionRow | null> {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const updateData: Record<string, unknown> = {
     status,
@@ -26,12 +27,30 @@ export async function updateCommissionStatus(
     .eq("deal_jacket_id", dealJacketId)
     .is("deleted_at", null)
     .select("*")
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error("Failed to update commission status:", error.message);
     return null;
   }
 
-  return data as SalesRepCommissionRow;
+  if (data) {
+    await supabase
+      .from("deal_jackets")
+      .update({ sales_rep_commission_id: data.id })
+      .eq("id", dealJacketId);
+
+    return data as SalesRepCommissionRow;
+  }
+
+  const created = await createCommissionOnDealJacket(dealJacketId, status);
+  if (!created) {
+    console.error(
+      "No commission row found for deal jacket and failed to create one:",
+      dealJacketId,
+    );
+    return null;
+  }
+
+  return created;
 }

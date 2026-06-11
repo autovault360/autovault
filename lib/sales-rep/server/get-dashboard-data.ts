@@ -1,6 +1,13 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  fetchCommissionsByJacketIds,
+} from "@/lib/sales-rep/commissions/server/fetch-commissions-by-jacket-ids";
+import {
+  isCommissionPending,
+  isCommissionPaid,
+} from "@/lib/sales-rep/commissions/normalize-status";
 import type {
   SalesRepDashboardData,
   IVehicleCard,
@@ -207,7 +214,7 @@ async function buildDashboard(
       .limit(50),
     supabase
       .from("deal_jackets")
-      .select(`id, jacket_number, sold_price, total_tax, fees, total_sale_price, down_payment, amount_financed, commission_amount, commission_status, profit_gross, profit_net, date_sold, status, created_at, sales_rep_id, created_by,
+      .select(`id, jacket_number, sold_price, total_tax, fees, total_sale_price, down_payment, amount_financed, commission_amount, profit_gross, profit_net, date_sold, workflow_status, created_at, sales_rep_id, created_by,
         vehicle:vehicle_id(id, vin, make, model, year, trim),
         customer:customer_id(id, name, phone, email)`)
       .eq("dealership_id", dealershipId)
@@ -228,6 +235,7 @@ async function buildDashboard(
   const vehicles = vehiclesResult.data ?? [];
   const allJackets = jacketsResult.data ?? [];
   const salesRepsRaw = leaderboardResult.data ?? [];
+  const commissionMap = await fetchCommissionsByJacketIds(allJackets.map((j: { id: string }) => j.id));
 
   const myJackets = allJackets.filter(
     (j: any) => j.sales_rep_id === userId || j.created_by === userId,
@@ -240,8 +248,11 @@ async function buildDashboard(
     currentMonthGross: myMtdJackets.reduce((s: number, j: any) => s + Number(j.profit_gross ?? 0), 0),
     currentMonthCommission: myMtdJackets.reduce((s: number, j: any) => s + Number(j.commission_amount ?? 0), 0),
     awaitingApprovalCommission: myJackets
-      .filter((j: any) => j.commission_status === "pending")
-      .reduce((s: number, j: any) => s + Number(j.commission_amount ?? 0), 0),
+      .filter((j: { id: string }) => {
+        const status = commissionMap.get(j.id)?.status ?? "pending_review";
+        return isCommissionPending(status);
+      })
+      .reduce((s: number, j: { commission_amount?: number }) => s + Number(j.commission_amount ?? 0), 0),
   };
 
   const inventory: IVehicleCard[] = await Promise.all(
@@ -270,6 +281,12 @@ async function buildDashboard(
     }),
   );
 
+  const mapWorkflowStatus = (ws: string): IDealJacketLine["status"] => {
+    if (ws === "approved") return "Approved";
+    if (ws === "changes_requested" || ws === "rejected") return "Changes Requested";
+    return "Pending";
+  };
+
   const recentDealJackets: IDealJacketLine[] = myJackets.slice(0, 10).map((j: any) => {
     const vehicle = Array.isArray(j.vehicle) ? j.vehicle[0] : j.vehicle;
     const customer = Array.isArray(j.customer) ? j.customer[0] : j.customer;
@@ -277,7 +294,7 @@ async function buildDashboard(
       id: j.jacket_number ?? j.id.slice(0, 8),
       vehicleDesc: vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.trim ? " " + vehicle.trim : ""}` : "Unknown",
       buyerName: customer?.name ?? "Unknown",
-      status: (j.status === "accepted" ? "Approved" : j.status === "rejected" ? "Changes Requested" : "Pending") as IDealJacketLine["status"],
+      status: mapWorkflowStatus(j.workflow_status ?? "pending_review"),
       dateString: new Date(j.date_sold ?? j.created_at).toLocaleDateString("en-US", {
         month: "short", day: "numeric", year: "numeric",
       }),
@@ -338,6 +355,7 @@ async function buildDashboard(
   const commissionEntries: ISalesRepCommissionRow[] = myJackets.map((j: any) => {
     const vehicle = Array.isArray(j.vehicle) ? j.vehicle[0] : j.vehicle;
     const customer = Array.isArray(j.customer) ? j.customer[0] : j.customer;
+    const commissionStatus = commissionMap.get(j.id)?.status ?? "pending_review";
     return {
       id: j.id,
       dealJacketId: j.jacket_number ?? j.id.slice(0, 8),
@@ -351,7 +369,7 @@ async function buildDashboard(
       grossProfit: Number(j.profit_gross ?? 0),
       commissionRate: Number(dbUser.commission_rate ?? 0.1),
       commissionEarned: Number(j.commission_amount ?? 0),
-      status: j.commission_status === "paid" ? "paid" : "pending_review",
+      status: isCommissionPaid(commissionStatus) ? "paid" : commissionStatus,
     } as ISalesRepCommissionRow;
   });
 

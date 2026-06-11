@@ -1,6 +1,5 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
 import { updateCommissionStatus } from "./update-commission-status";
 
@@ -16,7 +15,6 @@ export async function markCommissionPaid(
     return { success: false, error: "Only managers can mark commissions as paid" };
   }
 
-  const supabase = await createClient();
   const result = await updateCommissionStatus(dealJacketId, "paid", {
     paid_by: auth.user.userId,
   });
@@ -24,14 +22,6 @@ export async function markCommissionPaid(
   if (!result) {
     return { success: false, error: "Failed to mark commission as paid" };
   }
-
-  await supabase
-    .from("deal_jackets")
-    .update({
-      commission_status: "paid",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", dealJacketId);
 
   return { success: true };
 }

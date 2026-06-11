@@ -1,5 +1,5 @@
 /**
- * AutoVault360 — Full System Seeder
+ * AutoVault360 ? Full System Seeder
  *
  * Seeds ALL modules with properly related sample data.
  * Uses Supabase service_role key (bypasses RLS).
@@ -18,15 +18,15 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Config
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 const SEED_PASSWORD = "SeedRep123!";
 const SCRIPT_LABEL = "seed-full";
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Type Definitions
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 type SeedArgs = {
   dealershipId?: string;
   force: boolean;
@@ -88,9 +88,9 @@ function emptyTracker(): TrackedIds {
   };
 }
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Data Definitions
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 const OWNER = {
   fullName: "John Dealer",
   email: "john.dealer@autovault360.test",
@@ -322,9 +322,9 @@ const CPA_NOTES: CpaNoteSeed[] = [
   { title: "CDTFA Quarterly Report", description: "Q2 2025 CDTFA report due July 31st. Prepare sales tax collected data for April-June.", category: "Sales Tax", priority: "LOW", status: "OPEN", assignedToRepIndex: null },
 ];
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Utilities
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 const scriptDir = fileURLToPath(new URL(".", import.meta.url));
 const envContent = readFileSync(resolve(scriptDir, "..", ".env"), "utf-8");
 for (const line of envContent.split("\n")) {
@@ -361,12 +361,12 @@ function log(emoji: string, msg: string) {
 }
 
 function logStep(step: number, total: number, label: string) {
-  console.log(`\n─── [${step}/${total}] ${label} ───`);
+  console.log(`\n??? [${step}/${total}] ${label} ???`);
 }
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Supabase helpers
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 async function findAuthUserByEmail(supabase: SupabaseClient, email: string) {
   const { data, error } = await supabase.auth.admin.listUsers({ page: 1, perPage: 200 });
   if (error) return null;
@@ -377,12 +377,12 @@ async function resolveDealershipId(supabase: SupabaseClient, requestedId?: strin
   if (requestedId) {
     const { data, error } = await supabase.from("dealerships").select("id, name").eq("id", requestedId).maybeSingle();
     if (error || !data) throw new Error(`Dealership not found: ${requestedId}`);
-    log("🏢", `Using dealership: ${data.name} (${data.id})`);
+    log("??", `Using dealership: ${data.name} (${data.id})`);
     return data.id;
   }
   const { data, error } = await supabase.from("dealerships").select("id, name").eq("status", "active").order("created_at", { ascending: true }).limit(1).maybeSingle();
   if (error || !data) throw new Error("No active dealership found. Pass --dealership-id <uuid>.");
-  log("🏢", `Using dealership: ${data.name} (${data.id})`);
+  log("??", `Using dealership: ${data.name} (${data.id})`);
   return data.id;
 }
 
@@ -398,9 +398,9 @@ function isColMissing(msg: string) {
   return msg.includes("does not exist") || msg.includes("Could not find") || msg.includes("column");
 }
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Cleanup (reverse order)
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 async function cleanup(supabase: SupabaseClient, ids: TrackedIds) {
   const tables = [
     { name: "cpa_note_attachments", ids: ids.cpaAttachmentIds },
@@ -431,8 +431,8 @@ async function cleanup(supabase: SupabaseClient, ids: TrackedIds) {
   for (const table of tables) {
     if (table.ids.length > 0) {
       const { error } = await supabase.from(table.name).delete().in("id", table.ids);
-      if (error) log("⚠️", `Cleanup ${table.name}: ${error.message}`);
-      else log("🧹", `Removed ${table.ids.length} from ${table.name}`);
+      if (error) log("??", `Cleanup ${table.name}: ${error.message}`);
+      else log("??", `Removed ${table.ids.length} from ${table.name}`);
     }
   }
 
@@ -440,26 +440,26 @@ async function cleanup(supabase: SupabaseClient, ids: TrackedIds) {
     for (const uid of ids.authUserIds) {
       await supabase.auth.admin.deleteUser(uid);
     }
-    log("🧹", `Removed ${ids.authUserIds.length} auth users`);
+    log("??", `Removed ${ids.authUserIds.length} auth users`);
   }
 }
 
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 // Main
-// ─────────────────────────────────────────────────────────
+// ?????????????????????????????????????????????????????????
 async function main() {
   const args = parseArgs();
   const ids = emptyTracker();
 
-  console.log("\n╔══════════════════════════════════════════�—");
-  console.log("║     AutoVault360 — Full System Seeder    ║");
-  console.log("╚══════════════════════════════════════════�—\n");
+  console.log("\n?????????????????????????????????????????????");
+  console.log("?     AutoVault360 ? Full System Seeder    ?");
+  console.log("?????????????????????????????????????????????\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
-    console.error("�—� Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
+    console.error("??? Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env");
     process.exit(1);
   }
 
@@ -469,7 +469,7 @@ async function main() {
 
   const dealershipId = await resolveDealershipId(supabase, args.dealershipId);
 
-  // ── Step 1: Auth users + User profiles (before resolveCreatedBy) ──
+  // ?? Step 1: Auth users + User profiles (before resolveCreatedBy) ??
   if (!args.skipAuth && !args.cleanup) {
     logStep(1, 6, "Auth Users & Profiles");
 
@@ -484,7 +484,7 @@ async function main() {
     for (const u of allUsers) {
       const existingProfile = await supabase.from("users").select("id").eq("dealership_id", dealershipId).ilike("email", u.email).maybeSingle();
       if (existingProfile.data && !args.force) {
-        log("↷", `User exists: ${u.fullName}`);
+        log("?", `User exists: ${u.fullName}`);
         ids.userIds.push(existingProfile.data.id);
         continue;
       }
@@ -501,9 +501,9 @@ async function main() {
         if (error) throw new Error(`Auth create failed for ${u.email}: ${error.message}`);
         authUser = data.user;
         ids.authUserIds.push(authUser.id);
-        log("✅", `Auth user: ${u.email}`);
+        log("?", `Auth user: ${u.email}`);
       } else {
-        log("ℹ️", `Auth exists: ${u.email}`);
+        log("??", `Auth exists: ${u.email}`);
       }
 
       const payload: Record<string, unknown> = {
@@ -551,9 +551,9 @@ async function main() {
       if (result.error) throw new Error(`Profile create failed for ${u.email}: ${result.error.message}`);
 
       if (!existingProfile.data) ids.userIds.push(result.data.id);
-      log("✅", `Profile: ${u.fullName} (${u.role})`);
+      log("?", `Profile: ${u.fullName} (${u.role})`);
     }
-    log("✅", `${allUsers.length} user profiles ready`);
+    log("?", `${allUsers.length} user profiles ready`);
   }
 
   // Ensure admin@autovault.com always has a profile (survives cleanup)
@@ -570,17 +570,17 @@ async function main() {
           role: "super_admin",
           is_active: true,
         });
-        if (error) console.log("  ⚠️  Admin profile:", error.message);
-        else log("✅", "Admin profile restored");
+        if (error) console.log("  ??  Admin profile:", error.message);
+        else log("?", "Admin profile restored");
       }
     }
   }
 
   const createdBy = await resolveCreatedBy(supabase, dealershipId);
-  log("👤", `Created-by user resolved: ${createdBy}`);
+  log("??", `Created-by user resolved: ${createdBy}`);
 
   if (args.cleanup) {
-    console.log("\n🧹 Running cleanup mode...\n");
+    console.log("\n?? Running cleanup mode...\n");
 
     const tables = [
       "cpa_note_attachments",
@@ -611,8 +611,8 @@ async function main() {
 
     for (const table of tables) {
       const { error, count } = await supabase.from(table).delete().neq("id", "00000000-0000-0000-0000-000000000000");
-      if (error) console.log(`  ⚠️  ${table}: ${error.message}`);
-      else console.log(`  🧹 ${table}: cleared`);
+      if (error) console.log(`  ??  ${table}: ${error.message}`);
+      else console.log(`  ?? ${table}: cleared`);
     }
 
     // Delete seed auth users (keep real ones)
@@ -622,12 +622,12 @@ async function main() {
       for (const u of seedAuthIds.users) {
         if (seedEmails.includes(u.email ?? "")) {
           await supabase.auth.admin.deleteUser(u.id);
-          console.log(`  🧹 Auth user: ${u.email}`);
+          console.log(`  ?? Auth user: ${u.email}`);
         }
       }
     }
 
-    console.log("\n✅ Cleanup complete.\n");
+    console.log("\n? Cleanup complete.\n");
     return;
   }
 
@@ -639,7 +639,7 @@ async function main() {
   }
 
   try {
-    // ── Step 2: CPA Profiles ──
+    // ?? Step 2: CPA Profiles ??
     logStep(2, 6, "CPA Profiles");
 
     const { data: cpaUser } = await supabase.from("users").select("id").eq("dealership_id", dealershipId).ilike("email", CPA_USER.email).maybeSingle();
@@ -650,18 +650,18 @@ async function main() {
         last_name: CPA_USER.lastName,
         status: "ACTIVE",
       }, { onConflict: "user_id", ignoreDuplicates: false });
-      if (error) log("⚠️", `CPA profile: ${error.message}`);
-      else log("✅", `CPA profile: ${CPA_USER.firstName} ${CPA_USER.lastName}`);
+      if (error) log("??", `CPA profile: ${error.message}`);
+      else log("?", `CPA profile: ${CPA_USER.firstName} ${CPA_USER.lastName}`);
       ids.cpaProfileIds.push(cpaUser.id);
     }
 
-    // ── Step 3: Vehicles ──
+    // ?? Step 3: Vehicles ??
     logStep(3, 6, "Vehicles");
 
     for (const v of VEHICLES) {
       const existing = await supabase.from("vehicles").select("id, status").eq("dealership_id", dealershipId).eq("vin", v.vin).maybeSingle();
       if (existing.data && !args.force) {
-        log("↷", `Vehicle exists: ${v.year} ${v.make} ${v.model} (${v.vin})`);
+        log("?", `Vehicle exists: ${v.year} ${v.make} ${v.model} (${v.vin})`);
         ids.vehicleIds.push(existing.data.id);
         continue;
       }
@@ -712,18 +712,18 @@ async function main() {
         notes: `Seeded via ${SCRIPT_LABEL}`,
       }).select("id").single();
 
-      if (shErr) log("⚠️", `Status history: ${shErr.message}`);
-      log("✅", `${v.year} ${v.make} ${v.model} (${v.status})`);
+      if (shErr) log("??", `Status history: ${shErr.message}`);
+      log("?", `${v.year} ${v.make} ${v.model} (${v.status})`);
     }
 
-    // ── Step 4: Customers ──
+    // ?? Step 4: Customers ??
     logStep(4, 6, "Customers");
 
     for (const c of CUSTOMERS) {
       const salesRepUserId = await resolveSalesRepId(c.salesRepIndex);
       const existing = await supabase.from("customers").select("id").eq("dealership_id", dealershipId).eq("phone", c.phone).is("deleted_at", null).maybeSingle();
       if (existing.data && !args.force) {
-        log("↷", `Customer exists: ${c.name}`);
+        log("?", `Customer exists: ${c.name}`);
         ids.customerIds.push(existing.data.id);
         continue;
       }
@@ -747,10 +747,10 @@ async function main() {
 
       if (error) throw new Error(`Customer insert failed: ${error.message}`);
       if (!existing.data) ids.customerIds.push(data.id);
-      log("✅", `${c.name} (${c.status}) → rep index ${c.salesRepIndex}`);
+      log("?", `${c.name} (${c.status}) ? rep index ${c.salesRepIndex}`);
     }
 
-    // ── Step 5: Deals + Deal Jackets ──
+    // ?? Step 5: Deals + Deal Jackets ??
     logStep(5, 6, "Deals & Deal Jackets");
 
     for (let di = 0; di < DEALS.length; di++) {
@@ -770,7 +770,7 @@ async function main() {
       // Check existing deal
       const existingDeal = await supabase.from("deals").select("id").eq("vehicle_id", vehicleId).maybeSingle();
       if (existingDeal.data && !args.force) {
-        log("↷", `Deal exists for ${vehicle.make} ${vehicle.model}`);
+        log("?", `Deal exists for ${vehicle.make} ${vehicle.model}`);
         ids.dealIds.push(existingDeal.data.id);
         continue;
       }
@@ -807,7 +807,7 @@ async function main() {
           await supabase.from("deal_jacket_documents").delete().eq("deal_jacket_id", existingJacket.data.id);
           await supabase.from("deal_jackets").delete().eq("id", existingJacket.data.id);
         } else {
-          log("↷", `Jacket exists for ${vehicle.make} ${vehicle.model}`);
+          log("?", `Jacket exists for ${vehicle.make} ${vehicle.model}`);
           ids.dealJacketIds.push(existingJacket.data.id);
           continue;
         }
@@ -830,7 +830,6 @@ async function main() {
         total_invested: vehicle.totalInvested,
         additional_expenses: 0,
         commission_amount: commissionAmount,
-        commission_status: di % 3 === 0 ? "pending" : "paid",
         profit_gross: grossProfit,
         profit_net: netProfit,
         date_sold: dateSold,
@@ -841,6 +840,28 @@ async function main() {
       if (jkErr) throw new Error(`Deal jacket insert failed: ${jkErr.message}`);
       ids.dealJacketIds.push(newJacket.id);
 
+      const commissionStatus = di % 3 === 0 ? "approved" : "paid";
+      const { data: commission, error: commErr } = await supabase
+        .from("sales_rep_commissions")
+        .insert({
+          dealership_id: dealershipId,
+          sales_rep_id: salesRepUserId,
+          deal_jacket_id: newJacket.id,
+          commission_amount: commissionAmount,
+          commission_rate: commissionRate,
+          gross_profit: grossProfit,
+          sold_price: d.salePrice,
+          status: commissionStatus,
+          ...(commissionStatus === "paid" ? { paid_at: dateSold } : {}),
+        })
+        .select("id")
+        .single();
+      if (commErr) throw new Error(`Commission insert failed: ${commErr.message}`);
+      await supabase
+        .from("deal_jackets")
+        .update({ sales_rep_commission_id: commission.id })
+        .eq("id", newJacket.id);
+
       // Deal jacket document
       const { error: docErr } = await supabase.from("deal_jacket_documents").insert({
         deal_jacket_id: newJacket.id,
@@ -850,10 +871,10 @@ async function main() {
       });
       if (!docErr) ids.dealJacketDocIds.push(newJacket.id);
 
-      log("✅", `${jacketNumber} — ${vehicle.year} ${vehicle.make} ${vehicle.model} → ${customer.name} (GP: $${grossProfit.toLocaleString()})`);
+      log("?", `${jacketNumber} ? ${vehicle.year} ${vehicle.make} ${vehicle.model} ? ${customer.name} (GP: $${grossProfit.toLocaleString()})`);
     }
 
-    // ── Step 6: Expenses & Calendar & CPA Notes ──
+    // ?? Step 6: Expenses & Calendar & CPA Notes ??
     logStep(6, 6, "Expenses, CPA Notes & Calendar");
 
     // Dealership Expenses
@@ -868,10 +889,10 @@ async function main() {
         tax_deductible: e.taxDeductible,
         created_by: createdBy,
       }).select("id").single();
-      if (error) log("⚠️", `Expense: ${error.message}`);
+      if (error) log("??", `Expense: ${error.message}`);
       else ids.dealershipExpenseIds.push(data.id);
     }
-    log("✅", `${COMPANY_EXPENSES.length} dealership expenses`);
+    log("?", `${COMPANY_EXPENSES.length} dealership expenses`);
 
     // CPA Notes
     for (const n of CPA_NOTES) {
@@ -890,7 +911,7 @@ async function main() {
         assigned_to: assignedTo,
       }).select("id").single();
 
-      if (error) { log("⚠️", `CPA note: ${error.message}`); continue; }
+      if (error) { log("??", `CPA note: ${error.message}`); continue; }
       ids.cpaNoteIds.push(data.id);
 
       // Activity entries
@@ -918,7 +939,7 @@ async function main() {
         if (!cmtErr) ids.cpaCommentIds.push(data.id);
       }
     }
-    log("✅", `${CPA_NOTES.length} CPA notes with activity & comments`);
+    log("?", `${CPA_NOTES.length} CPA notes with activity & comments`);
 
     // Calendar events
     const calendarEvents = [
@@ -941,9 +962,9 @@ async function main() {
         description: ev.description,
         created_by: createdBy,
       });
-      if (error) log("⚠️", `Calendar: ${error.message}`);
+      if (error) log("??", `Calendar: ${error.message}`);
     }
-    log("✅", `${calendarEvents.length} calendar events`);
+    log("?", `${calendarEvents.length} calendar events`);
 
     // Files registry
     const sampleFiles = [
@@ -966,14 +987,14 @@ async function main() {
         source_entity_id: f.sourceEntityId,
         uploaded_by: createdBy,
       });
-      if (error) log("⚠️", `Files: ${error.message}`);
+      if (error) log("??", `Files: ${error.message}`);
     }
-    log("✅", `${sampleFiles.length} file records`);
+    log("?", `${sampleFiles.length} file records`);
 
-    // ── Summary ──
-    console.log("\n╔══════════════════════════════════════════�—");
-    console.log("║           Seed Complete! 🎉             ║");
-    console.log("╚══════════════════════════════════════════�—");
+    // ?? Summary ??
+    console.log("\n?????????????????????????????????????????????");
+    console.log("?           Seed Complete! ??             ?");
+    console.log("?????????????????????????????????????????????");
     console.log(`   Dealership ID:  ${dealershipId}`);
     console.log(`   Auth users:     ${ids.authUserIds.length}`);
     console.log(`   User profiles:  ${ids.userIds.length}`);
@@ -987,10 +1008,10 @@ async function main() {
     console.log("");
 
   } catch (err) {
-    console.error("\n�—� Seed failed:", err instanceof Error ? err.message : err);
-    console.log("\n🔄 Rolling back...");
+    console.error("\n??? Seed failed:", err instanceof Error ? err.message : err);
+    console.log("\n?? Rolling back...");
     await cleanup(supabase, ids);
-    console.log("\n�—� Seed rolled back.\n");
+    console.log("\n??? Seed rolled back.\n");
     process.exit(1);
   }
 }

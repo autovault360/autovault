@@ -168,7 +168,6 @@ export async function createDealJacket(
       total_invested: financials.totalInvested,
       additional_expenses: additionalExpenses,
       commission_amount: financials.commissionAmount,
-      commission_status: "pending",
       profit_gross: financials.profitGross,
       profit_net: financials.profitNet,
       date_sold: dateSold,

@@ -13,6 +13,7 @@ import { submitDealJacket } from "@/lib/deal-jackets/server/submit-deal-jacket";
 import { checkVehicleHasDealJacket } from "@/lib/deal-jackets/server/check-deal-jacket";
 import type { ILinkedVehicle } from "@/lib/sales-rep/deal-jacket/types";
 import type { LinkedVehicleResult } from "@/lib/expenses/server/types";
+import { todayISO } from "@/lib/vehicles/actions/utils";
 
 function buildDefaults(
   vehicle: ILinkedVehicle | null,
@@ -28,7 +29,7 @@ function buildDefaults(
     driverLicenseNo: "",
     buyerState: "" as UnifiedDealJacketFormValues["buyerState"],
     salePrice: vehicle?.askingPrice ?? 0,
-    saleDate: "",
+    saleDate: todayISO(),
     downPayment: 0,
     tradeInAllowance: 0,
     dmvFees: 0,

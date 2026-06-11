@@ -42,6 +42,20 @@ async function resolveOrCreateCustomer(
   data: SubmitDealJacketFormData,
 ): Promise<string | null> {
   const phoneClean = data.buyerPhone.replace(/\D/g, "");
+  const address =
+    data.buyerAddress && data.buyerState
+      ? `${data.buyerAddress}, ${data.buyerState}`
+      : data.buyerAddress ?? null;
+
+  const customerPayload = {
+    name: data.buyerName,
+    phone: phoneClean,
+    email: data.buyerEmail,
+    address,
+    state: data.buyerState || null,
+    drivers_license_number: data.driverLicenseNo,
+    updated_at: new Date().toISOString(),
+  };
 
   const { data: existing } = await supabase
     .from("customers")
@@ -50,24 +64,26 @@ async function resolveOrCreateCustomer(
     .or(`phone.eq.${phoneClean},email.eq.${data.buyerEmail}`)
     .maybeSingle();
 
-  if (existing) return existing.id;
+  if (existing) {
+    const { error: updateError } = await supabase
+      .from("customers")
+      .update(customerPayload)
+      .eq("id", existing.id);
 
-  const address =
-    data.buyerAddress && data.buyerState
-      ? `${data.buyerAddress}, ${data.buyerState}`
-      : data.buyerAddress ?? null;
+    if (updateError) {
+      console.error("Failed to update customer:", updateError.message);
+      return null;
+    }
+
+    return existing.id;
+  }
 
   const { data: inserted, error } = await supabase
     .from("customers")
     .insert({
       dealership_id: dealershipId,
       created_by: createdBy,
-      name: data.buyerName,
-      phone: phoneClean,
-      email: data.buyerEmail,
-      address,
-      state: data.buyerState || null,
-      drivers_license_number: data.driverLicenseNo,
+      ...customerPayload,
     })
     .select("id")
     .single();
