@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser, uploadFile, trackFile, rollbackVehicle } from "./utils";
+import { resolveTitleReceivedFields } from "@/lib/vehicles/title-received";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -20,7 +21,7 @@ const schema = z.object({
   stockNumber: z.string().optional(),
   lotLocation: z.string().optional(),
   acquisitionDate: z.string().optional(),
-  titleNumber: z.string().optional(),
+  titleReceived: z.boolean(),
   licensePlate: z.string().optional(),
   state: z.string().optional(),
   expirationDate: z.string().optional(),
@@ -31,7 +32,6 @@ const schema = z.object({
   marketValue: z.coerce.number().optional(),
   wholesalePrice: z.coerce.number().optional(),
   reconditioningCost: z.coerce.number().optional(),
-  titleStatus: z.string().optional(),
   odometerStatus: z.string().optional(),
   notes: z.string().max(500).optional(),
 });
@@ -55,6 +55,7 @@ export async function addVehicle(
 
     const reconditioningCost = data.reconditioningCost ?? 0;
     const totalInvested = data.acquisitionCost + reconditioningCost;
+    const titleFields = resolveTitleReceivedFields(data.titleReceived);
 
     const supabase = await createClient();
 
@@ -82,8 +83,7 @@ export async function addVehicle(
         wholesale_price: data.wholesalePrice,
         reconditioning_cost: reconditioningCost,
         total_invested: totalInvested,
-        title_status: data.titleStatus,
-        title_number: data.titleNumber,
+        ...titleFields,
         license_plate: data.licensePlate,
         state: data.state,
         expiration_date: data.expirationDate,
@@ -144,6 +144,9 @@ export async function addVehicle(
     if (auditError) console.error("audit_logs insert failed:", auditError.message);
 
     revalidatePath("/dashboard/vehicles");
+    revalidatePath("/dealer/dashboard");
+    revalidatePath("/dealer/dashboard/missing-titles");
+    revalidatePath("/sales-rep/dashboard/inventory");
     return { success: true, vehicleId: vehicle.id };
   } catch (err) {
     if (uploadedPaths.length > 0 && err instanceof Error) {

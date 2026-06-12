@@ -13,7 +13,7 @@ export type AddVehiclePayload = {
   stockNumber: string;
   lotLocation: string;
   acquisitionDate: string;
-  titleNumber: string;
+  titleReceived: boolean;
   licensePlate: string;
   state: string;
   expirationDate: string;
@@ -25,7 +25,6 @@ export type AddVehiclePayload = {
   wholesalePrice: number;
   reconditioningCost: number;
   totalInvested: number;
-  titleStatus: string;
   odometerStatus: string;
   fuelType: string;
   notes?: string;

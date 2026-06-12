@@ -1,25 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
-import InventoryPreviewTable from "./inventory-preview-table";
-import InventoryExpandedWorkspace from "./inventory-expanded-workspace";
+import InventoryCenter from "./inventory-center";
 
 export default function InventoryOverviewSection() {
   const {
     dashboardData,
     loading,
     inventoryRef,
-    expandedSection,
-    selectedVehicle,
-    expandInventory,
-    collapseExpanded,
-    setSelectedVehicle,
+    inventoryAddSignal,
+    clearInventoryAddSignal,
   } = useDealerDashboard();
 
   if (!dashboardData) return null;
-
-  const isExpanded = expandedSection === "inventory";
 
   return (
     <section
@@ -27,25 +22,12 @@ export default function InventoryOverviewSection() {
       ref={inventoryRef}
       className="scroll-mt-4"
     >
-      <InventoryPreviewTable
+      <InventoryCenter
         vehicles={dashboardData.vehicles}
         loading={loading.inventory}
-        onEdit={(vehicle) => {
-          setSelectedVehicle(vehicle);
-          expandInventory(vehicle);
-        }}
-        onView={(vehicle) => {
-          setSelectedVehicle(vehicle);
-          expandInventory(vehicle);
-        }}
+        addSignal={inventoryAddSignal}
+        onAddSignalConsumed={clearInventoryAddSignal}
       />
-
-      {isExpanded && (
-        <InventoryExpandedWorkspace
-          vehicle={selectedVehicle}
-          onClose={collapseExpanded}
-        />
-      )}
     </section>
   );
 }

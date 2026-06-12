@@ -1,5 +1,6 @@
 import type { KPICardData } from "@/components/ui/kpi-card";
 import type { CalendarReport } from "@/lib/calendar/types";
+import { withWholesaleVehicleDefaults } from "@/lib/dealer/inventory/map-wholesale-vehicle";
 import type {
   ActivityItem,
   ProfitLossPoint,
@@ -56,27 +57,33 @@ export function mapInventoryPreview(
     >
   >,
 ): WholesaleVehicle[] {
-  return rows.map((v) => ({
-    id: v.id,
-    vin: v.vin,
-    year: v.year,
-    make: v.make,
-    model: v.model,
-    stockNumber: v.stockNumber,
-    costs: {
-      acquisition: v.totalInvested,
-      auction: 0,
-      transport: 0,
-      recon: 0,
-      storage: 0,
-      dealerFees: 0,
-    },
-    marketValue: v.totalInvested,
-    status: mapVehicleStatus(v.status),
-    daysInLot: v.daysInLot,
-    purchaseDate: v.purchaseDate,
-    imageUrl: v.imageUrl,
-  }));
+  return rows.map((v) =>
+    withWholesaleVehicleDefaults({
+      id: v.id,
+      vin: v.vin,
+      year: v.year,
+      make: v.make,
+      model: v.model,
+      stockNumber: v.stockNumber,
+      costs: {
+        acquisition: v.totalInvested,
+        auction: 0,
+        transport: 0,
+        recon: 0,
+        storage: 0,
+        dealerFees: 0,
+      },
+      marketValue: v.totalInvested,
+      status: mapVehicleStatus(v.status),
+      daysInLot: v.daysInLot,
+      purchaseDate: v.purchaseDate,
+      imageUrl: v.imageUrl,
+      wholesaleValue: v.totalInvested,
+      location: "",
+      inventoryStatus: "in_stock",
+      titleStatus: "received",
+    }),
+  );
 }
 
 export function mapRecentDealsToActivity(deals: RecentDeal[]): ActivityItem[] {

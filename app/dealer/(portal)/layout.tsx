@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import {
-  DealerDashboardProvider,
-} from "@/components/dealer/context/dealer-dashboard-context";
+import { getWholesaleInventory } from "@/lib/dealer/inventory/server/get-wholesale-inventory";
+import { DealerDashboardProvider } from "@/components/dealer/context/dealer-dashboard-context";
 import DealerPortalShell from "@/components/dealer/layout/dealer-portal-shell";
 
 const WHOLESALE_DEALER_ROLES = new Set(["wholesale_dealer"]);
@@ -49,9 +48,13 @@ export default async function DealerPortalLayout({
     if (dealership?.name) dealershipName = dealership.name;
   }
   const initials = getInitials(dealershipName);
+  const initialVehicles = await getWholesaleInventory();
 
   return (
-    <DealerDashboardProvider dealerName={dealershipName}>
+    <DealerDashboardProvider
+      dealerName={dealershipName}
+      initialVehicles={initialVehicles}
+    >
       <DealerPortalShell dealershipName={dealershipName} initials={initials}>
         {children}
       </DealerPortalShell>

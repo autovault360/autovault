@@ -19,7 +19,6 @@ import {
   LOT_LOCATIONS,
   ODOMETER_STATUSES,
   PURCHASE_TYPES,
-  TITLE_STATUSES,
   US_STATES,
   VEHICLE_MAKES,
   VEHICLE_MODELS,
@@ -27,6 +26,8 @@ import {
 } from "@/lib/vehicles/actions/add-vehicle/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -49,9 +50,10 @@ import { VinInputWithScan } from "./vin-input-with-scan";
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => void;
 };
 
-export default function AddVehicleModal({ open, onOpenChange }: Props) {
+export default function AddVehicleModal({ open, onOpenChange, onSuccess }: Props) {
   const {
     form,
     onSubmit,
@@ -67,7 +69,10 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
     removePhoto,
     reorderPhotos,
     scanVin,
-  } = useAddVehicleForm(open, () => onOpenChange(false));
+  } = useAddVehicleForm(open, () => {
+    onOpenChange(false);
+    onSuccess?.();
+  });
 
   const modelOptions = make ? (VEHICLE_MODELS[make] ?? []) : [];
 
@@ -397,16 +402,29 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
                 <FormGrid cols={2}>
                   <FormField
                     control={form.control}
-                    name="titleNumber"
+                    name="titleReceived"
                     render={({ field }) => (
                       <FormItem>
-                        <FieldLabel label="Title Number" />
+                        <FieldLabel label="Has Title?" />
                         <FormControl>
-                          <Input
-                            theme="dark"
-                            value={field.value ?? ""}
-                            onChange={field.onChange}
-                          />
+                          <RadioGroup
+                            value={field.value ? "yes" : "no"}
+                            onValueChange={(v) => field.onChange(v === "yes")}
+                            className="space-y-2"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="yes" id="add-title-yes" />
+                              <Label htmlFor="add-title-yes" className="text-[12px]">
+                                Yes — Title received
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="no" id="add-title-no" />
+                              <Label htmlFor="add-title-no" className="text-[12px]">
+                                No — Missing title
+                              </Label>
+                            </div>
+                          </RadioGroup>
                         </FormControl>
                       </FormItem>
                     )}
@@ -619,26 +637,7 @@ export default function AddVehicleModal({ open, onOpenChange }: Props) {
             </div>
 
             <FormSection title="Additional Information" theme="dark">
-              <FormGrid cols={3}>
-                <FormField
-                  control={form.control}
-                  name="titleStatus"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FieldLabel label="Title Status" />
-                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger theme="dark">
-                            <SelectValue placeholder="Title status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent theme="dark">
-                          <SelectOptions options={TITLE_STATUSES} label="Title Status" theme="dark" />
-                        </SelectContent>
-                      </Select>
-                    </FormItem>
-                  )}
-                />
+              <FormGrid cols={2}>
                 <FormField
                   control={form.control}
                   name="odometerStatus"

@@ -8,6 +8,7 @@ import type {
 import { formatField, type VehicleStatus } from "./types";
 import { mapDbVehicleStatus } from "./map-db-status";
 import { authenticateUser } from "./server/utils";
+import { mapDbTitleReceived } from "./title-received";
 
 function mapStatus(dbStatus: string): VehicleStatus {
   return mapDbVehicleStatus(dbStatus);
@@ -69,7 +70,7 @@ type DbVehicleRow = {
   asking_price: number | null;
   market_value: number | null;
   title_status: string | null;
-  title_number: string | null;
+  title_received: boolean | null;
   license_plate: string | null;
   state: string | null;
   expiration_date: string | null;
@@ -320,8 +321,10 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       expenses,
       dateAcquired: formatDate(row.acquisition_date),
       acquisitionCost,
-      titleStatus: row.title_status ?? "",
-      titleNumber: row.title_number ?? "",
+      titleReceived: mapDbTitleReceived(row.title_received, row.title_status),
+      titleStatus: mapDbTitleReceived(row.title_received, row.title_status)
+        ? "received"
+        : "missing",
       licensePlate: row.license_plate ?? "",
       state: row.state ?? "",
       expirationDate: formatISO(row.expiration_date),

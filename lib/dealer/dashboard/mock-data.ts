@@ -8,10 +8,30 @@ import { transactionsMockData } from "./transactions-mock-data";
 const sparkPoints =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
 
+function legacyToInventoryStatus(
+  status: WholesaleVehicle["status"],
+): WholesaleVehicle["inventoryStatus"] {
+  if (status === "sold") return "sold";
+  if (status === "pending") return "pending_sale";
+  return "in_stock";
+}
+
 function makeVehicle(
-  partial: Omit<WholesaleVehicle, "id"> & { id?: string },
+  partial: Omit<WholesaleVehicle, "id" | "inventoryStatus" | "titleStatus" | "wholesaleValue" | "location"> &
+    Partial<Pick<WholesaleVehicle, "inventoryStatus" | "titleStatus" | "wholesaleValue" | "location">> & {
+      id?: string;
+    },
 ): WholesaleVehicle {
-  return { id: partial.id ?? crypto.randomUUID(), ...partial };
+  const inventoryStatus =
+    partial.inventoryStatus ?? legacyToInventoryStatus(partial.status);
+  return {
+    location: partial.location ?? "main_lot",
+    wholesaleValue: partial.wholesaleValue ?? partial.marketValue,
+    inventoryStatus,
+    titleStatus: partial.titleStatus ?? "received",
+    id: partial.id ?? crypto.randomUUID(),
+    ...partial,
+  };
 }
 
 const vehicles: WholesaleVehicle[] = [

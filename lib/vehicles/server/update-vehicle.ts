@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser, assertVehicleActive, uploadFile, trackFile } from "./utils";
+import { resolveTitleReceivedFields } from "@/lib/vehicles/title-received";
 import { revalidatePath } from "next/cache";
 
 const schema = z.object({
@@ -21,7 +22,7 @@ const schema = z.object({
   stockNumber: z.string().optional(),
   lotLocation: z.string().optional(),
   acquisitionDate: z.string().optional(),
-  titleNumber: z.string().optional(),
+  titleReceived: z.boolean(),
   licensePlate: z.string().optional(),
   state: z.string().optional(),
   expirationDate: z.string().optional(),
@@ -32,7 +33,6 @@ const schema = z.object({
   marketValue: z.coerce.number().optional(),
   wholesalePrice: z.coerce.number().optional(),
   reconditioningCost: z.coerce.number().optional(),
-  titleStatus: z.string().optional(),
   odometerStatus: z.string().optional(),
   notes: z.string().max(500).optional(),
   removedImages: z.array(z.string()).optional(),
@@ -92,6 +92,10 @@ export async function updateVehicle(formData: FormData) {
 
     const reconditioningCost = data.reconditioningCost ?? 0;
     const totalInvested = data.acquisitionCost + reconditioningCost;
+    const titleFields = resolveTitleReceivedFields(
+      data.titleReceived,
+      existing.title_missing_since as string | null | undefined,
+    );
 
     const { data: updatedRow, error: updateError } = await supabase
       .from("vehicles")
@@ -116,8 +120,7 @@ export async function updateVehicle(formData: FormData) {
         wholesale_price: data.wholesalePrice,
         reconditioning_cost: reconditioningCost,
         total_invested: totalInvested,
-        title_status: data.titleStatus || null,
-        title_number: data.titleNumber || null,
+        ...titleFields,
         license_plate: data.licensePlate || null,
         state: data.state || null,
         expiration_date: data.expirationDate || null,

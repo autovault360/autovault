@@ -7,6 +7,7 @@ import { mapDbVehicleStatus } from "@/lib/vehicles/map-db-status";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
+import AddVehicleTrigger from "@/components/vehicles/add/add-vehicle-trigger";
 import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
 import SalesRepInventory from "@/components/sales-rep/dashboard/sales-rep-inventory";
 
@@ -26,7 +27,17 @@ function formatISO(date: string | null | undefined): string {
   return date.split("T")[0];
 }
 
-export default async function SalesRepInventoryPage() {
+export default async function SalesRepInventoryPage({
+  searchParams,
+}: {
+  searchParams?:
+    | Promise<{ add?: string; edit?: string }>
+    | { add?: string; edit?: string };
+}) {
+  const resolved =
+    searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
+  const defaultOpen = resolved.add === "true";
+  const defaultEditId = resolved.edit;
   const auth = await authenticateUser();
   const vehicles: Vehicle[] = [];
 
@@ -97,11 +108,12 @@ export default async function SalesRepInventoryPage() {
             View dealership vehicle inventory.
           </p>
         </div>
+        <AddVehicleTrigger defaultOpen={defaultOpen} />
       </section>
 
       <VehicleStatsCards stats={stats} />
 
-      <SalesRepInventory vehicles={vehicles} />
+      <SalesRepInventory vehicles={vehicles} defaultEditId={defaultEditId} />
     </div>
   );
 }

@@ -1,6 +1,27 @@
 import type { KPICardData } from "@/components/ui/kpi-card";
 
+/** @deprecated Use WholesaleInventoryStatus */
 export type VehicleStatus = "in_inventory" | "sold" | "pending";
+
+export type WholesaleInventoryStatus = "in_stock" | "pending_sale" | "sold";
+export type WholesaleTitleStatus = "received" | "missing";
+export type WholesalePaymentStatus = "paid" | "on_hold" | "partial";
+export type VehicleCondition = "excellent" | "good" | "fair";
+
+export type InventoryKpiFilterKey =
+  | "all"
+  | "missing_titles"
+  | "pending_sale"
+  | "sold_this_month";
+
+export type InventoryKpiStrip = {
+  totalInInventory: DealerKpi;
+  totalInventoryValue: DealerKpi;
+  avgDaysInInventory: DealerKpi;
+  missingTitles: DealerKpi;
+  pendingSale: DealerKpi;
+  soldThisMonth: DealerKpi;
+};
 
 /** @deprecated Use TransactionPaymentStatus for the transactions center */
 export type PaymentStatus = "pending" | "funded" | "settled";
@@ -37,12 +58,30 @@ export type WholesaleVehicle = {
   model: string;
   trim?: string;
   stockNumber: string;
+  mileage?: number;
   costs: VehicleCosts;
   marketValue: number;
+  wholesaleValue: number;
+  /** Legacy mock field — prefer inventoryStatus */
   status: VehicleStatus;
+  inventoryStatus: WholesaleInventoryStatus;
+  titleStatus: WholesaleTitleStatus;
+  paymentStatus?: WholesalePaymentStatus;
+  condition?: VehicleCondition;
+  location: string;
   daysInLot: number;
   purchaseDate: string;
   imageUrl?: string;
+  soldPrice?: number;
+  profit?: number;
+  soldAt?: string;
+  titleMissingSince?: string;
+  daysSinceTitlePending?: number;
+  timesInAuction?: number;
+  nextAuctionDate?: string;
+  lastAuctionDate?: string;
+  odometerStatus?: string;
+  notes?: string;
 };
 
 export type DealerTransaction = {

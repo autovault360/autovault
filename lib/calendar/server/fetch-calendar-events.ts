@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CalendarEventType, UpcomingComplianceEvent } from "../types";
 import { getStateTaxFilingDeadlines } from "@/lib/state-tax/server/get-filing-deadlines";
+import { createEvent as createEventService } from "@/services/events.service";
 
 export type CalendarEventRow = {
   id: string;
@@ -38,13 +39,13 @@ export async function fetchCalendarEventsFromDb(
 ): Promise<CalendarEventRow[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("calendar_events")
-    .select("id, event_date, event_time, title, event_type, description")
+    .from("events")
+    .select("id, event_date, title, description")
     .eq("dealership_id", dealershipId)
-    .is("deleted_at", null)
     .gte("event_date", from)
     .lte("event_date", to)
-    .order("event_date", { ascending: true });
+    .order("event_date", { ascending: true })
+    .order("created_at", { ascending: true });
 
   if (error) {
     console.warn("fetchCalendarEventsFromDb:", error.message);
@@ -54,9 +55,9 @@ export async function fetchCalendarEventsFromDb(
   return (data ?? []).map((row) => ({
     id: row.id as string,
     event_date: row.event_date as string,
-    event_time: row.event_time as string | null,
+    event_time: null,
     title: row.title as string,
-    event_type: row.event_type as CalendarEventType,
+    event_type: "task" as CalendarEventType,
     description: (row.description as string) ?? null,
   }));
 }
@@ -246,21 +247,12 @@ export async function saveCalendarEvent(
     description?: string;
   },
 ): Promise<{ ok: boolean; id?: string; error?: string }> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("calendar_events")
-    .insert({
-      dealership_id: dealershipId,
-      event_date: input.date,
-      event_time: input.time || null,
-      title: input.title,
-      event_type: input.type,
-      description: input.description ?? null,
-      created_by: userId,
-    })
-    .select("id")
-    .single();
+  const event = await createEventService(dealershipId, userId, {
+    event_date: input.date,
+    title: input.title,
+    description: input.description ?? null,
+  });
 
-  if (error) return { ok: false, error: error.message };
-  return { ok: true, id: data.id as string };
+  if (!event) return { ok: false, error: "Failed to save event" };
+  return { ok: true, id: event.id };
 }

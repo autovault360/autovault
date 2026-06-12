@@ -6,7 +6,16 @@ import { Plus } from "lucide-react";
 import AddVehicleModal from "./add-vehicle-modal";
 import { Button } from "@/components/ui/button";
 
-export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen?: boolean }) {
+export default function AddVehicleTrigger({
+  defaultOpen = false,
+  buttonClassName,
+  syncQueryParam = true,
+}: {
+  defaultOpen?: boolean;
+  buttonClassName?: string;
+  /** When false, opening the modal does not update the URL (for embedded dashboard sections). */
+  syncQueryParam?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(defaultOpen);
@@ -18,7 +27,9 @@ export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
-    window.history.replaceState(null, "", next ? pathname + "?add=true" : pathname);
+    if (syncQueryParam) {
+      window.history.replaceState(null, "", next ? `${pathname}?add=true` : pathname);
+    }
     if (!next) {
       startTransition(() => {
         router.refresh();
@@ -31,7 +42,10 @@ export default function AddVehicleTrigger({ defaultOpen = false }: { defaultOpen
       <Button
         type="button"
         onClick={() => handleOpenChange(true)}
-        className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white"
+        className={
+          buttonClassName ??
+          "flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white"
+        }
       >
         <Plus className="h-4 w-4" />
         Add Vehicle

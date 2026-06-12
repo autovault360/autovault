@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { CardShell, CardHead } from "@/components/dashboard/card-shell";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
   formatCurrencyExact,
   totalVehicleCost,
 } from "@/lib/dealer/dashboard/calculations";
-import type { VehicleStatus, WholesaleVehicle } from "@/lib/dealer/dashboard/types";
+import type { WholesaleVehicle } from "@/lib/dealer/dashboard/types";
+import { InventoryStatusBadge } from "./inventory/inventory-status-badges";
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -19,18 +19,8 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-function StatusBadge({ status }: { status: VehicleStatus }) {
-  const config = {
-    in_inventory: { label: "In Inventory", className: "bg-emerald-500/15 text-emerald-400" },
-    sold: { label: "Sold", className: "bg-blue-500/15 text-blue-400" },
-    pending: { label: "Pending", className: "bg-amber-500/15 text-amber-400" },
-  }[status];
-
-  return (
-    <Badge className={cn("pointer-events-none", config.className)}>
-      {config.label}
-    </Badge>
-  );
+function StatusBadge({ vehicle }: { vehicle: WholesaleVehicle }) {
+  return <InventoryStatusBadge status={vehicle.inventoryStatus} />;
 }
 
 const DEFAULT_SHELL_CLASS =
@@ -113,7 +103,7 @@ export default function InventoryMiniPanel({
                   {v.daysInLot}
                 </td>
                 <td className="py-2">
-                  <StatusBadge status={v.status} />
+                  <StatusBadge vehicle={v} />
                 </td>
               </tr>
             ))}
@@ -133,4 +123,4 @@ export default function InventoryMiniPanel({
   );
 }
 
-export { StatusBadge };
+export { InventoryStatusBadge as StatusBadge } from "./inventory/inventory-status-badges";

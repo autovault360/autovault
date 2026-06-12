@@ -3,14 +3,20 @@ import { z } from "zod";
 const currencyField = z.coerce.number().min(0, "Must be 0 or greater");
 
 export const inventoryWorkspaceSchema = z.object({
+  vehicleId: z.string().uuid().optional(),
   vin: z
     .string()
     .min(17, "VIN must be 17 characters")
     .max(17, "VIN must be 17 characters"),
-  year: z.coerce.number().min(1980).max(2030),
+  year: z.coerce.number().min(1980).max(2035),
   make: z.string().min(1, "Make is required"),
   model: z.string().min(1, "Model is required"),
+  trim: z.string().optional(),
   stockNumber: z.string().min(1, "Stock number is required"),
+  mileage: z.coerce.number().min(0).optional(),
+  lotLocation: z.string().optional(),
+  condition: z.enum(["excellent", "good", "fair"]).optional(),
+  acquisitionDate: z.string().optional(),
   acquisitionCost: currencyField,
   auctionFees: currencyField,
   transportationCosts: currencyField,
@@ -18,6 +24,18 @@ export const inventoryWorkspaceSchema = z.object({
   storageFees: currencyField,
   dealerFees: currencyField,
   marketValue: currencyField.refine((v) => v > 0, "Market value is required"),
+  wholesaleValue: currencyField.optional(),
+  titleReceived: z.boolean(),
+  inventoryStatus: z
+    .enum(["in_stock", "pending_sale", "sold"])
+    .default("in_stock"),
+  odometerStatus: z.string().optional(),
+  notes: z.string().max(500, "Notes must be 500 characters or less").optional(),
+  timesInAuction: z.coerce.number().min(0).optional(),
+  nextAuctionDate: z.string().optional(),
+  lastAuctionDate: z.string().optional(),
+  soldAt: z.string().optional(),
+  soldPrice: z.coerce.number().optional(),
 });
 
 export type InventoryWorkspaceValues = z.infer<typeof inventoryWorkspaceSchema>;

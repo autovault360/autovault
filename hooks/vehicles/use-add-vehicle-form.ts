@@ -195,7 +195,7 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
           stockNumber: values.stockNumber,
           lotLocation: values.lotLocation,
           acquisitionDate: values.acquisitionDate ?? "",
-          titleNumber: values.titleNumber ?? "",
+          titleReceived: values.titleReceived,
           licensePlate: values.licensePlate ?? "",
           state: values.state ?? "",
           expirationDate: values.expirationDate ?? "",
@@ -206,7 +206,6 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
           marketValue: values.marketValue,
           wholesalePrice: values.wholesalePrice,
           reconditioningCost: values.reconditioningCost,
-          titleStatus: values.titleStatus ?? "",
           odometerStatus: values.odometerStatus ?? "",
           notes: values.notes ?? "",
         };
