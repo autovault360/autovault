@@ -1,6 +1,6 @@
 "use client";
 
-import CpaHeader from "../layout/cpa-header";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import CpaMonthSelector from "./cpa-month-selector";
 import CpaDashboardSkeleton from "./cpa-dashboard-skeleton";
 import CpaSalesActivity from "./cpa-sales-activity";
@@ -114,7 +114,12 @@ export default function CpaDashboardContent() {
           </div>
         </div>
       )}
-      <CpaHeader />
+      <section className="mb-3.5 border-b border-slate-800/60 px-0.5 pb-3.5">
+        <PageHeaderTitle
+          title="CPA Dashboard"
+          subtitle="Real-time financials, tax reporting & compliance center"
+        />
+      </section>
       <CpaMonthSelector />
 
       {/* KPI Cards */}

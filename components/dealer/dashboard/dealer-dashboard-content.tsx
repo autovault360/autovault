@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useDealerDashboard } from "../context/dealer-dashboard-context";
 import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import DealerKpiStrip from "./dealer-kpi-strip";
 import InventoryMiniPanel from "./inventory-mini-panel";
 import ProfitLossSummaryPanel from "./profit-loss-summary-panel";
@@ -13,6 +16,7 @@ import DocumentVaultSection from "./documents/document-vault-section";
 import DealerDashboardSkeleton from "./dealer-dashboard-skeleton";
 
 export default function DealerDashboardContent() {
+  const searchParams = useSearchParams();
   const {
     dashboardData,
     loading,
@@ -20,6 +24,14 @@ export default function DealerDashboardContent() {
     expandInventory,
     navigateToSection,
   } = useDealerDashboard();
+
+  useEffect(() => {
+    if (searchParams.get("addExpense") !== "true") return;
+    navigateToSection(DEALER_SECTION_IDS.expenses, "expense-add");
+    const url = new URL(window.location.href);
+    url.searchParams.delete("addExpense");
+    window.history.replaceState(null, "", `${url.pathname}${url.hash}`);
+  }, [searchParams, navigateToSection]);
 
   if (isInitialLoading || !dashboardData) {
     return <DealerDashboardSkeleton />;
@@ -31,12 +43,10 @@ export default function DealerDashboardContent() {
       className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100 antialiased selection:bg-blue-500/30"
     >
       <section className="mb-3.5 border-b border-slate-800/60 px-0.5 pb-3.5">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          Welcome back, {dashboardData.profile.dealershipName}
-        </h1>
-        <p className="mt-0.5 text-[12px] text-[#64748b]">
-          Wholesale dealer workspace - all operations on one page.
-        </p>
+        <PageHeaderTitle
+          title="Wholesale Dealer Dashboard"
+          subtitle={`Welcome back, ${dashboardData.profile.dealershipName}`}
+        />
       </section>
 
       <section className="mb-3.5">

@@ -7,16 +7,16 @@ import KPISection from "./kpi-section";
 import PerformanceRow from "./performance-row";
 import SalesRepSection from "./sales-rep-section";
 
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
+
 export default function AdminDashboardContent(props: AdminDashboardContentProps) {
   return (
     <div>
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
-        <div>
-          <h1 className="text-xl font-bold tracking-[0.12em] text-white">
-            RETAIL DASHBOARD OVERVIEW
-          </h1>
-          <p className="mt-0.5 text-[12px] text-slate-500">{props.periodLabel}</p>
-        </div>
+        <PageHeaderTitle
+          title="Retail Dashboard Overview"
+          subtitle={props.periodLabel}
+        />
       </section>
 
       <KPISection kpis={props.kpiCards} />

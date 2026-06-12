@@ -21,6 +21,7 @@ export async function authenticateWholesaleDealer(): Promise<AuthResult> {
 export async function revalidateWholesaleInventoryPaths() {
   const { revalidatePath } = await import("next/cache");
   revalidatePath("/dealer/dashboard");
+  revalidatePath("/dealer/inventory");
   revalidatePath("/dealer/dashboard/missing-titles");
 }
 

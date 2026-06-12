@@ -2,6 +2,7 @@
 
 import { Search, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import { formatMessageTime, truncatePreview } from "@/lib/sales-rep/messages/calculations";
 import type { TeamChatInfo } from "@/lib/sales-rep/team-chat/types";
 
@@ -24,10 +25,10 @@ export default function TeamChatSidebar({
   return (
     <div className="flex h-full w-[380px] shrink-0 flex-col border-r border-slate-800/80 bg-[#0a1524]">
       <div className="border-b border-slate-800/80 px-4 pb-4 pt-5">
-        <h1 className="text-[17px] font-semibold text-white">Team Chat</h1>
-        <p className="mt-1 text-[12px] text-slate-500">
-          Group messaging with your entire team.
-        </p>
+        <PageHeaderTitle
+          title="Team Chat"
+          subtitle="Group messaging with your entire team."
+        />
 
         <div className="relative mt-4">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />

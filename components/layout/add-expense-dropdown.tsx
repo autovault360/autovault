@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Car, ClipboardList, Receipt, RefreshCw, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button, ButtonIcon } from "@/components/ui/button";
+import { HeaderIconAction } from "@/components/layout/header-icon-action";
 
 type ExpenseMenuItem = {
   id: "general" | "vehicle" | "recurring";
@@ -45,8 +47,10 @@ const ROUTES: Record<ExpenseMenuItem["id"], string> = {
 
 export default function AddExpenseDropdown({
   onSelect,
+  variant = "default",
 }: {
   onSelect?: (type: ExpenseMenuItem["id"]) => void;
+  variant?: "default" | "icon";
 }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -73,28 +77,39 @@ export default function AddExpenseDropdown({
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        className={cn(
-          "flex items-center gap-2 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-[11.5px] text-slate-300 transition",
-          open
-            ? "border-red-500/40 bg-[#0e1626] text-white"
-            : "border-slate-800 bg-[#0e1626] hover:border-slate-700",
-        )}
-      >
-        <span className="grid h-5 w-5 place-items-center rounded-md bg-red-500/20 text-red-400">
-          <Receipt className="h-3 w-3" />
-        </span>
-        Add Expense
-      </button>
+      {variant === "icon" ? (
+        <HeaderIconAction
+          icon={Receipt}
+          label="Add Expense"
+          tone="red"
+          active={open}
+          onClick={() => setOpen((prev) => !prev)}
+        />
+      ) : (
+        <Button
+          type="button"
+          size="action"
+          onClick={() => setOpen((prev) => !prev)}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          className={cn(open && "border-red-500/40 text-white")}
+        >
+          <ButtonIcon tone="danger">
+            <Receipt />
+          </ButtonIcon>
+          Add Expense
+        </Button>
+      )}
 
       {open && (
         <div
           role="menu"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-[292px] overflow-hidden rounded-lg border border-slate-700/90 bg-[#0c1424] py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
+          className={cn(
+            "absolute z-50 w-[292px] overflow-hidden rounded-lg border border-slate-700/90 bg-[#0c1424] py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]",
+            variant === "icon"
+              ? "left-1/2 top-[calc(100%+6px)] -translate-x-1/2"
+              : "left-0 top-[calc(100%+6px)]",
+          )}
         >
           {MENU_ITEMS.map((item) => {
             const Icon = item.icon;

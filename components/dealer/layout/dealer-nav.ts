@@ -59,14 +59,13 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Add Vehicle",
         icon: Plus,
         color: "text-emerald-500",
-        sectionId: DEALER_SECTION_IDS.inventory,
-        expandAction: "inventory-add",
+        href: `${DEALER_ROUTES.inventory}?add=true`,
       },
       {
         label: "Inventory Overview",
         icon: Car,
         color: "text-blue-500",
-        sectionId: DEALER_SECTION_IDS.inventory,
+        href: DEALER_ROUTES.inventory,
       },
       {
         label: "Missing Titles Center",

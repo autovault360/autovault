@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, Calendar, LayoutDashboard, LogOut } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
-import { useNProgressRouter } from "@/hooks/use-nprogress-router";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import { useCpaPortal } from "../context/cpa-portal-context";
 import { getCpaHeaderDefaults } from "./cpa-header-config";
 
@@ -44,9 +42,7 @@ export default function CpaHeader({
 }: CpaHeaderProps = {}) {
   const pathname = usePathname();
   const defaults = getCpaHeaderDefaults(pathname);
-  const router = useNProgressRouter();
   const {
-    session,
     viewMode,
     setViewMode,
     month,
@@ -75,21 +71,11 @@ export default function CpaHeader({
     setYear(y);
   };
 
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/cpa/login");
-    router.refresh();
-  };
-
   return (
     <header className="mb-4 space-y-3 border-b border-slate-800 pb-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-[0.12em] text-white">{title}</h1>
-          {subtitle && (
-            <p className="mt-0.5 text-[12px] text-slate-500">{subtitle}</p>
-          )}
+          <PageHeaderTitle title={title} subtitle={subtitle} />
           {backLink && (
             <Link
               href={backLink.href}
@@ -145,38 +131,6 @@ export default function CpaHeader({
                 aria-label="Next month"
               >
                 <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {session && (
-            <div className="flex items-center gap-3 border-l border-slate-800 pl-3">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-blue-600 text-xs text-white">
-                  {session.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="hidden sm:block">
-                <p className="text-[12px] font-medium text-white">{session.fullName}</p>
-                <p className="text-[10px] text-slate-500">{session.email}</p>
-              </div>
-              {session.role !== "cpa" && (
-                <button
-                  type="button"
-                  onClick={() => router.push("/dashboard")}
-                  className="flex items-center gap-1 rounded-md border border-slate-700 px-3 py-1.5 text-[11px] text-blue-400 hover:text-blue-300"
-                >
-                  <LayoutDashboard className="h-3.5 w-3.5" />
-                  Admin Dashboard
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-1 rounded-md border border-slate-700 px-3 py-1.5 text-[11px] text-slate-400 hover:text-white"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Log Out
               </button>
             </div>
           )}

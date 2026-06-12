@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -344,12 +345,11 @@ export default function SalesRepEditDealJacketPageContent({
             <FileText className="h-5 w-5 text-amber-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Edit Deal Jacket #{editData.jacketNumber}
-            </h1>
-            <p className="mt-0.5 text-[12.5px] text-slate-500">
-              Update the deal jacket and resubmit for review.
-            </p>
+            <PageHeaderTitle
+              title={`Edit Deal Jacket #${editData.jacketNumber}`}
+              subtitle="Update the deal jacket and resubmit for review."
+              subtitleClassName="text-[12.5px]"
+            />
           </div>
         </div>
         <Button

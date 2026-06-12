@@ -1,38 +1,40 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Bell, Calendar, LogOut, Mail } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  Car,
+  FileWarning,
+  Handshake,
+  Plus,
+  Receipt,
+  Tag,
+  BarChart3,
+  Package,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { DealerProfile } from "@/lib/dealer/dashboard/types";
+import { HeaderIconAction } from "@/components/layout/header-icon-action";
+import { HeaderMoreMenu } from "@/components/layout/header-more-menu";
+import { PortalHeaderShell } from "@/components/layout/portal-header-shell";
+import {
+  DEALER_ROUTES,
+  DEALER_SECTION_IDS,
+} from "@/lib/dealer/dashboard/navigation";
+import { useDealerNavigation } from "../context/dealer-dashboard-context";
 
 type Props = {
-  profile: DealerProfile;
+  dealershipName: string;
+  initials: string;
   notificationCount?: number;
-  dateRange?: string;
 };
 
 export default function DealerHeader({
-  profile,
+  dealershipName,
+  initials,
   notificationCount = 0,
-  dateRange = "May 1 - May 24, 2024",
 }: Props) {
   const router = useRouter();
-  const [profileOpen, setProfileOpen] = useState(false);
-  const profileRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!profileOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [profileOpen]);
+  const pathname = usePathname();
+  const { navigateToSection } = useDealerNavigation();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -41,74 +43,90 @@ export default function DealerHeader({
     router.refresh();
   }
 
+  const handleAddExpense = () => {
+    if (pathname === DEALER_ROUTES.dashboard) {
+      navigateToSection(DEALER_SECTION_IDS.expenses, "expense-add");
+      return;
+    }
+    router.push(`${DEALER_ROUTES.dashboard}?addExpense=true#expenses`);
+  };
+
+  const actions = (
+    <>
+      <HeaderIconAction
+        icon={Plus}
+        label="Add Vehicle"
+        tone="blue"
+        onClick={() => router.push(`${DEALER_ROUTES.inventory}?add=true`)}
+      />
+      <HeaderIconAction
+        icon={Car}
+        label="Inventory"
+        tone="green"
+        onClick={() => router.push(DEALER_ROUTES.inventory)}
+      />
+      <HeaderIconAction
+        icon={FileWarning}
+        label="Missing Titles"
+        tone="red"
+        onClick={() => router.push("/dealer/dashboard/missing-titles")}
+      />
+      <HeaderIconAction
+        icon={Tag}
+        label="Add Sold"
+        tone="greenDark"
+        onClick={() => router.push(`${DEALER_ROUTES.soldVehicles}?add=true`)}
+      />
+      <HeaderIconAction
+        icon={Handshake}
+        label="Add Transaction"
+        tone="purple"
+        onClick={() => router.push(`${DEALER_ROUTES.transactions}?add=true`)}
+      />
+      <HeaderMoreMenu
+        items={[
+          {
+            label: "Add Expense",
+            onClick: handleAddExpense,
+            icon: Receipt,
+          },
+          {
+            label: "Sold Vehicles",
+            href: DEALER_ROUTES.soldVehicles,
+            icon: Tag,
+          },
+          {
+            label: "Transactions",
+            href: DEALER_ROUTES.transactions,
+            icon: Handshake,
+          },
+          {
+            label: "Profit & Loss",
+            href: "/dealer/dashboard/profit-loss",
+            icon: BarChart3,
+          },
+          {
+            label: "Dashboard",
+            href: DEALER_ROUTES.dashboard,
+            icon: Package,
+          },
+        ]}
+      />
+    </>
+  );
+
   return (
-    <div className="flex flex-wrap items-center justify-end gap-3 mb-3.5 border-b border-slate-800/60 pb-3.5">
-      <button
-        type="button"
-        className="flex items-center gap-1.5 rounded-md border border-[#1e293b] bg-[#070c14]/60 px-2.5 py-1.5 text-[11px] text-slate-400 transition hover:text-white"
-      >
-        <Calendar className="h-3.5 w-3.5" />
-        <span>{dateRange}</span>
-      </button>
-
-      <button
-        type="button"
-        className="relative p-1.5 text-slate-400 transition hover:text-white"
-        aria-label="Mail"
-      >
-        <Mail className="h-5 w-5" />
-      </button>
-
-      <button
-        type="button"
-        className="relative p-1.5 text-slate-400 transition hover:text-white"
-        aria-label="Notifications"
-      >
-        <Bell className="h-5 w-5" />
-        {notificationCount > 0 && (
-          <Badge className="absolute -right-1.5 -top-1 h-4 min-w-[18px] rounded-full bg-red-500 px-1 text-[10px] text-white">
-            {notificationCount}
-          </Badge>
-        )}
-      </button>
-
-      <div ref={profileRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setProfileOpen((prev) => !prev)}
-          aria-expanded={profileOpen}
-          aria-haspopup="menu"
-          className="flex items-center gap-2"
-        >
-          <div className="hidden text-right sm:block">
-            <div className="text-[13px] font-semibold text-white">
-              {profile.dealershipName}
-            </div>
-          </div>
-          <Avatar className="h-9 w-9 ring-2 ring-slate-700">
-            <AvatarFallback className="bg-blue-600 text-xs text-white">
-              {profile.initials}
-            </AvatarFallback>
-          </Avatar>
-        </button>
-
-        {profileOpen && (
-          <div
-            role="menu"
-            className="absolute right-0 top-[calc(100%+8px)] z-50 w-[200px] overflow-hidden rounded-lg border border-slate-700/90 bg-[#0c1424] py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
-          >
-            <button
-              type="button"
-              role="menuitem"
-              onClick={handleLogout}
-              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] text-red-400 transition-colors hover:bg-[#152238]"
-            >
-              <LogOut className="h-4 w-4" />
-              Log Out
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+    <PortalHeaderShell
+      searchPlaceholder="Search VIN, Stock #, or vehicle..."
+      actions={actions}
+      mobileActions={actions}
+      notificationCount={notificationCount}
+      profile={{
+        name: dealershipName,
+        subtitle: "Wholesale Dealer",
+        initials,
+        onLogout: handleLogout,
+      }}
+    />
   );
 }

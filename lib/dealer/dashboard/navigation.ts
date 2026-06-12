@@ -1,5 +1,6 @@
 export const DEALER_ROUTES = {
   dashboard: "/dealer/dashboard",
+  inventory: "/dealer/inventory",
   transactions: "/dealer/transactions",
   soldVehicles: "/dealer/sold-vehicles",
 } as const;

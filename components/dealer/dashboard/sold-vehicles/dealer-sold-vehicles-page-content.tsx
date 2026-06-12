@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import type { SoldVehicleRecord } from "@/lib/dealer/dashboard/types";
 import AddSoldVehicleWorkspace from "./add-sold-vehicle-workspace";
+import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
 import SoldVehiclesCenter from "./sold-vehicles-center";
 import SoldVehiclesCenterSkeleton from "./sold-vehicles-center-skeleton";
 
@@ -68,7 +69,10 @@ export default function DealerSoldVehiclesPageContent() {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100 antialiased selection:bg-blue-500/30">
+    <DealerPageShell
+      title="Sold Vehicles"
+      description="Manage wholesale sold vehicle records and sale documentation."
+    >
       <SoldVehiclesCenter
         soldVehicles={dashboardData.soldVehicles}
         soldVehicleKpis={dashboardData.soldVehicleKpis}
@@ -77,6 +81,7 @@ export default function DealerSoldVehiclesPageContent() {
         onAddSoldVehicle={openAdd}
         onViewSale={openView}
         onRowClick={openEdit}
+        showTitle={false}
       />
 
       {showWorkspace && (
@@ -86,6 +91,6 @@ export default function DealerSoldVehiclesPageContent() {
           onClose={closeWorkspace}
         />
       )}
-    </div>
+    </DealerPageShell>
   );
 }

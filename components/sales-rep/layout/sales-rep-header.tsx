@@ -1,13 +1,23 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Bell, LogOut, MessageCircle, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import {
+  Car,
+  FolderPlus,
+  FileUp,
+  MessageSquare,
+  MessageCircle,
+  CheckCircle,
+  DollarSign,
+  Wallet,
+  LayoutDashboard,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { HeaderIconAction } from "@/components/layout/header-icon-action";
+import { HeaderMoreMenu } from "@/components/layout/header-more-menu";
+import { PortalHeaderShell } from "@/components/layout/portal-header-shell";
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
 type Props = {
@@ -20,9 +30,7 @@ export default function SalesRepHeader({
   notificationCount = 0,
 }: Props) {
   const router = useRouter();
-  const [profileOpen, setProfileOpen] = useState(false);
   const [messageUnread, setMessageUnread] = useState(0);
-  const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch("/api/messages/unread-count")
@@ -33,17 +41,6 @@ export default function SalesRepHeader({
       .catch(() => {});
   }, []);
 
-  useEffect(() => {
-    if (!profileOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [profileOpen]);
-
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -51,85 +48,99 @@ export default function SalesRepHeader({
     router.refresh();
   }
 
+  const actions = (
+    <>
+      <HeaderIconAction
+        icon={Car}
+        label="Add Vehicle"
+        tone="blue"
+        onClick={() => router.push("/sales-rep/dashboard/inventory?add=true")}
+      />
+      <HeaderIconAction
+        icon={Car}
+        label="Inventory"
+        tone="green"
+        onClick={() => router.push("/sales-rep/dashboard/inventory")}
+      />
+      <HeaderIconAction
+        icon={FolderPlus}
+        label="New Deal"
+        tone="purple"
+        onClick={() => router.push("/sales-rep/deal-jackets/create")}
+      />
+      <HeaderIconAction
+        icon={FileUp}
+        label="Send Doc"
+        tone="greenDark"
+        onClick={() => router.push("/sales-rep/dashboard/send-document")}
+      />
+      <HeaderIconAction
+        icon={MessageSquare}
+        label="Messages"
+        tone="blue"
+        onClick={() => router.push("/sales-rep/messages")}
+      />
+      <HeaderMoreMenu
+        items={[
+          {
+            label: "Dashboard",
+            href: "/sales-rep/dashboard",
+            icon: LayoutDashboard,
+          },
+          {
+            label: "My Sold Vehicles",
+            href: "/sales-rep/dashboard/my-sold-vehicles",
+            icon: CheckCircle,
+          },
+          {
+            label: "My Deal Jackets",
+            href: "/sales-rep/deal-jackets",
+            icon: FolderPlus,
+          },
+          {
+            label: "Commissions",
+            href: "/sales-rep/commissions",
+            icon: DollarSign,
+          },
+          {
+            label: "Payroll & Earnings",
+            href: "/sales-rep/dashboard/payroll-earnings",
+            icon: Wallet,
+          },
+        ]}
+      />
+    </>
+  );
+
+  const messagesLink = (
+    <Link
+      href="/sales-rep/messages"
+      className="relative p-1.5 text-slate-400 transition hover:text-slate-200"
+      aria-label="Messages"
+    >
+      <MessageCircle className="h-5 w-5" />
+      {messageUnread > 0 && (
+        <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white">
+          {messageUnread > 99 ? "99+" : messageUnread}
+        </span>
+      )}
+    </Link>
+  );
+
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 mb-3.5 border-b border-slate-800/60 pb-3.5">
-      <div className="relative max-w-100 w-full">
-        <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-        <Input
-          placeholder="Search VIN, Stock #, Customer, or Vehicle..."
-          className="h-10 border-slate-800 bg-slate-800/50 pl-9 text-[12.5px] text-slate-200 placeholder:text-slate-500 max-w-300 w-full"
-        />
-      </div>
-
-      <div className="flex items-center gap-3">
-        <Link
-          href="/sales-rep/messages"
-          className="relative p-1.5 text-slate-400 transition hover:text-white"
-          aria-label="Messages"
-        >
-          <MessageCircle className="h-5 w-5" />
-          {messageUnread > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white">
-              {messageUnread > 99 ? "99+" : messageUnread}
-            </span>
-          )}
-        </Link>
-
-      <button
-        type="button"
-        className="relative p-1.5 text-slate-400 transition hover:text-white"
-        aria-label="Notifications"
-      >
-        <Bell className="h-5 w-5" />
-        {notificationCount > 0 && (
-          <Badge className="absolute -right-1.5 -top-1 h-4 min-w-[18px] rounded-full bg-red-500 px-1 text-[10px] text-white">
-            {notificationCount}
-          </Badge>
-        )}
-      </button>
-
-      <div ref={profileRef} className="relative">
-        <button
-          type="button"
-          onClick={() => setProfileOpen((prev) => !prev)}
-          aria-expanded={profileOpen}
-          aria-haspopup="menu"
-          className="flex items-center gap-2"
-        >
-          <div className="hidden text-right sm:block">
-            <div className="text-[13px] font-semibold text-white">
-              {profile.name}
-            </div>
-            <div className="text-[13px] text-slate-500">{profile.title}</div>
-          </div>
-          <Avatar className="h-9 w-9 ring-2 ring-slate-700">
-            {profile.imageUrl ? (
-              <AvatarImage src={profile.imageUrl} alt={profile.name} />
-            ) : null}
-            <AvatarFallback className="bg-blue-600 text-xs text-white">
-              {profile.initials}
-            </AvatarFallback>
-          </Avatar>
-        </button>
-
-        {profileOpen && (
-          <div
-            role="menu"
-            className="absolute right-0 top-[calc(100%+8px)] z-50 w-[200px] overflow-hidden rounded-lg border border-slate-700/90 bg-card py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
-          >
-            <button
-              type="button"
-              role="menuitem"
-              onClick={handleLogout}
-              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] text-red-400 transition-colors hover:bg-slate-800/70"
-            >
-              <LogOut className="h-4 w-4" />
-              Log Out
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-    </div>
+    <PortalHeaderShell
+      searchPlaceholder="Search VIN, Stock #, Customer, or Vehicle..."
+      actions={actions}
+      mobileActions={actions}
+      notificationCount={notificationCount}
+      extraRight={messagesLink}
+      profile={{
+        name: profile.name,
+        subtitle: profile.title,
+        initials: profile.initials,
+        imageUrl: profile.imageUrl,
+        onLogout: handleLogout,
+      }}
+    />
   );
 }

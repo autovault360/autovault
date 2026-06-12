@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 
 type Props = {
   title?: string;
@@ -21,23 +22,26 @@ export default function DealerPageShell({
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
       {headerSection ?? (
-        <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
-          <div className="min-w-0 flex-1">
-            {title && (
-              <h1 className="text-xl font-bold text-white sm:text-2xl">
-                {title}
-              </h1>
-            )}
-            {description && (
-              <p className="mt-0.5 text-[12px] text-[#64748b]">{description}</p>
-            )}
-          </div>
-          {headerExtra && (
-            <div className="flex flex-wrap items-center gap-2">
-              {headerExtra}
+        (title || description || headerExtra) && (
+          <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
+            <div className="min-w-0 flex-1">
+              {title ? (
+                <PageHeaderTitle title={title} subtitle={description} />
+              ) : (
+                description && (
+                  <p className="mt-0.5 text-[12px] text-[#64748b]">
+                    {description}
+                  </p>
+                )
+              )}
             </div>
-          )}
-        </section>
+            {headerExtra && (
+              <div className="flex flex-wrap items-center gap-2">
+                {headerExtra}
+              </div>
+            )}
+          </section>
+        )
       )}
 
       {children}

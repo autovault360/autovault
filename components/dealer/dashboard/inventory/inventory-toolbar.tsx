@@ -1,12 +1,14 @@
 "use client";
 
-import { Search, Upload, X } from "lucide-react";
+import { Download, Search, SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -54,16 +56,15 @@ export default function InventoryToolbar({
     filters.inventoryStatus !== "all" ||
     filters.location !== "all" ||
     filters.condition !== "all";
+  const hasActiveFilters = hasKpiFilter || hasToolbarFilters;
 
   return (
-    <div className="space-y-2">
-      {(hasKpiFilter || hasToolbarFilters) && (
+    <div className="space-y-2.5">
+      {hasKpiFilter && filters.kpiFilter !== "all" && (
         <div className="flex flex-wrap items-center gap-2 rounded-md border border-violet-500/30 bg-violet-500/5 px-3 py-2 text-[11px]">
-          {hasKpiFilter && filters.kpiFilter !== "all" && (
-            <span className="text-violet-300">
-              FILTER APPLIED: {INVENTORY_KPI_LABELS[filters.kpiFilter]}
-            </span>
-          )}
+          <span className="text-violet-300">
+            FILTER APPLIED: {INVENTORY_KPI_LABELS[filters.kpiFilter]}
+          </span>
           <button
             type="button"
             onClick={onClearFilters}
@@ -75,87 +76,113 @@ export default function InventoryToolbar({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative min-w-0 flex-1 basis-[200px]">
-          <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-          <Input
-            theme="dark"
-            value={filters.search}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search VIN, Stock #, Year, Make, Model..."
-            className="h-8 border-[#1e293b] pl-8 text-[11px]"
-          />
+      <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="relative w-full xl:max-w-sm">
+          <InputGroup theme="dark">
+            <InputGroupAddon>
+              <Search className="h-3.5 w-3.5" />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Search by Make, Model, Stock #, or VIN..."
+              value={filters.search}
+              onChange={(e) => onSearchChange(e.target.value)}
+              theme="dark"
+            />
+          </InputGroup>
         </div>
 
-        <Select
-          value={filters.inventoryStatus}
-          onValueChange={(v) =>
-            onInventoryStatusChange(v as WholesaleInventoryStatus | "all")
-          }
-        >
-          <SelectTrigger theme="dark" className="h-8 w-[120px] border-[#1e293b] text-[11px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent theme="dark" className="border-[#1e293b]">
-            <SelectItem value="all" theme="dark">
-              All Status
-            </SelectItem>
-            {(Object.keys(INVENTORY_STATUS_LABELS) as WholesaleInventoryStatus[]).map(
-              (status) => (
-                <SelectItem key={status} value={status} theme="dark">
-                  {INVENTORY_STATUS_LABELS[status]}
-                </SelectItem>
-              ),
+        <div className="flex w-full flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              value={filters.inventoryStatus}
+              onValueChange={(v) =>
+                onInventoryStatusChange(v as WholesaleInventoryStatus | "all")
+              }
+            >
+              <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent theme="dark" className="text-slate-300">
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">
+                    All Statuses
+                  </SelectItem>
+                  {(Object.keys(INVENTORY_STATUS_LABELS) as WholesaleInventoryStatus[]).map(
+                    (status) => (
+                      <SelectItem key={status} value={status} theme="dark" className="text-[11.5px]">
+                        {INVENTORY_STATUS_LABELS[status]}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Select value={filters.location} onValueChange={onLocationChange}>
+              <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
+                <SelectValue placeholder="All Locations" />
+              </SelectTrigger>
+              <SelectContent theme="dark" className="text-slate-300">
+                <SelectGroup>
+                  <SelectLabel>Location</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">
+                    All Locations
+                  </SelectItem>
+                  {locations.map((loc) => (
+                    <SelectItem key={loc} value={loc} theme="dark" className="text-[11.5px]">
+                      {loc}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.condition}
+              onValueChange={(v) => onConditionChange(v as VehicleCondition | "all")}
+            >
+              <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
+                <SelectValue placeholder="All Conditions" />
+              </SelectTrigger>
+              <SelectContent theme="dark" className="text-slate-300">
+                <SelectGroup>
+                  <SelectLabel>Condition</SelectLabel>
+                  <SelectItem value="all" theme="dark" className="text-[11.5px]">
+                    All Conditions
+                  </SelectItem>
+                  {(Object.keys(CONDITION_LABELS) as VehicleCondition[]).map((c) => (
+                    <SelectItem key={c} value={c} theme="dark" className="text-[11.5px]">
+                      {CONDITION_LABELS[c]}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Button variant="outline" theme="dark" className="shrink-0">
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              More Filters
+            </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                theme="dark"
+                onClick={onClearFilters}
+                className="text-[11.5px]"
+              >
+                <X className="h-3 w-3" />
+                Clear Filters
+              </Button>
             )}
-          </SelectContent>
-        </Select>
+          </div>
 
-        <Select value={filters.location} onValueChange={onLocationChange}>
-          <SelectTrigger theme="dark" className="h-8 w-[120px] border-[#1e293b] text-[11px]">
-            <SelectValue placeholder="Location" />
-          </SelectTrigger>
-          <SelectContent theme="dark" className="border-[#1e293b]">
-            <SelectItem value="all" theme="dark">
-              All Locations
-            </SelectItem>
-            {locations.map((loc) => (
-              <SelectItem key={loc} value={loc} theme="dark">
-                {loc}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={filters.condition}
-          onValueChange={(v) => onConditionChange(v as VehicleCondition | "all")}
-        >
-          <SelectTrigger theme="dark" className="h-8 w-[120px] border-[#1e293b] text-[11px]">
-            <SelectValue placeholder="Condition" />
-          </SelectTrigger>
-          <SelectContent theme="dark" className="border-[#1e293b]">
-            <SelectItem value="all" theme="dark">
-              All Conditions
-            </SelectItem>
-            {(Object.keys(CONDITION_LABELS) as VehicleCondition[]).map((c) => (
-              <SelectItem key={c} value={c} theme="dark">
-                {CONDITION_LABELS[c]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Button
-          type="button"
-          variant="outline"
-          theme="dark"
-          size="sm"
-          className="h-8 border-[#1e293b] text-[11px]"
-          onClick={onExport}
-        >
-          <Upload className="mr-1.5 h-3.5 w-3.5" />
-          Export
-        </Button>
+          <Button variant="outline" theme="dark" onClick={onExport}>
+            <Download className="h-3.5 w-3.5" />
+            Export
+          </Button>
+        </div>
       </div>
     </div>
   );

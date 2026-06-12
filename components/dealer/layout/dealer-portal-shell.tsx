@@ -77,12 +77,11 @@ export default function DealerPortalShell({
         />
       }
       header={
-        dashboardData ? (
-          <DealerHeader
-            profile={dashboardData.profile}
-            notificationCount={dashboardData.notificationCount}
-          />
-        ) : undefined
+        <DealerHeader
+          dealershipName={dealershipName}
+          initials={initials}
+          notificationCount={dashboardData?.notificationCount ?? 0}
+        />
       }
       footer={<AppFooter />}
     >

@@ -2,6 +2,7 @@
 
 import { FileClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 
 type Props = {
   onOpenHistory: () => void;
@@ -21,12 +22,10 @@ export default function SendDocumentPageHeader({ onOpenHistory }: Props) {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h1 className="text-xl font-bold text-white sm:text-2xl">
-            Send Document
-          </h1>
-          <p className="mt-1 text-[12px] text-slate-500">
-            Send documents securely to buyers, auctions, or team members.
-          </p>
+          <PageHeaderTitle
+            title="Send Document"
+            subtitle="Send documents securely to buyers, auctions, or team members."
+          />
         </div>
 
         <Button

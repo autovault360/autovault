@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import ExpenseCategoryBadge from "./expense-category-badge";
 import {
@@ -197,14 +197,16 @@ export default function ExpensesInventory({
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <Button
             type="button"
-            className="h-9 gap-1.5 bg-blue-600 px-3 text-[11.5px] hover:bg-blue-500"
+            size="action"
             onClick={() =>
               onRequestAdd
                 ? onRequestAdd()
                 : router.push("/dashboard/expenses?add=true&type=general")
             }
           >
-            <Plus className="h-3.5 w-3.5" />
+            <ButtonIcon tone="danger">
+              <Plus />
+            </ButtonIcon>
             Add Expense
           </Button>
 

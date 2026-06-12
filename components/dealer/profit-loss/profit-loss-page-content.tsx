@@ -40,7 +40,18 @@ export default function ProfitLossPageContent({
   const [timeframe, setTimeframe] = useState<DealerPlTimeframe>("this_month");
 
   return (
-    <DealerPageShell headerExtra={<ProfitLossHeaderToolbar period={period} timeframeOptions={timeframeOptions} timeframe={timeframe} onTimeframeChange={setTimeframe} />}>
+    <DealerPageShell
+      title="Profit & Loss"
+      description="Track income, expenses, and net profit for your wholesale operation."
+      headerExtra={
+        <ProfitLossHeaderToolbar
+          period={period}
+          timeframeOptions={timeframeOptions}
+          timeframe={timeframe}
+          onTimeframeChange={setTimeframe}
+        />
+      }
+    >
       <ProfitLossKpiStrip kpis={kpis} />
 
       <div className="mb-3.5 grid grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">

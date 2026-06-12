@@ -6,6 +6,7 @@ import { ChevronLeft, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getCreateDealJacketPageData } from "@/lib/deal-jackets/server/get-create-deal-jacket-page-data";
 import type { CreateDealJacketPageData, IRecentlyApprovedDeal } from "@/lib/sales-rep/deal-jacket/types";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import DealJacketFormEngine from "./deal-jacket-form-engine";
 import CreateDealJacketFooterWorkspace from "./create-deal-jacket-footer-workspace";
 
@@ -44,13 +45,11 @@ export default function CreateDealJacketPageContent() {
             <FolderPlus className="h-5 w-5 text-blue-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Create Deal Jacket
-            </h1>
-            <p className="mt-0.5 text-[12.5px] text-slate-500">
-              Desk a new deal with vehicle, buyer, numbers, and documents in one
-              workspace.
-            </p>
+            <PageHeaderTitle
+              title="Create Deal Jacket"
+              subtitle="Desk a new deal with vehicle, buyer, numbers, and documents in one workspace."
+              subtitleClassName="text-[12.5px]"
+            />
           </div>
         </div>
         <Button

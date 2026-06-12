@@ -4,6 +4,7 @@ import {
   SalesRepDashboardProvider,
   useSalesRepDashboard,
 } from "../context/sales-rep-dashboard-context";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import TopPerformerCard from "./top-performer-card";
 import PersonalMetricsStrip from "./personal-metrics-strip";
 import AvailableInventoryPanel from "./available-inventory-panel";
@@ -68,12 +69,10 @@ function DashboardInner() {
     <div className="min-h-screen  text-slate-100 antialiased selection:bg-blue-500/30">
       {/* GLOBAL TOP MARGIN BANNER CONTROL HEADER */}
       <section className="mb-3.5 border-b border-slate-800/60 px-0.5 pb-3.5">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          Welcome back, {dashboardData.profile.name}
-        </h1>
-        <p className="mt-0.5 text-[12.5px] text-slate-500">
-          Here&apos;s what&apos;s happening with your sales today.
-        </p>
+        <PageHeaderTitle
+          title="Sales Rep Dashboard"
+          subtitle={`Welcome back, ${dashboardData.profile.name}`}
+        />
       </section>
 
       {/* MASTER TWO-COLUMN GRID SYSTEM */}
