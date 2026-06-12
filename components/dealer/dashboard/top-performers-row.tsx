@@ -2,7 +2,7 @@
 
 import { Plus, TrendingUp, Trophy } from "lucide-react";
 import { CardShell } from "@/components/dashboard/card-shell";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import {
   formatCurrency,
   formatPercent,
@@ -72,10 +72,13 @@ export default function TopPerformersRow({
 
       <Button
         type="button"
+        size="action"
         onClick={onAddVehicle}
-        className="h-auto self-stretch bg-emerald-600 px-5 text-[13px] font-semibold hover:bg-emerald-500 lg:min-w-[140px]"
+        className="h-auto self-stretch lg:min-w-[140px]"
       >
-        <Plus className="mr-1.5 h-4 w-4" />
+        <ButtonIcon tone="default">
+          <Plus />
+        </ButtonIcon>
         Add Vehicle
       </Button>
     </div>

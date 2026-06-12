@@ -528,7 +528,7 @@ export default function AddEditVehicleModal({
                 void handleSubmit();
               }}
               submitLabel={isEdit ? "Save Changes" : "Add Vehicle"}
-              submitClassName="bg-emerald-600 hover:bg-emerald-500 text-white"
+              submitClassName="h-8"
               isSubmitting={saving}
               disabled={saving}
             />

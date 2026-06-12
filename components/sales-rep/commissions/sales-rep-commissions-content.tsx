@@ -24,6 +24,7 @@ import type {
   SalesRepCommissionStatus,
 } from "@/lib/sales-rep/commissions/types";
 import { COMMISSION_STATUS_LABELS } from "@/lib/sales-rep/commissions/types";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import CommissionStatusBadge from "./commission-status-badge";
 import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
@@ -225,12 +226,11 @@ export default function SalesRepCommissionsContent() {
   return (
     <div>
       <section className="mb-4 px-0.5">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          My Commissions
-        </h1>
-        <p className="mt-1 text-[12.5px] text-slate-500">
-          Track your commission earnings from approved deal jackets.
-        </p>
+        <PageHeaderTitle
+          title="My Commissions"
+          subtitle="Track your commission earnings from approved deal jackets."
+          subtitleClassName="text-[12.5px]"
+        />
       </section>
 
       <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">

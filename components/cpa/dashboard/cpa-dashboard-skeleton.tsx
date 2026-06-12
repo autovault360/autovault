@@ -69,23 +69,16 @@ function SidebarCardSkeleton() {
 export default function CpaDashboardSkeleton() {
   return (
     <div>
-      {/* Header */}
-      <header className="mb-4 space-y-3 border-b border-slate-800 pb-4">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2">
-            <SkeletonBar className="h-8 w-48" />
-            <SkeletonBar className="h-3 w-72" />
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <SkeletonBar className="h-8 w-32 rounded-lg" />
-            <SkeletonBar className="h-8 w-48 rounded-lg" />
-            <div className="flex items-center gap-3 border-l border-slate-800 pl-3">
-              <SkeletonBar className="h-9 w-9 rounded-full" />
-              <SkeletonBar className="h-8 w-24 rounded-md" />
-            </div>
-          </div>
-        </div>
-      </header>
+      <section className="mb-3.5 space-y-3 border-b border-slate-800/60 px-0.5 pb-3.5">
+        <SkeletonBar className="h-6 w-48" />
+        <SkeletonBar className="h-3 w-72" />
+      </section>
+
+      <div className="mb-4 flex flex-wrap gap-1">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <SkeletonBar key={i} className="h-7 w-10 rounded-md" />
+        ))}
+      </div>
 
       {/* KPI Cards */}
       <div className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">

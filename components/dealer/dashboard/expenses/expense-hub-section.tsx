@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { CardShell, CardHead } from "@/components/dashboard/card-shell";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
@@ -75,13 +75,10 @@ export default function ExpenseHubSection() {
         <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
           <div className="mb-3 flex items-center justify-between">
             <CardHead title="EXPENSE SYSTEM" />
-            <Button
-              type="button"
-              size="sm"
-              onClick={openExpenseModal}
-              className="h-8 bg-emerald-600 text-[11px] hover:bg-emerald-500"
-            >
-              <Plus className="mr-1 h-3.5 w-3.5" />
+            <Button type="button" size="sm" onClick={openExpenseModal}>
+              <ButtonIcon tone="danger">
+                <Plus />
+              </ButtonIcon>
               Add Expense
             </Button>
           </div>

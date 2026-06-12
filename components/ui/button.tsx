@@ -4,6 +4,25 @@ import { Slot } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
+const buttonIconRingVariants = cva(
+  "grid h-5 w-5 shrink-0 place-items-center rounded-md [&_svg]:size-3",
+  {
+    variants: {
+      tone: {
+        default: "bg-blue-500/20 text-blue-400",
+        success: "bg-emerald-500/20 text-emerald-400",
+        accent: "bg-purple-500/20 text-purple-400",
+        danger: "bg-red-500/20 text-red-400",
+        neutral: "bg-slate-700/80 text-slate-300",
+        warning: "bg-amber-500/20 text-amber-400",
+      },
+    },
+    defaultVariants: {
+      tone: "default",
+    },
+  }
+)
+
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center rounded-[4px] border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
@@ -24,6 +43,8 @@ const buttonVariants = cva(
       size: {
         default:
           "h-8 gap-1.5 px-2.5 text-sm has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        action:
+          "h-auto gap-2 rounded-lg px-2.5 py-1.5 text-[11.5px] font-medium has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5",
         xs:
           "h-6 gap-1 rounded-[4px] px-2 text-xs has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
         sm:
@@ -49,7 +70,7 @@ const buttonVariants = cva(
 
 const darkVariantClass: Record<string, string> = {
   default:
-    "bg-[#2563eb] text-white hover:bg-[#1d4ed8]",
+    "rounded-lg border border-slate-800 bg-[#0e1626] text-[11.5px] font-medium text-slate-300 shadow-none hover:border-slate-700 hover:bg-[#0e1626] hover:text-slate-200 active:translate-y-0",
   outline:
     "border-slate-600 bg-transparent text-slate-300 hover:bg-slate-800 hover:text-slate-100 aria-expanded:bg-slate-800 aria-expanded:text-slate-100",
   secondary:
@@ -60,6 +81,24 @@ const darkVariantClass: Record<string, string> = {
     "bg-red-900/30 text-red-400 hover:bg-red-900/50 focus-visible:border-red-400/40 focus-visible:ring-red-400/20",
   link:
     "text-blue-400 hover:text-blue-300",
+}
+
+function ButtonIcon({
+  className,
+  tone = "default",
+  children,
+  ...props
+}: React.ComponentProps<"span"> &
+  VariantProps<typeof buttonIconRingVariants>) {
+  return (
+    <span
+      data-slot="button-icon"
+      className={cn(buttonIconRingVariants({ tone }), className)}
+      {...props}
+    >
+      {children}
+    </span>
+  )
 }
 
 function Button({
@@ -91,4 +130,4 @@ function Button({
   )
 }
 
-export { Button, buttonVariants }
+export { Button, ButtonIcon, buttonIconRingVariants, buttonVariants }

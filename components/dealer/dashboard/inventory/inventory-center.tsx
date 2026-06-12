@@ -31,11 +31,13 @@ import InventoryToolbar, {
 export default function InventoryCenter({
   vehicles,
   loading,
+  variant = "embedded",
   addSignal = 0,
   onAddSignalConsumed,
 }: {
   vehicles: WholesaleVehicle[];
   loading?: boolean;
+  variant?: "embedded" | "page";
   addSignal?: number;
   onAddSignalConsumed?: () => void;
 }) {
@@ -173,69 +175,87 @@ export default function InventoryCenter({
     router.refresh();
   };
 
+  const content = (
+    <div className="space-y-3.5">
+      {variant === "embedded" && (
+        <InventoryCenterHeader onAddVehicle={openAddModal} />
+      )}
+
+      <InventoryKpiStrip
+        kpis={kpis}
+        loading={loading}
+        activeKpiFilter={activeKpiFilter}
+        onKpiClick={handleKpiClick}
+      />
+
+      <div
+        className={
+          variant === "page"
+            ? "space-y-3.5 rounded-sm border border-slate-800 bg-card p-3.5 text-slate-200 shadow-none"
+            : "space-y-3.5"
+        }
+      >
+        <InventoryToolbar
+          filters={filters}
+          locations={locations}
+          onSearchChange={setSearch}
+          onInventoryStatusChange={setInventoryStatusFilter}
+          onLocationChange={setLocationFilter}
+          onConditionChange={setConditionFilter}
+          onClearFilters={handleClearFilters}
+          onExport={() => exportInventoryCsv(filtered)}
+        />
+
+        <InventoryTable
+          vehicles={filtered}
+          loading={loading}
+          onView={openViewModal}
+          onEdit={openEditModal}
+          onChangeTitleStatus={(vehicle) => {
+            setTitleDialogVehicle(vehicle);
+            setTitleDialogOpen(true);
+          }}
+          onChangeInventoryStatus={handleChangeInventoryStatus}
+        />
+
+        <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-800 pt-3 text-[11px]">
+          <span className="text-[#64748b]">
+            Showing{" "}
+            <strong className="text-white tabular-nums">{footer.count}</strong>{" "}
+            vehicles
+          </span>
+          <span className="text-[#64748b]">
+            Total Cost:{" "}
+            <strong className="text-white tabular-nums">
+              {footer.formatted.totalCost}
+            </strong>
+          </span>
+          <span className="text-[#64748b]">
+            Wholesale Value:{" "}
+            <strong className="text-white tabular-nums">
+              {footer.formatted.totalWholesaleValue}
+            </strong>
+          </span>
+          <span className="text-[#64748b]">
+            Profit:{" "}
+            <strong className="text-emerald-400 tabular-nums">
+              {footer.formatted.totalProfit}
+            </strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
-      <CardShell className="min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
-        <div className="space-y-3.5">
-          <InventoryCenterHeader onAddVehicle={openAddModal} />
-
-          <InventoryKpiStrip
-            kpis={kpis}
-            loading={loading}
-            activeKpiFilter={activeKpiFilter}
-            onKpiClick={handleKpiClick}
-          />
-
-          <InventoryToolbar
-            filters={filters}
-            locations={locations}
-            onSearchChange={setSearch}
-            onInventoryStatusChange={setInventoryStatusFilter}
-            onLocationChange={setLocationFilter}
-            onConditionChange={setConditionFilter}
-            onClearFilters={handleClearFilters}
-            onExport={() => exportInventoryCsv(filtered)}
-          />
-
-          <InventoryTable
-            vehicles={filtered}
-            loading={loading}
-            onView={openViewModal}
-            onEdit={openEditModal}
-            onChangeTitleStatus={(vehicle) => {
-              setTitleDialogVehicle(vehicle);
-              setTitleDialogOpen(true);
-            }}
-            onChangeInventoryStatus={handleChangeInventoryStatus}
-          />
-
-          <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-[#1e293b] pt-3 text-[11px]">
-            <span className="text-[#64748b]">
-              Showing{" "}
-              <strong className="text-white tabular-nums">{footer.count}</strong>{" "}
-              vehicles
-            </span>
-            <span className="text-[#64748b]">
-              Total Cost:{" "}
-              <strong className="text-white tabular-nums">
-                {footer.formatted.totalCost}
-              </strong>
-            </span>
-            <span className="text-[#64748b]">
-              Wholesale Value:{" "}
-              <strong className="text-white tabular-nums">
-                {footer.formatted.totalWholesaleValue}
-              </strong>
-            </span>
-            <span className="text-[#64748b]">
-              Profit:{" "}
-              <strong className="text-emerald-400 tabular-nums">
-                {footer.formatted.totalProfit}
-              </strong>
-            </span>
-          </div>
-        </div>
-      </CardShell>
+      {variant === "embedded" ? (
+        <CardShell className="min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+          {content}
+        </CardShell>
+      ) : (
+        content
+      )}
 
       <InventoryDetailSheet
         open={sheetOpen}

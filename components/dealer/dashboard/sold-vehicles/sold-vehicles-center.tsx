@@ -56,6 +56,7 @@ export default function SoldVehiclesCenter({
   onAddSoldVehicle,
   onViewSale,
   onRowClick,
+  showTitle = true,
 }: {
   soldVehicles: SoldVehicleRecord[];
   soldVehicleKpis: SoldVehicleKpiStripData;
@@ -64,6 +65,7 @@ export default function SoldVehiclesCenter({
   onAddSoldVehicle: () => void;
   onViewSale: (record: SoldVehicleRecord) => void;
   onRowClick?: (record: SoldVehicleRecord) => void;
+  showTitle?: boolean;
 }) {
   const [periodPreset, setPeriodPreset] = useState<string>(
     DEFAULT_SOLD_VEHICLE_PERIOD.preset,
@@ -116,6 +118,7 @@ export default function SoldVehiclesCenter({
           periodPreset={periodPreset}
           onPeriodChange={setPeriodPreset}
           onAddSoldVehicle={onAddSoldVehicle}
+          showTitle={showTitle}
         />
 
         <SoldVehicleKpiStripComponent kpis={dynamicKpis} loading={loading} />

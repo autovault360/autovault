@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
-import CpaHeader from "./cpa-header";
+import CpaPortalHeader from "./cpa-portal-header";
 import CpaFooter from "./cpa-footer";
 import { CPA_NAV_GROUPS } from "./cpa-nav";
 import type { CpaSession } from "@/lib/cpa/types";
@@ -48,7 +48,7 @@ export default function CpaPortalShell({
     <CpaPortalProvider session={session}>
       <AppLayout
         sidebar={<UnifiedSidebar groups={CPA_NAV_GROUPS} profile={profileSection} />}
-        header={<CpaHeader />}
+        header={<CpaPortalHeader />}
         footer={<CpaFooter />}
       >
         {children}

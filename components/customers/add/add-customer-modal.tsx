@@ -481,7 +481,7 @@ export default function AddCustomerModal({
             onCancel={() => onOpenChange(false)}
             onSubmit={() => void onSubmit()}
             submitLabel={isEdit ? "Save Changes" : "Add Customer"}
-            submitClassName="bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
+            submitClassName="h-8 disabled:opacity-50"
             isSubmitting={isSubmitting}
             disabled={isDuplicatePhone}
             submitIcon={<Save className="h-4 w-4" />}

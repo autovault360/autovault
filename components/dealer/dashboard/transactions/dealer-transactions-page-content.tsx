@@ -69,7 +69,10 @@ export default function DealerTransactionsPageContent() {
   }
 
   return (
-    <DealerPageShell>
+    <DealerPageShell
+      title="Dealer Transactions"
+      description="Track wholesale purchases, sales, and payment status."
+    >
       <TransactionsCenter
         transactions={dashboardData.transactions}
         transactionKpis={dashboardData.transactionKpis}
@@ -78,6 +81,7 @@ export default function DealerTransactionsPageContent() {
         onAddTransaction={openAdd}
         onViewTransaction={openView}
         onRowClick={openEdit}
+        showTitle={false}
       />
 
       {showWorkspace && (

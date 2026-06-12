@@ -34,10 +34,7 @@ export default function ProfitLossHeaderToolbar({
   };
 
   return (
-    <>
-      <h1 className="text-xl font-bold text-white sm:text-2xl">Profit & Loss</h1>
-
-      <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-2">
         <Select value={timeframe} onValueChange={(v) => onTimeframeChange(v as DealerPlTimeframe)}>
           <SelectTrigger
             theme="dark"
@@ -87,7 +84,6 @@ export default function ProfitLossHeaderToolbar({
             </SelectItem>
           </SelectContent>
         </Select>
-      </div>
-    </>
+    </div>
   );
 }

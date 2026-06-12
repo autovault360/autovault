@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIcon } from "@/components/ui/button";
 
 export default function AddCustomerTrigger({
   onClick,
@@ -9,12 +9,10 @@ export default function AddCustomerTrigger({
   onClick: () => void;
 }) {
   return (
-    <Button
-      type="button"
-      onClick={onClick}
-      className="h-9 gap-1.5 bg-purple-600 text-[12px] hover:bg-purple-500"
-    >
-      <Plus className="h-4 w-4" />
+    <Button type="button" size="action" onClick={onClick}>
+      <ButtonIcon tone="accent">
+        <Plus />
+      </ButtonIcon>
       Add Customer
     </Button>
   );

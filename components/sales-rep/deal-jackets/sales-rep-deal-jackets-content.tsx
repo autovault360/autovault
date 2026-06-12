@@ -22,6 +22,7 @@ import type {
 } from "@/lib/deal-jackets/types";
 import { DEAL_JACKET_STATUS_LABELS } from "@/lib/deal-jackets/types";
 import { buildDealJacketKpiSummary } from "@/lib/sales-rep/deal-jacket/kpi";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import SalesRepDealJacketKpiStrip from "./sales-rep-deal-jacket-kpi-strip";
 import SalesRepDealJacketTable from "./sales-rep-deal-jacket-table";
 
@@ -82,8 +83,11 @@ export default function SalesRepDealJacketsContent({
             <Folder className="h-5 w-5 text-cyan-400" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-[0.12em] text-white">{title}</h1>
-            <p className="mt-0.5 text-[12.5px] text-slate-500">{description}</p>
+            <PageHeaderTitle
+              title={title}
+              subtitle={description}
+              subtitleClassName="text-[12.5px]"
+            />
           </div>
         </div>
       </section>

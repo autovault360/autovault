@@ -56,6 +56,7 @@ export default function TransactionsCenter({
   onAddTransaction,
   onViewTransaction,
   onRowClick,
+  showTitle = true,
 }: {
   transactions: DealerTransaction[];
   transactionKpis: TransactionKpiStripData;
@@ -64,6 +65,7 @@ export default function TransactionsCenter({
   onAddTransaction: () => void;
   onViewTransaction: (transaction: DealerTransaction) => void;
   onRowClick?: (transaction: DealerTransaction) => void;
+  showTitle?: boolean;
 }) {
   const [periodPreset, setPeriodPreset] = useState<string>(DEFAULT_TRANSACTION_PERIOD.preset);
   const [search, setSearch] = useState("");
@@ -109,6 +111,7 @@ export default function TransactionsCenter({
           periodPreset={periodPreset}
           onPeriodChange={setPeriodPreset}
           onAddTransaction={onAddTransaction}
+          showTitle={showTitle}
         />
 
         <TransactionKpiStripComponent kpis={dynamicKpis} loading={loading} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,21 +10,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { TRANSACTION_PERIOD_PRESETS } from "@/lib/dealer/dashboard/transaction-constants";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 
 export default function TransactionsCenterHeader({
   periodPreset,
   onPeriodChange,
   onAddTransaction,
+  showTitle = true,
 }: {
   periodPreset: string;
   onPeriodChange: (value: string) => void;
   onAddTransaction: () => void;
+  showTitle?: boolean;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <h2 className="text-[17px] font-bold tracking-tight text-white">
-        Dealer Transactions Center
-      </h2>
+      {showTitle ? (
+        <PageHeaderTitle
+          as="h2"
+          title="Dealer Transactions Center"
+          subtitle="Track wholesale purchases, sales, and payment status"
+          subtitleClassName="text-[11px]"
+        />
+      ) : (
+        <div className="min-w-0 flex-1" />
+      )}
       <div className="flex flex-wrap items-center gap-2">
         <Select value={periodPreset} onValueChange={onPeriodChange}>
           <SelectTrigger
@@ -33,20 +43,22 @@ export default function TransactionsCenterHeader({
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent theme="dark" className="border-[#1e293b] bg-card">
+          <SelectContent theme="dark">
             {TRANSACTION_PERIOD_PRESETS.map((preset) => (
-              <SelectItem key={preset.value} value={preset.value} theme="dark">
+              <SelectItem
+                key={preset.value}
+                value={preset.value}
+                className="text-[11px]"
+              >
                 {preset.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <Button
-          type="button"
-          onClick={onAddTransaction}
-          className="h-8 gap-1.5 bg-emerald-600 px-3 text-[11px] hover:bg-emerald-500"
-        >
-          <Plus className="h-3.5 w-3.5" />
+        <Button type="button" size="sm" onClick={onAddTransaction}>
+          <ButtonIcon tone="default">
+            <Plus />
+          </ButtonIcon>
           Add Transaction
         </Button>
       </div>

@@ -434,7 +434,7 @@ export default function AddSalesRepModal({ open, onOpenChange, onSaved }: Props)
             onCancel={() => onOpenChange(false)}
             onSubmit={() => void onSubmit()}
             submitLabel="Add Sales Rep"
-            submitClassName="bg-blue-600 hover:bg-blue-500 disabled:opacity-50"
+            submitClassName="h-8 disabled:opacity-50"
             isSubmitting={isSubmitting}
             disabled={isDuplicateEmail}
             submitIcon={<Save className="h-4 w-4" />}

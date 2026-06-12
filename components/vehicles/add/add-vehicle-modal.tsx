@@ -705,7 +705,7 @@ export default function AddVehicleModal({ open, onOpenChange, onSuccess }: Props
             onCancel={() => onOpenChange(false)}
             onSubmit={onSubmit}
             submitLabel="Save Vehicle"
-            submitClassName="bg-[#16a34a] hover:bg-[#15803d]"
+            submitClassName="h-8"
             isSubmitting={isSubmitting}
             disabled={isDuplicateVin}
             submitIcon={<Save className="mr-2 h-4 w-4" />}

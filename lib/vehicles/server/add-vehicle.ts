@@ -145,6 +145,7 @@ export async function addVehicle(
 
     revalidatePath("/dashboard/vehicles");
     revalidatePath("/dealer/dashboard");
+    revalidatePath("/dealer/inventory");
     revalidatePath("/dealer/dashboard/missing-titles");
     revalidatePath("/sales-rep/dashboard/inventory");
     return { success: true, vehicleId: vehicle.id };

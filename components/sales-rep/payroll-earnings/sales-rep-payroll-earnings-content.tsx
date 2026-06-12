@@ -5,6 +5,7 @@ import { Download, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { CardShell } from "@/components/dashboard/card-shell";
 import { Button } from "@/components/ui/button";
+import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import {
   filterEarningsByVehicle,
@@ -216,12 +217,11 @@ export default function SalesRepPayrollEarningsContent() {
     <div>
       <section className="mb-4 flex flex-wrap items-start justify-between gap-3 px-0.5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Payroll & Earnings
-          </h1>
-          <p className="mt-1 text-[12.5px] text-slate-500">
-            Track your earnings, commissions, and payments.
-          </p>
+          <PageHeaderTitle
+            title="Payroll & Earnings"
+            subtitle="Track your earnings, commissions, and payments."
+            subtitleClassName="text-[12.5px]"
+          />
         </div>
       </section>
 
