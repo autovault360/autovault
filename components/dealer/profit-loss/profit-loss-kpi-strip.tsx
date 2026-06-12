@@ -1,5 +1,6 @@
 import { KPICard } from "@/components/ui/kpi-card";
 import { buildDealerProfitLossKpiCards, type DealerPlKpiStats } from "@/lib/dealer/profit-loss/types";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
 export default function ProfitLossKpiStrip({ kpis }: { kpis: DealerPlKpiStats }) {
   const cards = buildDealerProfitLossKpiCards(kpis);
@@ -13,7 +14,7 @@ export default function ProfitLossKpiStrip({ kpis }: { kpis: DealerPlKpiStats })
           showLink={false}
           showSparkline={false}
           deltaColor={card.deltaColor ?? "green"}
-          className="rounded-sm border-[#1e293b] bg-[#0a101d]/60 shadow-[0_0_0_1px_rgba(148,163,184,0.08)] backdrop-blur-sm"
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
     </section>

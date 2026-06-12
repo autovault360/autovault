@@ -82,7 +82,7 @@ export default function SalesRepDealJacketsContent({
             <Folder className="h-5 w-5 text-cyan-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{title}</h1>
+            <h1 className="text-xl font-bold tracking-[0.12em] text-white">{title}</h1>
             <p className="mt-0.5 text-[12.5px] text-slate-500">{description}</p>
           </div>
         </div>

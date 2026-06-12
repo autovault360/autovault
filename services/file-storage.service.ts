@@ -11,7 +11,8 @@ export type SourceEntity =
   | "expense"
   | "deal_jacket"
   | "dealership_expense"
-  | "user";
+  | "user"
+  | "document_center";
 
 export type TrackFileOptions = {
   sourceEntity?: SourceEntity;
@@ -86,6 +87,61 @@ export async function getFileSignedUrl(
     return await getSignedUrl(bucket, storagePath, expiresInSeconds);
   } catch {
     return null;
+  }
+}
+
+/**
+ * Check whether an object exists in Supabase Storage.
+ */
+export async function verifyStorageObjectExists(
+  bucket: string,
+  storagePath: string,
+): Promise<boolean> {
+  try {
+    const signedUrl = await getSignedUrl(bucket as StorageBucket, storagePath, 60);
+    const response = await fetch(signedUrl, {
+      method: "HEAD",
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (response.ok) return true;
+  } catch {
+    // fall through to storage API check
+  }
+
+  const supabase = createServiceClient();
+  const { data, error } = await supabase.storage.from(bucket).download(storagePath);
+  return !error && !!data;
+}
+
+/**
+ * Download file bytes from storage for server-side use (e.g. email attachments).
+ */
+export async function downloadFileBuffer(
+  bucket: string,
+  storagePath: string,
+): Promise<{ data: Buffer } | { error: string }> {
+  const supabase = createServiceClient();
+
+  const { data: blob, error } = await supabase.storage.from(bucket).download(storagePath);
+  if (!error && blob) {
+    return { data: Buffer.from(await blob.arrayBuffer()) };
+  }
+
+  const storageError = error?.message ?? "Object not found";
+
+  try {
+    const signedUrl = await getSignedUrl(bucket as StorageBucket, storagePath, 3600);
+    const response = await fetch(signedUrl, { signal: AbortSignal.timeout(30_000) });
+    if (!response.ok) {
+      return {
+        error: `"${storagePath}" is not available in storage. The file record exists but the uploaded file is missing.`,
+      };
+    }
+    return { data: Buffer.from(await response.arrayBuffer()) };
+  } catch {
+    return {
+      error: `Could not read file from storage: ${storageError}`,
+    };
   }
 }
 

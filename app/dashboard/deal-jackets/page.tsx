@@ -2,12 +2,13 @@ import DealJacketsPageContent from "@/components/deal-jackets/deal-jackets-page-
 import { getDealJacketsForDashboard } from "@/lib/deal-jackets/get-deal-jackets-for-dashboard";
 
 export default async function DealJacketsPage() {
-  const { dealJackets, salesRepFilterOptions } =
+  const { dealJackets, stats, salesRepFilterOptions } =
     await getDealJacketsForDashboard();
 
   return (
     <DealJacketsPageContent
       dealJackets={dealJackets}
+      stats={stats}
       salesRepFilterOptions={salesRepFilterOptions}
       showAdminHeader={false}
     />

@@ -200,7 +200,7 @@ export default function SalesRepVehicleAlertsContent({
     <div>
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div>
-          <h1 className="text-2xl font-bold text-white">Vehicle Alerts</h1>
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">VEHICLE ALERTS</h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
             Vehicles you sold that are pending approval.
           </p>

@@ -2,6 +2,7 @@ import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { requireSalesRepMessagesAccess } from "./auth";
 import { assertConversationParticipant } from "./service-ops";
 import { getUnreadCountForConversation, mapUserToParticipant } from "./utils";
+import { loadAttachmentsForMessages } from "./load-attachments";
 import type { ChatMessage, ConversationDetail } from "../types";
 
 const USER_SELECT = "id, full_name, email, phone, image_url, role, updated_at";
@@ -72,6 +73,8 @@ export async function getConversationDetail(
 
   const hasMore = (messageRows?.length ?? 0) > limit;
   const sliced = (messageRows ?? []).slice(0, limit).reverse();
+  const messageIds = sliced.map((row) => row.id);
+  const attachmentsMap = await loadAttachmentsForMessages(messageIds);
 
   const messages: ChatMessage[] = sliced.map((row) => ({
     id: row.id,
@@ -82,6 +85,7 @@ export async function getConversationDetail(
     readAt: row.read_at,
     createdAt: row.created_at,
     isOwn: row.sender_id === user.userId,
+    attachments: attachmentsMap.get(row.id) ?? [],
   }));
 
   const nextCursor =
@@ -150,6 +154,8 @@ export async function loadOlderMessages(
 
   const hasMore = (messageRows?.length ?? 0) > limit;
   const sliced = (messageRows ?? []).slice(0, limit).reverse();
+  const messageIds = sliced.map((row) => row.id);
+  const attachmentsMap = await loadAttachmentsForMessages(messageIds);
 
   const messages: ChatMessage[] = sliced.map((row) => ({
     id: row.id,
@@ -160,6 +166,7 @@ export async function loadOlderMessages(
     readAt: row.read_at,
     createdAt: row.created_at,
     isOwn: row.sender_id === auth.user.userId,
+    attachments: attachmentsMap.get(row.id) ?? [],
   }));
 
   return {

@@ -100,7 +100,7 @@ export default async function VehiclesPage({
     <div>
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
     <div>
-          <h1 className="text-2xl font-bold text-white">Vehicles Inventory</h1>
+           <h1 className="text-xl font-bold tracking-[0.12em] text-white">VEHICLES INVENTORY</h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
             Manage your vehicle inventory, pricing, and status.
           </p>

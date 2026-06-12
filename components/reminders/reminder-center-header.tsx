@@ -14,7 +14,7 @@ export default function ReminderCenterHeader({ asOfDate, onDateChange }: Props) 
       <div>
         <div className="flex items-center gap-2">
           <Bell className="h-6 w-6 text-amber-400" />
-          <h1 className="text-2xl font-bold text-white">Reminder Center</h1>
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">REMINDER CENTER</h1>
         </div>
         <p className="mt-0.5 text-[12.5px] text-slate-500">
           Stay on top of important tasks, deadlines, payments, and opportunities.

@@ -86,7 +86,7 @@ export default function CpaHeader({
     <header className="mb-4 space-y-3 border-b border-slate-800 pb-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">{title}</h1>
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">{title}</h1>
           {subtitle && (
             <p className="mt-0.5 text-[12px] text-slate-500">{subtitle}</p>
           )}

@@ -21,7 +21,12 @@ import MetricCell from "@/components/sales-reps/metric-cell";
 import GoalProgressCell from "@/components/sales-reps/goal-progress-cell";
 import SalesRepStatusBadge from "@/components/sales-reps/sales-rep-status-badge";
 import SalesRepRowActions from "@/components/sales-reps/sales-rep-row-actions";
+import SalesRepRankCell from "@/components/sales-reps/sales-rep-rank-cell";
 import { downloadSalesRepsCsv } from "@/lib/sales-reps/export-sales-reps";
+import {
+  buildSalesRepRankMap,
+  getSalesRepRank,
+} from "@/lib/sales-reps/rank-sales-reps";
 import {
   SALES_REP_STATUSES,
   formatCurrency,
@@ -67,9 +72,14 @@ export default function SalesRepsInventory({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  const rankByRepId = useMemo(
+    () => buildSalesRepRankMap(salesReps),
+    [salesReps],
+  );
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return salesReps.filter((rep) => {
+    const result = salesReps.filter((rep) => {
       if (statusFilter !== "all" && rep.status !== statusFilter) return false;
       if (!q) return true;
       return (
@@ -77,9 +87,25 @@ export default function SalesRepsInventory({
         rep.email.toLowerCase().includes(q)
       );
     });
-  }, [salesReps, search, statusFilter]);
+
+    return [...result].sort(
+      (a, b) =>
+        getSalesRepRank(rankByRepId, a.id) - getSalesRepRank(rankByRepId, b.id),
+    );
+  }, [salesReps, search, statusFilter, rankByRepId]);
 
   const columns: Column<SalesRepListItem>[] = [
+    {
+      key: "rank",
+      header: "Rank",
+      sortable: true,
+      headerClassName: "w-[72px]",
+      cellClassName: "w-[72px]",
+      accessor: (row) => getSalesRepRank(rankByRepId, row.id),
+      cell: (row) => (
+        <SalesRepRankCell rank={getSalesRepRank(rankByRepId, row.id)} />
+      ),
+    },
     {
       key: "fullName",
       header: "Sales Rep",

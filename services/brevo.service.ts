@@ -29,12 +29,18 @@ export type BrevoEmailRecipient = {
   name?: string;
 };
 
+export type BrevoEmailAttachment = {
+  name: string;
+  content: string;
+};
+
 export type BrevoSendEmailParams = {
   to: BrevoEmailRecipient[];
   subject: string;
   htmlContent: string;
   sender?: BrevoEmailRecipient;
   replyTo?: BrevoEmailRecipient;
+  attachment?: BrevoEmailAttachment[];
 };
 
 export async function sendTransactionalEmail(
@@ -49,6 +55,7 @@ export async function sendTransactionalEmail(
       htmlContent: params.htmlContent,
       sender: params.sender ?? defaultSender(),
       replyTo: params.replyTo ?? defaultReplyTo(),
+      attachment: params.attachment,
     });
 
     return { success: true, messageId: (response as any).messageId };

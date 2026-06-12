@@ -1,6 +1,7 @@
 "use client";
 
 import { KPICard } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { cn } from "@/lib/utils";
 import type { SoldVehicleKpiStrip } from "@/lib/dealer/dashboard/types";
 
@@ -12,7 +13,7 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-const CARD_CLASS = "border-[#1e293b] bg-card backdrop-blur-sm";
+const CARD_CLASS = ADMIN_PANEL_SHELL_CLASS;
 
 export default function SoldVehicleKpiStrip({
   kpis,

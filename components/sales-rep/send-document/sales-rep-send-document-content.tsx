@@ -8,6 +8,7 @@ import SendDocumentPageHeader from "./send-document-page-header";
 import SendDocumentPreviewPanel from "./send-document-preview-panel";
 import SendDocumentRecipientSection from "./send-document-recipient-section";
 import SendDocumentUploadSection from "./send-document-upload-section";
+import SendHistorySheet from "./send-history-sheet";
 import { useSendDocumentForm } from "./use-send-document-form";
 
 export default function SalesRepSendDocumentContent() {
@@ -15,7 +16,7 @@ export default function SalesRepSendDocumentContent() {
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
-      <SendDocumentPageHeader />
+      <SendDocumentPageHeader onOpenHistory={() => form.setHistoryOpen(true)} />
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-5">
         <div className="flex min-w-0 flex-col gap-4">
@@ -33,8 +34,11 @@ export default function SalesRepSendDocumentContent() {
 
           <SendDocumentUploadSection
             files={form.files}
+            libraryFiles={form.libraryFiles}
+            libraryLoading={form.libraryLoading}
             onAddFiles={form.addFiles}
             onRemoveFile={form.removeFile}
+            onToggleLibraryItem={form.toggleLibrarySelect}
           />
 
           <SendDocumentMessageSection
@@ -65,6 +69,13 @@ export default function SalesRepSendDocumentContent() {
         sendStatus={form.sendStatus}
         onCancel={form.resetForm}
         onSend={form.handleSend}
+      />
+
+      <SendHistorySheet
+        open={form.historyOpen}
+        onOpenChange={form.setHistoryOpen}
+        items={form.historyItems}
+        loading={form.historyLoading}
       />
     </div>
   );

@@ -45,7 +45,7 @@ export default function CalendarModuleHeader({
         <div>
           <div className="flex items-center gap-2">
             <Calendar className="h-6 w-6 text-amber-400" />
-            <h1 className="text-2xl font-bold text-white">Calendar</h1>
+            <h1 className="text-xl font-bold tracking-[0.12em] text-white">CALENDAR</h1>
           </div>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
             Overview of daily sales activity, units sold, and commissions.

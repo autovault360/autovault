@@ -129,3 +129,42 @@ export function salesRepWelcomeEmail(data: SalesRepWelcomeData): string {
 
   return baseWrapper(body);
 }
+
+export type DocumentSendEmailData = {
+  senderName: string;
+  message: string;
+  documentCount: number;
+  documentNames: string[];
+};
+
+export function documentSendEmail(data: DocumentSendEmailData): string {
+  const docList = data.documentNames
+    .map((name) => `<li style="padding:4px 0;color:#e2e8f0;">${name}</li>`)
+    .join("");
+
+  const body = `
+    <h2 style="color:#f8fafc;font-size:20px;font-weight:600;margin:0 0 16px;">
+      Documents from ${data.senderName}
+    </h2>
+    <p style="margin:0 0 20px;color:#cbd5e1;">
+      ${data.message || "Please find the attached documents."}
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;margin-bottom:24px;">
+      <tr>
+        <td style="padding:16px 20px;">
+          <h3 style="margin:0 0 12px;font-size:13px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:0.5px;">
+            ${data.documentCount} Attached Document${data.documentCount === 1 ? "" : "s"}
+          </h3>
+          <ul style="margin:0;padding-left:20px;">
+            ${docList}
+          </ul>
+        </td>
+      </tr>
+    </table>
+    <p style="margin:0;font-size:12px;color:#64748b;">
+      Documents are attached to this email. Please handle them securely.
+    </p>
+  `;
+
+  return baseWrapper(body);
+}

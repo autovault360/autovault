@@ -1,6 +1,7 @@
 "use client";
 
 import { KPICard } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { cn } from "@/lib/utils";
 import type { DealerKpi } from "@/lib/dealer/dashboard/types";
 
@@ -49,7 +50,7 @@ export default function DealerKpiStrip({
           data={kpi}
           showSparkline={false}
           showLink={false}
-          className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm"
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
     </div>

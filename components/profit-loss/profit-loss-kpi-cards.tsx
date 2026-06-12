@@ -1,35 +1,40 @@
 "use client";
 
-import {
-  Briefcase,
-  DollarSign,
-  Package,
-  Percent,
-  ShoppingBag,
-  type LucideIcon,
-} from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { KPICard } from "@/components/ui/kpi-card";
+import type { KPICardData } from "@/components/ui/kpi-card";
 import type { PlKpiMetric } from "@/lib/profit-loss/types";
-import ProfitLossTrendBadge from "./profit-loss-trend-badge";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
-const iconMap: Record<PlKpiMetric["iconColor"], LucideIcon> = {
-  green: DollarSign,
-  red: Briefcase,
-  purple: ShoppingBag,
-  orange: Package,
-  blue: DollarSign,
-  teal: Percent,
+const iconMap: Record<PlKpiMetric["iconColor"], KPICardData["icon"]> = {
+  green: "dollar-sign",
+  red: "trending-down",
+  purple: "shopping-cart",
+  orange: "tag",
+  blue: "dollar-sign",
+  teal: "percent",
 };
 
-const iconBg: Record<PlKpiMetric["iconColor"], string> = {
-  green: "bg-emerald-500/15 text-emerald-400",
-  red: "bg-red-500/15 text-red-400",
-  purple: "bg-purple-500/15 text-purple-400",
-  orange: "bg-orange-500/15 text-orange-400",
-  blue: "bg-blue-500/15 text-blue-400",
-  teal: "bg-teal-500/15 text-teal-400",
+const colorMap: Record<PlKpiMetric["iconColor"], KPICardData["color"]> = {
+  green: "green",
+  red: "red",
+  purple: "violet",
+  orange: "orange",
+  blue: "blue",
+  teal: "teal",
 };
+
+function toKpiCardData(kpi: PlKpiMetric): KPICardData {
+  return {
+    icon: iconMap[kpi.iconColor],
+    color: colorMap[kpi.iconColor],
+    label: kpi.label,
+    value: kpi.valueFormatted,
+    delta: kpi.delta,
+    link: "",
+    sparkColor: "",
+    sparkPoints: "",
+  };
+}
 
 type Props = {
   kpis: PlKpiMetric[];
@@ -37,43 +42,16 @@ type Props = {
 
 export default function ProfitLossKPICards({ kpis }: Props) {
   return (
-    <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      {kpis.map((kpi) => {
-        const Icon = iconMap[kpi.iconColor];
-        return (
-          <Card
-            key={kpi.id}
-            className="flex h-full flex-col gap-1 rounded-sm border border-slate-700 bg-card p-3 text-slate-200 shadow-none"
-          >
-            <div className="flex items-start gap-2.5">
-              <div
-                className={cn(
-                  "grid h-10 w-10 shrink-0 place-items-center rounded-full",
-                  iconBg[kpi.iconColor],
-                )}
-              >
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-[13px] leading-tight text-slate-500">
-                  {kpi.label}
-                </div>
-                <div className="mt-0.5 text-[18px] font-bold leading-tight text-white">
-                  {kpi.valueFormatted}
-                </div>
-                <ProfitLossTrendBadge
-                  value={kpi.delta}
-                  sentiment={kpi.deltaSentiment}
-                  direction={kpi.deltaDirection}
-                />
-              </div>
-            </div>
-            <div className="mt-1 text-[10px] text-slate-500">
-              {kpi.comparisonLabel}
-            </div>
-          </Card>
-        );
-      })}
+    <section className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
+      {kpis.map((kpi) => (
+        <KPICard
+          key={kpi.id}
+          data={toKpiCardData(kpi)}
+          showSparkline={false}
+          showLink={false}
+          className={ADMIN_PANEL_SHELL_CLASS}
+        />
+      ))}
     </section>
   );
 }

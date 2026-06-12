@@ -21,6 +21,7 @@ export default function MessageBubble({ message, sender }: Props) {
         pending: message.pending,
         failed: message.failed,
         isRead: message.isRead,
+        attachments: message.attachments,
       }}
     />
   );
