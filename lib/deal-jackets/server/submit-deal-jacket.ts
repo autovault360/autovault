@@ -5,8 +5,8 @@ import { requireDealJacketAuth } from "./auth";
 import { checkVehicleHasDealJacket } from "./check-deal-jacket";
 import { createDealJacket } from "./create-deal-jacket";
 import { logDealJacketActivity } from "./activity";
-import { uploadFile } from "@/lib/vehicles/server/utils";
 import { isVehicleAvailableForDeal } from "@/lib/vehicles/map-db-status";
+import { persistDealJacketDocuments } from "./upload-deal-jacket-documents";
 import type { CreateDealJacketSaleData } from "./db-types";
 
 export type SubmitDealJacketFormData = {
@@ -97,29 +97,6 @@ async function resolveOrCreateCustomer(
   return inserted.id;
 }
 
-async function uploadDocuments(
-  files: File[],
-): Promise<{ path: string; name: string; type: string }[]> {
-  const uploaded: { path: string; name: string; type: string }[] = [];
-
-  for (const file of files) {
-    const ext = file.name.split(".").pop() ?? "pdf";
-    const storagePath = `deal-jackets/${crypto.randomUUID()}.${ext}`;
-    try {
-      await uploadFile("deal-jacket-documents", storagePath, file);
-      uploaded.push({
-        path: storagePath,
-        name: file.name,
-        type: file.type || "application/octet-stream",
-      });
-    } catch (err) {
-      console.error(`Failed to upload ${file.name}:`, err);
-    }
-  }
-
-  return uploaded;
-}
-
 export async function submitDealJacket(
   formData: SubmitDealJacketFormData,
   files: File[] = [],
@@ -207,21 +184,31 @@ export async function submitDealJacket(
     notes: formData.notes || null,
   };
 
-  const uploadedDocs = await uploadDocuments(files);
-
   const result = await createDealJacket({
     dealershipId,
     createdBy: userId,
     sale: saleData,
-    documents: uploadedDocs.map((d) => ({
-      storagePath: d.path,
-      fileType: d.type,
-      documentName: d.name,
-    })),
+    documents: [],
   });
 
   if (!result.success) {
     return { success: false, error: result.error };
+  }
+
+  if (files.length > 0) {
+    const uploadedDocs = await persistDealJacketDocuments(supabase, {
+      files,
+      dealershipId,
+      userId,
+      dealJacketId: result.dealJacket.id,
+    });
+
+    if (uploadedDocs.length === 0) {
+      return {
+        success: false,
+        error: "Deal jacket was created but document upload failed. Please edit the jacket and re-upload documents.",
+      };
+    }
   }
 
   await supabase

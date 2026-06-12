@@ -3,6 +3,7 @@
 import { Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { formatCommissionPrice } from "@/lib/sales-rep/commissions/format";
 import type { IVehicleAlertKpiSummary } from "@/lib/sales-rep/vehicle-alerts/types";
 type Props = {
@@ -18,7 +19,7 @@ export default function VehicleAlertsKpiStrip({
 }: Props) {
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
@@ -63,7 +64,7 @@ export default function VehicleAlertsKpiStrip({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       {cards.map((card) => (
         <KPICard
           key={card.label}
@@ -71,7 +72,7 @@ export default function VehicleAlertsKpiStrip({
           showSparkline={false}
           showLink={false}
           valueClassName={card.valueClassName}
-          className="border-slate-700/80 bg-card backdrop-blur-sm"
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
 

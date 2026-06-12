@@ -93,7 +93,7 @@ export default function SalesRepsPageContent({
     <div className="relative">
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div>
-          <h1 className="text-2xl font-bold text-white">Sales Reps</h1>
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">SALES REPS</h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
             Track performance, manage goals, and view individual rep metrics.
           </p>

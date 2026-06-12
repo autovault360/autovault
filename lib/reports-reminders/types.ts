@@ -78,10 +78,14 @@ export type TopReminderItem = {
 export type StickyNote = {
   id: string;
   color: string;
-  title?: string;
   text: string;
   date: string;
   author: string;
+  is_pinned?: boolean;
+  dashboard_path?: string;
+  created_at?: string;
+  updated_at?: string;
+  user_id?: string;
 };
 
 export type ReportsAiSuggestionIcon =

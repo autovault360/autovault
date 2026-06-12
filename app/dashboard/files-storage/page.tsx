@@ -5,5 +5,5 @@ import { DEFAULT_FILES_STORAGE_FILTERS } from "@/lib/files-storage/types";
 export default async function FilesStoragePage() {
   const initialReport = await getFilesStorageReport(DEFAULT_FILES_STORAGE_FILTERS);
 
-  return <FilesStoragePageContent initialReport={initialReport} />;
+  return <FilesStoragePageContent initialReport={initialReport} showAdminHeader={false} />;
 }

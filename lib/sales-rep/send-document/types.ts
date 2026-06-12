@@ -7,8 +7,22 @@ export type SendDocumentFile = {
   name: string;
   size: number;
   type: string;
+  fileType?: string;
   file?: File;
+  fileId?: string;
   previewUrl?: string;
+  sourceEntity?: string | null;
+};
+
+export type DocumentLibraryItem = {
+  id: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  fileType: string;
+  sourceEntity: string | null;
+  uploadedAt: string;
+  previewUrl: string | null;
 };
 
 export type SalesRepOption = {

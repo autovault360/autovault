@@ -41,6 +41,16 @@ export type ChatMessage = {
   isOwn: boolean;
   pending?: boolean;
   failed?: boolean;
+  attachments?: MessageAttachment[];
+};
+
+export type MessageAttachment = {
+  fileId: string;
+  name: string;
+  mimeType: string;
+  size: number;
+  url: string;
+  sendId?: string;
 };
 
 export type ConversationDetail = {

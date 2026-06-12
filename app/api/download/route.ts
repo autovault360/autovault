@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { markSendFileDownloaded } from "@/lib/sales-rep/send-document/server/list-send-history";
 
 export async function POST(request: NextRequest) {
   try {
-    const { url, fileName } = await request.json();
+    const { url, fileName, sendId, fileId } = await request.json();
 
     if (!url || typeof url !== "string") {
       return NextResponse.json({ error: "Missing or invalid 'url'" }, { status: 400 });
@@ -46,6 +47,10 @@ export async function POST(request: NextRequest) {
     const contentType =
       response.headers.get("content-type") || "application/octet-stream";
     const safeName = fileName || "download";
+
+    if (sendId && fileId) {
+      await markSendFileDownloaded(sendId, fileId);
+    }
 
     return new NextResponse(arrayBuffer, {
       status: 200,

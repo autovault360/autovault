@@ -2,9 +2,12 @@
 
 import { FileClock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 
-export default function SendDocumentPageHeader() {
+type Props = {
+  onOpenHistory: () => void;
+};
+
+export default function SendDocumentPageHeader({ onOpenHistory }: Props) {
   return (
     <section className="mb-4 border-b border-slate-800/60 pb-4">
       <nav
@@ -32,7 +35,7 @@ export default function SendDocumentPageHeader() {
           size="sm"
           theme="dark"
           className="h-9 shrink-0 border-slate-700 bg-slate-900/60 text-[11.5px] text-slate-200 hover:bg-slate-800"
-          onClick={() => toast.info("Send history will be available soon.")}
+          onClick={onOpenHistory}
         >
           <FileClock className="h-3.5 w-3.5" />
           Send History

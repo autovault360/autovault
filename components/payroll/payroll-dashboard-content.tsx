@@ -105,7 +105,7 @@ export default function PayrollDashboardContent({
 
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div>
-          <h1 className="text-2xl font-bold text-white">Payroll Dashboard</h1>
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">PAYROLL DASHBOARD</h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
             Manage payroll runs, commissions, and CPA synchronization
           </p>

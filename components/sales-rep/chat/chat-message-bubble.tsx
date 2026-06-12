@@ -4,7 +4,8 @@ import { Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/sales-rep/messages/calculations";
-import type { MessageParticipant } from "@/lib/sales-rep/messages/types";
+import type { MessageAttachment, MessageParticipant } from "@/lib/sales-rep/messages/types";
+import MessageAttachmentList from "@/components/sales-rep/messages/message-attachment-list";
 
 export type ChatBubbleMessage = {
   id: string;
@@ -15,6 +16,7 @@ export type ChatBubbleMessage = {
   failed?: boolean;
   isRead?: boolean;
   seenByCount?: number;
+  attachments?: MessageAttachment[];
 };
 
 type Props = {
@@ -59,7 +61,12 @@ export default function ChatMessageBubble({ message, sender, mode = "direct" }: 
           </div>
 
           <div className="flex justify-end">
-            <div className={bubbleClassName}>{message.messageText}</div>
+            <div className={bubbleClassName}>
+              {message.messageText}
+              {message.attachments && message.attachments.length > 0 && (
+                <MessageAttachmentList attachments={message.attachments} />
+              )}
+            </div>
           </div>
 
           {statusLabel && (
@@ -99,7 +106,12 @@ export default function ChatMessageBubble({ message, sender, mode = "direct" }: 
           <span className="text-[11px] text-slate-500">{time}</span>
         </div>
 
-        <div className={bubbleClassName}>{message.messageText}</div>
+        <div className={bubbleClassName}>
+          {message.messageText}
+          {message.attachments && message.attachments.length > 0 && (
+            <MessageAttachmentList attachments={message.attachments} />
+          )}
+        </div>
       </div>
     </div>
   );

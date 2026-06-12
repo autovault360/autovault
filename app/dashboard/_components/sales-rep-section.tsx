@@ -16,6 +16,7 @@ import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
 import { formatCurrency } from "@/lib/dealer/dashboard/calculations";
 import { getInitials } from "@/lib/calendar/format-utils";
 import { cn } from "@/lib/utils";
+import SalesRepRankCell from "@/components/sales-reps/sales-rep-rank-cell";
 import type { AdminSalesRepTableRow } from "@/lib/dashboard/admin/types";
 import DashboardExpandableShell from "./dashboard-expandable-shell";
 import { ADMIN_PANEL_INNER_CLASS, ADMIN_PANEL_SHELL_CLASS } from "./admin-panel-styles";
@@ -81,7 +82,7 @@ export default function SalesRepSection({
           <table className="w-full min-w-[640px] text-[11px]">
             <thead>
               <tr className="border-b border-slate-800 bg-card text-[9.5px] font-semibold uppercase tracking-[0.08em] text-slate-500">
-                <th className="px-2.5 py-2.5 text-left">#</th>
+                <th className="px-2.5 py-2.5 text-left">Rank</th>
                 <th className="px-2.5 py-2.5 text-left">Sales Rep</th>
                 <th className="px-2.5 py-2.5 text-right">Cars Sold</th>
                 <th className="px-2.5 py-2.5 text-right">Gross Profit</th>
@@ -96,7 +97,9 @@ export default function SalesRepSection({
                   key={row.id}
                   className="border-b border-slate-800/50 transition-colors last:border-0 hover:bg-slate-800/25"
                 >
-                  <td className="px-2.5 py-2.5 text-slate-500">{row.rank}</td>
+                  <td className="px-2.5 py-2.5">
+                    <SalesRepRankCell rank={row.rank} />
+                  </td>
                   <td className="px-2.5 py-2.5">
                     <div className="flex items-center gap-2">
                       <Avatar className="h-7 w-7">

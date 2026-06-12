@@ -260,28 +260,28 @@ export const REPORTS_REMINDERS_MOCK: ReportsRemindersMock = {
   stickyNotes: [
     {
       id: "n-1",
-      color: "#fef08a",
+      color: "#FFD75F",
       text: "Follow up with CPA on Q1 filings before month end.",
       date: "May 18, 2025",
       author: "John Dealer",
     },
     {
       id: "n-2",
-      color: "#bbf7d0",
+      color: "#7EE081",
       text: "Review floor plan interest on 60+ day units.",
       date: "May 17, 2025",
       author: "Sarah Williams",
     },
     {
       id: "n-3",
-      color: "#bfdbfe",
+      color: "#6EC1FF",
       text: "Schedule marketing vendor contract review.",
       date: "May 16, 2025",
       author: "Mike Thompson",
     },
     {
       id: "n-4",
-      color: "#fbcfe8",
+      color: "#FF9ECF",
       text: "Confirm CDTFA payment posted for April filing.",
       date: "May 15, 2025",
       author: "John Dealer",

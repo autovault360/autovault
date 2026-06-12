@@ -1,4 +1,5 @@
 import { createServiceClient } from "@/lib/supabase/server";
+import { syncSendReadStatusFromMessage } from "@/lib/sales-rep/send-document/server/list-send-history";
 import { requireSalesRepMessagesAccess } from "./auth";
 import { assertConversationParticipant } from "./service-ops";
 
@@ -26,6 +27,10 @@ export async function markConversationRead(
 
   if (error) {
     return { error: error.message };
+  }
+
+  for (const row of updatedRows ?? []) {
+    await syncSendReadStatusFromMessage(row.id);
   }
 
   return { success: true, updatedCount: updatedRows?.length ?? 0 };

@@ -8,7 +8,6 @@ import {
   Calendar,
   FolderOpen,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import {
   InputGroup,
   InputGroupInput,
@@ -45,18 +44,6 @@ type Props = {
   jacketBasePath?: string;
 };
 
-const TABLE_WRAPPER_CLASS =
-  "[&>div]:overflow-hidden [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]:bg-[#0a101c]/40 " +
-  "[&_table]:min-w-[1280px] [&_table]:w-full [&_table]:text-[11.5px] " +
-  "[&_thead]:bg-[#0c1424] [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
-  "[&_th]:px-3 [&_th]:py-3 [&_th]:text-[10px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-slate-500 " +
-  "[&_td]:px-3 [&_td]:py-4 [&_td]:align-middle " +
-  "[&_tbody_tr]:border-b [&_tbody_tr]:border-slate-800/50 [&_tbody_tr]:transition-colors [&_tbody_tr:last-child]:border-0 " +
-  "[&_tbody_tr:hover]:bg-slate-800/25 " +
-  "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800 [&>div>div:last-child]:bg-[#0a101c]/30";
-
-const PAGE_SIZE_OPTIONS = [10, 25, 50];
-
 export default function DealJacketsInventory({
   dealJackets,
   salesRepFilterOptions,
@@ -66,8 +53,6 @@ export default function DealJacketsInventory({
   const [search, setSearch] = useState("");
   const [salesRepFilter, setSalesRepFilter] = useState("all");
   const [paymentFilter, setPaymentFilter] = useState("all");
-  const [pageSize, setPageSize] = useState(10);
-
   const tabCounts = useMemo(
     () => computeDealJacketTabCounts(dealJackets),
     [dealJackets],
@@ -215,120 +200,90 @@ export default function DealJacketsInventory({
   ];
 
   return (
-    <Card className="overflow-hidden rounded-sm border border-slate-700 bg-transparent shadow-none">
-      <div className="space-y-3.5 p-3.5">
+    <div className="py-3.5 text-slate-200 shadow-none">
+      <div className="mb-3.5">
         <DealJacketFilterTabs
           activeTab={activeTab}
           counts={tabCounts}
           onChange={setActiveTab}
         />
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <InputGroup theme="dark" className="min-w-[240px] flex-1 sm:max-w-xl">
+      <div className="mb-3.5 flex flex-col gap-2.5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="relative w-full xl:max-w-sm">
+          <InputGroup theme="dark">
             <InputGroupAddon>
-              <Search className="h-3.5 w-3.5 text-slate-500" />
+              <Search className="h-3.5 w-3.5" />
             </InputGroupAddon>
             <InputGroupInput
               placeholder="Search by VIN, Stock #, Vehicle, or Customer..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="text-[12px] text-slate-200 placeholder:text-slate-500"
+              theme="dark"
             />
           </InputGroup>
+        </div>
 
-          <FilterSelect
-            value={salesRepFilter}
-            onChange={setSalesRepFilter}
-            placeholder="All Sales Reps"
-            options={salesRepFilterOptions.map((o) => ({
-              value: o.id,
-              label: o.label,
-            }))}
-            className="w-[150px]"
-          />
+        <div className="flex flex-wrap items-center gap-2 justify-between w-full">
+          <div className="flex flex-wrap items-center gap-2">
+            <FilterSelect
+              value={salesRepFilter}
+              onChange={setSalesRepFilter}
+              placeholder="All Sales Reps"
+              options={salesRepFilterOptions.map((o) => ({
+                value: o.id,
+                label: o.label,
+              }))}
+              className="w-[150px]"
+            />
 
-          <FilterSelect
-            value={paymentFilter}
-            onChange={setPaymentFilter}
-            placeholder="All Payment Methods"
-            options={[
-              { value: "all", label: "All Payment Methods" },
-              ...PAYMENT_METHODS.map((m) => ({
-                value: m,
-                label: formatPaymentMethod(m),
-              })),
-            ]}
-            className="w-[170px]"
-          />
+            <FilterSelect
+              value={paymentFilter}
+              onChange={setPaymentFilter}
+              placeholder="All Payment Methods"
+              options={[
+                { value: "all", label: "All Payment Methods" },
+                ...PAYMENT_METHODS.map((m) => ({
+                  value: m,
+                  label: formatPaymentMethod(m),
+                })),
+              ]}
+              className="w-[170px]"
+            />
 
-          <button
-            type="button"
-            className="flex h-9 items-center gap-1.5 rounded-md border border-slate-800 bg-[#0e1626] px-3 text-[11.5px] text-slate-300"
-          >
-            <Calendar className="h-3.5 w-3.5 text-slate-400" />
-            May 1, 2025 ... May 31, 2025
-          </button>
+            <button
+              type="button"
+              className="flex h-9 items-center gap-1.5 rounded-md border border-slate-800 bg-[#0e1626] px-3 text-[11.5px] text-slate-300"
+            >
+              <Calendar className="h-3.5 w-3.5 text-slate-400" />
+              May 1, 2025 ... May 31, 2025
+            </button>
 
-          <button
-            type="button"
-            className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 text-[11.5px] text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            Filters
-          </button>
+            <button
+              type="button"
+              className="flex h-9 items-center gap-1.5 rounded-md border border-slate-700 px-2.5 text-[11.5px] text-slate-400 transition hover:border-slate-600 hover:text-slate-200"
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              Filters
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className={`px-3.5 pb-3.5 ${TABLE_WRAPPER_CLASS}`}>
-        {filtered.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <>
-            <DataTable
-              columns={columns}
-              data={filtered}
-              rowKey="id"
-              pageSize={pageSize}
-              addPagination
-              emptyMessage="No deal jackets match your filters."
-              paginationSummaryLabel="deal jackets"
-            />
-            <div className="mt-2 flex justify-end border-t border-slate-800/80 px-1 pt-3">
-              <div className="flex items-center gap-2 text-[13px] text-slate-500">
-                <span>Rows per page</span>
-                <Select
-                  value={String(pageSize)}
-                  onValueChange={(v) => setPageSize(Number(v))}
-                >
-                  <SelectTrigger
-                    theme="dark"
-                    className="h-8 w-[72px] text-[11px]"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent theme="dark">
-                    <SelectGroup>
-                      <SelectLabel className="text-[10px] uppercase tracking-wider text-slate-500">
-                        Rows per page
-                      </SelectLabel>
-                      {PAGE_SIZE_OPTIONS.map((size) => (
-                        <SelectItem
-                          key={size}
-                          value={String(size)}
-                          className="text-[11px]"
-                        >
-                          {size}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    </Card>
+      {filtered.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <DataTable
+          columns={columns}
+          data={filtered}
+          rowKey="id"
+          pageSize={10}
+          addPagination
+          emptyMessage="No deal jackets match your filters."
+          paginationSummaryLabel="deal jackets"
+        />
+      )}
+    </div>
   );
 }
 

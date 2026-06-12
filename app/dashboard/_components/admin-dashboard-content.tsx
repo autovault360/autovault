@@ -1,7 +1,5 @@
-"use client";
-
-import StickyNotesCard from "@/components/reports-reminders/sticky-notes-card";
 import type { AdminDashboardContentProps } from "@/lib/dashboard/admin/types";
+import StickyNotesSection from "./sticky-notes-section";
 import AnalyticsRow from "./analytics-row";
 import CalendarSection from "./calendar-section";
 import GrossProfitSection from "./gross-profit-section";
@@ -22,6 +20,7 @@ export default function AdminDashboardContent(props: AdminDashboardContentProps)
       </section>
 
       <KPISection kpis={props.kpiCards} />
+      <StickyNotesSection notes={props.stickyNotes} />
       <CalendarSection calendarReport={props.calendarReport} />
       <AnalyticsRow
         vehicles={props.inventoryVehicles}
@@ -35,24 +34,15 @@ export default function AdminDashboardContent(props: AdminDashboardContentProps)
         topSalesRep={props.topSalesRep}
         todayEvents={props.todayEvents}
       />
-      <div className="flex">
-        <div className="w-full">
-          <SalesRepSection
-            periodLabel={props.periodLabel}
-            kpiCards={props.salesRepKpis}
-            tableRows={props.salesRepTableRows}
-          />
-          <GrossProfitSection
-            periodLabel={props.grossProfitPeriodLabel}
-            rows={props.grossProfitRows}
-          />
-        </div>
-        <div className="ml-3.5 max-w-[360px] relative">
-          <div className="sticky top-0 z-10">
-            <StickyNotesCard notes={props.stickyNotes} />
-          </div>
-        </div>
-      </div>
+      <SalesRepSection
+        periodLabel={props.periodLabel}
+        kpiCards={props.salesRepKpis}
+        tableRows={props.salesRepTableRows}
+      />
+      <GrossProfitSection
+        periodLabel={props.grossProfitPeriodLabel}
+        rows={props.grossProfitRows}
+      />
     </div>
   );
 }

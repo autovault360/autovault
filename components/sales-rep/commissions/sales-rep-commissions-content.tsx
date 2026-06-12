@@ -25,6 +25,7 @@ import type {
 } from "@/lib/sales-rep/commissions/types";
 import { COMMISSION_STATUS_LABELS } from "@/lib/sales-rep/commissions/types";
 import CommissionStatusBadge from "./commission-status-badge";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
 const SPARK_POINTS =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
@@ -232,7 +233,7 @@ export default function SalesRepCommissionsContent() {
         </p>
       </section>
 
-      <div className="mb-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {loading
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
@@ -246,7 +247,7 @@ export default function SalesRepCommissionsContent() {
                 data={kpi}
                 showSparkline={false}
                 showLink={false}
-                className="border-slate-700/80 bg-card backdrop-blur-sm"
+                className={ADMIN_PANEL_SHELL_CLASS}
               />
             ))}
       </div>

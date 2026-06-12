@@ -1,5 +1,6 @@
 import { KPICard, type KPICardData, type KPIPeriodMetric } from "@/components/ui/kpi-card";
 import type { SalesRepProfileKpiMetric } from "@/lib/sales-reps/profile-types";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
 function toKpiCardData(metric: SalesRepProfileKpiMetric): KPICardData {
   const periodMetrics: KPIPeriodMetric[] = [];
@@ -38,6 +39,7 @@ export default function SalesRepProfileKpiRow({
           layout="period"
           showSparkline={false}
           showLink={false}
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
     </section>

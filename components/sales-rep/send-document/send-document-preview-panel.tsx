@@ -1,46 +1,69 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { CheckCircle2, FileText, FileStack } from "lucide-react";
-import { cn } from "@/lib/utils";
+import FileTypeIcon from "@/components/files-storage/file-type-icon";
+import { toRecentUploadFileType } from "@/lib/deal-jackets/map-deal-jacket-file";
+import {
+  isImageSendDocumentFile,
+  isPdfSendDocumentFile,
+} from "@/lib/sales-rep/send-document/file-type-helpers";
 import type { SendDocumentFile } from "@/lib/sales-rep/send-document/types";
 import { formatFileSize } from "@/lib/sales-rep/send-document/validation";
+import SendDocumentPdfPreview from "./send-document-pdf-preview";
 
 type Props = {
   files: SendDocumentFile[];
 };
 
 function DocumentThumbnail({ file }: { file: SendDocumentFile }) {
-  const isImage =
-    file.type.startsWith("image/") ||
-    /\.(jpg|jpeg|png)$/i.test(file.name);
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [useNativeImg, setUseNativeImg] = useState(false);
+  const isImage = isImageSendDocumentFile(file);
+  const isPdf = isPdfSendDocumentFile(file);
+  const previewUrl = file.previewUrl;
+  const showImage = isImage && previewUrl && !previewFailed;
+  const showPdf = isPdf && previewUrl && !previewFailed && !isImage;
 
   return (
     <div className="flex min-w-0 flex-col items-center">
       <div className="relative w-full">
-        <div
-          className={cn(
-            "relative aspect-[3/4] w-full overflow-hidden rounded-lg border border-slate-700 bg-slate-900/60",
-            !isImage && "flex items-center justify-center",
-          )}
-        >
-          {isImage && file.previewUrl ? (
+        <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border border-slate-700 bg-white">
+          {showImage && !useNativeImg ? (
             <Image
-              src={file.previewUrl}
+              src={previewUrl}
               alt={file.name}
               fill
               unoptimized
-              className="object-cover"
+              sizes="(max-width: 1280px) 33vw, 200px"
+              className="object-contain"
+              onError={() => setUseNativeImg(true)}
+            />
+          ) : showImage && useNativeImg ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={previewUrl}
+              alt={file.name}
+              className="absolute inset-0 h-full w-full object-contain"
+              onError={() => setPreviewFailed(true)}
+            />
+          ) : showPdf ? (
+            <SendDocumentPdfPreview
+              url={previewUrl}
+              className="absolute inset-0"
+              onError={() => setPreviewFailed(true)}
             />
           ) : (
-            <div className="flex flex-col items-center gap-1.5 p-2">
-              <FileText className="h-8 w-8 text-red-400/80" />
-              <span className="text-[8px] font-bold uppercase tracking-wider text-slate-500">
-                PDF
-              </span>
+            <div className="flex h-full w-full items-center justify-center bg-white p-3">
+              <FileTypeIcon
+                fileType={toRecentUploadFileType(file.type, file.name)}
+                className="h-10 w-10"
+              />
             </div>
           )}
-          <span className="absolute bottom-1.5 right-1.5 grid h-5 w-5 place-items-center rounded-full bg-emerald-500 text-white shadow">
+
+          <span className="absolute bottom-1.5 right-1.5 z-10 grid h-5 w-5 place-items-center rounded-full bg-emerald-500 text-white shadow">
             <CheckCircle2 className="h-3 w-3" />
           </span>
         </div>

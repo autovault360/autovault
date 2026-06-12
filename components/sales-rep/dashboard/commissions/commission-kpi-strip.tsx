@@ -1,6 +1,7 @@
 "use client";
 
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { formatCommissionCurrency } from "@/lib/sales-rep/commissions/format";
 import type { ISalesRepCommissionSummary } from "@/lib/sales-rep/commissions/types";
 
@@ -15,7 +16,7 @@ type Props = {
 export default function CommissionKpiStrip({ summary, loading }: Props) {
   if (loading) {
     return (
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
           <div
             key={i}
@@ -79,7 +80,7 @@ export default function CommissionKpiStrip({ summary, loading }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => (
         <KPICard
           key={card.label}
@@ -87,7 +88,7 @@ export default function CommissionKpiStrip({ summary, loading }: Props) {
           showSparkline={false}
           showLink={false}
           valueClassName={card.valueClassName}
-          className="border-slate-700/80 bg-card backdrop-blur-sm"
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
     </div>

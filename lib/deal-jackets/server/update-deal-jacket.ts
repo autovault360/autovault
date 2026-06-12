@@ -8,7 +8,7 @@ import {
   sumVehicleExpenses,
 } from "./calculate-financials";
 import { logDealJacketActivity } from "./activity";
-import { uploadFile } from "@/lib/vehicles/server/utils";
+import { persistDealJacketDocuments } from "./upload-deal-jacket-documents";
 import { updateCommissionStatus } from "@/lib/sales-rep/commissions/server/update-commission-status";
 import type { SubmitDealJacketFormData } from "./submit-deal-jacket";
 
@@ -18,25 +18,17 @@ export type UpdateDealJacketResult =
 
 async function uploadDocuments(
   files: File[],
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  dealershipId: string,
+  userId: string,
+  dealJacketId: string,
 ): Promise<{ path: string; name: string; type: string }[]> {
-  const uploaded: { path: string; name: string; type: string }[] = [];
-
-  for (const file of files) {
-    const ext = file.name.split(".").pop() ?? "pdf";
-    const storagePath = `deal-jackets/${crypto.randomUUID()}.${ext}`;
-    try {
-      await uploadFile("deal-jacket-documents", storagePath, file);
-      uploaded.push({
-        path: storagePath,
-        name: file.name,
-        type: file.type || "application/octet-stream",
-      });
-    } catch (err) {
-      console.error(`Failed to upload ${file.name}:`, err);
-    }
-  }
-
-  return uploaded;
+  return persistDealJacketDocuments(supabase, {
+    files,
+    dealershipId,
+    userId,
+    dealJacketId,
+  });
 }
 
 export async function updateDealJacket(
@@ -155,7 +147,10 @@ export async function updateDealJacket(
     documentation: formData.documentationFees || 0,
   });
 
-  const uploadedDocs = await uploadDocuments(files);
+  const uploadedDocs =
+    files.length > 0
+      ? await uploadDocuments(files, supabase, dealershipId, userId, dealJacketId)
+      : [];
 
   const { error: updateError } = await supabase
     .from("deal_jackets")
@@ -193,17 +188,11 @@ export async function updateDealJacket(
     return { success: false, error: "Failed to update deal jacket. Please try again." };
   }
 
-  if (uploadedDocs.length > 0) {
-    const docRows = uploadedDocs.map((d) => ({
-      dealership_id: dealershipId,
-      deal_jacket_id: dealJacketId,
-      file_url: d.path,
-      file_type: d.type,
-      document_name: d.name,
-      created_by: userId,
-    }));
-
-    await supabase.from("deal_jacket_documents").insert(docRows);
+  if (files.length > 0 && uploadedDocs.length === 0) {
+    return {
+      success: false,
+      error: "Failed to upload new documents. Please try again.",
+    };
   }
 
   await logDealJacketActivity({

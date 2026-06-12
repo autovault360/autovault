@@ -7,6 +7,7 @@ import type {
   WholesaleVehicle,
 } from "@/lib/dealer/dashboard/types";
 import type { SalesRepListItem } from "@/lib/sales-reps/types";
+import { buildSalesRepRankMap } from "@/lib/sales-reps/rank-sales-reps";
 import type { DashboardData } from "@/services/report.service";
 import type { RecentDeal } from "@/services/deal-jacket.service";
 import type { JacketRowExtended } from "@/services/deal-jacket.service";
@@ -254,9 +255,15 @@ export function buildSalesRepTableRows(
   salesReps: SalesRepListItem[],
   jackets: JacketRowExtended[],
 ): AdminSalesRepTableRow[] {
-  const sorted = [...salesReps].sort((a, b) => b.grossProfit - a.grossProfit);
+  const rankByRepId = buildSalesRepRankMap(salesReps);
 
-  return sorted.map((rep, i) => {
+  return [...salesReps]
+    .sort(
+      (a, b) =>
+        (rankByRepId.get(a.id) ?? Number.MAX_SAFE_INTEGER) -
+        (rankByRepId.get(b.id) ?? Number.MAX_SAFE_INTEGER),
+    )
+    .map((rep) => {
     const repJackets = jackets.filter((j) => j.sales_rep_id === rep.id);
     const commissionEarned = repJackets.reduce(
       (s, j) => s + Number(j.commission_amount ?? 0),
@@ -270,7 +277,7 @@ export function buildSalesRepTableRows(
     );
 
     return {
-      rank: i + 1,
+      rank: rankByRepId.get(rep.id) ?? 0,
       id: rep.id,
       name: rep.fullName,
       imageUrl: rep.imageUrl,

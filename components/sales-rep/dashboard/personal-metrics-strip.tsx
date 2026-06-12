@@ -1,6 +1,7 @@
 "use client";
 
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { formatCurrency } from "@/lib/sales-reps/types";
 import type { ISalesRepMetrics } from "@/lib/sales-rep/dashboard/types";
 
@@ -55,14 +56,14 @@ export default function PersonalMetricsStrip({ metrics }: Props) {
   ];
 
   return (
-    <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => (
         <KPICard
           key={card.label}
           data={card}
           showSparkline={false}
           showLink={false}
-          className="shadow-[0_0_0_1px_rgba(148,163,184,0.08)]"
+          className={ADMIN_PANEL_SHELL_CLASS}
         />
       ))}
     </section>

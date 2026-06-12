@@ -1,6 +1,7 @@
 "use client";
 
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import type { CpaMetricTrend, CpaMonthlyFinancialsData } from "@/lib/cpa/types";
 import { formatMetricTrend, formatMoney } from "./utils";
 
@@ -54,7 +55,7 @@ export default function CpaMonthlyMetricsStrip({
 }) {
   if (loading) {
     return (
-      <div className="mb-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4 xl:grid-cols-8">
+      <div className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
@@ -66,7 +67,7 @@ export default function CpaMonthlyMetricsStrip({
   }
 
   return (
-    <div className="mb-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4 xl:grid-cols-8">
+    <div className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
       {METRICS.map((def) => {
         const kpiData = toKpiCardData(data.metrics[def.key], def, data.prevMonthLabel);
         return (
@@ -76,6 +77,7 @@ export default function CpaMonthlyMetricsStrip({
             showLink={false}
             showSparkline={false}
             deltaColor={formatMetricTrend(data.metrics[def.key], data.prevMonthLabel, def.invertColor).positive ? "green" : "red"}
+            className={ADMIN_PANEL_SHELL_CLASS}
           />
         );
       })}

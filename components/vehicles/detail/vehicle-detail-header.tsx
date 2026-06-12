@@ -39,7 +39,7 @@ export default function VehicleDetailHeader({
         <div className="flex flex-col md:flex-row items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-xl font-bold tracking-[0.12em] text-white">
                 {vehicle.displayTitle}
               </h1>
               <span

@@ -66,6 +66,14 @@ export type PaymentMethod = "cash" | "finance" | "check" | "wire" | "credit_card
 
 export type DealJacketTab = "all" | DealJacketStatus;
 
+export type DealJacketStats = {
+  totalJackets: number;
+  totalSaleValue: number;
+  totalProfit: number;
+  pendingReview: number;
+  approved: number;
+};
+
 export type DealJacketListItem = {
   id: string;
   vehicleId: string;

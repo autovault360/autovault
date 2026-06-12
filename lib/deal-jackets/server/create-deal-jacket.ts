@@ -8,6 +8,10 @@ import { logDealJacketActivity } from "./activity";
 import { createCommission } from "@/lib/sales-rep/commissions/server/create-commission";
 import { isVehicleAvailableForDeal } from "@/lib/vehicles/map-db-status";
 import { markVehiclePendingDeal } from "@/lib/vehicles/server/sync-vehicle-deal-status";
+import {
+  registerDealJacketFileInRegistry,
+  inferDocumentBucket,
+} from "./upload-deal-jacket-documents";
 import type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,
@@ -246,6 +250,18 @@ export async function createDealJacket(
 
     if (docError) {
       console.error("deal_jacket_documents insert failed:", docError.message);
+    } else {
+      for (const doc of documents) {
+        await registerDealJacketFileInRegistry(supabase, {
+          dealershipId,
+          dealJacketId: inserted.id,
+          uploadedBy: createdBy,
+          storagePath: doc.storagePath,
+          bucket: inferDocumentBucket(doc.storagePath),
+          originalName: doc.documentName,
+          mimeType: doc.fileType,
+        });
+      }
     }
   }
 

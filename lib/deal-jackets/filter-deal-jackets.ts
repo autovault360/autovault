@@ -1,9 +1,22 @@
 import type {
   DealJacketListItem,
+  DealJacketStats,
   DealJacketTab,
   DealJacketTabCounts,
 } from "./types";
 import { DEAL_JACKET_STATUSES } from "./types";
+
+export function computeDealJacketStats(
+  items: DealJacketListItem[],
+): DealJacketStats {
+  return {
+    totalJackets: items.length,
+    totalSaleValue: items.reduce((sum, i) => sum + i.salePrice, 0),
+    totalProfit: items.reduce((sum, i) => sum + i.totalProfit, 0),
+    pendingReview: items.filter((i) => i.workflowStatus === "pending_review").length,
+    approved: items.filter((i) => i.workflowStatus === "approved").length,
+  };
+}
 
 export function computeDealJacketTabCounts(
   items: DealJacketListItem[],

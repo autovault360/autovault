@@ -974,13 +974,24 @@ async function main() {
       { bucket: "vehicle-documents", storagePath: "seed/buyers_order_1008.pdf", originalName: "buyers_order_accord.pdf", fileSize: 156000, mimeType: "application/pdf", fileType: "pdf", sourceEntity: "deal", sourceEntityId: ids.dealIds[0] },
     ];
 
+    const { placeholderForMimeType } = await import("./lib/seed-storage-blobs");
+
     for (const f of sampleFiles) {
+      const placeholder = placeholderForMimeType(f.mimeType);
+      const { error: uploadError } = await supabase.storage
+        .from(f.bucket)
+        .upload(f.storagePath, placeholder, {
+          upsert: true,
+          contentType: f.mimeType,
+        });
+      if (uploadError) log("??", `Storage upload ${f.originalName}: ${uploadError.message}`);
+
       const { error } = await supabase.from("files").insert({
         dealership_id: dealershipId,
         bucket: f.bucket,
         storage_path: f.storagePath,
         original_name: f.originalName,
-        file_size: f.fileSize,
+        file_size: placeholder.byteLength,
         mime_type: f.mimeType,
         file_type: f.fileType,
         source_entity: f.sourceEntity,
@@ -989,7 +1000,7 @@ async function main() {
       });
       if (error) log("??", `Files: ${error.message}`);
     }
-    log("?", `${sampleFiles.length} file records`);
+    log("?", `${sampleFiles.length} file records (+ storage uploads)`);
 
     // ?? Summary ??
     console.log("\n?????????????????????????????????????????????");

@@ -1,28 +1,42 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CloudUpload, FileText, X } from "lucide-react";
+import { ChevronDown, CloudUpload, FileText, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SEND_DOCUMENT_ALLOWED_EXTENSIONS } from "@/lib/sales-rep/send-document/constants";
-import type { SendDocumentFile } from "@/lib/sales-rep/send-document/types";
+import type {
+  DocumentLibraryItem,
+  SendDocumentFile,
+} from "@/lib/sales-rep/send-document/types";
 import { formatFileSize } from "@/lib/sales-rep/send-document/validation";
+import { getSourceLabel } from "@/lib/sales-rep/send-document/source-labels";
 import SendDocumentSectionCard from "./send-document-section-card";
 
 type Props = {
   files: SendDocumentFile[];
+  libraryFiles?: DocumentLibraryItem[];
+  libraryLoading?: boolean;
   onAddFiles: (files: FileList | File[]) => void;
   onRemoveFile: (id: string) => void;
+  onToggleLibraryItem?: (item: DocumentLibraryItem) => void;
 };
 
 export default function SendDocumentUploadSection({
   files,
+  libraryFiles = [],
+  libraryLoading = false,
   onAddFiles,
   onRemoveFile,
+  onToggleLibraryItem,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(false);
 
   const accept = SEND_DOCUMENT_ALLOWED_EXTENSIONS.join(",");
+  const selectedLibraryIds = new Set(
+    files.map((file) => file.fileId).filter((id): id is string => Boolean(id)),
+  );
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -72,6 +86,79 @@ export default function SendDocumentUploadSection({
           }}
         />
       </div>
+
+      {onToggleLibraryItem && (
+        <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/20">
+          <button
+            type="button"
+            onClick={() => setBrowseOpen((open) => !open)}
+            className="flex w-full items-center justify-between px-3 py-2.5 text-left transition hover:bg-slate-800/30"
+          >
+            <span className="text-[11px] font-semibold tracking-wide text-slate-400">
+              Browse stored documents
+            </span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 text-slate-500 transition",
+                browseOpen && "rotate-180",
+              )}
+            />
+          </button>
+
+          {browseOpen && (
+            <div className="border-t border-slate-800 px-3 pb-3">
+              {libraryLoading ? (
+                <div className="flex items-center justify-center gap-2 py-6 text-[11px] text-slate-500">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading documents...
+                </div>
+              ) : libraryFiles.length === 0 ? (
+                <p className="py-6 text-center text-[11px] text-slate-500">
+                  No stored documents found.
+                </p>
+              ) : (
+                <ul className="mt-2 max-h-[200px] space-y-1 overflow-y-auto">
+                  {libraryFiles.map((item) => {
+                    const isSelected = selectedLibraryIds.has(item.id);
+                    return (
+                      <li key={item.id}>
+                        <button
+                          type="button"
+                          onClick={() => onToggleLibraryItem(item)}
+                          className={cn(
+                            "flex w-full items-center gap-3 rounded-lg border px-3 py-2 text-left transition",
+                            isSelected
+                              ? "border-violet-500/40 bg-violet-500/5"
+                              : "border-slate-800 bg-slate-900/40 hover:border-slate-700",
+                          )}
+                        >
+                          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-red-500/10 text-red-400">
+                            <FileText className="h-4 w-4" />
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[12px] font-medium text-slate-200">
+                              {item.name}
+                            </span>
+                            <span className="text-[10px] text-slate-500">
+                              {getSourceLabel(item.sourceEntity)} ·{" "}
+                              {formatFileSize(item.size)}
+                            </span>
+                          </span>
+                          {isSelected && (
+                            <span className="text-[10px] font-semibold text-violet-400">
+                              Selected
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {files.length > 0 ? (
         <div className="mt-4">

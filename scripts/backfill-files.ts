@@ -3,17 +3,6 @@
  * and inserts records into the unified `files` table.
  *
  * Run: npx tsx scripts/backfill-files.ts
- *
- * Handles:
- * - vehicle_images -> files (vehicle-images bucket)
- * - customer_documents -> files (vehicle-documents bucket)
- * - customer.image_url -> files (customer-images bucket)
- * - user (users.image_url) -> files (user-images bucket)
- * - dealership_expenses.receipt_storage_path -> files (expense-receipts bucket)
- * - vehicle_expenses.receipt_storage_path -> files (expense-receipts bucket)
- * - deal_jacket_documents -> files (deal-jacket-documents bucket)
- * - deals.buyer_id_front_path, buyer_id_back_path, etc. -> files (vehicle-documents bucket)
- * - vehicle_losses.document_paths -> files (vehicle-documents bucket)
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -45,6 +34,71 @@ const supabase = createClient(supabaseUrl, serviceRoleKey, {
   auth: { persistSession: false },
 });
 
+type FileInsertRow = {
+  dealership_id: string;
+  bucket: string;
+  storage_path: string;
+  original_name: string;
+  file_size: number;
+  mime_type: string;
+  file_type: string;
+  source_entity: string;
+  source_entity_id: string | null;
+  uploaded_by: string;
+  uploaded_at?: string;
+};
+
+async function fileRecordExists(bucket: string, storagePath: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("files")
+    .select("id")
+    .eq("bucket", bucket)
+    .eq("storage_path", storagePath)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  return !!data;
+}
+
+async function insertFileIfMissing(row: FileInsertRow): Promise<"inserted" | "skipped" | "error"> {
+  const exists = await fileRecordExists(row.bucket, row.storage_path);
+  if (exists) return "skipped";
+
+  const { error } = await supabase.from("files").insert(row);
+
+  if (error) {
+    console.error(`  Error inserting ${row.original_name}:`, error.message);
+    return "error";
+  }
+
+  return "inserted";
+}
+
+type BackfillStats = { inserted: number; skipped: number; errors: number };
+
+function logBackfillStats(label: string, stats: BackfillStats) {
+  console.log(
+    `  ${label}: ${stats.inserted} inserted, ${stats.skipped} skipped (already in files), ${stats.errors} errors`,
+  );
+}
+
+async function runBackfill(
+  label: string,
+  rows: FileInsertRow[],
+): Promise<BackfillStats> {
+  const stats: BackfillStats = { inserted: 0, skipped: 0, errors: 0 };
+
+  for (const row of rows) {
+    const result = await insertFileIfMissing(row);
+    if (result === "inserted") stats.inserted++;
+    else if (result === "skipped") stats.skipped++;
+    else stats.errors++;
+  }
+
+  logBackfillStats(label, stats);
+  return stats;
+}
+
 async function backfillVehicleImages() {
   console.log("Backfilling vehicle_images...");
   const { data: rows, error } = await supabase
@@ -54,12 +108,12 @@ async function backfillVehicleImages() {
 
   if (error) {
     console.error("  Error fetching vehicle_images:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
-    const { error: insertError } = await supabase.from("files").upsert({
+    fileRows.push({
       dealership_id: row.dealership_id,
       bucket: "vehicle-images",
       storage_path: row.storage_path,
@@ -71,16 +125,10 @@ async function backfillVehicleImages() {
       source_entity_id: row.vehicle_id,
       uploaded_by: await resolveUserId(row.dealership_id, await getCreator("vehicles", row.vehicle_id)),
       uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting vehicle_image ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} vehicle_images`);
-  return count;
+
+  return runBackfill("vehicle_images", fileRows);
 }
 
 async function backfillCustomerDocuments() {
@@ -92,12 +140,12 @@ async function backfillCustomerDocuments() {
 
   if (error) {
     console.error("  Error fetching customer_documents:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
-    const { error: insertError } = await supabase.from("files").upsert({
+    fileRows.push({
       dealership_id: row.dealership_id,
       bucket: "vehicle-documents",
       storage_path: row.storage_path,
@@ -109,16 +157,10 @@ async function backfillCustomerDocuments() {
       source_entity_id: row.customer_id,
       uploaded_by: await resolveUserId(row.dealership_id, row.created_by),
       uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting customer_doc ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} customer_documents`);
-  return count;
+
+  return runBackfill("customer_documents", fileRows);
 }
 
 async function backfillCustomerImages() {
@@ -131,13 +173,13 @@ async function backfillCustomerImages() {
 
   if (error) {
     console.error("  Error fetching customers:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
     if (!row.image_url) continue;
-    const { error: insertError } = await supabase.from("files").upsert({
+    fileRows.push({
       dealership_id: row.dealership_id,
       bucket: "customer-images",
       storage_path: row.image_url,
@@ -149,16 +191,10 @@ async function backfillCustomerImages() {
       source_entity_id: row.id,
       uploaded_by: await resolveUserId(row.dealership_id, row.created_by),
       uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting customer image ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} customer images`);
-  return count;
+
+  return runBackfill("customer images", fileRows);
 }
 
 async function backfillUserImages() {
@@ -170,13 +206,13 @@ async function backfillUserImages() {
 
   if (error) {
     console.error("  Error fetching users:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
-    if (!row.image_url) continue;
-    const { error: insertError } = await supabase.from("files").upsert({
+    if (!row.image_url || !row.dealership_id) continue;
+    fileRows.push({
       dealership_id: row.dealership_id,
       bucket: "user-images",
       storage_path: row.image_url,
@@ -188,20 +224,14 @@ async function backfillUserImages() {
       source_entity_id: row.id,
       uploaded_by: row.id,
       uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting user image ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} user images`);
-  return count;
+
+  return runBackfill("user images", fileRows);
 }
 
 async function backfillExpenseReceipts(table: "dealership_expenses" | "vehicle_expenses") {
-  const label = table === "dealership_expenses" ? "dealership" : "vehicle";
+  const label = table === "dealership_expenses" ? "dealership receipts" : "vehicle receipts";
   const entity = table === "dealership_expenses" ? "dealership_expense" : "expense";
   console.log(`Backfilling ${table} receipts...`);
 
@@ -213,13 +243,13 @@ async function backfillExpenseReceipts(table: "dealership_expenses" | "vehicle_e
 
   if (error) {
     console.error(`  Error fetching ${table}:`, error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
     if (!row.receipt_storage_path) continue;
-    const { error: insertError } = await supabase.from("files").upsert({
+    fileRows.push({
       dealership_id: row.dealership_id,
       bucket: "expense-receipts",
       storage_path: row.receipt_storage_path,
@@ -231,55 +261,75 @@ async function backfillExpenseReceipts(table: "dealership_expenses" | "vehicle_e
       source_entity_id: row.id,
       uploaded_by: await resolveUserId(row.dealership_id, row.created_by),
       uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting receipt ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} ${label} receipts`);
-  return count;
+
+  return runBackfill(label, fileRows);
+}
+
+function inferDealJacketDocBucket(storagePath: string): string {
+  if (storagePath.includes("/deal_jackets/") || storagePath.startsWith("deal-jackets/")) {
+    return "deal-jacket-documents";
+  }
+  return "vehicle-documents";
 }
 
 async function backfillDealJacketDocuments() {
   console.log("Backfilling deal_jacket_documents...");
   const { data: rows, error } = await supabase
     .from("deal_jacket_documents")
-    .select("id, deal_jacket_id, dealership_id, file_url, file_type, uploaded_at")
-    .is("deleted_at", null);
+    .select("id, deal_jacket_id, file_url, file_type, document_name, uploaded_at");
 
   if (error) {
     console.error("  Error fetching deal_jacket_documents:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
     if (!row.file_url) continue;
-    const { error: insertError } = await supabase.from("files").upsert({
-      dealership_id: row.dealership_id,
-      bucket: "deal-jacket-documents",
+
+    const { data: jacket } = await supabase
+      .from("deal_jackets")
+      .select("dealership_id, created_by")
+      .eq("id", row.deal_jacket_id)
+      .maybeSingle();
+
+    if (!jacket?.dealership_id) {
+      console.error(`  Skipping deal_jacket_doc ${row.id}: jacket not found`);
+      continue;
+    }
+
+    const bucket = inferDealJacketDocBucket(row.file_url);
+    const mimeType =
+      row.file_type?.startsWith("image/") || row.file_type === "image"
+        ? "image/jpeg"
+        : row.file_type === "application/pdf"
+          ? "application/pdf"
+          : "application/octet-stream";
+    const fileType =
+      row.file_type === "image" || row.file_type?.startsWith("image/")
+        ? "jpg"
+        : row.file_type === "application/pdf"
+          ? "pdf"
+          : "other";
+
+    fileRows.push({
+      dealership_id: jacket.dealership_id,
+      bucket,
       storage_path: row.file_url,
-      original_name: `deal_jacket_doc_${row.id.slice(0, 8)}`,
+      original_name: row.document_name ?? `deal_jacket_doc_${row.id.slice(0, 8)}`,
       file_size: 0,
-      mime_type: row.file_type === "image" ? "image/jpeg" : "application/octet-stream",
-      file_type: row.file_type === "image" ? "jpg" : "other",
+      mime_type: mimeType,
+      file_type: fileType,
       source_entity: "deal_jacket",
       source_entity_id: row.deal_jacket_id,
-      uploaded_by: await resolveUserId(row.dealership_id),
+      uploaded_by: await resolveUserId(jacket.dealership_id, jacket.created_by),
       uploaded_at: row.uploaded_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting deal_jacket_doc ${row.id}:`, insertError.message);
-    } else {
-      count++;
-    }
+    });
   }
-  console.log(`  Inserted ${count} deal_jacket_documents`);
-  return count;
+
+  return runBackfill("deal_jacket_documents", fileRows);
 }
 
 async function backfillDealDocuments() {
@@ -291,10 +341,10 @@ async function backfillDealDocuments() {
 
   if (error) {
     console.error("  Error fetching deals:", error.message);
-    return 0;
+    return { inserted: 0, skipped: 0, errors: 0 };
   }
 
-  let count = 0;
+  const fileRows: FileInsertRow[] = [];
   for (const row of rows ?? []) {
     const paths = [
       { path: row.buyer_id_front_path, name: "Buyer ID Front" },
@@ -303,31 +353,25 @@ async function backfillDealDocuments() {
       { path: row.other_doc_path, name: "Other Document" },
     ];
 
-    for (const { path } of paths) {
+    for (const { path, name } of paths) {
       if (!path) continue;
-      const { error: insertError } = await supabase.from("files").upsert({
+      fileRows.push({
         dealership_id: row.dealership_id,
         bucket: "vehicle-documents",
         storage_path: path,
-        original_name: `deal_doc_${row.id.slice(0, 8)}`,
+        original_name: name,
         file_size: 0,
         mime_type: "application/octet-stream",
         file_type: "other",
         source_entity: "deal",
         source_entity_id: row.vehicle_id,
-      uploaded_by: await resolveUserId(row.dealership_id, row.created_by),
-      uploaded_at: row.created_at,
-    }, { onConflict: "storage_path", ignoreDuplicates: true });
-
-    if (insertError) {
-      console.error(`  Error inserting deal doc:`, insertError.message);
-      } else {
-        count++;
-      }
+        uploaded_by: await resolveUserId(row.dealership_id, row.created_by),
+        uploaded_at: row.created_at,
+      });
     }
   }
-  console.log(`  Inserted ${count} deal documents`);
-  return count;
+
+  return runBackfill("deal documents", fileRows);
 }
 
 const userCache = new Map<string, string>();
@@ -371,18 +415,30 @@ async function getCreator(table: string, id: string): Promise<string | null> {
 
 async function main() {
   console.log("=== Backfilling files table ===\n");
+  console.log("Uses insert-if-missing (no upsert) — safe to re-run.\n");
 
-  let total = 0;
-  total += await backfillVehicleImages();
-  total += await backfillCustomerDocuments();
-  total += await backfillCustomerImages();
-  total += await backfillUserImages();
-  total += await backfillExpenseReceipts("dealership_expenses");
-  total += await backfillExpenseReceipts("vehicle_expenses");
-  total += await backfillDealJacketDocuments();
-  total += await backfillDealDocuments();
+  const totals: BackfillStats = { inserted: 0, skipped: 0, errors: 0 };
+  const sections = [
+    backfillVehicleImages,
+    backfillCustomerDocuments,
+    backfillCustomerImages,
+    backfillUserImages,
+    () => backfillExpenseReceipts("dealership_expenses"),
+    () => backfillExpenseReceipts("vehicle_expenses"),
+    backfillDealJacketDocuments,
+    backfillDealDocuments,
+  ];
 
-  console.log(`\n=== Done! Total records inserted: ${total} ===`);
+  for (const run of sections) {
+    const stats = await run();
+    totals.inserted += stats.inserted;
+    totals.skipped += stats.skipped;
+    totals.errors += stats.errors;
+  }
+
+  console.log(
+    `\n=== Done! ${totals.inserted} inserted, ${totals.skipped} skipped, ${totals.errors} errors ===`,
+  );
 }
 
 main().catch(console.error);
