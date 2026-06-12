@@ -62,6 +62,9 @@ type DealerDashboardContextValue = {
   refreshSection: (section: DashboardSectionKey) => Promise<void>;
   workspaceSaving: boolean;
   simulateSave: () => Promise<void>;
+  inventoryAddSignal: number;
+  clearInventoryAddSignal: () => void;
+  refreshInventory: () => void;
 };
 
 const defaultLoading: DashboardLoadingState = {
@@ -104,9 +107,11 @@ function getRefForSection(
 export function DealerDashboardProvider({
   children,
   dealerName,
+  initialVehicles = [],
 }: {
   children: ReactNode;
   dealerName: string;
+  initialVehicles?: WholesaleVehicle[];
 }) {
   const [dashboardData, setDashboardData] =
     useState<DealerDashboardData | null>(null);
@@ -125,6 +130,7 @@ export function DealerDashboardProvider({
     useState<SoldVehicleRecord | null>(null);
   const [workspaceSaving, setWorkspaceSaving] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [inventoryAddSignal, setInventoryAddSignal] = useState(0);
   const router = useRouter();
 
   const inventoryRef = useRef<HTMLDivElement | null>(null);
@@ -147,8 +153,12 @@ export function DealerDashboardProvider({
     setDashboardData({
       ...data,
       profile: { ...data.profile, dealershipName: dealerName },
+      vehicles:
+        initialVehicles.length > 0 ? initialVehicles : data.vehicles,
     });
-    setSelectedVehicle(data.vehicles[0] ?? null);
+    setSelectedVehicle(
+      (initialVehicles.length > 0 ? initialVehicles : data.vehicles)[0] ?? null,
+    );
     setIsInitialLoading(false);
 
     const sections: DashboardSectionKey[] = [
@@ -166,11 +176,18 @@ export function DealerDashboardProvider({
       const section = sections[i];
       setLoading((prev) => ({ ...prev, [section]: false }));
     }
-  }, [dealerName]);
+  }, [dealerName, initialVehicles]);
 
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    if (initialVehicles.length === 0) return;
+    setDashboardData((prev) =>
+      prev ? { ...prev, vehicles: initialVehicles } : prev,
+    );
+  }, [initialVehicles]);
 
   const handleExpandAction = useCallback(
     (expandAction?: DealerExpandAction) => {
@@ -178,10 +195,10 @@ export function DealerDashboardProvider({
       switch (expandAction) {
         case "inventory-add":
           setSelectedVehicle(null);
-          setExpandedSection("inventory");
+          setInventoryAddSignal((n) => n + 1);
           break;
         case "inventory-edit":
-          setExpandedSection("inventory");
+          setInventoryAddSignal((n) => n + 1);
           break;
         case "transaction-add":
           setSelectedTransaction(null);
@@ -241,11 +258,23 @@ export function DealerDashboardProvider({
   const expandInventory = useCallback(
     (vehicle?: WholesaleVehicle | null) => {
       if (vehicle !== undefined) setSelectedVehicle(vehicle);
-      setExpandedSection("inventory");
+      if (vehicle) {
+        setInventoryAddSignal((n) => n + 1);
+      } else {
+        setInventoryAddSignal((n) => n + 1);
+      }
       navigateToSection(DEALER_SECTION_IDS.inventory);
     },
     [navigateToSection],
   );
+
+  const clearInventoryAddSignal = useCallback(() => {
+    setInventoryAddSignal(0);
+  }, []);
+
+  const refreshInventory = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const expandTransaction = useCallback(
     (transaction?: DealerTransaction | null) => {
@@ -311,6 +340,9 @@ export function DealerDashboardProvider({
       refreshSection,
       workspaceSaving,
       simulateSave,
+      inventoryAddSignal,
+      clearInventoryAddSignal,
+      refreshInventory,
     }),
     [
       dashboardData,
@@ -331,6 +363,9 @@ export function DealerDashboardProvider({
       refreshSection,
       workspaceSaving,
       simulateSave,
+      inventoryAddSignal,
+      clearInventoryAddSignal,
+      refreshInventory,
     ],
   );
 

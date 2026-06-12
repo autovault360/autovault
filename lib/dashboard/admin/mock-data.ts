@@ -1,4 +1,5 @@
 import { CALENDAR_MOCK_REPORT } from "@/lib/calendar/mock-data";
+import { withWholesaleVehicleDefaults } from "@/lib/dealer/inventory/map-wholesale-vehicle";
 import type { AdminDashboardContentProps, AdminTodayEvent } from "./types";
 
 const VEHICLE_IMG =
@@ -136,7 +137,7 @@ const BASE_MOCK: Omit<
     },
   ],
   inventoryVehicles: [
-    {
+    withWholesaleVehicleDefaults({
       id: "inv-1",
       vin: "1HGCM82633A004352",
       year: 2022,
@@ -156,8 +157,8 @@ const BASE_MOCK: Omit<
       daysInLot: 15,
       purchaseDate: "2026-05-25",
       imageUrl: VEHICLE_IMG,
-    },
-    {
+    }),
+    withWholesaleVehicleDefaults({
       id: "inv-2",
       vin: "2HGFG3B53GH550001",
       year: 2023,
@@ -177,8 +178,8 @@ const BASE_MOCK: Omit<
       daysInLot: 22,
       purchaseDate: "2026-05-18",
       imageUrl: VEHICLE_IMG,
-    },
-    {
+    }),
+    withWholesaleVehicleDefaults({
       id: "inv-3",
       vin: "3FA6P0HD5KR123456",
       year: 2021,
@@ -198,8 +199,8 @@ const BASE_MOCK: Omit<
       daysInLot: 8,
       purchaseDate: "2026-06-01",
       imageUrl: VEHICLE_IMG,
-    },
-    {
+    }),
+    withWholesaleVehicleDefaults({
       id: "inv-4",
       vin: "4T1BF1FK4GU123456",
       year: 2020,
@@ -219,8 +220,8 @@ const BASE_MOCK: Omit<
       daysInLot: 35,
       purchaseDate: "2026-05-05",
       imageUrl: VEHICLE_IMG,
-    },
-    {
+    }),
+    withWholesaleVehicleDefaults({
       id: "inv-5",
       vin: "5YJSA1E26HF123456",
       year: 2024,
@@ -240,7 +241,7 @@ const BASE_MOCK: Omit<
       daysInLot: 3,
       purchaseDate: "2026-06-06",
       imageUrl: VEHICLE_IMG,
-    },
+    }),
   ],
   profitLossPoints: [
     { week: "Week 1", revenue: 148600, expenses: 42100 },

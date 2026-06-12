@@ -133,8 +133,8 @@ export default async function VehiclePrintPage({ params }: Props) {
               <Row label="Days in Inventory" value={vehicle.daysInInventory} />
               <Row label="Date Acquired" value={vehicle.dateAcquired} />
               <Row
-                label="Title Status"
-                value={formatField("titleStatus", vehicle.titleStatus)}
+                label="Has Title"
+                value={vehicle.titleReceived ? "Yes" : "No"}
               />
               <Row label="Last Updated" value={vehicle.lastUpdated} />
             </div>

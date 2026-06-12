@@ -19,7 +19,6 @@ import {
   LOT_LOCATIONS,
   ODOMETER_STATUSES,
   PURCHASE_TYPES,
-  TITLE_STATUSES,
   US_STATES,
   VEHICLE_MAKES,
   VEHICLE_MODELS,
@@ -27,6 +26,8 @@ import {
 } from "@/lib/vehicles/actions/add-vehicle/options";
 import { FormGrid, FormSection } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -376,10 +377,29 @@ export default function EditVehicleModal({
 
               <FormSection title="Additional Details" theme="dark">
                 <FormGrid cols={2}>
-                  <FormField control={form.control} name="titleNumber" render={({ field }) => (
+                  <FormField control={form.control} name="titleReceived" render={({ field }) => (
                     <FormItem>
-                      <FieldLabel label="Title Number" />
-                      <FormControl><Input theme="dark" value={field.value ?? ""} onChange={field.onChange} /></FormControl>
+                      <FieldLabel label="Has Title?" />
+                      <FormControl>
+                        <RadioGroup
+                          value={field.value ? "yes" : "no"}
+                          onValueChange={(v) => field.onChange(v === "yes")}
+                          className="space-y-2"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="edit-title-yes" />
+                            <Label htmlFor="edit-title-yes" className="text-[12px]">
+                              Yes — Title received
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="edit-title-no" />
+                            <Label htmlFor="edit-title-no" className="text-[12px]">
+                              No — Missing title
+                            </Label>
+                          </div>
+                        </RadioGroup>
+                      </FormControl>
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="licensePlate" render={({ field }) => (
@@ -485,16 +505,7 @@ export default function EditVehicleModal({
             </div>
 
             <FormSection title="Additional Information" theme="dark">
-              <FormGrid cols={3}>
-                <FormField control={form.control} name="titleStatus" render={({ field }) => (
-                  <FormItem>
-                    <FieldLabel label="Title Status" />
-                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                      <FormControl><SelectTrigger theme="dark"><SelectValue placeholder="Title status" /></SelectTrigger></FormControl>
-                      <SelectContent theme="dark"><SelectOptions label="Title Status" options={TITLE_STATUSES} theme="dark" /></SelectContent>
-                    </Select>
-                  </FormItem>
-                )} />
+              <FormGrid cols={2}>
                 <FormField control={form.control} name="odometerStatus" render={({ field }) => (
                   <FormItem>
                     <FieldLabel label="Odometer Status" />

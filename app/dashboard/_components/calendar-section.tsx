@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CardShell } from "@/components/dashboard/card-shell";
@@ -15,9 +15,14 @@ import {
   buildMonthGrid,
   getDailyActivity,
 } from "@/lib/calendar/selectors";
-import type { CalendarReport } from "@/lib/calendar/types";
+import type { CalendarEventType, CalendarReport } from "@/lib/calendar/types";
+import { fetchCalendarReportAction } from "@/lib/calendar/server/actions";
+import { createEvent } from "@/lib/events/server/create-event";
 import AdminCalendarMonthGrid from "./admin-calendar-month-grid";
 import AdminCalendarMonthStrip from "./admin-calendar-month-strip";
+import DayEventsModal, {
+  type AddDashboardEventInput,
+} from "./day-events-modal";
 import { ADMIN_PANEL_INNER_CLASS, ADMIN_PANEL_SHELL_CLASS } from "./admin-panel-styles";
 import {
   ADMIN_EVENT_LEGEND,
@@ -35,25 +40,67 @@ type StripEvent = {
   date: string;
   time: string;
   title: string;
-  type: import("@/lib/calendar/types").CalendarEventType;
+  type: CalendarEventType;
 };
+
+type DailyEvent = CalendarReport["dailyActivity"][number]["events"][number];
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function addEventToReport(
+  report: CalendarReport,
+  date: string,
+  event: DailyEvent,
+): CalendarReport {
+  const existingDay = report.dailyActivity.find((day) => day.date === date);
+
+  if (existingDay) {
+    return {
+      ...report,
+      dailyActivity: report.dailyActivity.map((day) =>
+        day.date === date ? { ...day, events: [...day.events, event] } : day,
+      ),
+    };
+  }
+
+  return {
+    ...report,
+    dailyActivity: [
+      ...report.dailyActivity,
+      {
+        id: date,
+        date,
+        unitsSold: 0,
+        totalGross: 0,
+        totalCommissions: 0,
+        salesReps: [],
+        events: [event],
+      },
+    ].sort((a, b) => a.date.localeCompare(b.date)),
+  };
+}
+
 export default function CalendarSection({ calendarReport }: Props) {
   const today = todayIso();
+  const [report, setReport] = useState(calendarReport);
   const [expanded, setExpanded] = useState(false);
   const [focusMonth, setFocusMonth] = useState(today.slice(0, 7));
   const [selectedDay, setSelectedDay] = useState<string | null>(today);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
+  const [eventModalDate, setEventModalDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    setReport(calendarReport);
+  }, [calendarReport]);
 
   const year = Number(focusMonth.slice(0, 4));
   const month = Number(focusMonth.slice(5, 7));
 
   const dailyMap = useMemo(
-    () => buildDailyMap(calendarReport.dailyActivity),
-    [calendarReport.dailyActivity],
+    () => buildDailyMap(report.dailyActivity),
+    [report.dailyActivity],
   );
 
   const monthGrid = useMemo(
@@ -63,13 +110,13 @@ export default function CalendarSection({ calendarReport }: Props) {
 
   const eventCountByDate = useMemo(() => {
     const map = new Map<string, number>();
-    for (const day of calendarReport.dailyActivity) {
+    for (const day of report.dailyActivity) {
       if (day.date.startsWith(focusMonth)) {
         map.set(day.date, day.events.length);
       }
     }
     return map;
-  }, [calendarReport.dailyActivity, focusMonth]);
+  }, [report.dailyActivity, focusMonth]);
 
   const monthStripDays = useMemo(
     () => buildFullMonthStrip(year, month, today, eventCountByDate),
@@ -77,7 +124,7 @@ export default function CalendarSection({ calendarReport }: Props) {
   );
 
   const stripEvents = useMemo((): StripEvent[] => {
-    const fromActivity = calendarReport.dailyActivity
+    const fromActivity = report.dailyActivity
       .flatMap((d) =>
         d.events.map((ev) => ({
           id: ev.id,
@@ -92,28 +139,72 @@ export default function CalendarSection({ calendarReport }: Props) {
 
     if (fromActivity.length) return fromActivity.slice(0, 5);
 
-    return calendarReport.upcomingEvents.slice(0, 5).map((ev) => ({
+    return report.upcomingEvents.slice(0, 5).map((ev) => ({
       id: ev.id,
       date: ev.date,
       time: "All Day",
       title: ev.title,
       type: "task" as const,
     }));
-  }, [calendarReport, today]);
-
-  const selectedActivity = selectedDay
-    ? getDailyActivity(selectedDay, dailyMap)
-    : null;
+  }, [report, today]);
 
   const scheduleDay = selectedDay ?? today;
-  const scheduleActivity =
-    getDailyActivity(scheduleDay, dailyMap) ?? selectedActivity;
+  const scheduleActivity = getDailyActivity(scheduleDay, dailyMap);
   const scheduleEvents = scheduleActivity?.events ?? [];
+
+  const modalDayEvents = useMemo(() => {
+    if (!eventModalDate) return [];
+    return getDailyActivity(eventModalDate, dailyMap)?.events ?? [];
+  }, [eventModalDate, dailyMap]);
+
+  function handleDayClick(date: string) {
+    setSelectedDay(date);
+    setEventModalDate(date);
+    setEventModalOpen(true);
+  }
+
+  async function refreshReport() {
+    const fresh = await fetchCalendarReportAction(year);
+    setReport(fresh);
+  }
+
+  async function handleAddEvent(data: AddDashboardEventInput): Promise<string | null> {
+    if (!eventModalDate) return null;
+
+    const snapshot = report;
+    const tempId = `pending-${crypto.randomUUID()}`;
+    const optimisticEvent: DailyEvent = {
+      id: tempId,
+      time: "All day",
+      title: data.title,
+      type: "task",
+      description: data.description ?? undefined,
+    };
+
+    setReport((prev) => addEventToReport(prev, eventModalDate, optimisticEvent));
+
+    const fd = new FormData();
+    fd.append(
+      "payload",
+      JSON.stringify({
+        event_date: eventModalDate,
+        title: data.title,
+        description: data.description,
+      }),
+    );
+
+    const result = await createEvent(fd);
+    if (result.success) {
+      await refreshReport();
+      return result.id;
+    }
+    setReport(snapshot);
+    return null;
+  }
 
   return (
     <section className="mb-3.5">
       <CardShell className={ADMIN_PANEL_SHELL_CLASS}>
-        {/* Header */}
         <div className="mb-3 grid grid-cols-[auto_1fr_auto] items-center gap-3">
           <div className="text-[11px] font-bold tracking-[0.14em] text-slate-500">
             CALENDAR
@@ -180,16 +271,14 @@ export default function CalendarSection({ calendarReport }: Props) {
           </div>
         </div>
 
-        {/* Collapsed: full-month strip (always visible) */}
         <div className={cn(expanded && "mb-3 border-b border-slate-800/60 pb-3")}>
           <AdminCalendarMonthStrip
             days={monthStripDays}
             selectedDay={selectedDay}
-            onSelectDay={setSelectedDay}
+            onSelectDay={handleDayClick}
           />
         </div>
 
-        {/* Collapsed: upcoming events row */}
         {!expanded && (
           <div className="mt-2 border-t border-slate-800/60 pt-2.5">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
@@ -221,7 +310,6 @@ export default function CalendarSection({ calendarReport }: Props) {
           </div>
         )}
 
-        {/* Expanded: legend + full month grid + bottom panels */}
         <div
           className={cn(
             "grid transition-[grid-template-rows] duration-250 ease-in-out",
@@ -255,7 +343,7 @@ export default function CalendarSection({ calendarReport }: Props) {
                     cells={monthGrid}
                     selectedDay={selectedDay}
                     today={today}
-                    onDaySelect={setSelectedDay}
+                    onDaySelect={handleDayClick}
                   />
 
                   <div className="grid gap-3 lg:grid-cols-2">
@@ -290,17 +378,8 @@ export default function CalendarSection({ calendarReport }: Props) {
                                     {ev.description ?? "-"}
                                   </td>
                                   <td className="py-2 text-right">
-                                    <span
-                                      className={cn(
-                                        "rounded px-1.5 py-0.5 text-[9px] font-medium",
-                                        ev.type === "appointment"
-                                          ? "bg-emerald-500/15 text-emerald-400"
-                                          : "bg-amber-500/15 text-amber-400",
-                                      )}
-                                    >
-                                      {ev.type === "appointment"
-                                        ? "Confirmed"
-                                        : "Pending"}
+                                    <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">
+                                      Added
                                     </span>
                                   </td>
                                 </tr>
@@ -314,7 +393,7 @@ export default function CalendarSection({ calendarReport }: Props) {
                           {scheduleDay === today
                             ? "today"
                             : formatShortDate(scheduleDay)}
-                          .
+                          . Click a date to add one.
                         </p>
                       )}
                     </div>
@@ -324,7 +403,7 @@ export default function CalendarSection({ calendarReport }: Props) {
                         UPCOMING EVENTS
                       </div>
                       <ul className="space-y-2">
-                        {calendarReport.upcomingEvents.slice(0, 7).map((ev) => (
+                        {report.upcomingEvents.slice(0, 7).map((ev) => (
                           <li
                             key={ev.id}
                             className="flex items-center justify-between gap-3 text-[11px]"
@@ -340,7 +419,7 @@ export default function CalendarSection({ calendarReport }: Props) {
                             </span>
                           </li>
                         ))}
-                        {!calendarReport.upcomingEvents.length && (
+                        {!report.upcomingEvents.length && (
                           <li className="text-[11px] text-slate-500">
                             No upcoming events.
                           </li>
@@ -354,6 +433,14 @@ export default function CalendarSection({ calendarReport }: Props) {
           </div>
         </div>
       </CardShell>
+
+      <DayEventsModal
+        open={eventModalOpen}
+        onOpenChange={setEventModalOpen}
+        eventDate={eventModalDate}
+        events={modalDayEvents}
+        onAdd={handleAddEvent}
+      />
     </section>
   );
 }

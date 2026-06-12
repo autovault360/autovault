@@ -21,7 +21,7 @@ import {
   totalVehicleCost,
 } from "@/lib/dealer/dashboard/calculations";
 import type { WholesaleVehicle } from "@/lib/dealer/dashboard/types";
-import { StatusBadge } from "../inventory-mini-panel";
+import { InventoryStatusBadge } from "./inventory-status-badges";
 
 export default function InventoryPreviewTable({
   vehicles,
@@ -133,7 +133,9 @@ export default function InventoryPreviewTable({
     {
       key: "status",
       header: "Status",
-      cell: (row) => <StatusBadge status={row.status} />,
+      cell: (row) => (
+        <InventoryStatusBadge status={row.inventoryStatus} />
+      ),
     },
     {
       key: "daysInLot",
