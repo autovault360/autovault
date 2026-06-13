@@ -6,8 +6,10 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
 import AppFooter from "@/components/layout/app-footer";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
+import DealerQuickActionsHost from "./dealer-quick-actions-host";
 import DealerHeader from "./dealer-header";
 import { DEALER_NAV_GROUPS } from "./dealer-nav";
+import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
 import { useDealerDashboard, useDealerNavigation } from "../context/dealer-dashboard-context";
 
 import type { SidebarItem } from "@/components/layout/sidebar";
@@ -31,8 +33,34 @@ export default function DealerPortalShell({
   initials: string;
 }) {
   const pathname = usePathname();
-  const { navigateToSection, activeSection } = useDealerNavigation();
-  const { dashboardData } = useDealerDashboard();
+  const { navigateToSection } = useDealerNavigation();
+  const {
+    dashboardData,
+    triggerAddVehicle,
+    triggerAddSoldVehicle,
+    triggerAddTransaction,
+    openExpenseModal,
+  } = useDealerDashboard();
+
+  const runExpandAction = (action: string) => {
+    switch (action) {
+      case "inventory-add":
+        triggerAddVehicle();
+        navigateToSection(DEALER_SECTION_IDS.inventory, "inventory-add");
+        break;
+      case "sold-add":
+        triggerAddSoldVehicle();
+        break;
+      case "transaction-add":
+        triggerAddTransaction();
+        break;
+      case "expense-add":
+        openExpenseModal();
+        break;
+      default:
+        break;
+    }
+  };
 
   const profileSection = (
     <div>
@@ -67,9 +95,15 @@ export default function DealerPortalShell({
             if (item.href) return;
             for (const g of DEALER_NAV_GROUPS) {
               for (const orig of g.items) {
-                if (orig.label === item.label && orig.sectionId) {
-                  navigateToSection(orig.sectionId, orig.expandAction);
-                  return;
+                if (orig.label === item.label) {
+                  if (orig.expandAction) {
+                    runExpandAction(orig.expandAction);
+                    return;
+                  }
+                  if (orig.sectionId) {
+                    navigateToSection(orig.sectionId, orig.expandAction);
+                    return;
+                  }
                 }
               }
             }
@@ -86,6 +120,7 @@ export default function DealerPortalShell({
       footer={<AppFooter />}
     >
       <div className="mx-auto w-full min-w-0 max-w-full">{children}</div>
+      <DealerQuickActionsHost />
     </AppLayout>
   );
 }

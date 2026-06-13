@@ -14,12 +14,14 @@ export default function VehicleDetailHeader({
   onEditOpenChange,
   onVehicleUpdated,
   photoUploadTrigger,
+  backHref = "/dashboard/vehicles",
 }: {
   vehicle: VehicleDetail;
   editOpen?: boolean;
   onEditOpenChange?: (open: boolean) => void;
   onVehicleUpdated?: (vehicle: VehicleDetail) => void;
   photoUploadTrigger?: number | undefined;
+  backHref?: string;
 }) {
   const [internalEditOpen, setInternalEditOpen] = useState(false);
   const editOpen = externalEditOpen ?? internalEditOpen;
@@ -29,11 +31,11 @@ export default function VehicleDetailHeader({
     <>
       <section className="mb-3.5 space-y-2.5">
         <Link
-          href="/dashboard/vehicles"
+          href={backHref}
           className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-blue-400 transition hover:text-blue-300"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Back to Vehicles
+          Back to Inventory
         </Link>
 
         <div className="flex flex-col md:flex-row items-start justify-between gap-3">

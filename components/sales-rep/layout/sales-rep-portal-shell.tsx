@@ -6,7 +6,9 @@ import AppLayout from "@/components/layout/app-layout";
 import AppFooter from "@/components/layout/app-footer";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
 import SalesRepHeader from "./sales-rep-header";
+import SalesRepQuickActionsHost from "./sales-rep-quick-actions-host";
 import { SALES_REP_NAV_GROUPS } from "./sales-rep-nav";
+import { SalesRepQuickActionsProvider } from "@/lib/portal/sales-rep-quick-actions-context";
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
 type Props = {
@@ -45,14 +47,17 @@ export default function SalesRepPortalShell({ children, profile }: Props) {
   );
 
   return (
-    <AppLayout
-      sidebar={
-        <UnifiedSidebar groups={SALES_REP_NAV_GROUPS} profile={profileSection} />
-      }
-      header={<SalesRepHeader profile={profile} />}
-      footer={<AppFooter />}
-    >
-      {children}
-    </AppLayout>
+    <SalesRepQuickActionsProvider>
+      <AppLayout
+        sidebar={
+          <UnifiedSidebar groups={SALES_REP_NAV_GROUPS} profile={profileSection} />
+        }
+        header={<SalesRepHeader profile={profile} />}
+        footer={<AppFooter />}
+      >
+        {children}
+      </AppLayout>
+      <SalesRepQuickActionsHost />
+    </SalesRepQuickActionsProvider>
   );
 }

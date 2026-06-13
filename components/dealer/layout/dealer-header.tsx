@@ -34,7 +34,13 @@ export default function DealerHeader({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const { navigateToSection } = useDealerNavigation();
+  const {
+    navigateToSection,
+    triggerAddVehicle,
+    triggerAddSoldVehicle,
+    triggerAddTransaction,
+    openExpenseModal,
+  } = useDealerNavigation();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -44,11 +50,10 @@ export default function DealerHeader({
   }
 
   const handleAddExpense = () => {
+    openExpenseModal();
     if (pathname === DEALER_ROUTES.dashboard) {
       navigateToSection(DEALER_SECTION_IDS.expenses, "expense-add");
-      return;
     }
-    router.push(`${DEALER_ROUTES.dashboard}?addExpense=true#expenses`);
   };
 
   const actions = (
@@ -57,7 +62,7 @@ export default function DealerHeader({
         icon={Plus}
         label="Add Vehicle"
         tone="blue"
-        onClick={() => router.push(`${DEALER_ROUTES.inventory}?add=true`)}
+        onClick={triggerAddVehicle}
       />
       <HeaderIconAction
         icon={Car}
@@ -75,13 +80,13 @@ export default function DealerHeader({
         icon={Tag}
         label="Add Sold"
         tone="greenDark"
-        onClick={() => router.push(`${DEALER_ROUTES.soldVehicles}?add=true`)}
+        onClick={triggerAddSoldVehicle}
       />
       <HeaderIconAction
         icon={Handshake}
         label="Add Transaction"
         tone="purple"
-        onClick={() => router.push(`${DEALER_ROUTES.transactions}?add=true`)}
+        onClick={triggerAddTransaction}
       />
       <HeaderMoreMenu
         items={[

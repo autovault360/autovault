@@ -9,7 +9,6 @@ import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
 import { formatCurrencyExact } from "@/lib/dealer/dashboard/calculations";
 import { WHOLESALE_EXPENSE_CATEGORY_LABELS } from "@/lib/dealer/dashboard/expense-form-constants";
 import type { ExpenseCategory, WholesaleExpense } from "@/lib/dealer/dashboard/types";
-import AddWholesaleExpenseModal from "./add-wholesale-expense-modal";
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -35,11 +34,7 @@ export default function ExpenseHubSection() {
     dashboardData,
     loading,
     expensesRef,
-    isExpenseModalOpen,
     openExpenseModal,
-    setExpenseModalOpen,
-    simulateSave,
-    workspaceSaving,
   } = useDealerDashboard();
 
   if (!dashboardData) return null;
@@ -125,12 +120,6 @@ export default function ExpenseHubSection() {
         </CardShell>
       </section>
 
-      <AddWholesaleExpenseModal
-        open={isExpenseModalOpen}
-        onOpenChange={setExpenseModalOpen}
-        onSave={simulateSave}
-        saving={workspaceSaving}
-      />
     </>
   );
 }

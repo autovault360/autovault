@@ -10,6 +10,7 @@ import ExpensesInventory from "@/components/expenses/expenses-inventory";
 import type { ExpenseDetail, ExpenseStats } from "@/lib/expenses/types";
 import { getExpenseDetail } from "@/lib/expenses/types";
 import type { ExpenseFormType } from "@/lib/expenses/form-types";
+import { useAdminQuickActionsOptional } from "@/lib/portal/admin-quick-actions-context";
 
 const ExpenseDetailPanel = dynamic(
   () => import("@/components/expenses/expense-detail-panel"),
@@ -38,10 +39,14 @@ export default function ExpensesPageContent({
   const [isPending, startTransition] = useTransition();
   const urlAddOpen = searchParams.get("add") === "true";
   const urlExpenseType = (searchParams.get("type") as ExpenseFormType | null) ?? expenseType;
+  const adminQuickActions = useAdminQuickActionsOptional();
+  const useGlobalAdd = Boolean(adminQuickActions);
 
   useEffect(() => {
-    setAddOpen(urlAddOpen);
-  }, [urlAddOpen]);
+    if (!useGlobalAdd || !urlAddOpen) return;
+    adminQuickActions?.triggerAddExpense(urlExpenseType);
+    window.history.replaceState(null, "", pathname);
+  }, [adminQuickActions, pathname, urlAddOpen, urlExpenseType, useGlobalAdd]);
 
   const selectedExpense = useMemo(
     () => (selectedId ? getExpenseDetail(expenses, selectedId) : null),
@@ -51,6 +56,19 @@ export default function ExpensesPageContent({
   const handleSelect = useCallback((row: ExpenseDetail) => {
     setSelectedId((prev) => (prev === row.id ? null : row.id));
   }, []);
+
+  useEffect(() => {
+    if (useGlobalAdd) return;
+    setAddOpen(urlAddOpen);
+  }, [urlAddOpen, useGlobalAdd]);
+
+  const handleRequestAdd = () => {
+    if (adminQuickActions) {
+      adminQuickActions.triggerAddExpense(urlExpenseType);
+      return;
+    }
+    handleAddOpenChange(true);
+  };
 
   const handleAddOpenChange = useCallback(
     (next: boolean) => {
@@ -116,7 +134,7 @@ export default function ExpensesPageContent({
             expenses={expenses}
             selectedId={selectedId}
             onSelect={handleSelect}
-            onRequestAdd={() => handleAddOpenChange(true)}
+            onRequestAdd={handleRequestAdd}
             loading={isPending}
           />
         </div>
@@ -130,11 +148,13 @@ export default function ExpensesPageContent({
         )}
       </div>
 
-      <AddExpenseModal
-        open={addOpen}
-        onOpenChange={handleAddOpenChange}
-        expenseType={urlExpenseType}
-      />
+      {!useGlobalAdd && (
+        <AddExpenseModal
+          open={addOpen}
+          onOpenChange={handleAddOpenChange}
+          expenseType={urlExpenseType}
+        />
+      )}
     </div>
   );
 }

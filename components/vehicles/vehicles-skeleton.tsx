@@ -8,28 +8,6 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-function AdminHeaderSkeleton() {
-  return (
-    <header className="mb-3.5 flex justify-between items-center gap-3 border-b border-slate-800 pb-3.5 xl:gap-4">
-      <SkeletonBar className="h-10 w-full max-w-[400px]" />
-      <div className="hidden xl:flex xl:flex-col xl:items-center xl:gap-1.5">
-        <SkeletonBar className="h-3 w-24" />
-        <div className="flex gap-2">
-          <SkeletonBar className="h-8 w-36" />
-          <SkeletonBar className="h-8 w-36" />
-          <SkeletonBar className="h-8 w-28" />
-          <SkeletonBar className="h-8 w-40" />
-          <SkeletonBar className="h-8 w-32" />
-        </div>
-      </div>
-      <div className="flex items-center gap-3">
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-      </div>
-    </header>
-  );
-}
-
 function StatsCardSkeleton() {
   return (
     <Card className="flex h-full flex-col gap-1.5 rounded-sm border border-slate-800/50 bg-transparent p-3 text-slate-200 shadow-none">
@@ -99,7 +77,6 @@ export function VehiclesTableSkeleton() {
 export default function VehiclesPageSkeleton() {
   return (
     <div>
-      <AdminHeaderSkeleton />
       <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
         <div className="space-y-2">
           <SkeletonBar className="h-8 w-44" />

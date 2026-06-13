@@ -12,5 +12,5 @@ export default async function VehicleDetailPage({ params, searchParams }: Props)
   const resolved = searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
   const vehicle = (await getVehicleDetail(id)) || notFound();
 
-  return <VehicleDetailShell vehicle={vehicle} defaultEdit={resolved.edit === "true"} />;
+  return <VehicleDetailShell vehicle={vehicle} defaultEdit={resolved.edit === "true"} backHref="/dashboard/vehicles" />;
 }

@@ -30,11 +30,36 @@ async function resolveImageUrl(
   }
 }
 
-export async function getWholesaleInventory(): Promise<WholesaleVehicle[]> {
+type GetWholesaleInventoryOptions = {
+  /** Signed URLs are expensive (one storage call per row). Skip for list views. */
+  includeImageUrls?: boolean;
+};
+
+export async function getWholesaleInventory(
+  options: GetWholesaleInventoryOptions = {},
+): Promise<WholesaleVehicle[]> {
+  const { includeImageUrls = false } = options;
   const auth = await authenticateWholesaleDealer();
   if (!auth.ok) return [];
 
   const supabase = await createClient();
+
+  if (!includeImageUrls) {
+    const { data: rows, error } = await supabase
+      .from("vehicles")
+      .select("*")
+      .eq("dealership_id", auth.user.dealershipId)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+
+    if (error || !rows) {
+      console.error("getWholesaleInventory:", error?.message);
+      return [];
+    }
+
+    return (rows as VehicleDbRow[]).map((row) => mapWholesaleVehicle(row));
+  }
+
   const { data: rows, error } = await supabase
     .from("vehicles")
     .select("*, images:vehicle_images(storage_path, is_primary, sort_order)")
@@ -47,14 +72,16 @@ export async function getWholesaleInventory(): Promise<WholesaleVehicle[]> {
     return [];
   }
 
-  const vehicles: WholesaleVehicle[] = [];
-  for (const row of rows) {
-    const r = row as VehicleDbRow & {
-      images?: { storage_path: string; is_primary: boolean; sort_order: number }[];
-    };
-    const imageUrl = await resolveImageUrl(supabase, r.images ?? []);
-    vehicles.push(mapWholesaleVehicle(r, imageUrl));
-  }
+  const typedRows = rows as (VehicleDbRow & {
+    images?: { storage_path: string; is_primary: boolean; sort_order: number }[];
+  })[];
+
+  const vehicles = await Promise.all(
+    typedRows.map(async (r) => {
+      const imageUrl = await resolveImageUrl(supabase, r.images ?? []);
+      return mapWholesaleVehicle(r, imageUrl);
+    }),
+  );
 
   return vehicles;
 }

@@ -1,12 +1,14 @@
 "use client";
 
-import { Calendar, Search, Upload } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -40,63 +42,65 @@ export default function TransactionsToolbar({
   onExport: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <div className="relative min-w-0 flex-1 basis-[200px]">
-        <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
-        <Input
-          theme="dark"
-          value={filters.search}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search by VIN, Stock #, Dealer, Auction..."
-          className="h-8 border-[#1e293b]     pl-8 text-[11px]"
-        />
+    <div className="flex flex-col gap-2.5 xl:flex-row xl:items-center xl:justify-between">
+      <div className="relative w-full xl:max-w-sm">
+        <InputGroup theme="dark">
+          <InputGroupAddon theme="dark">
+            <Search className="h-3.5 w-3.5" />
+          </InputGroupAddon>
+          <InputGroupInput
+            placeholder="Search by VIN, Stock #, Dealer, Auction..."
+            value={filters.search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            theme="dark"
+          />
+        </InputGroup>
       </div>
 
-      <Select value={filters.type} onValueChange={(v) => onTypeChange(v as TransactionType | "all")}>
-        <SelectTrigger theme="dark" className="h-8 w-[120px] border-[#1e293b]     text-[11px]">
-          <SelectValue placeholder="All Types" />
-        </SelectTrigger>
-        <SelectContent theme="dark" className="border-[#1e293b]    ">
-          <SelectItem value="all" theme="dark">All Types</SelectItem>
-          {TRANSACTION_TYPE_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value} theme="dark">
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="flex flex-wrap items-center gap-2">
+        <Select value={filters.type} onValueChange={(v) => onTypeChange(v as TransactionType | "all")}>
+          <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
+            <SelectValue placeholder="All Types" />
+          </SelectTrigger>
+          <SelectContent theme="dark" className="text-slate-300">
+            <SelectGroup>
+              <SelectLabel>Type</SelectLabel>
+              <SelectItem value="all" theme="dark" className="text-[11.5px]">All Types</SelectItem>
+              {TRANSACTION_TYPE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} theme="dark" className="text-[11.5px]">
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      <Select value={filters.status} onValueChange={(v) => onStatusChange(v as TransactionPaymentStatus | "all")}>
-        <SelectTrigger theme="dark" className="h-8 w-[115px] border-[#1e293b]     text-[11px]">
-          <SelectValue placeholder="All Status" />
-        </SelectTrigger>
-        <SelectContent theme="dark" className="border-[#1e293b]    ">
-          <SelectItem value="all" theme="dark">All Status</SelectItem>
-          {PAYMENT_STATUS_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value} theme="dark">
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <Select value={filters.status} onValueChange={(v) => onStatusChange(v as TransactionPaymentStatus | "all")}>
+          <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent theme="dark" className="text-slate-300">
+            <SelectGroup>
+              <SelectLabel>Payment Status</SelectLabel>
+              <SelectItem value="all" theme="dark" className="text-[11.5px]">All Status</SelectItem>
+              {PAYMENT_STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} theme="dark" className="text-[11.5px]">
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-      <button
-        type="button"
-        className="flex h-8 items-center gap-1.5 rounded-md border border-[#1e293b]     px-2.5 text-[11px] text-slate-400"
-      >
-        <Calendar className="h-3.5 w-3.5" />
-        {filters.dateLabel}
-      </button>
-
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onExport}
-        className="h-8 gap-1.5 border-[#1e293b] bg-[#0a101d]/60 text-[11px] text-slate-300 hover:bg-slate-800/40"
-      >
-        <Upload className="h-3.5 w-3.5" />
-        Export
-      </Button>
+        <Button
+          variant="outline"
+          theme="dark"
+          onClick={onExport}
+        >
+          <Download className="h-3.5 w-3.5" />
+          Export
+        </Button>
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 import { HeaderIconAction } from "@/components/layout/header-icon-action";
 import { HeaderMoreMenu } from "@/components/layout/header-more-menu";
 import { PortalHeaderShell } from "@/components/layout/portal-header-shell";
+import { useSalesRepQuickActions } from "@/lib/portal/sales-rep-quick-actions-context";
 import type { ISalesRepProfile } from "@/lib/sales-rep/dashboard/types";
 
 type Props = {
@@ -30,6 +31,7 @@ export default function SalesRepHeader({
   notificationCount = 0,
 }: Props) {
   const router = useRouter();
+  const { triggerAddVehicle } = useSalesRepQuickActions();
   const [messageUnread, setMessageUnread] = useState(0);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function SalesRepHeader({
         icon={Car}
         label="Add Vehicle"
         tone="blue"
-        onClick={() => router.push("/sales-rep/dashboard/inventory?add=true")}
+        onClick={triggerAddVehicle}
       />
       <HeaderIconAction
         icon={Car}
