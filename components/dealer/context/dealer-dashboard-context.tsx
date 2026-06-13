@@ -64,6 +64,13 @@ type DealerDashboardContextValue = {
   simulateSave: () => Promise<void>;
   inventoryAddSignal: number;
   clearInventoryAddSignal: () => void;
+  triggerAddVehicle: () => void;
+  soldVehicleAddSignal: number;
+  clearSoldVehicleAddSignal: () => void;
+  triggerAddSoldVehicle: () => void;
+  transactionAddSignal: number;
+  clearTransactionAddSignal: () => void;
+  triggerAddTransaction: () => void;
   refreshInventory: () => void;
 };
 
@@ -131,6 +138,8 @@ export function DealerDashboardProvider({
   const [workspaceSaving, setWorkspaceSaving] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [inventoryAddSignal, setInventoryAddSignal] = useState(0);
+  const [soldVehicleAddSignal, setSoldVehicleAddSignal] = useState(0);
+  const [transactionAddSignal, setTransactionAddSignal] = useState(0);
   const router = useRouter();
 
   const inventoryRef = useRef<HTMLDivElement | null>(null);
@@ -202,7 +211,11 @@ export function DealerDashboardProvider({
           break;
         case "transaction-add":
           setSelectedTransaction(null);
-          router.push(`${DEALER_ROUTES.transactions}?add=true`);
+          setTransactionAddSignal((n) => n + 1);
+          break;
+        case "sold-add":
+          setSelectedSoldVehicle(null);
+          setSoldVehicleAddSignal((n) => n + 1);
           break;
         case "expense-add":
           setIsExpenseModalOpen(true);
@@ -214,7 +227,10 @@ export function DealerDashboardProvider({
 
   const navigateToSection = useCallback(
     (sectionId: DealerSectionId, expandAction?: DealerExpandAction) => {
-      if (expandAction === "transaction-add") {
+      if (
+        expandAction === "transaction-add" ||
+        expandAction === "sold-add"
+      ) {
         handleExpandAction(expandAction);
         return;
       }
@@ -272,6 +288,26 @@ export function DealerDashboardProvider({
     setInventoryAddSignal(0);
   }, []);
 
+  const triggerAddVehicle = useCallback(() => {
+    setInventoryAddSignal((n) => n + 1);
+  }, []);
+
+  const clearSoldVehicleAddSignal = useCallback(() => {
+    setSoldVehicleAddSignal(0);
+  }, []);
+
+  const triggerAddSoldVehicle = useCallback(() => {
+    setSoldVehicleAddSignal((n) => n + 1);
+  }, []);
+
+  const clearTransactionAddSignal = useCallback(() => {
+    setTransactionAddSignal(0);
+  }, []);
+
+  const triggerAddTransaction = useCallback(() => {
+    setTransactionAddSignal((n) => n + 1);
+  }, []);
+
   const refreshInventory = useCallback(() => {
     router.refresh();
   }, [router]);
@@ -279,13 +315,13 @@ export function DealerDashboardProvider({
   const expandTransaction = useCallback(
     (transaction?: DealerTransaction | null) => {
       if (transaction !== undefined) setSelectedTransaction(transaction);
-      router.push(
-        transaction
-          ? DEALER_ROUTES.transactions
-          : `${DEALER_ROUTES.transactions}?add=true`,
-      );
+      if (transaction) {
+        router.push(DEALER_ROUTES.transactions);
+        return;
+      }
+      triggerAddTransaction();
     },
-    [router],
+    [router, triggerAddTransaction],
   );
 
   const openExpenseModal = useCallback(() => {
@@ -342,6 +378,13 @@ export function DealerDashboardProvider({
       simulateSave,
       inventoryAddSignal,
       clearInventoryAddSignal,
+      triggerAddVehicle,
+      soldVehicleAddSignal,
+      clearSoldVehicleAddSignal,
+      triggerAddSoldVehicle,
+      transactionAddSignal,
+      clearTransactionAddSignal,
+      triggerAddTransaction,
       refreshInventory,
     }),
     [
@@ -365,6 +408,13 @@ export function DealerDashboardProvider({
       simulateSave,
       inventoryAddSignal,
       clearInventoryAddSignal,
+      triggerAddVehicle,
+      soldVehicleAddSignal,
+      clearSoldVehicleAddSignal,
+      triggerAddSoldVehicle,
+      transactionAddSignal,
+      clearTransactionAddSignal,
+      triggerAddTransaction,
       refreshInventory,
     ],
   );
@@ -387,6 +437,20 @@ export function useDealerDashboard() {
 }
 
 export function useDealerNavigation() {
-  const { navigateToSection, activeSection } = useDealerDashboard();
-  return { navigateToSection, activeSection };
+  const {
+    navigateToSection,
+    activeSection,
+    triggerAddVehicle,
+    triggerAddSoldVehicle,
+    triggerAddTransaction,
+    openExpenseModal,
+  } = useDealerDashboard();
+  return {
+    navigateToSection,
+    activeSection,
+    triggerAddVehicle,
+    triggerAddSoldVehicle,
+    triggerAddTransaction,
+    openExpenseModal,
+  };
 }

@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button, ButtonIcon } from "@/components/ui/button";
+import { useAdminQuickActionsOptional } from "@/lib/portal/admin-quick-actions-context";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import ExpenseCategoryBadge from "./expense-category-badge";
 import {
@@ -60,6 +61,7 @@ export default function ExpensesInventory({
   loading = false,
 }: Props) {
   const router = useRouter();
+  const adminQuickActions = useAdminQuickActionsOptional();
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
@@ -198,11 +200,17 @@ export default function ExpensesInventory({
           <Button
             type="button"
             size="action"
-            onClick={() =>
-              onRequestAdd
-                ? onRequestAdd()
-                : router.push("/dashboard/expenses?add=true&type=general")
-            }
+            onClick={() => {
+              if (onRequestAdd) {
+                onRequestAdd();
+                return;
+              }
+              if (adminQuickActions) {
+                adminQuickActions.triggerAddExpense("general");
+                return;
+              }
+              router.push("/dashboard/expenses?add=true&type=general");
+            }}
           >
             <ButtonIcon tone="danger">
               <Plus />

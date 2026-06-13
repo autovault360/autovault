@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AppLayout from "@/components/layout/app-layout";
+import AdminPortalShell from "@/components/layout/admin-portal-shell";
 import AdminSidebarContent from "@/components/dashboard/admin-sidebar-content";
 import AdminHeader from "@/components/layout/AdminHeader";
 import AppFooter from "@/components/layout/app-footer";
@@ -40,12 +41,14 @@ export default async function DashboardLayout({
   }
 
   return (
-    <AppLayout
-      sidebar={<AdminSidebarContent />}
-      header={<AdminHeader />}
-      footer={<AppFooter />}
-    >
-      {children}
-    </AppLayout>
+    <AdminPortalShell>
+      <AppLayout
+        sidebar={<AdminSidebarContent />}
+        header={<AdminHeader />}
+        footer={<AppFooter />}
+      >
+        {children}
+      </AppLayout>
+    </AdminPortalShell>
   );
 }

@@ -10,8 +10,6 @@ export default function InventoryOverviewSection() {
     dashboardData,
     loading,
     inventoryRef,
-    inventoryAddSignal,
-    clearInventoryAddSignal,
   } = useDealerDashboard();
 
   if (!dashboardData) return null;
@@ -25,8 +23,6 @@ export default function InventoryOverviewSection() {
       <InventoryCenter
         vehicles={dashboardData.vehicles}
         loading={loading.inventory}
-        addSignal={inventoryAddSignal}
-        onAddSignalConsumed={clearInventoryAddSignal}
       />
     </section>
   );

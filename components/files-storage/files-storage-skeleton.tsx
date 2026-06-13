@@ -8,23 +8,9 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-function AdminHeaderSkeleton() {
-  return (
-    <header className="mb-3.5 flex items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
-      <SkeletonBar className="h-10 w-full max-w-[400px]" />
-      <div className="flex items-center gap-3">
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-      </div>
-    </header>
-  );
-}
-
 export default function FilesStoragePageSkeleton() {
   return (
     <div className="files-storage-page relative">
-      <AdminHeaderSkeleton />
-
       <div className="flex gap-3.5">
         <div className="min-w-0 flex-1">
           <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 px-0.5">

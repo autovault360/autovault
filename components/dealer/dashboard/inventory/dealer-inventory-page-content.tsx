@@ -1,29 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { Plus } from "lucide-react";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
-import type { WholesaleVehicle } from "@/lib/dealer/dashboard/types";
+import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import InventoryCenter from "./inventory-center";
 
 type Props = {
-  vehicles: WholesaleVehicle[];
   defaultAddOpen?: boolean;
 };
 
 export default function DealerInventoryPageContent({
-  vehicles,
   defaultAddOpen = false,
 }: Props) {
-  const [addSignal, setAddSignal] = useState(defaultAddOpen ? 1 : 0);
+  const { dashboardData, loading, triggerAddVehicle } = useDealerDashboard();
+
+  useEffect(() => {
+    if (defaultAddOpen) triggerAddVehicle();
+  }, [defaultAddOpen, triggerAddVehicle]);
+
+  if (!dashboardData) return null;
 
   return (
     <DealerPageShell
       title="Inventory Overview"
       description="Manage wholesale inventory, titles, and pipeline status."
       headerExtra={
-        <Button type="button" size="action" onClick={() => setAddSignal((n) => n + 1)}>
+        <Button type="button" size="action" onClick={triggerAddVehicle}>
           <ButtonIcon tone="default">
             <Plus />
           </ButtonIcon>
@@ -32,10 +36,9 @@ export default function DealerInventoryPageContent({
       }
     >
       <InventoryCenter
-        vehicles={vehicles}
+        vehicles={dashboardData.vehicles}
+        loading={loading.inventory}
         variant="page"
-        addSignal={addSignal}
-        onAddSignalConsumed={() => {}}
       />
     </DealerPageShell>
   );

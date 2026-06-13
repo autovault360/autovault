@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CardShell } from "@/components/dashboard/card-shell";
+import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import { cn } from "@/lib/utils";
 import { exportSoldVehiclesCsv } from "@/lib/dealer/dashboard/export-sold-vehicles";
 import {
   buildSoldVehicleKpiStrip,
@@ -112,7 +113,7 @@ export default function SoldVehiclesCenter({
   };
 
   return (
-    <CardShell className="min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <div className={cn("rounded-sm border p-3.5 text-slate-200 shadow-none", ADMIN_PANEL_SHELL_CLASS)}>
       <div className="space-y-3.5">
         <SoldVehiclesCenterHeader
           periodPreset={periodPreset}
@@ -139,7 +140,7 @@ export default function SoldVehiclesCenter({
           onView={onViewSale}
         />
 
-        <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-[#1e293b] pt-3 text-[11px]">
+        <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-800 pt-3 text-[11px]">
           <span className="text-[#64748b]">
             Showing{" "}
             <strong className="text-white tabular-nums">{footer.count}</strong>{" "}
@@ -165,6 +166,6 @@ export default function SoldVehiclesCenter({
           </span>
         </div>
       </div>
-    </CardShell>
+    </div>
   );
 }

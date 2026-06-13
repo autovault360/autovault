@@ -123,8 +123,11 @@ export default function AddExpenseDropdown({
                 onMouseEnter={() => setHoveredId(item.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 onClick={() => {
-                  onSelect?.(item.id);
                   setOpen(false);
+                  if (onSelect) {
+                    onSelect(item.id);
+                    return;
+                  }
                   router.push(ROUTES[item.id]);
                 }}
                 className={cn(

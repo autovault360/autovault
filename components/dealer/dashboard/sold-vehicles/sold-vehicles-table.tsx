@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Eye, FileText, MoreVertical } from "lucide-react";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
 import { formatCurrencyExact } from "@/lib/dealer/dashboard/calculations";
@@ -10,17 +9,14 @@ import type { SoldVehicleRecord } from "@/lib/dealer/dashboard/types";
 import TransactionPaymentBadge from "../transactions/transaction-payment-badge";
 
 const TABLE_WRAPPER_CLASS =
-  "[&>div]:min-w-0 [&>div]:max-w-full [&>div]:overflow-x-auto [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-700/80 [&>div]: " +
+  "[&>div]:min-w-0 [&>div]:max-w-full [&>div]:overflow-x-auto [&>div]:rounded-sm [&>div]:border [&>div]:border-slate-800/60 " +
   "[&_table]:min-w-[1300px] [&_table]:w-full [&_table]:text-[11px] " +
   "[&_thead]:  [&_thead_tr]:border-b [&_thead_tr]:border-slate-800 " +
   "[&_th]:px-2.5 [&_th]:py-2.5 [&_th]:text-[9.5px] [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-[0.08em] [&_th]:text-slate-500 " +
   "[&_td]:px-2.5 [&_td]:py-2.5 [&_td]:align-middle " +
   "[&_tbody_tr]:border-b [&_tbody_tr]:border-slate-800/50 [&_tbody_tr]:transition-colors [&_tbody_tr:last-child]:border-0 " +
   "[&_tbody_tr:hover]:bg-slate-800/25 " +
-  "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800 [&>div>div:last-child]: /60";
-
-const PLACEHOLDER_IMG =
-  "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=80&h=60&fit=crop";
+  "[&>div>div:last-child]:border-t [&>div>div:last-child]:border-slate-800";
 
 export default function SoldVehiclesTable({
   records,
@@ -52,15 +48,17 @@ export default function SoldVehiclesTable({
       header: "Vehicle",
       cell: (row) => (
         <div className="flex min-w-[160px] items-center gap-2">
-          <div className="relative h-8 w-10 shrink-0 overflow-hidden rounded border border-slate-700/80 bg-slate-800">
-            <Image
-              src={row.vehicleImageUrl ?? PLACEHOLDER_IMG}
+          {row.vehicleImageUrl ? (
+            <img
+              src={row.vehicleImageUrl}
               alt=""
-              fill
-              className="object-cover"
-              sizes="40px"
+              className="h-8 w-10 shrink-0 rounded border border-slate-800 object-cover"
             />
-          </div>
+          ) : (
+            <div className="flex h-8 w-10 shrink-0 items-center justify-center rounded border border-slate-800 bg-slate-800 text-[8px] text-slate-500">
+              No Photo
+            </div>
+          )}
           <span className="truncate text-[11px] font-medium text-slate-200">
             {row.vehicleLabel}
           </span>

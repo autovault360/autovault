@@ -17,6 +17,7 @@ type Props = {
   showSectionNumber?: boolean;
   expandedToggleLabel?: string;
   collapsedToggleLabel?: string;
+  onToggle?: (expanded: boolean) => void;
 };
 
 export default function DashboardExpandableShell({
@@ -31,8 +32,15 @@ export default function DashboardExpandableShell({
   showSectionNumber = true,
   expandedToggleLabel = "Hide Details",
   collapsedToggleLabel = "View Details",
+  onToggle,
 }: Props) {
   const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const handleToggle = () => {
+    const next = !expanded;
+    setExpanded(next);
+    onToggle?.(next);
+  };
 
   return (
     <section className={cn("mb-3.5", className)}>
@@ -56,7 +64,7 @@ export default function DashboardExpandableShell({
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setExpanded((e) => !e)}
+              onClick={handleToggle}
               className="flex items-center gap-1 text-[11px] text-blue-400 transition hover:text-blue-300"
             >
               {expanded ? expandedToggleLabel : collapsedToggleLabel}

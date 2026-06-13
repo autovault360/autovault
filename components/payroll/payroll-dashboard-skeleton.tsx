@@ -8,18 +8,6 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-function AdminHeaderSkeleton() {
-  return (
-    <header className="mb-3.5 flex items-center justify-between gap-3 border-b border-slate-800 pb-3.5">
-      <SkeletonBar className="h-10 w-full max-w-[400px]" />
-      <div className="flex gap-2">
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-        <SkeletonBar className="h-8 w-8 rounded-full" />
-      </div>
-    </header>
-  );
-}
-
 function KpiSkeleton() {
   return (
     <Card className="flex h-full flex-col rounded-sm border border-slate-800/50 bg-transparent p-3 shadow-none">
@@ -38,8 +26,6 @@ function KpiSkeleton() {
 export default function PayrollDashboardSkeleton() {
   return (
     <div>
-      <AdminHeaderSkeleton />
-
       <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3">
         <div>
           <SkeletonBar className="h-8 w-48" />

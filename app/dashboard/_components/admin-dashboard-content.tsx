@@ -34,11 +34,7 @@ export default function AdminDashboardContent(props: AdminDashboardContentProps)
         topSalesRep={props.topSalesRep}
         todayEvents={props.todayEvents}
       />
-      <SalesRepSection
-        periodLabel={props.periodLabel}
-        kpiCards={props.salesRepKpis}
-        tableRows={props.salesRepTableRows}
-      />
+      <SalesRepSection />
       <GrossProfitSection
         periodLabel={props.grossProfitPeriodLabel}
         rows={props.grossProfitRows}

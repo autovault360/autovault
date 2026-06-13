@@ -20,6 +20,7 @@ export type DealerExpandAction =
   | "inventory-add"
   | "inventory-edit"
   | "transaction-add"
+  | "sold-add"
   | "expense-add";
 
 export function scrollToSection(

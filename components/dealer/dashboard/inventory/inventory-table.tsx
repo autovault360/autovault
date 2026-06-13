@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Copy, Eye, MoreHorizontal, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import DataTable, { type Column } from "@/components/reusable/DataTable";
@@ -44,14 +45,12 @@ function formatDisplayDate(iso?: string): string {
 export default function InventoryTable({
   vehicles,
   loading,
-  onView,
   onEdit,
   onChangeTitleStatus,
   onChangeInventoryStatus,
 }: {
   vehicles: WholesaleVehicle[];
   loading?: boolean;
-  onView: (vehicle: WholesaleVehicle) => void;
   onEdit: (vehicle: WholesaleVehicle) => void;
   onChangeTitleStatus: (vehicle: WholesaleVehicle) => void;
   onChangeInventoryStatus: (
@@ -80,9 +79,8 @@ export default function InventoryTable({
       sortable: true,
       accessor: (row) => getVehicleLabel(row),
       cell: (row) => (
-        <button
-          type="button"
-          onClick={() => onView(row)}
+        <Link
+          href={`/dealer/inventory/${row.id}`}
           className="flex w-full items-center gap-2.5 text-left transition hover:opacity-80"
         >
           {row.imageUrl ? (
@@ -105,7 +103,7 @@ export default function InventoryTable({
               <div className="truncate text-[10px] text-slate-500">{row.trim}</div>
             ) : null}
           </div>
-        </button>
+        </Link>
       ),
     },
     {
@@ -284,17 +282,14 @@ export default function InventoryTable({
                 ref={popoverRef}
                 className="absolute right-0 top-full z-50 mt-1 min-w-[180px] overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
               >
-                <button
-                  type="button"
+                <Link
+                  href={`/dealer/inventory/${row.id}`}
                   className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-slate-800"
-                  onClick={() => {
-                    setActivePopover(null);
-                    onView(row);
-                  }}
+                  onClick={() => setActivePopover(null)}
                 >
                   <Eye className="h-3.5 w-3.5" />
                   View
-                </button>
+                </Link>
                 <button
                   type="button"
                   className="block w-full px-3 py-1.5 text-left text-xs text-slate-300 transition hover:bg-slate-800"

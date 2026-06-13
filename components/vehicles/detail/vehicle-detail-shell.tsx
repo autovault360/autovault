@@ -17,9 +17,11 @@ import NotesCard from "@/components/vehicles/detail/notes-card";
 export default function VehicleDetailShell({
   vehicle: initialVehicle,
   defaultEdit = false,
+  backHref,
 }: {
   vehicle: VehicleDetail;
   defaultEdit?: boolean;
+  backHref?: string;
 }) {
   const pathname = usePathname();
   const [vehicle, setVehicle] = useState(initialVehicle);
@@ -53,6 +55,7 @@ export default function VehicleDetailShell({
         onEditOpenChange={handleEditOpenChange}
         onVehicleUpdated={setVehicle}
         photoUploadTrigger={triggerUpload}
+        backHref={backHref}
       />
 
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-5 auto-rows-auto">

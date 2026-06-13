@@ -59,7 +59,8 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Add Vehicle",
         icon: Plus,
         color: "text-emerald-500",
-        href: `${DEALER_ROUTES.inventory}?add=true`,
+        sectionId: DEALER_SECTION_IDS.inventory,
+        expandAction: "inventory-add",
       },
       {
         label: "Inventory Overview",
@@ -82,7 +83,7 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Add Sold Vehicle",
         icon: Plus,
         color: "text-emerald-500",
-        href: `${DEALER_ROUTES.soldVehicles}?add=true`,
+        expandAction: "sold-add",
       },
       {
         label: "Sold Vehicles",
@@ -99,7 +100,7 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "Add Transaction",
         icon: Search,
         color: "text-cyan-500",
-        href: `${DEALER_ROUTES.transactions}?add=true`,
+        expandAction: "transaction-add",
       },
       {
         label: "Dealer Transactions",

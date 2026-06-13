@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { CardShell } from "@/components/dashboard/card-shell";
+import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import { exportInventoryCsv } from "@/lib/dealer/inventory/export-inventory";
 import {
   buildInventoryKpiStrip,
@@ -18,7 +19,6 @@ import type {
   WholesaleVehicle,
 } from "@/lib/dealer/dashboard/types";
 import AddEditVehicleModal from "./add-edit-vehicle-modal";
-import AddVehicleModal from "@/components/vehicles/add/add-vehicle-modal";
 import ChangeTitleStatusDialog from "./change-title-status-dialog";
 import InventoryCenterHeader from "./inventory-center-header";
 import InventoryDetailSheet from "./inventory-detail-sheet";
@@ -32,16 +32,13 @@ export default function InventoryCenter({
   vehicles,
   loading,
   variant = "embedded",
-  addSignal = 0,
-  onAddSignalConsumed,
 }: {
   vehicles: WholesaleVehicle[];
   loading?: boolean;
   variant?: "embedded" | "page";
-  addSignal?: number;
-  onAddSignalConsumed?: () => void;
 }) {
   const router = useRouter();
+  const { triggerAddVehicle } = useDealerDashboard();
   const [search, setSearch] = useState("");
   const [inventoryStatusFilter, setInventoryStatusFilter] = useState<
     WholesaleInventoryStatus | "all"
@@ -56,7 +53,6 @@ export default function InventoryCenter({
   const [sheetVariant, setSheetVariant] = useState<
     Exclude<InventoryKpiFilterKey, "all"> | null
   >(null);
-  const [addModalOpen, setAddModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalVehicle, setModalVehicle] = useState<WholesaleVehicle | null>(
     null,
@@ -65,17 +61,6 @@ export default function InventoryCenter({
   const [titleDialogVehicle, setTitleDialogVehicle] =
     useState<WholesaleVehicle | null>(null);
   const [titleDialogOpen, setTitleDialogOpen] = useState(false);
-
-  const openAddModal = () => {
-    setAddModalOpen(true);
-  };
-
-  useEffect(() => {
-    if (addSignal > 0) {
-      openAddModal();
-      onAddSignalConsumed?.();
-    }
-  }, [addSignal, onAddSignalConsumed]);
 
   const locations = useMemo(() => getUniqueLocations(vehicles), [vehicles]);
 
@@ -143,9 +128,7 @@ export default function InventoryCenter({
   };
 
   const openViewModal = (vehicle: WholesaleVehicle) => {
-    setModalVehicle(vehicle);
-    setModalReadOnly(true);
-    setModalOpen(true);
+    router.push(`/dealer/inventory/${vehicle.id}`);
   };
 
   const handleChangeInventoryStatus = async (
@@ -178,7 +161,7 @@ export default function InventoryCenter({
   const content = (
     <div className="space-y-3.5">
       {variant === "embedded" && (
-        <InventoryCenterHeader onAddVehicle={openAddModal} />
+        <InventoryCenterHeader onAddVehicle={triggerAddVehicle} />
       )}
 
       <InventoryKpiStrip
@@ -209,7 +192,6 @@ export default function InventoryCenter({
         <InventoryTable
           vehicles={filtered}
           loading={loading}
-          onView={openViewModal}
           onEdit={openEditModal}
           onChangeTitleStatus={(vehicle) => {
             setTitleDialogVehicle(vehicle);
@@ -263,12 +245,6 @@ export default function InventoryCenter({
         variant={sheetVariant}
         vehicles={vehicles}
         onViewVehicle={openViewModal}
-      />
-
-      <AddVehicleModal
-        open={addModalOpen}
-        onOpenChange={setAddModalOpen}
-        onSuccess={handleRefresh}
       />
 
       {modalVehicle && (

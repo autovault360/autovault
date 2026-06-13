@@ -20,6 +20,7 @@ import type {
   CustomerStats,
   SalesRepOption,
 } from "@/lib/customers/types";
+import { useAdminQuickActionsOptional } from "@/lib/portal/admin-quick-actions-context";
 
 type Props = {
   customers: CustomerListItem[];
@@ -37,6 +38,8 @@ export default function CustomersPageContent({
   defaultEditId,
 }: Props) {
   const pathname = usePathname();
+  const adminQuickActions = useAdminQuickActionsOptional();
+  const useGlobalAdd = Boolean(adminQuickActions);
 
   const [customers, setCustomers] = useState(initialCustomers);
   const [tableLoading, setTableLoading] = useState(false);
@@ -49,8 +52,23 @@ export default function CustomersPageContent({
   const [addOpen, setAddOpen] = useState(defaultOpen);
 
   useEffect(() => {
+    if (useGlobalAdd) return;
     setAddOpen(defaultOpen);
-  }, [defaultOpen]);
+  }, [defaultOpen, useGlobalAdd]);
+
+  useEffect(() => {
+    if (!useGlobalAdd || !defaultOpen) return;
+    adminQuickActions?.triggerAddCustomer();
+    window.history.replaceState(null, "", pathname);
+  }, [adminQuickActions, defaultOpen, pathname, useGlobalAdd]);
+
+  const handleRequestAdd = () => {
+    if (adminQuickActions) {
+      adminQuickActions.triggerAddCustomer();
+      return;
+    }
+    handleAddOpenChange(true);
+  };
 
   const refreshTable = useCallback(async () => {
     if (tableLoadingRef.current) return;
@@ -124,7 +142,7 @@ export default function CustomersPageContent({
                 Manage customer relationships and deal history.
               </p>
             </div>
-            <AddCustomerTrigger onClick={() => handleAddOpenChange(true)} />
+            <AddCustomerTrigger onClick={handleRequestAdd} />
           </section>
 
           <CustomerStatsCards stats={stats} />
@@ -137,7 +155,7 @@ export default function CustomersPageContent({
               onSelect={handleSelect}
               onEdit={handleEdit}
               onAddNote={handleAddNote}
-              onRequestAdd={() => handleAddOpenChange(true)}
+              onRequestAdd={handleRequestAdd}
               loading={tableLoading}
             />
           </Suspense>
@@ -156,12 +174,14 @@ export default function CustomersPageContent({
         )}
       </div>
 
-      <AddCustomerModal
-        open={addOpen}
-        onOpenChange={handleAddOpenChange}
-        salesReps={salesReps}
-        onSaved={handleCustomerSaved}
-      />
+      {!useGlobalAdd && (
+        <AddCustomerModal
+          open={addOpen}
+          onOpenChange={handleAddOpenChange}
+          salesReps={salesReps}
+          onSaved={handleCustomerSaved}
+        />
+      )}
       {editCustomer && (
         <AddCustomerModal
           open={!!editCustomer}
