@@ -20,6 +20,7 @@ import { PanelPreview } from "@/components/dashboard/PanelPreview";
 import { CardShell, CardHead } from "@/components/dashboard/card-shell";
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
 import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import { kpiGridClass } from "@/lib/ui/kpi-grid";
 import { KPIChart } from "@/components/dashboard/KPIChart";
 import { cn } from "@/lib/utils";
 import { Download, FileText } from "lucide-react";
@@ -123,10 +124,16 @@ export default function CpaDashboardContent() {
       <CpaMonthSelector />
 
       {/* KPI Cards */}
-      <div className="mb-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+      <div className={kpiGridClass(dashboard.kpis.length, "mb-3.5")}>
         {dashboard.kpis.map((kpi) => (
           <PanelPreview key={kpi.label} title={kpi.label} expanded={<ExpandedKpi kpi={kpi} />}>
-            <KPICard data={toKpiCardData(kpi)} showLink={false} showSparkline={false} />
+            <KPICard
+              data={toKpiCardData(kpi)}
+              showLink={false}
+              showSparkline={false}
+              layout="default"
+              className={ADMIN_PANEL_SHELL_CLASS}
+            />
           </PanelPreview>
         ))}
       </div>

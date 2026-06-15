@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSignedUrl } from "@/lib/vehicles/server/utils";
 
+const ACTIVE_INVENTORY_STATUSES = ["in_stock", "needs_attention"] as const;
+
 export type VehicleRow = {
   id: string;
   year: number;
@@ -68,7 +70,8 @@ export async function getVehicleCount(dealershipId: string, to?: string): Promis
     .from("vehicles")
     .select("id", { count: "exact", head: true })
     .eq("dealership_id", dealershipId)
-    .is("deleted_at", null);
+    .is("deleted_at", null)
+    .in("status", ACTIVE_INVENTORY_STATUSES);
 
   if (to) {
     query = query.lte("created_at", `${to}T23:59:59`);
@@ -272,6 +275,7 @@ export async function getDashboardInventoryPreview(
     )
     .eq("dealership_id", dealershipId)
     .is("deleted_at", null)
+    .in("status", ACTIVE_INVENTORY_STATUSES)
     .order("created_at", { ascending: false })
     .limit(limit);
 

@@ -17,10 +17,18 @@ import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
 import { formatCurrency } from "@/lib/dealer/dashboard/calculations";
 import { getInitials } from "@/lib/calendar/format-utils";
 import { cn } from "@/lib/utils";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import SalesRepRankCell from "@/components/sales-reps/sales-rep-rank-cell";
 import type { AdminSalesRepTableRow } from "@/lib/dashboard/admin/types";
 import DashboardExpandableShell from "./dashboard-expandable-shell";
-import { ADMIN_PANEL_INNER_CLASS, ADMIN_PANEL_SHELL_CLASS } from "./admin-panel-styles";
+import { ADMIN_PANEL_INNER_CLASS } from "./admin-panel-styles";
+
+const SALES_REP_KPI_COUNT = 5;
 
 function formatCompact(n: number): string {
   if (n >= 1000) return `${Math.round(n / 1000)}K`;
@@ -28,24 +36,7 @@ function formatCompact(n: number): string {
 }
 
 function SalesRepSkeleton() {
-  return (
-    <div className="mb-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className="flex h-full animate-pulse flex-col gap-1.5 rounded-sm border border-slate-800/50 bg-card p-3 shadow-none"
-        >
-          <div className="flex items-start gap-2.5">
-            <div className="h-10 w-10 shrink-0 rounded-full bg-slate-800/80" />
-            <div className="min-w-0 flex-1 space-y-1.5">
-              <div className="h-3 w-24 rounded-md bg-slate-800/80" />
-              <div className="h-5 w-20 rounded-md bg-slate-800/80" />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+  return <KpiGridSkeleton count={SALES_REP_KPI_COUNT} />;
 }
 
 export default function SalesRepSection() {
@@ -111,13 +102,12 @@ export default function SalesRepSection() {
             <span className="text-[11px] text-slate-400">{data.periodLabel}</span>
           </div>
 
-          <div className="mb-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-5">
+          <div className={cn("mb-3.5", kpiGridClass(SALES_REP_KPI_COUNT))}>
             {data.kpiCards.map((card) => (
               <KPICard
                 key={card.label}
                 data={card}
-                showSparkline={false}
-                showLink={false}
+                {...KPI_CARD_DEFAULT_PROPS}
                 valueClassName={
                   card.label === "Pending Commission"
                     ? "text-amber-400"
@@ -125,7 +115,7 @@ export default function SalesRepSection() {
                       ? "text-emerald-400"
                       : undefined
                 }
-                className={ADMIN_PANEL_SHELL_CLASS}
+                className={KPI_CARD_SHELL_CLASS}
               />
             ))}
           </div>

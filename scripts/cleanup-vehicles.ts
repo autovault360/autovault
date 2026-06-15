@@ -85,7 +85,7 @@ async function showCounts(
 async function main() {
   const { dealershipId: requestedDealershipId, dryRun } = parseArgs();
 
-  console.log("╔═══════════════════════════════════════════╗");
+  console.log("╔═══════════════════════════════════════════�—");
   console.log("║  AutoVault360 — Vehicle Data Cleanup     ║");
   if (dryRun) {
     console.log("║   🔍 DRY RUN — no changes will be made  ║");
@@ -129,7 +129,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("deal_jackets").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -138,7 +138,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("deals").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -147,7 +147,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("vehicle_losses").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -156,7 +156,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("vehicle_images").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -165,7 +165,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("vehicle_expenses").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -174,7 +174,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("pricing_history").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -183,7 +183,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("status_history").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -192,7 +192,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("vehicles").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -201,7 +201,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("customer_documents").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -210,7 +210,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("customer_communications").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -219,7 +219,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("customer_notes").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -228,7 +228,7 @@ async function main() {
   {
     const query = eqFilter(supabase.from("customers").delete());
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -240,7 +240,7 @@ async function main() {
       query = query.eq("dealership_id", requestedDealershipId);
     }
     const { data, error } = await query.select("id");
-    if (error) console.error(`  ✗ ${error.message}`);
+    if (error) console.error(`  �— ${error.message}`);
     else console.log(`  ✓ ${data?.length ?? 0} deleted`);
   }
 
@@ -257,7 +257,7 @@ async function main() {
         query = query.eq("dealership_id", requestedDealershipId);
       }
       const { data, error } = await query.select("id");
-      if (error) console.error(`  ✗ ${entity}: ${error.message}`);
+      if (error) console.error(`  �— ${entity}: ${error.message}`);
       else console.log(`  ✓ ${entity}: ${data?.length ?? 0} deleted`);
     }
   }
@@ -275,7 +275,7 @@ async function main() {
         query = query.eq("dealership_id", requestedDealershipId);
       }
       const { data, error } = await query.select("id");
-      if (error) console.error(`  ✗ ${entity}: ${error.message}`);
+      if (error) console.error(`  �— ${entity}: ${error.message}`);
       else console.log(`  ✓ ${entity}: ${data?.length ?? 0} deleted`);
     }
   }

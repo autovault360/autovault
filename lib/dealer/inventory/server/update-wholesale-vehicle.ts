@@ -11,6 +11,8 @@ import {
 import {
   resolveWholesalePaymentStatus,
   todayISO,
+  mapInventoryStatusToDb,
+  resolveArbitrationFields,
 } from "./helpers";
 import { checkVinUniqueness } from "@/lib/vehicles/server/utils";
 import { resolveTitleReceivedFields } from "@/lib/vehicles/title-received";
@@ -35,7 +37,9 @@ const schema = z.object({
   marketValue: z.coerce.number().min(0),
   wholesaleValue: z.coerce.number().min(0).optional(),
   titleReceived: z.boolean(),
-  inventoryStatus: z.enum(["in_stock", "pending_sale", "sold"]),
+  inventoryStatus: z.enum(["in_stock", "pending_sale", "sold", "arbitration"]),
+  arbitrationReason: z.string().max(200).optional(),
+  arbitrationBuyerDealer: z.string().max(120).optional(),
   odometerStatus: z.string().optional(),
   notes: z.string().max(500).optional(),
   acquisitionDate: z.string().optional(),
@@ -65,7 +69,7 @@ export async function updateWholesaleVehicle(
 
     const { data: existing } = await supabase
       .from("vehicles")
-      .select("status, title_status, vin, title_missing_since")
+      .select("status, title_status, vin, title_missing_since, arbitration_listed_at")
       .eq("id", data.vehicleId)
       .eq("dealership_id", dealershipId)
       .is("deleted_at", null)
@@ -93,12 +97,7 @@ export async function updateWholesaleVehicle(
       existing.title_missing_since,
     );
 
-    const dbStatus =
-      data.inventoryStatus === "pending_sale"
-        ? "pending_sale"
-        : data.inventoryStatus === "sold"
-          ? "sold"
-          : "in_stock";
+    const dbStatus = mapInventoryStatusToDb(data.inventoryStatus);
 
     const reconditioningCost = data.reconRepairDetails;
     const totalInvested =
@@ -145,6 +144,13 @@ export async function updateWholesaleVehicle(
       times_in_auction: data.timesInAuction ?? 0,
       next_auction_date: data.nextAuctionDate || null,
       last_auction_date: data.lastAuctionDate || null,
+      ...resolveArbitrationFields({
+        inventoryStatus: data.inventoryStatus,
+        previousStatus: existing.status,
+        arbitrationReason: data.arbitrationReason,
+        arbitrationBuyerDealer: data.arbitrationBuyerDealer,
+        existingListedAt: existing.arbitration_listed_at as string | null,
+      }),
     };
 
     const { error: updateError } = await supabase

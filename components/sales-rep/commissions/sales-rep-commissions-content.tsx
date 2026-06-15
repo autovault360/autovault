@@ -26,7 +26,14 @@ import type {
 import { COMMISSION_STATUS_LABELS } from "@/lib/sales-rep/commissions/types";
 import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import CommissionStatusBadge from "./commission-status-badge";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
+
+const KPI_COUNT = 5;
 
 const SPARK_POINTS =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
@@ -233,24 +240,20 @@ export default function SalesRepCommissionsContent() {
         />
       </section>
 
-      <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        {loading
-          ? Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[108px] animate-pulse rounded-sm border border-slate-700 bg-slate-800/40"
-              />
-            ))
-          : kpiCards.map((kpi) => (
-              <KPICard
-                key={kpi.label}
-                data={kpi}
-                showSparkline={false}
-                showLink={false}
-                className={ADMIN_PANEL_SHELL_CLASS}
-              />
-            ))}
-      </div>
+      {loading ? (
+        <KpiGridSkeleton count={KPI_COUNT} className="mb-4" />
+      ) : (
+        <div className={kpiGridClass(KPI_COUNT, "mb-4")}>
+          {kpiCards.map((kpi) => (
+            <KPICard
+              key={kpi.label}
+              data={kpi}
+              {...KPI_CARD_DEFAULT_PROPS}
+              className={KPI_CARD_SHELL_CLASS}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="rounded-lg border-slate-700/80 bg-card p-4 backdrop-blur-sm">
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">

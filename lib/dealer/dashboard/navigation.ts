@@ -3,6 +3,7 @@ export const DEALER_ROUTES = {
   inventory: "/dealer/inventory",
   transactions: "/dealer/transactions",
   soldVehicles: "/dealer/sold-vehicles",
+  arbitration: "/dealer/dashboard/arbitration",
 } as const;
 
 export const DEALER_SECTION_IDS = {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import NProgress from "nprogress";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import {
   Eye,
   Loader2,
   Copy,
+  Shuffle,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,8 @@ import DataTable, { type Column } from "@/components/reusable/DataTable";
 import { Button } from "../ui/button";
 import EditVehicleModal from "@/components/vehicles/detail/edit-vehicle-modal";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
+import EntityActionModal from "@/components/shared/entity-action-modal";
+import { updateVehicleStatus } from "@/lib/vehicles/server/update-vehicle-status";
 
 type VehiclesInventoryProps = {
   vehicles: Vehicle[];
@@ -51,6 +54,7 @@ type VehiclesInventoryProps = {
 
 export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesInventoryProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [make, setMake] = useState("all");
   const [model, setModel] = useState("all");
@@ -60,6 +64,8 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<VehicleDetail | null>(null);
   const [editLoading, setEditLoading] = useState(false);
+  const [statusVehicleId, setStatusVehicleId] = useState<string | null>(null);
+  const [statusSubmitting, setStatusSubmitting] = useState(false);
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -358,7 +364,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
             {activePopover === v.id && (
               <div
                 ref={popoverRef}
-                className="absolute right-0 top-full z-50 mt-1 w-32 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
+                className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
               >
                 <Link
                   href={`/dashboard/vehicles/${v.id}`}
@@ -368,6 +374,17 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                   <Eye className="h-3.5 w-3.5" />
                   View
                 </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStatusVehicleId(v.id);
+                    setActivePopover(null);
+                  }}
+                  className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-slate-800"
+                >
+                  <Shuffle className="h-3.5 w-3.5" />
+                  Change Status
+                </button>
               </div>
             )}
           </div>
@@ -516,6 +533,70 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
           onVehicleUpdated={setEditingVehicle}
         />
       )}
+
+      <EntityActionModal
+        open={!!statusVehicleId}
+        onOpenChange={(open) => {
+          if (!open) setStatusVehicleId(null);
+        }}
+        title="Change Status"
+        subtitle="Update the status of this vehicle"
+        sectionTitle="VEHICLE STATUS"
+        icon={<Shuffle className="h-4 w-4" />}
+        fields={[
+          {
+            name: "status",
+            label: "New Status",
+            type: "select",
+            required: true,
+            placeholder: "Select a status...",
+            options: [
+              { value: "in_stock", label: "In Stock" },
+              { value: "needs_attention", label: "Needs Attention" },
+              { value: "pending_deal", label: "Pending Deal" },
+              { value: "sold", label: "Sold" },
+              { value: "loss", label: "Loss" },
+            ],
+            defaultValue: "",
+          },
+          {
+            name: "notes",
+            label: "Notes (optional)",
+            type: "textarea",
+            placeholder: "Reason for status change...",
+            rows: 3,
+          },
+        ]}
+        saveLabel="Update Status"
+        isSubmitting={statusSubmitting}
+        onSave={async (values) => {
+          if (!statusVehicleId) return;
+          setStatusSubmitting(true);
+          try {
+            const formData = new FormData();
+            formData.append(
+              "payload",
+              JSON.stringify({
+                vehicleId: statusVehicleId,
+                status: values.status,
+                notes: values.notes || undefined,
+              }),
+            );
+            const result = await updateVehicleStatus(formData);
+            if (result.success) {
+              toast.success("Status updated successfully");
+              setStatusVehicleId(null);
+              router.refresh();
+            } else {
+              toast.error(result.error || "Failed to update status");
+            }
+          } catch {
+            toast.error("An unexpected error occurred");
+          } finally {
+            setStatusSubmitting(false);
+          }
+        }}
+      />
     </div>
   );
 }

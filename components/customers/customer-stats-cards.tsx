@@ -1,6 +1,12 @@
 import { KPICard } from "@/components/ui/kpi-card";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { formatCurrency, type CustomerStats } from "@/lib/customers/types";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+
+const CARD_COUNT = 4;
 
 function buildCards(stats: CustomerStats) {
   return [
@@ -59,15 +65,14 @@ export default function CustomerStatsCards({
   const cards = buildCards(stats);
 
   return (
-    <section className="mb-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section className={kpiGridClass(CARD_COUNT, "mb-3.5")}>
       {cards.map((card) => (
         <KPICard
           key={card.label}
           data={card}
-          showSparkline={false}
-          showLink={false}
+          {...KPI_CARD_DEFAULT_PROPS}
           deltaColor={card.deltaColor}
-          className={ADMIN_PANEL_SHELL_CLASS}
+          className={KPI_CARD_SHELL_CLASS}
         />
       ))}
     </section>

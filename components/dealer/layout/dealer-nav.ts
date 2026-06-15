@@ -15,6 +15,7 @@ import {
   User,
   CreditCard,
   FileWarning,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -73,6 +74,12 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         icon: FileWarning,
         color: "text-red-400",
         href: "/dealer/dashboard/missing-titles",
+      },
+      {
+        label: "Arbitration",
+        icon: Scale,
+        color: "text-orange-400",
+        href: DEALER_ROUTES.arbitration,
       },
     ],
   },

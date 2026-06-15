@@ -3,7 +3,11 @@ import type { KPICardData } from "@/components/ui/kpi-card";
 /** @deprecated Use WholesaleInventoryStatus */
 export type VehicleStatus = "in_inventory" | "sold" | "pending";
 
-export type WholesaleInventoryStatus = "in_stock" | "pending_sale" | "sold";
+export type WholesaleInventoryStatus =
+  | "in_stock"
+  | "pending_sale"
+  | "sold"
+  | "arbitration";
 export type WholesaleTitleStatus = "received" | "missing";
 export type WholesalePaymentStatus = "paid" | "on_hold" | "partial";
 export type VehicleCondition = "excellent" | "good" | "fair";
@@ -82,6 +86,10 @@ export type WholesaleVehicle = {
   lastAuctionDate?: string;
   odometerStatus?: string;
   notes?: string;
+  exteriorColor?: string;
+  arbitrationReason?: string;
+  arbitrationListedAt?: string;
+  arbitrationBuyerDealer?: string;
 };
 
 export type DealerTransaction = {

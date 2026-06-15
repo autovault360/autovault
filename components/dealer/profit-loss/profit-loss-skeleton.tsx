@@ -1,4 +1,7 @@
 import { Card } from "@/components/ui/card";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
+
+const CARD_COUNT = 5;
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -18,16 +21,7 @@ export default function ProfitLossPageSkeleton() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <Card
-            key={index}
-            className="h-28 rounded-sm border border-slate-800/50 bg-transparent p-3 shadow-none"
-          >
-            <SkeletonBar className="h-full w-full" />
-          </Card>
-        ))}
-      </section>
+      <KpiGridSkeleton count={CARD_COUNT} />
 
       <div className="grid grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card className="overflow-hidden rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">

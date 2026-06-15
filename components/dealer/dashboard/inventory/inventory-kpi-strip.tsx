@@ -1,28 +1,25 @@
 "use client";
 
 import { KPICard } from "@/components/ui/kpi-card";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { cn } from "@/lib/utils";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import type {
   InventoryKpiFilterKey,
   InventoryKpiStrip,
 } from "@/lib/dealer/dashboard/types";
-
-function SkeletonBar({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("animate-pulse rounded-md bg-slate-800/80", className)}
-    />
-  );
-}
-
-const CARD_CLASS = ADMIN_PANEL_SHELL_CLASS;
 
 type KpiCardConfig = {
   key: Exclude<InventoryKpiFilterKey, "all"> | "total_in_inventory";
   data: InventoryKpiStrip[keyof InventoryKpiStrip];
   clickable?: boolean;
 };
+
+const CARD_COUNT = 6;
 
 export default function InventoryKpiStrip({
   kpis,
@@ -36,26 +33,8 @@ export default function InventoryKpiStrip({
   onKpiClick: (filter: InventoryKpiFilterKey) => void;
 }) {
   if (loading) {
-    return (
-      <div className="grid min-w-0 grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className={cn("rounded-sm border p-3", CARD_CLASS)}>
-            <SkeletonBar className="mb-2 h-10 w-10 rounded-full" />
-            <SkeletonBar className="h-4 w-24" />
-          </div>
-        ))}
-      </div>
-    );
+    return <KpiGridSkeleton count={CARD_COUNT} />;
   }
-
-  const cards: KpiCardConfig[] = [
-    { key: "total_in_inventory", data: kpis.totalInInventory, clickable: false },
-    { key: "missing_titles", data: kpis.missingTitles, clickable: true },
-    { key: "pending_sale", data: kpis.pendingSale, clickable: true },
-    { key: "sold_this_month", data: kpis.soldThisMonth, clickable: true },
-    { key: "total_in_inventory", data: kpis.totalInventoryValue, clickable: false },
-    { key: "total_in_inventory", data: kpis.avgDaysInInventory, clickable: false },
-  ];
 
   const orderedCards: KpiCardConfig[] = [
     { key: "total_in_inventory", data: kpis.totalInInventory, clickable: false },
@@ -67,7 +46,7 @@ export default function InventoryKpiStrip({
   ];
 
   return (
-    <div className="grid min-w-0 grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+    <div className={kpiGridClass(CARD_COUNT)}>
       {orderedCards.map(({ key, data, clickable }, index) => {
         const filterKey =
           key === "total_in_inventory" ? "all" : (key as InventoryKpiFilterKey);
@@ -87,15 +66,13 @@ export default function InventoryKpiStrip({
               "text-left transition",
               clickable && "cursor-pointer hover:opacity-90",
               !clickable && "cursor-default",
-              isActive && "ring-2 ring-violet-500/60 rounded-sm",
+              isActive && "rounded-sm ring-2 ring-violet-500/60",
             )}
           >
             <KPICard
               data={data}
-              layout="default"
-              showSparkline={false}
-              showLink={false}
-              className={CARD_CLASS}
+              {...KPI_CARD_DEFAULT_PROPS}
+              className={KPI_CARD_SHELL_CLASS}
             />
           </button>
         );

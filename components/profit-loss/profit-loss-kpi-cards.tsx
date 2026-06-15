@@ -3,7 +3,11 @@
 import { KPICard } from "@/components/ui/kpi-card";
 import type { KPICardData } from "@/components/ui/kpi-card";
 import type { PlKpiMetric } from "@/lib/profit-loss/types";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
 
 const iconMap: Record<PlKpiMetric["iconColor"], KPICardData["icon"]> = {
   green: "dollar-sign",
@@ -42,14 +46,13 @@ type Props = {
 
 export default function ProfitLossKPICards({ kpis }: Props) {
   return (
-    <section className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
+    <section className={kpiGridClass(kpis.length, "mb-3.5")}>
       {kpis.map((kpi) => (
         <KPICard
           key={kpi.id}
           data={toKpiCardData(kpi)}
-          showSparkline={false}
-          showLink={false}
-          className={ADMIN_PANEL_SHELL_CLASS}
+          {...KPI_CARD_DEFAULT_PROPS}
+          className={KPI_CARD_SHELL_CLASS}
         />
       ))}
     </section>

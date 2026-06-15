@@ -11,6 +11,8 @@ import {
 import {
   resolveWholesalePaymentStatus,
   todayISO,
+  mapInventoryStatusToDb,
+  resolveArbitrationFields,
 } from "./helpers";
 import { checkVinUniqueness, uploadFile, trackFile } from "@/lib/vehicles/server/utils";
 import { resolveTitleReceivedFields } from "@/lib/vehicles/title-received";
@@ -35,8 +37,10 @@ const schema = z.object({
   wholesaleValue: z.coerce.number().min(0).optional(),
   titleReceived: z.boolean(),
   inventoryStatus: z
-    .enum(["in_stock", "pending_sale", "sold"])
+    .enum(["in_stock", "pending_sale", "sold", "arbitration"])
     .default("in_stock"),
+  arbitrationReason: z.string().max(200).optional(),
+  arbitrationBuyerDealer: z.string().max(120).optional(),
   odometerStatus: z.string().optional(),
   notes: z.string().max(500).optional(),
   acquisitionDate: z.string().optional(),
@@ -74,12 +78,7 @@ export async function addWholesaleVehicle(
     }
 
     const titleFields = resolveTitleReceivedFields(data.titleReceived);
-    const dbStatus =
-      data.inventoryStatus === "pending_sale"
-        ? "pending_sale"
-        : data.inventoryStatus === "sold"
-          ? "sold"
-          : "in_stock";
+    const dbStatus = mapInventoryStatusToDb(data.inventoryStatus);
     const reconditioningCost = data.reconRepairDetails;
     const totalInvested =
       data.acquisitionCost +
@@ -126,6 +125,12 @@ export async function addWholesaleVehicle(
         times_in_auction: data.timesInAuction ?? 0,
         next_auction_date: data.nextAuctionDate || null,
         last_auction_date: data.lastAuctionDate || null,
+        ...resolveArbitrationFields({
+          inventoryStatus: data.inventoryStatus,
+          previousStatus: null,
+          arbitrationReason: data.arbitrationReason,
+          arbitrationBuyerDealer: data.arbitrationBuyerDealer,
+        }),
         purchase_type: "wholesale",
         created_by: userId,
       })

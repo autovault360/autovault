@@ -53,7 +53,7 @@ function SelectTrigger({
       className={cn(
         "h-8 flex w-full items-center justify-between gap-1.5 rounded-[4px] border px-3 text-[13px] whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-100 aria-invalid:border-red-400 data-placeholder:text-gray-400 data-[size=default]:h-8 data-[size=sm]:h-7 data-[size=sm]:rounded-[4px] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:text-gray-400",
         theme === "dark"
-          ? "border-slate-600 bg-slate-800/50 text-slate-100 data-placeholder:text-slate-500 focus-visible:border-blue-500"
+          ? "border-slate-600 text-slate-200 data-placeholder:text-slate-500 focus-visible:border-blue-500"
           : "border-[#E0E0E0] bg-white text-gray-900 focus-visible:border-[#2563eb]",
         className
       )}
@@ -135,7 +135,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-1.5 rounded-[2px] py-1.5 pr-8 pl-2 text-[13px] outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-1.5 rounded-[2px] py-1.5 pl-2 text-[13px] outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         theme === "dark"
           ? "focus:bg-slate-700 focus:text-slate-100"
           : "focus:bg-gray-100 focus:text-gray-900",

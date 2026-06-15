@@ -1,9 +1,16 @@
 "use client";
 
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import type { CpaMetricTrend, CpaMonthlyFinancialsData } from "@/lib/cpa/types";
 import { formatMetricTrend, formatMoney } from "./utils";
+
+const CARD_COUNT = 8;
 
 const sparkPoints =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
@@ -54,30 +61,24 @@ export default function CpaMonthlyMetricsStrip({
   loading?: boolean;
 }) {
   if (loading) {
-    return (
-      <div className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[110px] animate-pulse rounded-sm border border-slate-700 bg-[#0e1626]"
-          />
-        ))}
-      </div>
-    );
+    return <KpiGridSkeleton count={CARD_COUNT} className="mb-3.5" />;
   }
 
   return (
-    <div className="mb-3.5 grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
+    <div className={kpiGridClass(CARD_COUNT, "mb-3.5")}>
       {METRICS.map((def) => {
         const kpiData = toKpiCardData(data.metrics[def.key], def, data.prevMonthLabel);
         return (
           <KPICard
             key={def.key}
             data={kpiData}
-            showLink={false}
-            showSparkline={false}
-            deltaColor={formatMetricTrend(data.metrics[def.key], data.prevMonthLabel, def.invertColor).positive ? "green" : "red"}
-            className={ADMIN_PANEL_SHELL_CLASS}
+            {...KPI_CARD_DEFAULT_PROPS}
+            deltaColor={
+              formatMetricTrend(data.metrics[def.key], data.prevMonthLabel, def.invertColor).positive
+                ? "green"
+                : "red"
+            }
+            className={KPI_CARD_SHELL_CLASS}
           />
         );
       })}

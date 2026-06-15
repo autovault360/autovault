@@ -1,11 +1,18 @@
 "use client";
 
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
 import { formatCurrency } from "@/lib/sales-reps/types";
 import type { ISalesRepMetrics } from "@/lib/sales-rep/dashboard/types";
 
-const sparkPoints = "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
+const CARD_COUNT = 4;
+
+const sparkPoints =
+  "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
 
 type Props = {
   metrics: ISalesRepMetrics;
@@ -56,14 +63,13 @@ export default function PersonalMetricsStrip({ metrics }: Props) {
   ];
 
   return (
-    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <section className={kpiGridClass(CARD_COUNT)}>
       {cards.map((card) => (
         <KPICard
           key={card.label}
           data={card}
-          showSparkline={false}
-          showLink={false}
-          className={ADMIN_PANEL_SHELL_CLASS}
+          {...KPI_CARD_DEFAULT_PROPS}
+          className={KPI_CARD_SHELL_CLASS}
         />
       ))}
     </section>

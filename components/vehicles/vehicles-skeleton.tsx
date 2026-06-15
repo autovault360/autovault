@@ -1,4 +1,7 @@
 import { Card } from "@/components/ui/card";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
+
+const CARD_COUNT = 5;
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -8,31 +11,8 @@ function SkeletonBar({ className }: { className?: string }) {
   );
 }
 
-function StatsCardSkeleton() {
-  return (
-    <Card className="flex h-full flex-col gap-1.5 rounded-sm border border-slate-800/50 bg-transparent p-3 text-slate-200 shadow-none">
-      <div className="flex items-start gap-2.5">
-        <SkeletonBar className="h-10 w-10 shrink-0 rounded-full" />
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <SkeletonBar className="h-3 w-24" />
-          <SkeletonBar className="h-5 w-20" />
-          <SkeletonBar className="h-3 w-16" />
-        </div>
-      </div>
-      <SkeletonBar className="mt-1 h-9 w-full" />
-      <SkeletonBar className="mt-auto -mx-3 -mb-3 h-10 rounded-b-sm" />
-    </Card>
-  );
-}
-
 export function VehicleStatsSkeleton() {
-  return (
-    <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <StatsCardSkeleton key={i} />
-      ))}
-    </section>
-  );
+  return <KpiGridSkeleton count={CARD_COUNT} className="mb-3.5" />;
 }
 
 export function VehiclesTableSkeleton() {

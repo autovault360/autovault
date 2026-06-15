@@ -320,6 +320,22 @@ export async function rollbackVehicle(
     }
   }
 
+  if (bucket === "vehicle-images" && storagePaths.length > 0) {
+    const { error: imageDeleteError } = await supabase
+      .from("vehicle_images")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("vehicle_id", vehicleId)
+      .in("storage_path", storagePaths)
+      .is("deleted_at", null);
+
+    if (imageDeleteError) {
+      console.error(
+        "Rollback: failed to soft-delete vehicle image records",
+        imageDeleteError.message,
+      );
+    }
+  }
+
   const { error: deleteError } = await supabase
     .from("vehicles")
     .update({ deleted_at: new Date().toISOString() })

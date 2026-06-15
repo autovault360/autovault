@@ -1,3 +1,5 @@
+import type { WholesaleInventoryStatus } from "@/lib/dealer/dashboard/types";
+
 export function todayISO(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -21,7 +23,29 @@ export function resolveWholesalePaymentStatus(params: {
 }
 
 export function mapInventoryStatusToDb(
-  status: "in_stock" | "pending_sale" | "sold",
+  status: WholesaleInventoryStatus,
 ): string {
   return status;
+}
+
+export function resolveArbitrationFields(params: {
+  inventoryStatus: WholesaleInventoryStatus;
+  previousStatus?: string | null;
+  arbitrationReason?: string | null;
+  arbitrationBuyerDealer?: string | null;
+  existingListedAt?: string | null;
+}): Record<string, unknown> {
+  if (params.inventoryStatus !== "arbitration") {
+    return {};
+  }
+
+  const enteringArbitration = params.previousStatus !== "arbitration";
+
+  return {
+    arbitration_reason: params.arbitrationReason?.trim() || null,
+    arbitration_buyer_dealer: params.arbitrationBuyerDealer?.trim() || null,
+    arbitration_listed_at: enteringArbitration
+      ? todayISO()
+      : params.existingListedAt || todayISO(),
+  };
 }

@@ -3,9 +3,17 @@
 import { Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import { formatCommissionPrice } from "@/lib/sales-rep/commissions/format";
 import type { IVehicleAlertKpiSummary } from "@/lib/sales-rep/vehicle-alerts/types";
+
+const CARD_COUNT = 4;
+
 type Props = {
   summary: IVehicleAlertKpiSummary;
   loading?: boolean;
@@ -18,16 +26,7 @@ export default function VehicleAlertsKpiStrip({
   onLearnMore,
 }: Props) {
   if (loading) {
-    return (
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[108px] animate-pulse rounded-sm border border-slate-700 bg-slate-800/40"
-          />
-        ))}
-      </div>
-    );
+    return <KpiGridSkeleton count={CARD_COUNT} />;
   }
 
   const cards: (KPICardData & { valueClassName?: string })[] = [
@@ -64,34 +63,36 @@ export default function VehicleAlertsKpiStrip({
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className={kpiGridClass(CARD_COUNT)}>
       {cards.map((card) => (
         <KPICard
           key={card.label}
           data={card}
-          showSparkline={false}
-          showLink={false}
+          {...KPI_CARD_DEFAULT_PROPS}
           valueClassName={card.valueClassName}
-          className={ADMIN_PANEL_SHELL_CLASS}
+          className={KPI_CARD_SHELL_CLASS}
         />
       ))}
 
       <Card className="flex h-full min-w-0 flex-col rounded-sm border border-slate-700/80 bg-card p-3 text-slate-200 shadow-none backdrop-blur-sm">
         <div className="flex items-start gap-2.5">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-purple-500/15 text-purple-400">
-            <Info className="h-5 w-5" />
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue-500/10">
+            <Info className="h-5 w-5 text-blue-400" />
           </div>
-          <div className="min-w-0 space-y-1">
-            <div className="text-[13px] text-slate-500">What Happens Next?</div>
-            <p className="text-[12px] leading-relaxed text-slate-400">
-              Admin will review the deal jacket, documents, and information.
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+              How It Works
+            </p>
+            <p className="mt-1 text-[12px] leading-snug text-slate-400">
+              Vehicles marked sold by sales reps require admin approval before
+              commission is finalized.
             </p>
             <button
               type="button"
               onClick={onLearnMore}
-              className="text-[12px] font-medium text-blue-400 transition hover:text-blue-300"
+              className="mt-2 text-[11px] font-medium text-blue-400 hover:text-blue-300"
             >
-              Learn More
+              Learn more
             </button>
           </div>
         </div>

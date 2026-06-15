@@ -500,6 +500,48 @@ export default function AddEditVehicleModal({
                 </FormGrid>
               )}
 
+              {watched.inventoryStatus === "arbitration" && (
+                <FormGrid cols={2} className="mt-3">
+                  <FormField
+                    control={form.control}
+                    name="arbitrationReason"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FieldLabel label="Arbitration Reason" />
+                        <FormControl>
+                          <Input
+                            theme="dark"
+                            {...field}
+                            disabled={readOnly}
+                            className="h-8"
+                            placeholder="e.g. Engine Noise, Title Issue"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="arbitrationBuyerDealer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FieldLabel label="Buyer / Dealer" />
+                        <FormControl>
+                          <Input
+                            theme="dark"
+                            {...field}
+                            disabled={readOnly}
+                            className="h-8"
+                            placeholder="Counterparty name"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </FormGrid>
+              )}
+
               <FormField
                 control={form.control}
                 name="notes"

@@ -81,6 +81,38 @@ export type MonthStripDay = {
   eventCount: number;
 };
 
+export type WeekDay = {
+  date: string;
+  dayNumber: number;
+  month: number;
+};
+
+export function getWeekDays(selectedDate: string): WeekDay[] {
+  const date = new Date(`${selectedDate}T00:00:00`);
+  const dayOfWeek = date.getDay();
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - ((dayOfWeek + 6) % 7));
+  const days: WeekDay[] = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push({
+      date: d.toISOString().slice(0, 10),
+      dayNumber: d.getDate(),
+      month: d.getMonth() + 1,
+    });
+  }
+  return days;
+}
+
+export function formatWeekRange(dateStr: string): string {
+  const days = getWeekDays(dateStr);
+  const start = new Date(`${days[0]!.date}T00:00:00`);
+  const end = new Date(`${days[6]!.date}T00:00:00`);
+  const fmt: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
+  return `${start.toLocaleDateString("en-US", fmt)} – ${end.toLocaleDateString("en-US", fmt)}`;
+}
+
 export function buildFullMonthStrip(
   year: number,
   month: number,

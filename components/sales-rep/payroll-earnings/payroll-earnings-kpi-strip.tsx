@@ -2,7 +2,11 @@
 
 import { formatCommissionCurrency } from "@/lib/sales-rep/commissions/format";
 import type { IPayrollEarningsKpiSummary } from "@/lib/sales-rep/payroll-earnings/types";
+import { kpiGridClass } from "@/lib/ui/kpi-grid";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import PayrollKpiCard from "./payroll-kpi-card";
+
+const CARD_COUNT = 5;
 
 type Props = {
   summary: IPayrollEarningsKpiSummary;
@@ -11,16 +15,7 @@ type Props = {
 
 export default function PayrollEarningsKpiStrip({ summary, loading }: Props) {
   if (loading) {
-    return (
-      <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-[118px] animate-pulse rounded-lg border border-slate-700 bg-slate-800/40"
-          />
-        ))}
-      </div>
-    );
+    return <KpiGridSkeleton count={CARD_COUNT} />;
   }
 
   const cards = [
@@ -77,7 +72,7 @@ export default function PayrollEarningsKpiStrip({ summary, loading }: Props) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
+    <div className={kpiGridClass(CARD_COUNT)}>
       {cards.map((card) => (
         <PayrollKpiCard key={card.label} data={card} />
       ))}

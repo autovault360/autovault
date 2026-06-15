@@ -11,13 +11,17 @@ import {
 import {
   resolveWholesalePaymentStatus,
   todayISO,
+  mapInventoryStatusToDb,
+  resolveArbitrationFields,
 } from "./helpers";
 import { mapDbTitleReceived } from "@/lib/vehicles/title-received";
 import type { WholesaleVehicleActionResult } from "./update-wholesale-vehicle";
 
 const schema = z.object({
   vehicleId: z.string().uuid(),
-  inventoryStatus: z.enum(["in_stock", "pending_sale", "sold"]),
+  inventoryStatus: z.enum(["in_stock", "pending_sale", "sold", "arbitration"]),
+  arbitrationReason: z.string().max(200).optional(),
+  arbitrationBuyerDealer: z.string().max(120).optional(),
   timesInAuction: z.coerce.number().min(0).optional(),
   nextAuctionDate: z.string().optional(),
   lastAuctionDate: z.string().optional(),
@@ -34,10 +38,19 @@ export async function updateInventoryStatus(
     const { userId, dealershipId } = auth.user;
     const data = schema.parse(input);
 
+    if (
+      data.inventoryStatus === "arbitration" &&
+      !data.arbitrationReason?.trim()
+    ) {
+      return { success: false, error: "Arbitration reason is required" };
+    }
+
     const supabase = await createClient();
     const { data: existing, error: fetchError } = await supabase
       .from("vehicles")
-      .select("status, title_status, title_received")
+      .select(
+        "status, title_status, title_received, arbitration_listed_at",
+      )
       .eq("id", data.vehicleId)
       .eq("dealership_id", dealershipId)
       .is("deleted_at", null)
@@ -47,12 +60,7 @@ export async function updateInventoryStatus(
       return { success: false, error: "Vehicle not found" };
     }
 
-    const dbStatus =
-      data.inventoryStatus === "pending_sale"
-        ? "pending_sale"
-        : data.inventoryStatus === "sold"
-          ? "sold"
-          : "in_stock";
+    const dbStatus = mapInventoryStatusToDb(data.inventoryStatus);
 
     const titleReceived = mapDbTitleReceived(
       existing.title_received as boolean | null | undefined,
@@ -65,6 +73,13 @@ export async function updateInventoryStatus(
       wholesale_payment_status: resolveWholesalePaymentStatus({
         inventoryStatus: data.inventoryStatus,
         titleStatus,
+      }),
+      ...resolveArbitrationFields({
+        inventoryStatus: data.inventoryStatus,
+        previousStatus: existing.status,
+        arbitrationReason: data.arbitrationReason,
+        arbitrationBuyerDealer: data.arbitrationBuyerDealer,
+        existingListedAt: existing.arbitration_listed_at as string | null,
       }),
     };
 

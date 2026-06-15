@@ -27,8 +27,10 @@ export const inventoryWorkspaceSchema = z.object({
   wholesaleValue: currencyField.optional(),
   titleReceived: z.boolean(),
   inventoryStatus: z
-    .enum(["in_stock", "pending_sale", "sold"])
+    .enum(["in_stock", "pending_sale", "sold", "arbitration"])
     .default("in_stock"),
+  arbitrationReason: z.string().max(200).optional(),
+  arbitrationBuyerDealer: z.string().max(120).optional(),
   odometerStatus: z.string().optional(),
   notes: z.string().max(500, "Notes must be 500 characters or less").optional(),
   timesInAuction: z.coerce.number().min(0).optional(),
@@ -36,6 +38,14 @@ export const inventoryWorkspaceSchema = z.object({
   lastAuctionDate: z.string().optional(),
   soldAt: z.string().optional(),
   soldPrice: z.coerce.number().optional(),
+}).superRefine((data, ctx) => {
+  if (data.inventoryStatus === "arbitration" && !data.arbitrationReason?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Arbitration reason is required",
+      path: ["arbitrationReason"],
+    });
+  }
 });
 
 export type InventoryWorkspaceValues = z.infer<typeof inventoryWorkspaceSchema>;

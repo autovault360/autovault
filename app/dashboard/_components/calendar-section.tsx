@@ -6,7 +6,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CardShell } from "@/components/dashboard/card-shell";
 import { cn } from "@/lib/utils";
 import {
+  addDays,
   addMonths,
+  formatFullDate,
   formatMonthYear,
   formatShortDate,
 } from "@/lib/calendar/format-utils";
@@ -19,6 +21,7 @@ import type { CalendarEventType, CalendarReport } from "@/lib/calendar/types";
 import { fetchCalendarReportAction } from "@/lib/calendar/server/actions";
 import { createEvent } from "@/lib/events/server/create-event";
 import AdminCalendarMonthGrid from "./admin-calendar-month-grid";
+import AdminCalendarWeekGrid from "./admin-calendar-week-grid";
 import AdminCalendarMonthStrip from "./admin-calendar-month-strip";
 import DayEventsModal, {
   type AddDashboardEventInput,
@@ -28,7 +31,10 @@ import {
   ADMIN_EVENT_LEGEND,
   buildFullMonthStrip,
   formatRelativeEventDate,
+  formatWeekRange,
   getEventDotClass,
+  getWeekDays,
+  type WeekDay,
 } from "./admin-calendar-utils";
 
 type Props = {
@@ -88,6 +94,7 @@ export default function CalendarSection({ calendarReport }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [focusMonth, setFocusMonth] = useState(today.slice(0, 7));
   const [selectedDay, setSelectedDay] = useState<string | null>(today);
+  const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [eventModalDate, setEventModalDate] = useState<string | null>(null);
 
@@ -117,6 +124,11 @@ export default function CalendarSection({ calendarReport }: Props) {
     }
     return map;
   }, [report.dailyActivity, focusMonth]);
+
+  const weekDays = useMemo(
+    () => (viewMode === "week" ? getWeekDays(selectedDay ?? today) : [] as WeekDay[]),
+    [viewMode, selectedDay, today],
+  );
 
   const monthStripDays = useMemo(
     () => buildFullMonthStrip(year, month, today, eventCountByDate),
@@ -213,20 +225,48 @@ export default function CalendarSection({ calendarReport }: Props) {
           <div className="flex items-center justify-center gap-1.5">
             <button
               type="button"
-              onClick={() => setFocusMonth(addMonths(focusMonth, -1))}
+              onClick={() => {
+                if (viewMode === "month") {
+                  setFocusMonth(addMonths(focusMonth, -1));
+                } else if (viewMode === "week") {
+                  const prev = addDays(selectedDay ?? today, -7);
+                  setSelectedDay(prev);
+                  setFocusMonth(prev.slice(0, 7));
+                } else {
+                  const prev = addDays(selectedDay ?? today, -1);
+                  setSelectedDay(prev);
+                  setFocusMonth(prev.slice(0, 7));
+                }
+              }}
               className="grid h-7 w-7 place-items-center rounded-md border border-slate-800 bg-card text-slate-400 transition hover:text-white"
-              aria-label="Previous month"
+              aria-label="Previous"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
-            <span className="min-w-[120px] text-center text-[13px] font-medium text-slate-200">
-              {formatMonthYear(focusMonth)}
+            <span className="min-w-[140px] text-center text-[13px] font-medium text-slate-200">
+              {viewMode === "week"
+                ? formatWeekRange(selectedDay ?? today)
+                : viewMode === "day"
+                  ? formatFullDate(selectedDay ?? today)
+                  : formatMonthYear(focusMonth)}
             </span>
             <button
               type="button"
-              onClick={() => setFocusMonth(addMonths(focusMonth, 1))}
+              onClick={() => {
+                if (viewMode === "month") {
+                  setFocusMonth(addMonths(focusMonth, 1));
+                } else if (viewMode === "week") {
+                  const next = addDays(selectedDay ?? today, 7);
+                  setSelectedDay(next);
+                  setFocusMonth(next.slice(0, 7));
+                } else {
+                  const next = addDays(selectedDay ?? today, 1);
+                  setSelectedDay(next);
+                  setFocusMonth(next.slice(0, 7));
+                }
+              }}
               className="grid h-7 w-7 place-items-center rounded-md border border-slate-800 bg-card text-slate-400 transition hover:text-white"
-              aria-label="Next month"
+              aria-label="Next"
             >
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
@@ -235,18 +275,24 @@ export default function CalendarSection({ calendarReport }: Props) {
           <div className="flex items-center justify-end gap-2">
             {expanded && (
               <div className="hidden items-center gap-1 text-[10px] sm:flex">
-                {["Month", "Week", "Day"].map((v, i) => (
+                {(["month", "week", "day"] as const).map((mode) => (
                   <button
-                    key={v}
+                    key={mode}
                     type="button"
+                    onClick={() => {
+                      setViewMode(mode);
+                      if (mode === "month") {
+                        setFocusMonth((selectedDay ?? today).slice(0, 7));
+                      }
+                    }}
                     className={cn(
-                      "rounded-md px-2.5 py-1 font-medium",
-                      i === 0
+                      "rounded-md px-2.5 py-1 font-medium capitalize transition-colors",
+                      viewMode === mode
                         ? "bg-blue-600/20 text-blue-400"
                         : "text-slate-500 hover:text-slate-300",
                     )}
                   >
-                    {v}
+                    {mode}
                   </button>
                 ))}
               </div>
@@ -339,12 +385,77 @@ export default function CalendarSection({ calendarReport }: Props) {
                     ))}
                   </div>
 
-                  <AdminCalendarMonthGrid
-                    cells={monthGrid}
-                    selectedDay={selectedDay}
-                    today={today}
-                    onDaySelect={handleDayClick}
-                  />
+                  {viewMode === "month" && (
+                    <AdminCalendarMonthGrid
+                      cells={monthGrid}
+                      selectedDay={selectedDay}
+                      today={today}
+                      onDaySelect={handleDayClick}
+                    />
+                  )}
+
+                  {viewMode === "week" && (
+                    <AdminCalendarWeekGrid
+                      days={weekDays}
+                      dailyMap={dailyMap}
+                      selectedDay={selectedDay}
+                      today={today}
+                      onDaySelect={handleDayClick}
+                      focusMonth={focusMonth}
+                    />
+                  )}
+
+                  {viewMode === "day" && (
+                    <div className={cn("rounded-sm", ADMIN_PANEL_INNER_CLASS)}>
+                      <div className="flex items-center justify-between border-b border-slate-800/60 px-4 py-3">
+                        <div className="text-[13px] font-semibold text-slate-200">
+                          {formatFullDate(selectedDay ?? today)}
+                        </div>
+                        {scheduleEvents.length > 0 && (
+                          <span className="rounded bg-blue-500/15 px-2 py-0.5 text-[10px] font-medium text-blue-400">
+                            {scheduleEvents.length} Event{scheduleEvents.length === 1 ? "" : "s"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="divide-y divide-slate-800/40 px-4 py-2">
+                        {scheduleEvents.length > 0 ? (
+                          scheduleEvents.map((ev) => (
+                            <div key={ev.id} className="flex items-start gap-3 py-2.5">
+                              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[11px] font-medium text-slate-200">
+                                    {ev.title}
+                                  </span>
+                                  <span className="text-[10px] text-slate-500">{ev.time}</span>
+                                </div>
+                                {ev.description && (
+                                  <p className="mt-0.5 text-[10px] text-slate-500">
+                                    {ev.description}
+                                  </p>
+                                )}
+                              </div>
+                              <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-medium text-emerald-400">
+                                {ev.type === "appointment"
+                                  ? "Appointment"
+                                  : ev.type === "follow_up"
+                                    ? "Follow Up"
+                                    : ev.type === "compliance"
+                                      ? "Compliance"
+                                      : ev.type === "payroll"
+                                        ? "Payroll"
+                                        : "Task"}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="py-6 text-center text-[11px] text-slate-500">
+                            No events scheduled for this day. Click a date to add one.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="grid gap-3 lg:grid-cols-2">
                     <div className={cn("rounded-sm p-3", ADMIN_PANEL_INNER_CLASS)}>

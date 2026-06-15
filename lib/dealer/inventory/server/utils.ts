@@ -23,6 +23,7 @@ export async function revalidateWholesaleInventoryPaths() {
   revalidatePath("/dealer/dashboard");
   revalidatePath("/dealer/inventory");
   revalidatePath("/dealer/dashboard/missing-titles");
+  revalidatePath("/dealer/dashboard/arbitration");
 }
 
 export async function insertStatusHistory(

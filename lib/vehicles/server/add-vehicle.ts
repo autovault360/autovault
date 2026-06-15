@@ -111,13 +111,16 @@ export async function addVehicle(
       await uploadFile("vehicle-images", path, photos[i]);
       uploadedPaths.push(path);
 
-      await supabase.from("vehicle_images").insert({
+      const { error: imageError } = await supabase.from("vehicle_images").insert({
         vehicle_id: vehicle.id,
         dealership_id: dealershipId,
         storage_path: path,
         is_primary: i === 0,
         sort_order: i + 1,
       });
+      if (imageError) {
+        throw new Error(`Failed to save vehicle image metadata: ${imageError.message}`);
+      }
 
       await trackFile(photos[i], "vehicle-images", path, dealershipId, userId, {
         sourceEntity: "vehicle",
