@@ -1,63 +1,31 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
-import { cn } from "@/lib/utils";
 import { exportSoldVehiclesCsv } from "@/lib/dealer/dashboard/export-sold-vehicles";
 import {
   buildSoldVehicleKpiStrip,
-  computeSoldVehicleTableFooter,
   filterSoldVehicles,
+  filterSoldVehiclesByMonth,
 } from "@/lib/dealer/dashboard/sold-vehicle-calculations";
-import { DEFAULT_SOLD_VEHICLE_PERIOD } from "@/lib/dealer/dashboard/sold-vehicle-constants";
 import type {
-  SaleType,
   SoldVehicleKpiStrip as SoldVehicleKpiStripData,
   SoldVehicleRecord,
-  TransactionPaymentStatus,
 } from "@/lib/dealer/dashboard/types";
 import SoldVehicleKpiStripComponent from "./sold-vehicle-kpi-strip";
-import SoldVehiclesCenterHeader from "./sold-vehicles-center-header";
+import SoldVehiclesCalendar from "./sold-vehicles-calendar";
 import SoldVehiclesTable from "./sold-vehicles-table";
-import SoldVehiclesToolbar, {
-  type SoldVehicleFilters,
-} from "./sold-vehicles-toolbar";
 
-function getPeriodDates(preset: string) {
-  if (preset === "this_month") return DEFAULT_SOLD_VEHICLE_PERIOD;
-  if (preset === "last_month") {
-    return {
-      preset: "last_month" as const,
-      start: "2024-04-01",
-      end: "2024-04-30",
-      label: "04/01/2024 - 04/30/2024",
-    };
-  }
-  if (preset === "this_quarter") {
-    return {
-      preset: "this_quarter" as const,
-      start: "2024-04-01",
-      end: "2024-06-30",
-      label: "04/01/2024 - 06/30/2024",
-    };
-  }
-  return {
-    preset: "ytd" as const,
-    start: "2024-01-01",
-    end: "2024-05-31",
-    label: "01/01/2024 - 05/31/2024",
-  };
-}
+const DEFAULT_CALENDAR_MONTH = { year: 2024, month: 4 };
 
 export default function SoldVehiclesCenter({
   soldVehicles,
   soldVehicleKpis,
   loading,
   activeRowKey,
-  onAddSoldVehicle,
+  onAddSoldVehicle: _onAddSoldVehicle,
   onViewSale,
   onRowClick,
-  showTitle = true,
+  showTitle: _showTitle = true,
 }: {
   soldVehicles: SoldVehicleRecord[];
   soldVehicleKpis: SoldVehicleKpiStripData;
@@ -68,103 +36,72 @@ export default function SoldVehiclesCenter({
   onRowClick?: (record: SoldVehicleRecord) => void;
   showTitle?: boolean;
 }) {
-  const [periodPreset, setPeriodPreset] = useState<string>(
-    DEFAULT_SOLD_VEHICLE_PERIOD.preset,
-  );
+  const [calendarYear, setCalendarYear] = useState(DEFAULT_CALENDAR_MONTH.year);
+  const [calendarMonth, setCalendarMonth] = useState(DEFAULT_CALENDAR_MONTH.month);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [search, setSearch] = useState("");
-  const [saleTypeFilter, setSaleTypeFilter] = useState<SaleType | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<
-    TransactionPaymentStatus | "all"
-  >("all");
 
-  const period = getPeriodDates(periodPreset);
-
-  const filters: SoldVehicleFilters = {
-    search,
-    saleType: saleTypeFilter,
-    status: statusFilter,
-    dateLabel: period.label,
-  };
-
-  const filtered = useMemo(
-    () =>
-      filterSoldVehicles(soldVehicles, {
-        search,
-        saleType: saleTypeFilter,
-        status: statusFilter,
-        dateStart: period.start,
-        dateEnd: period.end,
-      }),
-    [soldVehicles, search, saleTypeFilter, statusFilter, period.start, period.end],
+  const monthRecords = useMemo(
+    () => filterSoldVehiclesByMonth(soldVehicles, calendarYear, calendarMonth),
+    [soldVehicles, calendarYear, calendarMonth],
   );
+
+  const filtered = useMemo(() => {
+    let rows = filterSoldVehicles(monthRecords, { search });
+    if (selectedDate) {
+      rows = rows.filter((row) => row.dateSold === selectedDate);
+    }
+    return rows;
+  }, [monthRecords, search, selectedDate]);
 
   const dynamicKpis = useMemo(
-    () =>
-      filtered.length === soldVehicles.length
-        ? soldVehicleKpis
-        : buildSoldVehicleKpiStrip(filtered),
-    [filtered, soldVehicles.length, soldVehicleKpis],
+    () => buildSoldVehicleKpiStrip(monthRecords),
+    [monthRecords],
   );
-
-  const footer = useMemo(() => computeSoldVehicleTableFooter(filtered), [filtered]);
 
   const handleExport = () => {
     exportSoldVehiclesCsv(filtered);
   };
 
+  const handleMonthChange = (year: number, month: number) => {
+    setCalendarYear(year);
+    setCalendarMonth(month);
+    setSelectedDate(null);
+  };
+
+  const handleCalendarReset = () => {
+    setCalendarYear(DEFAULT_CALENDAR_MONTH.year);
+    setCalendarMonth(DEFAULT_CALENDAR_MONTH.month);
+    setSelectedDate(null);
+  };
+
   return (
-    <div className={cn("rounded-sm border p-3.5 text-slate-200 shadow-none", ADMIN_PANEL_SHELL_CLASS)}>
-      <div className="space-y-3.5">
-        <SoldVehiclesCenterHeader
-          periodPreset={periodPreset}
-          onPeriodChange={setPeriodPreset}
-          onAddSoldVehicle={onAddSoldVehicle}
-          showTitle={showTitle}
-        />
+    <div className="space-y-3.5">
+      <SoldVehicleKpiStripComponent kpis={dynamicKpis} loading={loading} />
 
-        <SoldVehicleKpiStripComponent kpis={dynamicKpis} loading={loading} />
-
-        <SoldVehiclesToolbar
-          filters={filters}
-          onSearchChange={setSearch}
-          onSaleTypeChange={setSaleTypeFilter}
-          onStatusChange={setStatusFilter}
-          onExport={handleExport}
+      <div className="grid min-w-0 grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+        <SoldVehiclesCalendar
+          records={monthRecords}
+          year={calendarYear}
+          month={calendarMonth}
+          selectedDate={selectedDate}
+          onMonthChange={handleMonthChange}
+          onSelectedDateChange={setSelectedDate}
+          onReset={handleCalendarReset}
+          defaultYear={DEFAULT_CALENDAR_MONTH.year}
+          defaultMonth={DEFAULT_CALENDAR_MONTH.month}
+          loading={loading}
         />
 
         <SoldVehiclesTable
           records={filtered}
           loading={loading}
           activeRowKey={activeRowKey}
+          search={search}
+          onSearchChange={setSearch}
+          onExport={handleExport}
           onRowClick={onRowClick}
-          onView={onViewSale}
         />
-
-        <div className="flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-800 pt-3 text-[11px]">
-          <span className="text-[#64748b]">
-            Showing{" "}
-            <strong className="text-white tabular-nums">{footer.count}</strong>{" "}
-            sold vehicles
-          </span>
-          <span className="text-[#64748b]">
-            Total Sales:{" "}
-            <strong className="text-white tabular-nums">
-              {footer.formatted.totalSales}
-            </strong>
-          </span>
-          <span className="text-[#64748b]">
-            Gross Profit:{" "}
-            <strong className="text-emerald-400 tabular-nums">
-              {footer.formatted.totalGrossProfit}
-            </strong>
-          </span>
-          <span className="text-[#64748b]">
-            Pending:{" "}
-            <strong className="text-amber-400 tabular-nums">
-              {footer.formatted.pendingAmount}
-            </strong>
-          </span>
-        </div>
       </div>
     </div>
   );

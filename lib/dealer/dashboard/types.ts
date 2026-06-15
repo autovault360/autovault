@@ -216,6 +216,7 @@ export type SoldVehicleRecord = {
   vin: string;
   vehicleLabel: string;
   stockNumber: string;
+  exteriorColor?: string;
   vehicleImageUrl?: string;
   mileage?: number;
   buyer: string;

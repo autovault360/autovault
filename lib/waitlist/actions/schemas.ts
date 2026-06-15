@@ -11,13 +11,13 @@ export const heroWaitlistSchema = z.object({
     .optional()
     .refine((val) => !val || phoneRegex.test(val), phoneSchemaMessage),
   dealershipName: z.string().trim().min(2, "Dealership name is required"),
-  source: waitlistSourceSchema.default("hero_form"),
+  source: waitlistSourceSchema,
   website: z.string().max(0).optional(),
 });
 
 export const footerWaitlistSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email address"),
-  source: waitlistSourceSchema.default("footer_form"),
+  source: waitlistSourceSchema,
   website: z.string().max(0).optional(),
 });
 

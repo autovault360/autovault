@@ -1,7 +1,9 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import type { SoldVehicleRecord } from "@/lib/dealer/dashboard/types";
 import AddSoldVehicleWorkspace from "./add-sold-vehicle-workspace";
@@ -71,7 +73,15 @@ export default function DealerSoldVehiclesPageContent() {
   return (
     <DealerPageShell
       title="Sold Vehicles"
-      description="Manage wholesale sold vehicle records and sale documentation."
+      description="View and track all vehicles that have been marked as sold."
+      headerExtra={
+        <Button type="button" size="sm" onClick={openAdd}>
+          <ButtonIcon tone="default">
+            <Plus />
+          </ButtonIcon>
+          Add Sold Vehicle
+        </Button>
+      }
     >
       <SoldVehiclesCenter
         soldVehicles={dashboardData.soldVehicles}
