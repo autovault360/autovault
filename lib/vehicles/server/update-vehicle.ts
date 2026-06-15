@@ -68,6 +68,9 @@ async function softDeleteVehicleImages(
 }
 
 export async function updateVehicle(formData: FormData) {
+  const uploadedPaths: string[] = [];
+  let vehicleId: string | null = null;
+
   try {
     const auth = await authenticateUser();
     if (!auth.ok) return { success: false, error: auth.error };
@@ -75,6 +78,7 @@ export async function updateVehicle(formData: FormData) {
 
     const raw = JSON.parse(formData.get("payload") as string);
     const data = schema.parse(raw);
+    vehicleId = data.vehicleId;
 
     const supabase = await createClient();
 
@@ -161,6 +165,7 @@ export async function updateVehicle(formData: FormData) {
         const path = `${dealershipId}/${data.vehicleId}/photos/${Date.now()}-${newPhotoIndex}.${ext}`;
         await uploadFile("vehicle-images", path, file);
         uploadedNewPaths.push(path);
+        uploadedPaths.push(path);
 
         await trackFile(file, "vehicle-images", path, dealershipId, userId, {
           sourceEntity: "vehicle",
@@ -237,19 +242,23 @@ export async function updateVehicle(formData: FormData) {
           const ext = photos[i].name.split(".").pop();
           const path = `${dealershipId}/${data.vehicleId}/photos/${nextSort}.${ext}`;
           await uploadFile("vehicle-images", path, photos[i]);
+          uploadedPaths.push(path);
 
           await trackFile(photos[i], "vehicle-images", path, dealershipId, userId, {
             sourceEntity: "vehicle",
             sourceEntityId: data.vehicleId,
           });
 
-          await supabase.from("vehicle_images").insert({
+          const { error: insertError } = await supabase.from("vehicle_images").insert({
             vehicle_id: data.vehicleId,
             dealership_id: dealershipId,
             storage_path: path,
             is_primary: false,
             sort_order: nextSort,
           });
+          if (insertError) {
+            throw new Error(`Failed to insert image: ${insertError.message}`);
+          }
           nextSort++;
         }
       }
@@ -269,6 +278,18 @@ export async function updateVehicle(formData: FormData) {
     revalidatePath(`/dashboard/vehicles/${data.vehicleId}`);
     return { success: true };
   } catch (err) {
+    if (uploadedPaths.length > 0) {
+      const supabase = await createClient();
+      await supabase.storage.from("vehicle-images").remove(uploadedPaths);
+      if (vehicleId) {
+        await supabase
+          .from("vehicle_images")
+          .update({ deleted_at: new Date().toISOString() })
+          .eq("vehicle_id", vehicleId)
+          .in("storage_path", uploadedPaths)
+          .is("deleted_at", null);
+      }
+    }
     const message = err instanceof Error ? err.message : "Unknown error";
     return { success: false, error: message };
   }

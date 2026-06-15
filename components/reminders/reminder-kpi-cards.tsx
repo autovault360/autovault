@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { kpiGridClass } from "@/lib/ui/kpi-grid";
 import type { ReminderKpi } from "@/lib/reminders/types";
 
 const iconMap = {
@@ -32,7 +33,7 @@ type Props = {
 
 export default function ReminderKpiCards({ kpis }: Props) {
   return (
-    <section className="mb-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+    <section className={kpiGridClass(kpis.length, "mb-3.5")}>
       {kpis.map((kpi) => {
         const Icon = iconMap[kpi.color];
         return (

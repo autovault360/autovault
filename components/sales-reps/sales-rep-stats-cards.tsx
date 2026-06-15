@@ -3,7 +3,13 @@ import {
   formatCurrency,
   type SalesRepStats,
 } from "@/lib/sales-reps/types";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
+import {
+  KPI_CARD_DEFAULT_PROPS,
+  KPI_CARD_SHELL_CLASS,
+  kpiGridClass,
+} from "@/lib/ui/kpi-grid";
+
+const CARD_COUNT = 3;
 
 function buildCards(stats: SalesRepStats): KPICardData[] {
   return [
@@ -44,13 +50,12 @@ export default function SalesRepStatsCards({ stats }: { stats: SalesRepStats }) 
   const cards = buildCards(stats);
 
   return (
-    <section className="mb-3.5 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-3">
+    <section className={kpiGridClass(CARD_COUNT, "mb-3.5")}>
       {cards.map((card, i) => (
         <KPICard
           key={card.label}
           data={card}
-          showSparkline={false}
-          showLink={false}
+          {...KPI_CARD_DEFAULT_PROPS}
           deltaColor={
             i === 0
               ? "green"
@@ -58,7 +63,7 @@ export default function SalesRepStatsCards({ stats }: { stats: SalesRepStats }) 
                 ? stats.commissionsPaidMtdDeltaColor
                 : stats.totalCommissionsYtdDeltaColor
           }
-          className={ADMIN_PANEL_SHELL_CLASS}
+          className={KPI_CARD_SHELL_CLASS}
         />
       ))}
     </section>

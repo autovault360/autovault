@@ -1,3 +1,7 @@
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
+
+const DEALER_KPI_COUNT = 7;
+
 function SkeletonBar({ className }: { className?: string }) {
   return (
     <div
@@ -24,7 +28,7 @@ function SkeletonCard({
 
 export default function DealerDashboardSkeleton() {
   return (
-    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden  text-slate-100 antialiased">
+    <div className="min-h-screen w-full min-w-0 max-w-full overflow-x-hidden text-slate-100 antialiased">
       <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 border-b border-slate-800/60 px-0.5 pb-3.5">
         <div className="flex-1">
           <SkeletonBar className="mb-2 h-7 w-80" />
@@ -37,19 +41,7 @@ export default function DealerDashboardSkeleton() {
         </div>
       </section>
 
-      <div className="mb-3.5 grid min-w-0 grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <SkeletonCard key={i}>
-            <div className="flex items-start gap-2.5">
-              <SkeletonBar className="h-10 w-10 rounded-full shrink-0" />
-              <div className="flex-1 space-y-2">
-                <SkeletonBar className="h-2.5 w-20" />
-                <SkeletonBar className="h-5 w-16" />
-              </div>
-            </div>
-          </SkeletonCard>
-        ))}
-      </div>
+      <KpiGridSkeleton count={DEALER_KPI_COUNT} className="mb-3.5" />
 
       <div className="mb-3.5 grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (

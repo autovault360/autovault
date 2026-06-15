@@ -41,6 +41,10 @@ export type VehicleDbRow = {
   condition?: string | null;
   odometer_status?: string | null;
   notes?: string | null;
+  exterior_color?: string | null;
+  arbitration_reason?: string | null;
+  arbitration_listed_at?: string | null;
+  arbitration_buyer_dealer?: string | null;
 };
 
 function formatISO(date: string | null | undefined): string {
@@ -64,6 +68,8 @@ export function mapDbInventoryStatus(
   switch (dbStatus) {
     case "pending_sale":
       return "pending_sale";
+    case "arbitration":
+      return "arbitration";
     case "sold":
     case "loss":
       return "sold";
@@ -104,6 +110,8 @@ export function toLegacyStatus(
 ): VehicleStatus {
   switch (inventoryStatus) {
     case "pending_sale":
+      return "pending";
+    case "arbitration":
       return "pending";
     case "sold":
       return "sold";
@@ -180,6 +188,10 @@ export function mapWholesaleVehicle(
     lastAuctionDate: formatISO(row.last_auction_date),
     odometerStatus: row.odometer_status ?? undefined,
     notes: row.notes ?? undefined,
+    exteriorColor: row.exterior_color ?? undefined,
+    arbitrationReason: row.arbitration_reason ?? undefined,
+    arbitrationListedAt: formatISO(row.arbitration_listed_at),
+    arbitrationBuyerDealer: row.arbitration_buyer_dealer ?? undefined,
   };
 }
 

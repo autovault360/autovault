@@ -1,4 +1,4 @@
-export type SalesRepWelcomeData = {
+type SalesRepWelcomeParams = {
   fullName: string;
   email: string;
   tempPassword: string;
@@ -9,40 +9,49 @@ export type SalesRepWelcomeData = {
   loginUrl: string;
 };
 
-function baseWrapper(bodyHtml: string): string {
+export function salesRepWelcomeEmail(p: SalesRepWelcomeParams): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoVault360</title>
 </head>
-<body style="margin:0;padding:0;background-color:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;">
+<body style="margin:0;padding:0;background-color:#0b1120;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0b1120;">
     <tr>
       <td align="center" style="padding:40px 16px;">
-        <table role="presentation" width="100%" style="max-width:600px;background-color:#1e293b;border-radius:12px;overflow:hidden;border:1px solid #334155;">
+        <table role="presentation" width="520" cellpadding="0" cellspacing="0" style="background-color:#111b2e;border-radius:12px;border:1px solid #1e293b;">
           <tr>
-            <td style="padding:32px 40px 24px;text-align:center;background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);border-bottom:3px solid #3b82f6;">
-              <h1 style="margin:0;font-size:24px;font-weight:700;color:#f8fafc;letter-spacing:-0.5px;">
-                ⚡ AutoVault360
-              </h1>
-              <p style="margin:6px 0 0;font-size:13px;color:#94a3b8;">Dealership Operating System</p>
+            <td align="center" style="padding:36px 32px 20px;">
+              <span style="font-size:22px;font-weight:700;color:#e2e8f0;letter-spacing:0.05em;">AUTOVAULT<span style="color:#3b82f6;">360</span></span>
             </td>
           </tr>
           <tr>
-            <td style="padding:32px 40px;color:#e2e8f0;font-size:14px;line-height:1.6;">
-              ${bodyHtml}
+            <td style="padding:0 32px 12px;text-align:center;">
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#f1f5f9;">Welcome to AutoVault360</h1>
+              <p style="margin:8px 0 0;font-size:14px;color:#94a3b8;line-height:1.5;">Your account has been created. Sign in with the credentials below.</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:24px 40px;text-align:center;border-top:1px solid #334155;">
-              <p style="margin:0 0 4px;font-size:12px;color:#64748b;">
-                &copy; ${new Date().getFullYear()} AutoVault360. All rights reserved.
-              </p>
-              <p style="margin:0;font-size:11px;color:#475569;">
-                This is an automated message. Please do not reply directly.
-              </p>
+            <td style="padding:20px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a1222;border-radius:8px;border:1px solid #1e293b;">
+                <tr><td style="padding:20px 24px;">
+                  <p style="margin:0 0 16px;font-size:13px;color:#94a3b8;"><strong style="color:#e2e8f0;">Name:</strong> ${p.fullName}</p>
+                  <p style="margin:0 0 16px;font-size:13px;color:#94a3b8;"><strong style="color:#e2e8f0;">Email:</strong> ${p.email}</p>
+                  <p style="margin:0 0 16px;font-size:13px;color:#94a3b8;"><strong style="color:#e2e8f0;">Role:</strong> ${p.role.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}</p>
+                  <p style="margin:0;font-size:13px;color:#94a3b8;"><strong style="color:#e2e8f0;">Temporary Password:</strong> <span style="font-family:'SFMono-Regular',Consolas,monospace;color:#fbbf24;font-weight:600;">${p.tempPassword}</span></p>
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:8px 32px 28px;">
+              <a href="${p.loginUrl}" style="display:inline-block;padding:14px 40px;border-radius:8px;background-color:#3b82f6;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;">Sign In to AutoVault360</a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 20px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">For security, please change your password after first login.<br/>This is an automated message — do not reply.</p>
             </td>
           </tr>
         </table>
@@ -53,118 +62,65 @@ function baseWrapper(bodyHtml: string): string {
 </html>`;
 }
 
-export function salesRepWelcomeEmail(data: SalesRepWelcomeData): string {
-  const roleDisplay = data.role === "manager" ? "Manager" : "Sales Representative";
-
-  const body = `
-    <h2 style="color:#f8fafc;font-size:20px;font-weight:600;margin:0 0 16px;">
-      Welcome to AutoVault360, ${data.fullName}! 🚗
-    </h2>
-    <p style="margin:0 0 20px;color:#cbd5e1;">
-      Your account has been created. Below are your credentials and account details.
-      Please sign in and change your password on first login.
-    </p>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;margin-bottom:24px;">
-      <tr>
-        <td style="padding:16px 20px;">
-          <h3 style="margin:0 0 12px;font-size:13px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:0.5px;">
-            Sign-In Credentials
-          </h3>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">Email</td>
-              <td style="padding:4px 0;font-size:13px;color:#f8fafc;font-weight:500;">${data.email}</td>
-            </tr>
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">Temporary Password</td>
-              <td style="padding:4px 0;font-size:13px;color:#facc15;font-weight:600;font-family:monospace;">${data.tempPassword}</td>
-            </tr>
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">Role</td>
-              <td style="padding:4px 0;font-size:13px;color:#f8fafc;font-weight:500;">${roleDisplay}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:0 20px 16px;">
-          <h3 style="margin:0 0 12px;font-size:13px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:0.5px;">
-            Account Details
-          </h3>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">User ID</td>
-              <td style="padding:4px 0;font-size:13px;color:#f8fafc;font-family:monospace;">${data.userId}</td>
-            </tr>
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">Auth User ID</td>
-              <td style="padding:4px 0;font-size:13px;color:#f8fafc;font-family:monospace;">${data.authUserId}</td>
-            </tr>
-            <tr>
-              <td style="padding:4px 0;font-size:13px;color:#94a3b8;width:120px;">Dealership ID</td>
-              <td style="padding:4px 0;font-size:13px;color:#f8fafc;font-family:monospace;">${data.dealershipId}</td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-    </table>
-
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td align="center" style="padding:0 0 16px;">
-          <a href="${data.loginUrl}"
-             style="display:inline-block;padding:12px 32px;background-color:#2563eb;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">
-            Sign In to AutoVault360
-          </a>
-        </td>
-      </tr>
-    </table>
-
-    <p style="margin:16px 0 0;font-size:12px;color:#64748b;">
-      ⚠️ For security, please change your password after signing in.
-      This password was generated by your dealership administrator.
-    </p>
-  `;
-
-  return baseWrapper(body);
-}
-
-export type DocumentSendEmailData = {
+type DocumentSendParams = {
   senderName: string;
   message: string;
   documentCount: number;
   documentNames: string[];
 };
 
-export function documentSendEmail(data: DocumentSendEmailData): string {
-  const docList = data.documentNames
-    .map((name) => `<li style="padding:4px 0;color:#e2e8f0;">${name}</li>`)
+export function documentSendEmail(p: DocumentSendParams): string {
+  const docsList = p.documentNames
+    .map((name) => `<li style="margin:4px 0;font-size:13px;color:#cbd5e1;">📎 ${name}</li>`)
     .join("");
-
-  const body = `
-    <h2 style="color:#f8fafc;font-size:20px;font-weight:600;margin:0 0 16px;">
-      Documents from ${data.senderName}
-    </h2>
-    <p style="margin:0 0 20px;color:#cbd5e1;">
-      ${data.message || "Please find the attached documents."}
-    </p>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0f172a;border-radius:8px;border:1px solid #334155;margin-bottom:24px;">
-      <tr>
-        <td style="padding:16px 20px;">
-          <h3 style="margin:0 0 12px;font-size:13px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:0.5px;">
-            ${data.documentCount} Attached Document${data.documentCount === 1 ? "" : "s"}
-          </h3>
-          <ul style="margin:0;padding-left:20px;">
-            ${docList}
-          </ul>
-        </td>
-      </tr>
-    </table>
-    <p style="margin:0;font-size:12px;color:#64748b;">
-      Documents are attached to this email. Please handle them securely.
-    </p>
-  `;
-
-  return baseWrapper(body);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background-color:#0b1120;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0b1120;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="520" cellpadding="0" cellspacing="0" style="background-color:#111b2e;border-radius:12px;border:1px solid #1e293b;">
+          <tr>
+            <td align="center" style="padding:36px 32px 20px;">
+              <span style="font-size:22px;font-weight:700;color:#e2e8f0;letter-spacing:0.05em;">AUTOVAULT<span style="color:#3b82f6;">360</span></span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 12px;">
+              <h1 style="margin:0;font-size:20px;font-weight:600;color:#f1f5f9;">Documents Shared With You</h1>
+              <p style="margin:8px 0 0;font-size:14px;color:#94a3b8;line-height:1.5;"><strong style="color:#e2e8f0;">${p.senderName}</strong> has shared <strong style="color:#e2e8f0;">${p.documentCount}</strong> document${p.documentCount === 1 ? "" : "s"} with you.</p>
+            </td>
+          </tr>
+          ${p.message ? `
+          <tr>
+            <td style="padding:8px 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a1222;border-radius:8px;border:1px solid #1e293b;">
+                <tr><td style="padding:16px 20px;">
+                  <p style="margin:0;font-size:13px;color:#94a3b8;line-height:1.5;font-style:italic;">"${p.message}"</p>
+                </td></tr>
+              </table>
+            </td>
+          </tr>` : ""}
+          ${p.documentNames.length > 0 ? `
+          <tr>
+            <td style="padding:16px 32px 8px;">
+              <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#e2e8f0;">Documents:</p>
+              <ul style="margin:0;padding-left:8px;list-style:none;">${docsList}</ul>
+            </td>
+          </tr>` : ""}
+          <tr>
+            <td style="padding:24px 32px 28px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">Sign in to your AutoVault360 account to view and download these documents.<br/>This is an automated message — do not reply.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 }

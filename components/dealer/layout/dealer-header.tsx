@@ -7,6 +7,7 @@ import {
   Handshake,
   Plus,
   Receipt,
+  Scale,
   Tag,
   BarChart3,
   Package,
@@ -77,6 +78,12 @@ export default function DealerHeader({
         onClick={() => router.push("/dealer/dashboard/missing-titles")}
       />
       <HeaderIconAction
+        icon={Scale}
+        label="Arbitration"
+        tone="orange"
+        onClick={() => router.push(DEALER_ROUTES.arbitration)}
+      />
+      <HeaderIconAction
         icon={Tag}
         label="Add Sold"
         tone="greenDark"
@@ -94,6 +101,16 @@ export default function DealerHeader({
             label: "Add Expense",
             onClick: handleAddExpense,
             icon: Receipt,
+          },
+          {
+            label: "Missing Titles",
+            href: "/dealer/dashboard/missing-titles",
+            icon: FileWarning,
+          },
+          {
+            label: "Arbitration",
+            href: DEALER_ROUTES.arbitration,
+            icon: Scale,
           },
           {
             label: "Sold Vehicles",

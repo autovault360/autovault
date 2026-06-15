@@ -20,6 +20,7 @@ import type {
 } from "@/lib/dealer/dashboard/types";
 import AddEditVehicleModal from "./add-edit-vehicle-modal";
 import ChangeTitleStatusDialog from "./change-title-status-dialog";
+import ChangeArbitrationStatusDialog from "./change-arbitration-status-dialog";
 import InventoryCenterHeader from "./inventory-center-header";
 import InventoryDetailSheet from "./inventory-detail-sheet";
 import InventoryKpiStrip from "./inventory-kpi-strip";
@@ -61,6 +62,9 @@ export default function InventoryCenter({
   const [titleDialogVehicle, setTitleDialogVehicle] =
     useState<WholesaleVehicle | null>(null);
   const [titleDialogOpen, setTitleDialogOpen] = useState(false);
+  const [arbitrationDialogVehicle, setArbitrationDialogVehicle] =
+    useState<WholesaleVehicle | null>(null);
+  const [arbitrationDialogOpen, setArbitrationDialogOpen] = useState(false);
 
   const locations = useMemo(() => getUniqueLocations(vehicles), [vehicles]);
 
@@ -135,6 +139,12 @@ export default function InventoryCenter({
     vehicle: WholesaleVehicle,
     status: WholesaleInventoryStatus,
   ) => {
+    if (status === "arbitration") {
+      setArbitrationDialogVehicle(vehicle);
+      setArbitrationDialogOpen(true);
+      return;
+    }
+
     const result = await updateInventoryStatus({
       vehicleId: vehicle.id,
       inventoryStatus: status,
@@ -261,6 +271,13 @@ export default function InventoryCenter({
         vehicle={titleDialogVehicle}
         open={titleDialogOpen}
         onOpenChange={setTitleDialogOpen}
+        onSuccess={handleRefresh}
+      />
+
+      <ChangeArbitrationStatusDialog
+        vehicle={arbitrationDialogVehicle}
+        open={arbitrationDialogOpen}
+        onOpenChange={setArbitrationDialogOpen}
         onSuccess={handleRefresh}
       />
     </>

@@ -180,9 +180,9 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       0,
     );
     const totalReconditioning = Math.max(Number(row.reconditioning_cost ?? 0), sumOfExpenses);
-    const grossProfit = askingPrice - acquisitionCost;
-    const grossProfitPct = acquisitionCost > 0
-      ? (grossProfit / acquisitionCost) * 100
+    const grossProfit = askingPrice - totalReconditioning - acquisitionCost;
+    const grossProfitPct = totalReconditioning + acquisitionCost > 0
+      ? (grossProfit / (acquisitionCost + totalReconditioning)) * 100
       : 0;
 
     const activeImages = (row.images ?? []).filter((img) => !img.deleted_at);

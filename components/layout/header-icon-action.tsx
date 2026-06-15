@@ -9,6 +9,7 @@ const toneStyles = {
   green: { icon: "text-emerald-400", bg: "bg-emerald-500/10" },
   greenDark: { icon: "text-emerald-600", bg: "bg-emerald-600/10" },
   purple: { icon: "text-purple-400", bg: "bg-purple-500/10" },
+  orange: { icon: "text-orange-400", bg: "bg-orange-500/10" },
   neutral: { icon: "text-slate-400", bg: "bg-slate-800/50" },
 } as const;
 

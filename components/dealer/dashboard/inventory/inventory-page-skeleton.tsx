@@ -1,6 +1,6 @@
 import DealerPageShell from "@/components/dealer/layout/dealer-page-shell";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 import { cn } from "@/lib/utils";
-import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 
 function Bar({ className }: { className?: string }) {
   return (
@@ -8,23 +8,15 @@ function Bar({ className }: { className?: string }) {
   );
 }
 
+const CARD_COUNT = 6;
+
 export default function InventoryPageSkeleton() {
   return (
     <DealerPageShell
       title="Inventory Overview"
       description="Manage wholesale inventory, titles, and pipeline status."
     >
-      <div className="mb-3.5 grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className={cn("rounded-sm border p-3", ADMIN_PANEL_SHELL_CLASS)}
-          >
-            <Bar className="mb-2 h-10 w-10 rounded-full" />
-            <Bar className="h-4 w-24" />
-          </div>
-        ))}
-      </div>
+      <KpiGridSkeleton count={CARD_COUNT} className="mb-3.5" />
 
       <div className="rounded-sm border border-slate-800 bg-card p-3.5">
         <Bar className="mb-3 h-9 w-full max-w-sm" />

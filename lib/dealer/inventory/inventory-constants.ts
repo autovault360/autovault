@@ -27,6 +27,7 @@ export const INVENTORY_STATUS_LABELS: Record<WholesaleInventoryStatus, string> =
     in_stock: "In Stock",
     pending_sale: "Pending Sale",
     sold: "Sold",
+    arbitration: "Arbitration",
   };
 
 export const INVENTORY_STATUS_STYLES: Record<WholesaleInventoryStatus, string> =
@@ -34,6 +35,7 @@ export const INVENTORY_STATUS_STYLES: Record<WholesaleInventoryStatus, string> =
     in_stock: "bg-emerald-500/15 text-emerald-400",
     pending_sale: "bg-violet-500/15 text-violet-400",
     sold: "bg-slate-500/15 text-slate-400",
+    arbitration: "bg-orange-500/15 text-orange-400",
   };
 
 export const TITLE_STATUS_LABELS: Record<WholesaleTitleStatus, string> = {

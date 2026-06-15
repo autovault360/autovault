@@ -1,0 +1,132 @@
+/* Landing page theme tokens � scoped to .landing-page only */
+
+.landing-page {
+  --lp-bg: #ffffff;
+  --lp-bg-muted: #f4f5f2;
+  --lp-bg-subtle: #fafafa;
+  --lp-bg-card: #ffffff;
+  --lp-bg-input: #ffffff;
+  --lp-bg-icon: #fafafa;
+  --lp-bg-elevated: #02351d;
+  --lp-bg-elevated-hover: #052b20;
+  --lp-bg-accent: #4daa4f;
+  --lp-bg-accent-hover: #5fbb63;
+  --lp-bg-inset: #052b20;
+  --lp-bg-header: rgba(255, 255, 255, 0.95);
+  --lp-bg-video: #171717;
+
+  --lp-fg: #121212;
+  --lp-fg-heading: #02351d;
+  --lp-fg-muted: #616161;
+  --lp-fg-subtle: #757575;
+  --lp-fg-nav: #2a2a2a;
+  --lp-fg-nav-hover: #02351d;
+  --lp-fg-accent: #0d7a3c;
+  --lp-fg-link: #454545;
+  --lp-fg-link-hover: #02351d;
+  --lp-fg-on-dark: #ffffff;
+  --lp-fg-on-dark-muted: rgba(255, 255, 255, 0.75);
+  --lp-fg-on-dark-subtle: rgba(255, 255, 255, 0.6);
+  --lp-fg-input: #1a1a1a;
+  --lp-fg-placeholder: #ababab;
+  --lp-fg-icon: #9a9a9a;
+  --lp-fg-chevron: #616161;
+
+  --lp-border: #ececec;
+  --lp-border-subtle: #e0e0e0;
+  --lp-border-card: #e7e7e7;
+  --lp-border-strong: #e5e5e5;
+  --lp-border-icon: #e8e8e8;
+  --lp-border-social: #dedede;
+  --lp-border-toggle: #e5e5e5;
+
+  --lp-dash-bg: #f4f5f2;
+  --lp-dash-card: #ffffff;
+  --lp-dash-sidebar-from: #02351d;
+  --lp-dash-sidebar-mid: #052f1b;
+  --lp-dash-sidebar-to: #08311c;
+  --lp-dash-active: rgba(77, 170, 79, 0.8);
+  --lp-dash-title: #202020;
+  --lp-dash-value: #151515;
+  --lp-dash-body: #3f3f3f;
+  --lp-dash-label: #414141;
+  --lp-dash-secondary: #616161;
+  --lp-dash-positive: #0d7a2f;
+  --lp-dash-positive-text: #0d7a3c;
+  --lp-dash-calendar-muted: #7f7f7f;
+  --lp-dash-calendar-fg: #141414;
+
+  --lp-shadow-card: 0 8px 40px rgba(0, 0, 0, 0.08);
+  --lp-shadow-preview: 0 12px 48px rgba(0, 0, 0, 0.08);
+  --lp-shadow-sidebar: 0 4px 20px rgba(0, 0, 0, 0.12);
+
+  --lp-gold: #d4a843;
+  --lp-glow: rgba(62, 164, 54, 0.05);
+
+  color: var(--lp-fg);
+  background-color: var(--lp-bg);
+}
+
+.landing-page.landing-dark {
+  --lp-bg: #020403;
+  --lp-bg-muted: #0a0c0d;
+  --lp-bg-subtle: #050708;
+  --lp-bg-card: rgba(12, 14, 16, 0.85);
+  --lp-bg-input: rgba(6, 8, 9, 0.9);
+  --lp-bg-icon: rgba(12, 14, 16, 0.6);
+  --lp-bg-elevated: #0c0e10;
+  --lp-bg-elevated-hover: #121518;
+  --lp-bg-accent: #3b9229;
+  --lp-bg-accent-hover: #4bc43b;
+  --lp-bg-inset: #060809;
+  --lp-bg-header: rgba(2, 4, 3, 0.92);
+  --lp-bg-video: #050708;
+
+  --lp-fg: #d4d4d8;
+  --lp-fg-heading: #ffffff;
+  --lp-fg-muted: #a1a1aa;
+  --lp-fg-subtle: #71717a;
+  --lp-fg-nav: #d4d4d8;
+  --lp-fg-nav-hover: #4bc43b;
+  --lp-fg-accent: #4bc43b;
+  --lp-fg-link: #a1a1aa;
+  --lp-fg-link-hover: #4bc43b;
+  --lp-fg-on-dark: #ffffff;
+  --lp-fg-on-dark-muted: rgba(255, 255, 255, 0.75);
+  --lp-fg-on-dark-subtle: rgba(255, 255, 255, 0.55);
+  --lp-fg-input: #e4e4e7;
+  --lp-fg-placeholder: #52525b;
+  --lp-fg-icon: #71717a;
+  --lp-fg-chevron: #71717a;
+
+  --lp-border: #27272a;
+  --lp-border-subtle: #18181b;
+  --lp-border-card: rgba(39, 39, 42, 0.9);
+  --lp-border-strong: #3f3f46;
+  --lp-border-icon: #27272a;
+  --lp-border-social: #3f3f46;
+  --lp-border-toggle: #3f3f46;
+
+  --lp-dash-bg: #0a0c0d;
+  --lp-dash-card: rgba(12, 14, 16, 0.95);
+  --lp-dash-sidebar-from: #02351d;
+  --lp-dash-sidebar-mid: #041a10;
+  --lp-dash-sidebar-to: #020403;
+  --lp-dash-active: rgba(77, 170, 79, 0.75);
+  --lp-dash-title: #d4d4d8;
+  --lp-dash-value: #fafafa;
+  --lp-dash-body: #a1a1aa;
+  --lp-dash-label: #a1a1aa;
+  --lp-dash-secondary: #71717a;
+  --lp-dash-positive: #4bc43b;
+  --lp-dash-positive-text: #4bc43b;
+  --lp-dash-calendar-muted: #52525b;
+  --lp-dash-calendar-fg: #e4e4e7;
+
+  --lp-shadow-card: 0 25px 60px -15px rgba(0, 0, 0, 0.85);
+  --lp-shadow-preview: 0 25px 60px -15px rgba(0, 0, 0, 0.75);
+  --lp-shadow-sidebar: 0 8px 30px rgba(0, 0, 0, 0.45);
+
+  --lp-gold: #d4a843;
+  --lp-glow: rgba(62, 164, 54, 0.12);
+}

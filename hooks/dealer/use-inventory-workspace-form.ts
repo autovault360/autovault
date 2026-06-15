@@ -36,6 +36,8 @@ const emptyDefaults: InventoryWorkspaceValues = {
   lastAuctionDate: "",
   soldAt: "",
   soldPrice: undefined,
+  arbitrationReason: "",
+  arbitrationBuyerDealer: "",
 };
 
 function vehicleToFormValues(
@@ -71,6 +73,8 @@ function vehicleToFormValues(
     lastAuctionDate: vehicle.lastAuctionDate ?? "",
     soldAt: vehicle.soldAt ?? "",
     soldPrice: vehicle.soldPrice,
+    arbitrationReason: vehicle.arbitrationReason ?? "",
+    arbitrationBuyerDealer: vehicle.arbitrationBuyerDealer ?? "",
   };
 }
 

@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
+import { kpiGridClass } from "@/lib/ui/kpi-grid";
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
@@ -67,13 +69,7 @@ function PanelSkeleton() {
 }
 
 function KpiRowSkeleton({ count }: { count: number }) {
-  return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-5">
-      {Array.from({ length: count }).map((_, i) => (
-        <KpiSkeleton key={i} />
-      ))}
-    </div>
-  );
+  return <KpiGridSkeleton count={count} />;
 }
 
 export default function DashboardLoading() {
@@ -88,7 +84,7 @@ export default function DashboardLoading() {
       </section>
 
       {/* KPI Section - 7 cards */}
-      <section className="mb-3.5 grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-7">
+      <section className={kpiGridClass(7, "mb-3.5")}>
         {Array.from({ length: 7 }).map((_, i) => (
           <KpiSkeleton key={i} />
         ))}
