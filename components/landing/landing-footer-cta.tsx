@@ -58,7 +58,7 @@ export default function LandingFooterCta({ serifClassName }: { serifClassName: s
                     type="email"
                     placeholder="Your email address"
                     className={[
-                      "h-[48px] flex-1 rounded-[10px] border bg-[var(--lp-bg-inset)] px-4 text-[14px] text-[var(--lp-fg-on-dark)] outline-none placeholder:text-[var(--lp-fg-on-dark-subtle)] focus:border-[var(--lp-bg-accent)] focus:ring-1 focus:ring-[var(--lp-bg-accent)]/30",
+                      "h-10 py-3 flex-1 rounded-[10px] border bg-[var(--lp-bg-inset)] px-4 text-[14px] text-[var(--lp-fg-on-dark)] outline-none placeholder:text-[var(--lp-fg-on-dark-subtle)] focus:border-[var(--lp-bg-accent)] focus:ring-1 focus:ring-[var(--lp-bg-accent)]/30",
                       emailError ? "border-red-400" : "border-[var(--lp-bg-accent)]/40",
                     ].join(" ")}
                   />

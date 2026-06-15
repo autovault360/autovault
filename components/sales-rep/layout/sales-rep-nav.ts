@@ -140,7 +140,6 @@ export const SALES_REP_NAV_GROUPS: SalesRepNavGroup[] = [
         label: "My Profile",
         icon: User,
         color: "text-slate-400",
-        comingSoon: true,
       },
       {
         href: "/sales-rep/settings",

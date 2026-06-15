@@ -4,6 +4,7 @@ export const DEALER_ROUTES = {
   transactions: "/dealer/transactions",
   soldVehicles: "/dealer/sold-vehicles",
   arbitration: "/dealer/dashboard/arbitration",
+  profile: "/dealer/profile",
 } as const;
 
 export const DEALER_SECTION_IDS = {

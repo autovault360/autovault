@@ -188,7 +188,7 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         label: "My Profile",
         icon: User,
         color: "text-slate-400",
-        comingSoon: true,
+        href: DEALER_ROUTES.profile,
       },
       {
         label: "Subscription",

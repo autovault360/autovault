@@ -180,6 +180,7 @@ export type CpaSession = {
   email: string;
   fullName: string;
   initials: string;
+  imageUrl?: string;
   role: string;
   dealershipId: string;
   dealershipName: string;

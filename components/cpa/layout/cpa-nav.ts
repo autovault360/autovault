@@ -9,6 +9,7 @@ import {
   StickyNote,
   FileDown,
   Bot,
+  User,
   type LucideIcon,
 } from "lucide-react";
 
@@ -81,6 +82,17 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         label: "Files & Storage",
         icon: Archive,
         color: "text-cyan-500",
+      },
+    ],
+  },
+  {
+    label: "PROFILE",
+    items: [
+      {
+        href: "/cpa/profile",
+        label: "My Profile",
+        icon: User,
+        color: "text-slate-400",
       },
     ],
   },

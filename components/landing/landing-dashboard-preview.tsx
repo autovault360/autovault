@@ -50,10 +50,10 @@ const previewInventory = [
 
 export default function LandingDashboardPreview({ serifClassName }: { serifClassName: string }) {
   return (
-    <section className="relative z-[0] bg-[var(--lp-bg)] pb-10 pt-16 transition-colors duration-300 sm:pb-12 sm:pt-20 lg:pt-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="overflow-hidden rounded-[18px] border border-[var(--lp-border-strong)] bg-[var(--lp-dash-bg)] shadow-[var(--lp-shadow-preview)]">
-          <div className="grid grid-cols-[52px_minmax(0,1fr)] sm:grid-cols-[64px_minmax(0,1fr)]">
+    <section className="relative z-[0] overflow-x-hidden bg-[var(--lp-bg)] px-4 pb-10 pt-16 transition-colors duration-300 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:pt-24">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="w-full overflow-hidden rounded-[12px] border border-[var(--lp-border-strong)] bg-[var(--lp-dash-bg)] shadow-[var(--lp-shadow-preview)] sm:rounded-[18px]">
+          <div className="grid grid-cols-1 sm:grid-cols-[64px_minmax(0,1fr)]">
             <aside className="hidden sm:flex flex-col items-center gap-1 bg-[linear-gradient(180deg,var(--lp-dash-sidebar-from)_0%,var(--lp-dash-sidebar-mid)_100%)] px-2 py-4 text-white">
               <div className={`mb-3 text-[28px] font-semibold leading-none tracking-[-0.12em] ${serifClassName}`}>
                 V<span className="relative -left-[1px]">A</span>
@@ -74,8 +74,31 @@ export default function LandingDashboardPreview({ serifClassName }: { serifClass
               })}
             </aside>
 
-            <div className="min-w-0 p-3 sm:p-4">
-              <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+            <div className="min-w-0 overflow-hidden">
+              <div className="flex items-center justify-between bg-[linear-gradient(180deg,var(--lp-dash-sidebar-from)_0%,var(--lp-dash-sidebar-mid)_100%)] px-3 py-2.5 text-white sm:hidden">
+                <div className={`text-[22px] font-semibold leading-none tracking-[-0.12em] ${serifClassName}`}>
+                  V<span className="relative -left-[1px]">A</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  {previewNav.slice(0, 4).map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                      <div
+                        key={index}
+                        className={[
+                          "flex h-7 w-7 items-center justify-center rounded-[6px]",
+                          item.active ? "bg-[var(--lp-dash-active)]" : "text-white/90",
+                        ].join(" ")}
+                      >
+                        <Icon className="h-3.5 w-3.5" strokeWidth={2} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="min-w-0 p-3 sm:p-4">
+              <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-2 lg:grid-cols-4">
                 <MetricCard compact title="Profit & Loss (This Month)" value="$187,452" subtitle="Total Profit" delta="16% vs last month" accent="green" />
                 <MetricCard compact title="Revenue" value="$1,247,499" subtitle="Total Revenue" delta="12% vs last month" accent="green" />
                 <MetricCard compact title="Gross Profit" value="$187,452" subtitle="Gross Profit" delta="16% vs last month" accent="green" />
@@ -135,11 +158,11 @@ export default function LandingDashboardPreview({ serifClassName }: { serifClass
                 <div className="space-y-2">
                   <Panel className="px-3 py-3">
                     <PanelHeader compact title="Inventory Overview" />
-                    <div className="mt-2 flex items-start gap-3">
-                      <div className="scale-[0.72] origin-top-left -mr-6">
-                        <ChartDonut />
+                    <div className="mt-2 flex flex-col items-center gap-3 sm:flex-row sm:items-start">
+                      <div className="shrink-0 scale-[0.85] sm:scale-[0.72] sm:origin-top-left">
+                        <ChartDonut size="compact" />
                       </div>
-                      <div className="flex-1 space-y-2 pt-1">
+                      <div className="w-full min-w-0 flex-1 space-y-2 sm:pt-1">
                         <InventoryLegend compact color="#15803d" label="In Stock" value="68 (53%)" />
                         <InventoryLegend compact color="#2563eb" label="At Auction" value="28 (22%)" />
                         <InventoryLegend compact color="#233b6b" label="Sold" value="24 (19%)" />
@@ -151,40 +174,45 @@ export default function LandingDashboardPreview({ serifClassName }: { serifClass
                     <PanelHeader
                       compact
                       title="Recent Inventory"
-                      right={<Link href="#" className="text-[10px] text-[var(--lp-fg-accent)]">View All</Link>}
+                      right={<Link href="#" className="shrink-0 text-[10px] text-[var(--lp-fg-accent)]">View All</Link>}
                     />
-                    <div className="mt-2 space-y-2">
-                      {previewInventory.map((item) => (
-                        <div key={item.name} className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 text-[10px]">
-                          <div className="h-6 w-9 rounded bg-[#ececec]" />
-                          <div className="min-w-0">
-                            <div className="truncate font-medium">{item.name}</div>
-                            <div className="truncate text-[9px] text-[var(--lp-fg-subtle)]">{item.stock}</div>
+                    <div className="mt-2 -mx-1 overflow-x-auto sm:mx-0">
+                      <div className="min-w-0 space-y-2 sm:min-w-full">
+                        {previewInventory.map((item) => (
+                          <div key={item.name} className="grid grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-2 text-[10px]">
+                            <div className="h-6 w-9 rounded bg-[#ececec]" />
+                            <div className="min-w-0">
+                              <div className="truncate font-medium">{item.name}</div>
+                              <div className="truncate text-[9px] text-[var(--lp-fg-subtle)]">{item.stock}</div>
+                            </div>
+                            <div className="shrink-0 text-right">
+                              <div className={item.tone}>{item.status}</div>
+                              <div>{item.price}</div>
+                            </div>
                           </div>
-                          <div className="text-right">
-                            <div className={item.tone}>{item.status}</div>
-                            <div>{item.price}</div>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </Panel>
                 </div>
               </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 border-t border-[var(--lp-border-subtle)] bg-[var(--lp-bg-video)] px-4 py-3 text-white sm:px-5">
-            <button aria-label="Pause" className="text-white/90">
-              <Pause className="h-4 w-4 fill-current" />
+          <div className="flex min-w-0 items-center gap-1.5 border-t border-[var(--lp-border-subtle)] bg-[var(--lp-bg-video)] px-3 py-2.5 text-white sm:gap-3 sm:px-4 sm:py-3 md:px-5">
+            <button aria-label="Pause" className="shrink-0 text-white/90">
+              <Pause className="h-3.5 w-3.5 fill-current sm:h-4 sm:w-4" />
             </button>
-            <span className="text-[12px] tabular-nums text-white/80">0:12 / 0:30</span>
-            <div className="relative mx-1 h-1.5 flex-1 rounded-full bg-white/20">
+            <span className="shrink-0 text-[10px] tabular-nums text-white/80 sm:text-[12px]">
+              0:12 / 0:30
+            </span>
+            <div className="relative mx-0.5 h-1.5 min-w-0 flex-1 rounded-full bg-white/20 sm:mx-1">
               <div className="absolute left-0 top-0 h-full w-[40%] rounded-full bg-[var(--lp-bg-accent)]" />
-              <div className="absolute left-[40%] top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
+              <div className="absolute left-[40%] top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white sm:h-3 sm:w-3" />
             </div>
-            <Volume2 className="hidden h-4 w-4 text-white/80 sm:block" />
-            <Maximize2 className="h-4 w-4 text-white/80" />
+            <Volume2 className="hidden h-4 w-4 shrink-0 text-white/80 sm:block" />
+            <Maximize2 className="h-3.5 w-3.5 shrink-0 text-white/80 sm:h-4 sm:w-4" />
           </div>
         </div>
       </div>

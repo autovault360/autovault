@@ -29,13 +29,21 @@ export default async function DealerPortalLayout({
 
   const { data: profile } = await supabase
     .from("users")
-    .select("role, full_name, dealership_id")
+    .select("role, full_name, dealership_id, image_url")
     .eq("auth_user_id", user.id)
     .single();
 
   if (!profile || !WHOLESALE_DEALER_ROLES.has(profile.role)) {
     await supabase.auth.signOut();
     redirect("/dealer/login");
+  }
+
+  let imageUrl: string | undefined;
+  if (profile.image_url) {
+    const { data: signed } = await supabase.storage
+      .from("user-images")
+      .createSignedUrl(profile.image_url, 3600);
+    if (signed?.signedUrl) imageUrl = signed.signedUrl;
   }
 
   let dealershipName = profile.full_name ?? "Wholesale Dealer";
@@ -55,7 +63,11 @@ export default async function DealerPortalLayout({
       dealerName={dealershipName}
       initialVehicles={initialVehicles}
     >
-      <DealerPortalShell dealershipName={dealershipName} initials={initials}>
+      <DealerPortalShell
+        dealershipName={dealershipName}
+        initials={initials}
+        imageUrl={imageUrl}
+      >
         {children}
       </DealerPortalShell>
     </DealerDashboardProvider>
