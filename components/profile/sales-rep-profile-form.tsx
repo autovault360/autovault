@@ -309,7 +309,7 @@ export default function SalesRepProfileForm({ profile }: Props) {
                       day: "numeric",
                       year: "numeric",
                     })
-                  : ""
+                  : "—"
               }
             />
             <ProfileReadOnlyField
