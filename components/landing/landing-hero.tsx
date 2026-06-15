@@ -58,9 +58,12 @@ export default function LandingHero({ serifClassName }: LandingHeroProps) {
             </div>
             <div>
               <Image
-                src={landingCar}
+                src="/Landing_bg.webp"
                 alt="Luxury dealership vehicle"
+                loading="eager"
                 priority
+                width={1000}
+                height={600}
                 className="h-auto w-full object-contain object-left-bottom"
               />
             </div>
