@@ -1,6 +1,8 @@
 "use server";
 
 import { createServiceClient } from "@/lib/supabase/server";
+import { waitlistConfirmationEmail } from "@/lib/email/email-template";
+import { sendTransactionalEmail } from "@/services/brevo.service";
 import {
   footerWaitlistSchema,
   heroWaitlistSchema,
@@ -8,6 +10,30 @@ import {
   type HeroWaitlistValues,
   type WaitlistActionResult,
 } from "../actions/schemas";
+
+async function sendWaitlistConfirmationEmail(payload: {
+  email: string;
+  full_name?: string | null;
+  dealership_name?: string | null;
+}) {
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const recipientName = payload.full_name?.trim() || undefined;
+
+  const emailResult = await sendTransactionalEmail({
+    to: [{ email: payload.email, name: recipientName }],
+    subject: "You're on the AutoVault360 Waitlist",
+    htmlContent: waitlistConfirmationEmail({
+      email: payload.email,
+      fullName: payload.full_name,
+      dealershipName: payload.dealership_name,
+      siteUrl,
+    }),
+  });
+
+  if (!emailResult.success) {
+    console.error("Waitlist confirmation email failed to send:", emailResult.error);
+  }
+}
 
 function duplicateEmailResult(): WaitlistActionResult {
   return {
@@ -81,6 +107,8 @@ async function insertWaitlist(payload: {
     }
     return { success: false as const, error: "Something went wrong. Please try again." };
   }
+
+  await sendWaitlistConfirmationEmail(payload);
 
   return {
     success: true as const,
