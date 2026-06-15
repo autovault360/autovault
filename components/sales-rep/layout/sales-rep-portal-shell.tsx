@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
@@ -23,7 +24,10 @@ export default function SalesRepPortalShell({ children, profile }: Props) {
         SALES REP PORTAL
       </div>
       <div className="space-y-1">
-        <div className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left">
+        <Link
+          href="/sales-rep/profile"
+          className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left transition-colors hover:bg-slate-800"
+        >
           <Avatar className="h-9 w-9">
             {profile.imageUrl ? (
               <AvatarImage src={profile.imageUrl} alt={profile.name} />
@@ -41,7 +45,7 @@ export default function SalesRepPortalShell({ children, profile }: Props) {
             </div>
           </div>
           <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
-        </div>
+        </Link>
       </div>
     </div>
   );

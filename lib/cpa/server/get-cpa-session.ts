@@ -12,11 +12,19 @@ export async function getCpaSession(): Promise<CpaSession | null> {
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("users")
-    .select("id, email, full_name, role, dealership_id")
+    .select("id, email, full_name, role, dealership_id, image_url")
     .eq("id", auth.user.userId)
     .single();
 
   if (!profile) return null;
+
+  let imageUrl: string | undefined;
+  if (profile.image_url) {
+    const { data: signed } = await supabase.storage
+      .from("user-images")
+      .createSignedUrl(profile.image_url, 3600);
+    if (signed?.signedUrl) imageUrl = signed.signedUrl;
+  }
 
   let dealershipName = "Dealership";
   if (profile.dealership_id) {
@@ -40,6 +48,7 @@ export async function getCpaSession(): Promise<CpaSession | null> {
     email: profile.email,
     fullName,
     initials,
+    imageUrl,
     role: profile.role,
     dealershipId: auth.user.dealershipId,
     dealershipName,

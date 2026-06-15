@@ -1,15 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
 import AppFooter from "@/components/layout/app-footer";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
 import DealerQuickActionsHost from "./dealer-quick-actions-host";
 import DealerHeader from "./dealer-header";
 import { DEALER_NAV_GROUPS } from "./dealer-nav";
-import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
+import { DEALER_ROUTES, DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
 import { useDealerDashboard, useDealerNavigation } from "../context/dealer-dashboard-context";
 
 import type { SidebarItem } from "@/components/layout/sidebar";
@@ -27,10 +28,12 @@ export default function DealerPortalShell({
   children,
   dealershipName,
   initials,
+  imageUrl,
 }: {
   children: React.ReactNode;
   dealershipName: string;
   initials: string;
+  imageUrl?: string;
 }) {
   const pathname = usePathname();
   const { navigateToSection } = useDealerNavigation();
@@ -64,8 +67,12 @@ export default function DealerPortalShell({
 
   const profileSection = (
     <div>
-      <div className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left">
+      <Link
+        href={DEALER_ROUTES.profile}
+        className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left transition-colors hover:bg-slate-800"
+      >
         <Avatar className="h-9 w-9">
+          {imageUrl ? <AvatarImage src={imageUrl} alt={dealershipName} /> : null}
           <AvatarFallback className="bg-slate-800 text-sm text-white">
             {initials}
           </AvatarFallback>
@@ -79,7 +86,7 @@ export default function DealerPortalShell({
           </div>
         </div>
         <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
-      </div>
+      </Link>
     </div>
   );
 

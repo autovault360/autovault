@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
 import CpaPortalHeader from "./cpa-portal-header";
@@ -24,8 +25,14 @@ export default function CpaPortalShell({
         CPA ACCOUNT
       </div>
       <div className="space-y-1">
-        <div className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left">
+        <Link
+          href="/cpa/profile"
+          className="flex w-full items-center gap-2.5 rounded-lg border border-slate-700 bg-slate-800/70 p-2 text-left transition-colors hover:bg-slate-800"
+        >
           <Avatar className="h-9 w-9">
+            {session.imageUrl ? (
+              <AvatarImage src={session.imageUrl} alt={session.fullName} />
+            ) : null}
             <AvatarFallback className="bg-slate-800 text-sm text-white">
               {session.initials}
             </AvatarFallback>
@@ -39,7 +46,7 @@ export default function CpaPortalShell({
             </div>
           </div>
           <ChevronRight className="h-4 w-4 shrink-0 text-slate-500" />
-        </div>
+        </Link>
       </div>
     </div>
   ) : undefined;

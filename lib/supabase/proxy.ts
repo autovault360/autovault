@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getDashboardPathForRole } from "@/lib/auth/get-dashboard-path";
 
 const CPA_PORTAL_ROLES = new Set([
   "super_admin",
@@ -53,6 +54,7 @@ export async function updateSession(request: NextRequest) {
   );
 
   const pathname = request.nextUrl.pathname;
+  const isLandingPage = pathname === "/";
   const isAdminAuthPage =
     pathname.startsWith("/login") || pathname.startsWith("/forgot-password");
   const isCpaAuthPage = pathname === "/cpa/login";
@@ -126,6 +128,12 @@ export async function updateSession(request: NextRequest) {
   if (!user && isDealerRoute && !isDealerAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/dealer/login";
+    return NextResponse.redirect(url);
+  }
+
+  if (user && isLandingPage) {
+    const url = request.nextUrl.clone();
+    url.pathname = getDashboardPathForRole(role);
     return NextResponse.redirect(url);
   }
 

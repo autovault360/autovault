@@ -1,6 +1,7 @@
 import { Playfair_Display } from "next/font/google";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getDashboardPathForRole } from "@/lib/auth/get-dashboard-path";
 import LandingHeader from "@/components/landing/landing-header";
 import LandingHero from "@/components/landing/landing-hero";
 import LandingDashboardPreview from "@/components/landing/landing-dashboard-preview";
@@ -22,7 +23,15 @@ export default async function LandingPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) redirect("/dashboard");
+  if (user) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("auth_user_id", user.id)
+      .maybeSingle();
+
+    redirect(getDashboardPathForRole(profile?.role));
+  }
 
   const serifClassName = playfair.className;
 
