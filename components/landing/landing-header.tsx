@@ -28,7 +28,7 @@ export default function LandingHeader() {
     <header className="sticky top-0 z-50 border-b border-[var(--lp-border)] bg-[var(--lp-bg-header)] backdrop-blur-md transition-colors duration-300">
       <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4">
         <Link href="/" className="shrink-0">
-          <Image src="/logo.webp" alt="AutoVault" width={150} height={100} />
+          <Image src="/Logo_2.jpeg" className="rounded-full" alt="AutoVault" width={68} height={68} />
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex xl:gap-9">
@@ -72,7 +72,7 @@ export default function LandingHeader() {
             >
               <SheetHeader className="border-b border-[var(--lp-border)] px-5 py-4">
                 <SheetTitle className="text-left">
-                  <Image src="/logo.webp" alt="AutoVault" width={150} height={100} />
+                  <Image src="/Logo_2.jpeg" className="rounded-full" alt="AutoVault" width={68} height={68} />
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col px-5 py-4">
