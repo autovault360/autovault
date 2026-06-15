@@ -63,9 +63,6 @@ export function filterSoldVehicles(
 
 export function computeSoldVehicleStats(records: SoldVehicleRecord[]) {
   const pending = records.filter((r) => r.paymentStatus === "pending");
-  const thisMonth = records.filter(
-    (r) => r.dateSold >= "2024-05-01" && r.dateSold <= "2024-05-31",
-  );
 
   const totalSales = records.reduce((s, r) => s + r.salePrice, 0);
   const totalGrossProfit = records.reduce((s, r) => s + r.grossProfit, 0);
@@ -78,7 +75,7 @@ export function computeSoldVehicleStats(records: SoldVehicleRecord[]) {
     totalSales,
     totalGrossProfit,
     averageGrossProfit: avgGross,
-    soldThisMonth: thisMonth.length,
+    soldThisMonth: records.length,
     pendingCount: pending.length,
     pendingAmount,
   };
@@ -161,4 +158,54 @@ export function computeSoldVehicleTableFooter(records: SoldVehicleRecord[]) {
       pendingAmount: formatCurrencyExact(stats.pendingAmount),
     },
   };
+}
+
+export type SoldVehicleDayAggregate = {
+  date: string;
+  count: number;
+  totalSales: number;
+};
+
+export function aggregateSoldVehiclesByDay(
+  records: SoldVehicleRecord[],
+): Map<string, SoldVehicleDayAggregate> {
+  const map = new Map<string, SoldVehicleDayAggregate>();
+  for (const row of records) {
+    const existing = map.get(row.dateSold);
+    if (existing) {
+      existing.count += 1;
+      existing.totalSales += row.salePrice;
+    } else {
+      map.set(row.dateSold, {
+        date: row.dateSold,
+        count: 1,
+        totalSales: row.salePrice,
+      });
+    }
+  }
+  return map;
+}
+
+export function formatCalendarSalesAmount(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export function getMonthDateRange(year: number, month: number) {
+  const start = `${year}-${String(month + 1).padStart(2, "0")}-01`;
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const end = `${year}-${String(month + 1).padStart(2, "0")}-${String(lastDay).padStart(2, "0")}`;
+  return { start, end, lastDay };
+}
+
+export function filterSoldVehiclesByMonth(
+  records: SoldVehicleRecord[],
+  year: number,
+  month: number,
+) {
+  const { start, end } = getMonthDateRange(year, month);
+  return records.filter((r) => r.dateSold >= start && r.dateSold <= end);
 }

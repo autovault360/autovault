@@ -1,6 +1,5 @@
 "use client";
 
-import { CardShell } from "@/components/dashboard/card-shell";
 import { cn } from "@/lib/utils";
 import SoldVehicleKpiStrip from "./sold-vehicle-kpi-strip";
 
@@ -12,49 +11,38 @@ function SkeletonBar({ className }: { className?: string }) {
 
 export default function SoldVehiclesCenterSkeleton() {
   return (
-    <CardShell className="min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
-      <div className="space-y-3.5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <SkeletonBar className="h-5 w-48" />
-          <div className="flex gap-2">
-            <SkeletonBar className="h-8 w-[130px]" />
-            <SkeletonBar className="h-8 w-36" />
+    <div className="space-y-3.5">
+      <SoldVehicleKpiStrip
+        kpis={{
+          totalSold: { icon: "shopping-cart", color: "blue", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+          totalSales: { icon: "dollar-sign", color: "green", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+          totalGrossProfit: { icon: "pie-chart", color: "violet", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+          averageGrossProfit: { icon: "triangle-alert", color: "amber", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+          soldThisMonth: { icon: "refresh-cw", color: "teal", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+          pendingPayments: { icon: "shield", color: "orange", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
+        }}
+        loading
+      />
+
+      <div className="grid min-w-0 grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+        <div className="rounded-sm border border-slate-800/60 bg-card p-3.5">
+          <SkeletonBar className="h-8 w-full max-w-[320px]" />
+          <div className="mt-3 grid grid-cols-7 gap-2">
+            {Array.from({ length: 35 }).map((_, i) => (
+              <SkeletonBar key={i} className="h-12" />
+            ))}
           </div>
         </div>
 
-        <SoldVehicleKpiStrip
-          kpis={{
-            totalSold: { icon: "shopping-cart", color: "blue", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-            totalSales: { icon: "dollar-sign", color: "green", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-            totalGrossProfit: { icon: "pie-chart", color: "violet", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-            averageGrossProfit: { icon: "triangle-alert", color: "amber", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-            soldThisMonth: { icon: "refresh-cw", color: "teal", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-            pendingPayments: { icon: "shield", color: "orange", label: "", value: "", link: "#", sparkColor: "", sparkPoints: "" },
-          }}
-          loading
-        />
-
-        <div className="flex flex-wrap gap-2">
-          <SkeletonBar className="h-8 min-w-[200px] flex-1" />
-          <SkeletonBar className="h-8 w-[130px]" />
-          <SkeletonBar className="h-8 w-[140px]" />
-          <SkeletonBar className="h-8 w-44" />
-          <SkeletonBar className="h-8 w-20" />
-        </div>
-
-        <div className="overflow-hidden rounded-sm border border-slate-700/80 bg-card">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex gap-3 border-b border-slate-800/50 px-3 py-3 last:border-0"
-            >
-              {Array.from({ length: 6 }).map((__, j) => (
-                <SkeletonBar key={j} className="h-4 flex-1" />
-              ))}
-            </div>
-          ))}
+        <div className="rounded-sm border border-slate-800/60 bg-card p-3.5">
+          <SkeletonBar className="h-8 w-full max-w-[280px]" />
+          <div className="mt-3 space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonBar key={i} className="h-10" />
+            ))}
+          </div>
         </div>
       </div>
-    </CardShell>
+    </div>
   );
 }
