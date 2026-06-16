@@ -91,17 +91,52 @@ export type DealerProfitLossData = {
   timeframeOptions: { value: DealerPlTimeframe; label: string }[];
 };
 
+export type DealerPlKpiTrend = {
+  percent: string;
+  comparisonLabel: string;
+  direction: "up" | "down" | "flat";
+  sentiment: "positive" | "negative" | "neutral";
+};
+
 export type DealerPlKpiCard = {
   icon: KPIIconName;
   color: string;
   label: string;
   value: string;
   delta?: string;
+  trend?: DealerPlKpiTrend;
   link: string;
   sparkColor: string;
   sparkPoints: string;
   deltaColor?: "green" | "red";
 };
+
+export function parseDealerPlDelta(delta: string): DealerPlKpiTrend {
+  const trimmed = delta.trim();
+  const direction: DealerPlKpiTrend["direction"] = trimmed.startsWith("↓")
+    ? "down"
+    : trimmed.startsWith("↑")
+      ? "up"
+      : "flat";
+  const rest = trimmed.replace(/^[↑↓]\s*/, "");
+  const vsIndex = rest.indexOf(" vs ");
+
+  if (vsIndex === -1) {
+    return {
+      direction,
+      percent: rest,
+      comparisonLabel: "",
+      sentiment: direction === "down" ? "negative" : "positive",
+    };
+  }
+
+  return {
+    direction,
+    percent: rest.slice(0, vsIndex).trim(),
+    comparisonLabel: rest.slice(vsIndex + 1).trim(),
+    sentiment: direction === "down" ? "negative" : "positive",
+  };
+}
 
 export function formatCompactCurrency(value: number): string {
   const abs = Math.abs(value);
@@ -176,6 +211,10 @@ export function buildDealerProfitLossKpiCards(
       label: "Total Revenue",
       value: formatCurrency(kpis.totalRevenue),
       delta: kpis.totalRevenueDelta,
+      trend: {
+        ...parseDealerPlDelta(kpis.totalRevenueDelta),
+        sentiment: "positive",
+      },
       link: "",
       sparkColor: "#3b82f6",
       sparkPoints:
@@ -188,6 +227,10 @@ export function buildDealerProfitLossKpiCards(
       label: "Gross Profit",
       value: formatCurrency(kpis.grossProfit),
       delta: kpis.grossProfitDelta,
+      trend: {
+        ...parseDealerPlDelta(kpis.grossProfitDelta),
+        sentiment: "positive",
+      },
       link: "",
       sparkColor: "#10b981",
       sparkPoints:
@@ -200,6 +243,10 @@ export function buildDealerProfitLossKpiCards(
       label: "Total Expenses",
       value: formatCurrency(kpis.totalExpenses),
       delta: kpis.totalExpensesDelta,
+      trend: {
+        ...parseDealerPlDelta(kpis.totalExpensesDelta),
+        sentiment: "negative",
+      },
       link: "",
       sparkColor: "#f97316",
       sparkPoints:
@@ -212,6 +259,10 @@ export function buildDealerProfitLossKpiCards(
       label: "Net Profit",
       value: formatCurrency(kpis.netProfit),
       delta: kpis.netProfitDelta,
+      trend: {
+        ...parseDealerPlDelta(kpis.netProfitDelta),
+        sentiment: "positive",
+      },
       link: "",
       sparkColor: "#a855f7",
       sparkPoints:
@@ -220,10 +271,14 @@ export function buildDealerProfitLossKpiCards(
     },
     {
       icon: "percent",
-      color: "green",
+      color: "teal",
       label: "Gross Margin",
       value: formatPercentValue(kpis.grossMargin),
       delta: kpis.grossMarginDelta,
+      trend: {
+        ...parseDealerPlDelta(kpis.grossMarginDelta),
+        sentiment: "positive",
+      },
       link: "",
       sparkColor: "#14b8a6",
       sparkPoints:

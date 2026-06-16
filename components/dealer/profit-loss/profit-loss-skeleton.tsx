@@ -12,16 +12,22 @@ function SkeletonBar({ className }: { className?: string }) {
 export default function ProfitLossPageSkeleton() {
   return (
     <div className="min-w-0 space-y-3.5">
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <SkeletonBar className="h-8 w-40" />
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto">
-          <SkeletonBar className="h-9 w-32" />
-          <SkeletonBar className="h-9 w-52" />
-          <SkeletonBar className="h-9 w-28" />
+      <section className="mb-3.5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
+          <div className="min-w-0 flex-1 space-y-2.5">
+            <div className="space-y-2">
+              <SkeletonBar className="h-7 w-44" />
+              <SkeletonBar className="h-4 w-80 max-w-full" />
+            </div>
+            <KpiGridSkeleton count={CARD_COUNT} />
+          </div>
+          <div className="flex w-full flex-col gap-2.5 lg:w-[300px] lg:shrink-0">
+            <SkeletonBar className="h-9 w-full" />
+            <SkeletonBar className="h-9 w-full" />
+            <SkeletonBar className="h-9 w-full" />
+          </div>
         </div>
       </section>
-
-      <KpiGridSkeleton count={CARD_COUNT} />
 
       <div className="grid grid-cols-1 gap-3.5 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card className="overflow-hidden rounded-sm border border-slate-800/50 bg-transparent p-3.5 shadow-none">

@@ -85,6 +85,13 @@ export type KPIPeriodMetric = {
   label: string;
 };
 
+export type KPITrendMetric = {
+  percent: string;
+  comparisonLabel: string;
+  direction: "up" | "down" | "flat";
+  sentiment: "positive" | "negative" | "neutral";
+};
+
 export type KPICardData = {
   icon: KPIIconName;
   color: string;
@@ -92,6 +99,7 @@ export type KPICardData = {
   value: string;
   unit?: string;
   delta?: string;
+  trend?: KPITrendMetric;
   link: string;
   sparkColor: string;
   sparkPoints: string;
@@ -99,7 +107,7 @@ export type KPICardData = {
   periodMetrics?: KPIPeriodMetric[];
 };
 
-export type KPICardLayout = "default" | "period";
+export type KPICardLayout = "default" | "period" | "accent-top";
 
 function Sparkline({
   color,
@@ -251,6 +259,90 @@ export default function PeriodKPICard({
   );
 }
 
+const accentTopBorder: Record<string, string> = {
+  blue: "border-t-blue-500",
+  green: "border-t-emerald-500",
+  violet: "border-t-purple-500",
+  orange: "border-t-orange-500",
+  teal: "border-t-teal-500",
+  red: "border-t-red-500",
+  amber: "border-t-amber-500",
+};
+
+function AccentTopKPICard({
+  data,
+  className,
+}: {
+  data: KPICardData;
+  className?: string;
+}) {
+  const Icon = iconMap[data.icon];
+  const trend = data.trend;
+  const trendColorClass =
+    trend?.sentiment === "negative"
+      ? "text-red-400"
+      : trend?.sentiment === "neutral"
+        ? "text-slate-400"
+        : "text-emerald-400";
+  const TrendIcon =
+    trend?.direction === "down"
+      ? TrendingDown
+      : trend?.direction === "up"
+        ? TrendingUp
+        : null;
+
+  return (
+    <Card
+      className={cn(
+        "flex min-h-[108px] min-w-0 max-w-full flex-col rounded-lg border border-white/10 bg-[#0c1220] p-3 text-slate-200 shadow-none",
+        "border-t-2",
+        accentTopBorder[data.color] ?? "border-t-emerald-500",
+        className,
+      )}
+    >
+      <div className="flex items-start gap-2.5">
+        <div
+          className={cn(
+            "grid h-9 w-9 shrink-0 place-items-center rounded-full",
+            iconBg[data.color],
+          )}
+        >
+          <Icon className="h-4 w-4" strokeWidth={2} />
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <div className="text-[12px] font-medium leading-tight text-slate-500">
+            {data.label}
+          </div>
+
+          <div className="mt-1 text-[20px] font-bold leading-none tracking-tight text-white tabular-nums">
+            {data.value}
+          </div>
+
+          {trend && (
+            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-0.5 text-[12px] font-semibold leading-none",
+                  trendColorClass,
+                )}
+              >
+                {TrendIcon ? <TrendIcon className="h-3 w-3" /> : null}
+                {trend.percent}
+              </span>
+              {trend.comparisonLabel ? (
+                <span className="text-[11px] leading-none text-slate-500">
+                  {trend.comparisonLabel}
+                </span>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  );
+}
+
 export function KPICard({
   data,
   showSparkline = true,
@@ -270,6 +362,10 @@ export function KPICard({
 }) {
   if (layout === "period") {
     return <PeriodKPICard data={data} className={className} />;
+  }
+
+  if (layout === "accent-top") {
+    return <AccentTopKPICard data={data} className={className} />;
   }
 
   const Icon = iconMap[data.icon];
