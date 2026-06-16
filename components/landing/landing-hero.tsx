@@ -56,7 +56,7 @@ export default function LandingHero({ serifClassName }: LandingHeroProps) {
                 );
               })}
             </div>
-            <div>
+            {/* <div>
               <Image
                 src="/Landing_bg.webp"
                 alt="Luxury dealership vehicle"
@@ -66,7 +66,7 @@ export default function LandingHero({ serifClassName }: LandingHeroProps) {
                 height={600}
                 className="h-auto w-full object-contain object-left-bottom"
               />
-            </div>
+            </div> */}
           </div>
           <div className="relative z-[2] lg:pt-2">
             <LandingWaitlistForm serifClassName={serifClassName} />

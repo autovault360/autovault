@@ -12,6 +12,7 @@ import type {
 
 export function buildVehicleExpenseDefaults(): VehicleExpenseFormValues {
   return {
+    expenseName: "",
     expenseDate: todayIsoDate(),
     vehicleSubcategory: "",
     vendor: "",
@@ -67,12 +68,13 @@ export function buildEditExpenseDefaults(
 
   if (expense.expenseKind === "vehicle") {
     return {
+      expenseName: expense.expenseName ?? expense.description,
       expenseDate: expense.date,
       vehicleSubcategory: findSubcategoryValue(expense.expenseSubcategory ?? ""),
       vendor: expense.vendor,
       reference: expense.transactionId === expense.id.slice(0, 8).toUpperCase() ? "" : expense.transactionId,
       description: expense.description,
-      amount: expense.amount,
+      amount: Math.max(0, expense.amount - (expense.vehicleNotesAmount ?? 0)),
       paymentMethod: findPaymentMethodValue(expense.paymentMethod),
       saveMerchant: false,
       addNote: hasNotes,

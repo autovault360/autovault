@@ -4,6 +4,8 @@ export const DEALER_ROUTES = {
   transactions: "/dealer/transactions",
   soldVehicles: "/dealer/sold-vehicles",
   arbitration: "/dealer/dashboard/arbitration",
+  addVehicleExpense: "/dealer/expenses/add",
+  documents: "/dealer/documents",
   profile: "/dealer/profile",
 } as const;
 

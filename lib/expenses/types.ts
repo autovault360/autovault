@@ -25,6 +25,8 @@ export type ExpenseListItem = {
 export type ExpenseDetail = ExpenseListItem & {
   expenseKind: "dealership" | "vehicle";
   vendor: string;
+  expenseName?: string | null;
+  vehicleNotesAmount?: number;
   linkedVehicle: string | null;
   stockNumber: string | null;
   vehicleId: string | null;

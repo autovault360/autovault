@@ -60,11 +60,13 @@ export function useAddVehicleExpenseForm(open: boolean, onSuccess?: () => void) 
 
     const payload = {
       vehicleId: linkedVehicle.id,
+      expenseName: values.expenseName.trim(),
       expenseDate: values.expenseDate,
       expenseSubcategory: values.vehicleSubcategory as VehicleExpenseSubcategory,
       vendor: values.vendor.trim(),
       description: values.description.trim(),
       amount: values.amount,
+      vehicleNotesAmount: 0,
       referenceNumber: values.reference?.trim() || undefined,
       paymentMethod: values.paymentMethod as PaymentMethod,
       notes: values.addNote ? values.notes?.trim() || undefined : undefined,

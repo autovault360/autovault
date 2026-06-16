@@ -89,6 +89,9 @@ export async function updateExpense(
         return { success: false, error: "Expense not found" };
       }
 
+      const totalCost = data.amount + data.vehicleNotesAmount;
+      const description = data.description?.trim() || data.expenseName;
+
       const { error: updateError } = await supabase
         .from("vehicle_expenses")
         .update({
@@ -96,9 +99,11 @@ export async function updateExpense(
           repair_date: data.expenseDate,
           repair_type: data.expenseSubcategory,
           expense_subcategory: data.expenseSubcategory,
-          description: data.description,
+          expense_name: data.expenseName,
+          description,
           shop_vendor: data.vendor,
-          total_cost: data.amount,
+          total_cost: totalCost,
+          vehicle_notes_amount: data.vehicleNotesAmount,
           payment_method: data.paymentMethod,
           invoice_number: data.referenceNumber || null,
           notes: data.notes || null,
@@ -139,6 +144,8 @@ export async function updateExpense(
 
     revalidatePath("/dashboard/expenses");
     revalidatePath("/dashboard/vehicles");
+    revalidatePath("/dealer/dashboard");
+    revalidatePath("/dealer/inventory");
     return { success: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Update failed";

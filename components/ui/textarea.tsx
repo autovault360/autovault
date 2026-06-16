@@ -36,7 +36,7 @@ function Textarea({ className, showCount, value, maxLength, theme = "light", ...
         {textarea}
         <span
           className={cn(
-            "pointer-events-none absolute right-2 bottom-1.5 text-[10px] leading-none",
+            "pointer-events-none absolute right-3 bottom-3 text-[10px] leading-none",
             atLimit ? "text-destructive" : "text-muted-foreground",
           )}
         >

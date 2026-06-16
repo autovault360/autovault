@@ -12,7 +12,8 @@ export type SourceEntity =
   | "deal_jacket"
   | "dealership_expense"
   | "user"
-  | "document_center";
+  | "document_center"
+  | "wholesale_document";
 
 export type TrackFileOptions = {
   sourceEntity?: SourceEntity;
@@ -309,6 +310,7 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
     "user-images": "User Avatars",
     "expense-receipts": "Expenses & Receipts",
     "deal-jacket-documents": "Deal Jackets",
+    "wholesale-dealer-documents": "Wholesale Dealer Documents",
   };
 
   const folderDescMap: Record<string, string> = {
@@ -318,6 +320,7 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
     "user-images": "User profile avatars",
     "expense-receipts": "Expense receipts and invoices",
     "deal-jacket-documents": "All deal related documents",
+    "wholesale-dealer-documents": "Wholesale dealer document vault",
   };
 
   const totalFromBreakdown = report.breakdown.reduce((s, b) => s + b.totalSize, 0);

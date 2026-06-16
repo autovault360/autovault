@@ -63,12 +63,15 @@ export const dealershipExpenseSchema = z.object({
 export const vehicleExpenseSchema = z.object({
   vehicleId: z.string().uuid(),
   expenseDate: z.string().min(1),
+  expenseName: z.string().trim().min(1).max(80),
   expenseSubcategory: z.enum(VEHICLE_EXPENSE_SUBCATEGORIES),
   vendor: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string().trim().max(150).optional(),
   amount: z.coerce.number().positive(),
+  vehicleNotesAmount: z.coerce.number().min(0).default(0),
   referenceNumber: z.string().optional(),
   paymentMethod: z.enum(PAYMENT_METHODS),
+  paymentStatus: z.enum(["paid", "unpaid", "partial"]).default("paid"),
   notes: z.string().optional(),
   saveMerchant: z.boolean().default(false),
 });

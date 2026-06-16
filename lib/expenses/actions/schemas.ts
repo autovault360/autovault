@@ -3,6 +3,11 @@ import { z } from "zod";
 const currencyField = z.coerce.number().min(0, "Must be 0 or greater");
 
 export const vehicleExpenseSchema = z.object({
+  expenseName: z
+    .string()
+    .trim()
+    .min(1, "Expense name is required")
+    .max(80, "Expense name must be 80 characters or less"),
   expenseDate: z.string().min(1, "Expense date is required"),
   vehicleSubcategory: z.string().min(1, "Type is required"),
   vendor: z.string().min(1, "Vendor is required"),

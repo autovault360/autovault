@@ -238,7 +238,8 @@ export type SourceEntity =
   | "expense"
   | "deal_jacket"
   | "dealership_expense"
-  | "user";
+  | "user"
+  | "wholesale_document";
 
 export type TrackFileOptions = {
   sourceEntity?: SourceEntity;

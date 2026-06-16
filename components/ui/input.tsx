@@ -33,7 +33,7 @@ const toneShellClass: Record<InputTone, string> = {
 };
 
 const darkShellClass: Record<InputTone, string> = {
-  default: "border-slate-600 bg-slate-800/50 text-slate-100",
+  default: "border-slate-600 bg-transparent text-slate-100",
   readonly: "border-slate-600 bg-slate-800/50 text-slate-300",
   negative: "border-red-400 bg-red-900/30 text-red-400",
   positive: "border-emerald-400 bg-emerald-900/30 text-emerald-400",
@@ -110,7 +110,7 @@ function CurrencyInput({
   const shell = theme === "dark" ? darkShellClass[resolvedTone] : toneShellClass[resolvedTone];
 
   const prefixBg = theme === "dark"
-    ? "border-slate-600 bg-slate-800/50 text-slate-400"
+    ? "border-slate-600 bg-transparent text-slate-400"
     : "border-[#E0E0E0] bg-[#FAFAFA] text-gray-500";
 
   return (
