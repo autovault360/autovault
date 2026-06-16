@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import LandingThemeLogo from "@/components/landing/landing-theme-logo";
 
 const footerLinks = [
   { label: "Privacy Policy", href: "/privacy-policy" },
@@ -52,9 +52,7 @@ export default function LandingFooter({ serifClassName }: { serifClassName: stri
   return (
     <footer id="contact" className="border-t border-[var(--lp-border)] bg-[var(--lp-bg-subtle)] transition-colors duration-300">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-8 sm:px-6 lg:flex-row lg:justify-between lg:px-8 lg:py-10">
-        <div className="rounded-2xl bg-[var(--lp-bg-elevated)] p-4">
-          <Image src="/logo.webp" alt="AutoVault" width={100} height={100} />
-        </div>
+        <LandingThemeLogo variant="footer" />
 
         <div className="flex flex-col items-center gap-3 text-center lg:items-start">
           <p className={`text-[13px] text-[var(--lp-fg-muted)] ${serifClassName}`}>

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronDown, Menu } from "lucide-react";
-import Image from "next/image";
 import LandingThemeToggle from "@/components/landing/landing-theme-toggle";
+import LandingThemeLogo from "@/components/landing/landing-theme-logo";
 import {
   Sheet,
   SheetContent,
@@ -12,6 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import Image from "next/image";
+import { useLandingTheme } from "@/components/landing/landing-theme-provider";
 
 const navLinks = [
   { label: "Features", hasDropdown: true, href: "#features" },
@@ -23,12 +25,14 @@ const navLinks = [
 
 export default function LandingHeader() {
   const [open, setOpen] = useState(false);
-
+  const { isDark } = useLandingTheme();
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--lp-border)] bg-[var(--lp-bg-header)] backdrop-blur-md transition-colors duration-300">
       <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4">
         <Link href="/" className="shrink-0">
-          <Image src="/Logo_2.jpeg" className="rounded-full" alt="AutoVault" width={68} height={68} />
+          <LandingThemeLogo variant="header" />
+          {/* <Image src={isDark ? "/logos/dark.png" : "/logos/light.png"} className="" alt="AutoVault" width={68} height={68} /> */}
+          
         </Link>
 
         <nav className="hidden items-center gap-7 lg:flex xl:gap-9">
@@ -71,9 +75,9 @@ export default function LandingHeader() {
               className="w-[300px] border-[var(--lp-border)] bg-[var(--lp-bg-card)] p-0"
             >
               <SheetHeader className="border-b border-[var(--lp-border)] px-5 py-4">
-                <SheetTitle className="text-left">
-                  <Image src="/Logo_2.jpeg" className="rounded-full" alt="AutoVault" width={68} height={68} />
-                </SheetTitle>
+              <SheetTitle className="text-left">
+                <LandingThemeLogo variant="header" />
+              </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col px-5 py-4">
                 <div className="mb-4 flex items-center justify-between">
