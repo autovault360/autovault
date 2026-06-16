@@ -101,11 +101,13 @@ export function useEditExpenseForm(
     if (isVehicle) {
       const v = values as VehicleExpenseFormValues;
       payload.vehicleId = linkedVehicle!.id;
+      payload.expenseName = v.expenseName.trim();
       payload.expenseDate = v.expenseDate;
       payload.expenseSubcategory = v.vehicleSubcategory as VehicleExpenseSubcategory;
       payload.vendor = v.vendor.trim();
       payload.description = v.description.trim();
       payload.amount = v.amount;
+      payload.vehicleNotesAmount = expense.vehicleNotesAmount ?? 0;
       payload.referenceNumber = v.reference?.trim() || undefined;
       payload.paymentMethod = v.paymentMethod as PaymentMethod;
       payload.notes = v.addNote ? v.notes?.trim() || undefined : undefined;

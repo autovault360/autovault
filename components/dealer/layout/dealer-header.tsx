@@ -103,6 +103,11 @@ export default function DealerHeader({
             icon: Receipt,
           },
           {
+            label: "Add Vehicle Expense",
+            href: DEALER_ROUTES.addVehicleExpense,
+            icon: Car,
+          },
+          {
             label: "Missing Titles",
             href: "/dealer/dashboard/missing-titles",
             icon: FileWarning,
@@ -152,3 +157,4 @@ export default function DealerHeader({
     />
   );
 }
+

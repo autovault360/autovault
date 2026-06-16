@@ -19,6 +19,7 @@ export type LinkedVehicleResult = {
   color: string;
   status: string;
   image: string;
+  location?: string;
   acquisitionCost?: number;
   totalInvested?: number;
 };
@@ -52,9 +53,11 @@ export type DbVehicleExpense = {
   category: string;
   repair_type: string;
   expense_subcategory: string | null;
+  expense_name: string | null;
   description: string;
   shop_vendor: string | null;
   total_cost: number;
+  vehicle_notes_amount: number;
   payment_method: string | null;
   invoice_number: string | null;
   receipt_storage_path: string | null;
@@ -149,6 +152,8 @@ export function mapDealershipExpense(
     paymentMethod: formatPaymentMethod(row.payment_method),
     amount: Number(row.amount),
     vendor: row.vendor,
+    expenseName: null,
+    vehicleNotesAmount: 0,
     linkedVehicle: null,
     stockNumber: null,
     vehicleId: null,
@@ -180,14 +185,16 @@ export function mapVehicleExpense(
     expenseKind: "vehicle",
     date: row.repair_date,
     category: "vehicle",
-    title: vehicle
-      ? `${subLabel} - Stock #${vehicle.stock_number ?? "..."}`
-      : subLabel,
+    title:
+      row.expense_name ||
+      (vehicle ? `${subLabel} - Stock #${vehicle.stock_number ?? "..."}` : subLabel),
     subtitle: row.shop_vendor ?? "...",
     hasReceipt: !!row.receipt_storage_path,
     paymentMethod: formatPaymentMethod(row.payment_method),
     amount: Number(row.total_cost),
     vendor: row.shop_vendor ?? "...",
+    expenseName: row.expense_name,
+    vehicleNotesAmount: Number(row.vehicle_notes_amount ?? 0),
     linkedVehicle: vehicleLabel,
     stockNumber: vehicle?.stock_number ?? null,
     vehicleId: row.vehicle_id,

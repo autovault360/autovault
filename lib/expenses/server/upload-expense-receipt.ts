@@ -8,6 +8,32 @@ import {
 } from "@/lib/vehicles/server/utils";
 
 const RECEIPT_BUCKET = "expense-receipts" as const;
+const MAX_RECEIPT_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+const ALLOWED_RECEIPT_MIME_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+]);
+const ALLOWED_RECEIPT_EXTENSIONS = new Set(["pdf", "jpg", "jpeg", "png"]);
+
+function validateReceiptFile(file: File): string {
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+
+  if (file.size <= 0) {
+    throw new Error("Receipt file is empty.");
+  }
+  if (file.size > MAX_RECEIPT_FILE_SIZE_BYTES) {
+    throw new Error("Receipt file must be 10MB or smaller.");
+  }
+  if (!ALLOWED_RECEIPT_EXTENSIONS.has(ext)) {
+    throw new Error("Receipt must be a PDF, JPG, JPEG, or PNG file.");
+  }
+  if (!ALLOWED_RECEIPT_MIME_TYPES.has(file.type)) {
+    throw new Error("Receipt file type is not supported.");
+  }
+
+  return ext;
+}
 
 export async function uploadExpenseReceipt(
   dealershipId: string,
@@ -16,7 +42,7 @@ export async function uploadExpenseReceipt(
   file: File,
   userId: string,
 ): Promise<string> {
-  const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+  const ext = validateReceiptFile(file);
   const folder = expenseKind === "dealership" ? "dealership" : "vehicle";
   const path = `${dealershipId}/${folder}/${expenseId}/receipt.${ext}`;
   await uploadFile(RECEIPT_BUCKET, path, file);

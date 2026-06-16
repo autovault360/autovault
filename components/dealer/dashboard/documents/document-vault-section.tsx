@@ -1,141 +1,77 @@
 "use client";
 
-import { useState } from "react";
-import { CheckCircle, FileText, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowRight, FileText, FolderOpen } from "lucide-react";
 import { CardShell, CardHead } from "@/components/dashboard/card-shell";
 import { cn } from "@/lib/utils";
-import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
-import { DEALER_SECTION_IDS } from "@/lib/dealer/dashboard/navigation";
-import type { VaultDocument } from "@/lib/dealer/dashboard/types";
+import { DEALER_ROUTES } from "@/lib/dealer/dashboard/navigation";
+import { getWholesaleDocumentStats } from "@/lib/dealer/documents/server/get-wholesale-document-stats";
 
 function SkeletonBar({ className }: { className?: string }) {
   return (
-    <div
-      className={cn("animate-pulse rounded-md bg-slate-800/80", className)}
-    />
+    <div className={cn("animate-pulse rounded-md bg-slate-800/80", className)} />
   );
 }
 
-const TYPE_LABELS: Record<VaultDocument["type"], string> = {
-  bill_of_sale: "Bill of Sale",
-  title: "Title",
-  auction_invoice: "Auction Invoice",
-  other: "Other",
-};
-
 export default function DocumentVaultSection() {
-  const { dashboardData, loading, documentsRef, simulateSave } =
-    useDealerDashboard();
-  const [uploaded, setUploaded] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
+  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  if (!dashboardData) return null;
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const stats = await getWholesaleDocumentStats();
+        if (!cancelled) setTotalDocuments(stats.totalDocuments);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-  const handleUpload = async () => {
-    await simulateSave();
-    setUploaded(true);
-    setTimeout(() => setUploaded(false), 3000);
-  };
-
-  if (loading.documents) {
+  if (loading) {
     return (
-      <section
-        id={DEALER_SECTION_IDS.documents}
-        ref={documentsRef}
-        className="scroll-mt-4"
-      >
-        <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <section className="scroll-mt-4">
+        <CardShell className="border-[#1e293b] bg-card backdrop-blur-sm">
           <SkeletonBar className="mb-3 h-3 w-36" />
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <SkeletonBar key={i} className="h-24" />
-            ))}
-          </div>
+          <SkeletonBar className="h-24" />
         </CardShell>
       </section>
     );
   }
 
   return (
-    <section
-      id={DEALER_SECTION_IDS.documents}
-      ref={documentsRef}
-      className="scroll-mt-4"
-    >
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+    <section className="scroll-mt-4">
+      <CardShell className="border-[#1e293b] bg-card backdrop-blur-sm">
         <CardHead title="DOCUMENT VAULT" />
 
-        <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {dashboardData.documents.map((doc) => (
-            <div
-              key={doc.id}
-              className="rounded-md border border-[#1e293b] bg-[#070c14]/40 p-3"
-            >
-              <div className="flex items-start gap-2.5">
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-blue-500/15">
-                  <FileText className="h-4 w-4 text-blue-400" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="truncate text-[12px] font-semibold text-white">
-                    {doc.name}
-                  </div>
-                  <div className="text-[10px] text-[#64748b]">
-                    {TYPE_LABELS[doc.type]}
-                  </div>
-                  <div className="mt-1 text-[10px] text-slate-500">
-                    Linked: {doc.linkedRecord}
-                  </div>
-                  <div className="text-[10px] text-slate-600">
-                    {doc.uploadedAt}
-                  </div>
-                </div>
-                <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
-              </div>
+        <div className="flex flex-col gap-3 rounded-md border border-[#1e293b] bg-[#070c14]/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-blue-500/15">
+              <FolderOpen className="h-5 w-5 text-blue-400" />
             </div>
-          ))}
-        </div>
+            <div>
+              <p className="text-[13px] font-semibold text-white">
+                {totalDocuments.toLocaleString()} documents in storage
+              </p>
+              <p className="mt-0.5 text-[11px] text-slate-500">
+                Bills of sale, titles, auction invoices, and more
+              </p>
+            </div>
+          </div>
 
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={handleUpload}
-          onKeyDown={(e) => e.key === "Enter" && handleUpload()}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragOver(true);
-          }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragOver(false);
-            handleUpload();
-          }}
-          className={cn(
-            "flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed px-4 py-8 transition-colors",
-            dragOver
-              ? "border-emerald-400 bg-emerald-500/10"
-              : "border-[#1e293b] bg-[#070c14]/40 hover:border-slate-600",
-            uploaded && "border-emerald-500/50 bg-emerald-500/5",
-          )}
-        >
-          {uploaded ? (
-            <>
-              <CheckCircle className="mb-2 h-10 w-10 text-emerald-400" />
-              <p className="text-[13px] font-medium text-emerald-400">
-                Document uploaded and attached securely
-              </p>
-            </>
-          ) : (
-            <>
-              <Upload className="mb-2 h-8 w-8 text-slate-500" />
-              <p className="text-[13px] font-medium text-slate-300">
-                Drag and drop documents here
-              </p>
-              <p className="mt-1 text-[11px] text-[#64748b]">
-                Bills of Sale, Titles, Auction Invoices - PDF, JPG, PNG
-              </p>
-            </>
-          )}
+          <Link
+            href={DEALER_ROUTES.documents}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-md bg-emerald-600 px-4 text-[12px] font-medium text-white transition hover:bg-emerald-500"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            Open Documents
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
       </CardShell>
     </section>

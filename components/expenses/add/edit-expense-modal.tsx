@@ -114,6 +114,30 @@ export default function EditExpenseModal({
                   />
                 )}
 
+                {isVehicle && (
+                  <FormField
+                    control={form.control}
+                    name="expenseName"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <div className="flex items-center gap-1 justify-between">
+                          <FieldLabel label="Expense Name" required />
+                          <FormMessage />
+                        </div>
+                        <FormControl>
+                          <Input
+                            theme="dark"
+                            placeholder="e.g. Brake pads replacement"
+                            className="h-8 bg-slate-800/50"
+                            aria-invalid={!!fieldState.error}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
+
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                   {isVehicle ? (
                     <FormField

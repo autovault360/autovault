@@ -24,6 +24,9 @@ export async function createVehicleExpense(
     );
     if (activeError) return { success: false, error: activeError };
 
+    const totalCost = data.amount + data.vehicleNotesAmount;
+    const description = data.description?.trim() || data.expenseName;
+
     const { data: row, error: insertError } = await supabase
       .from("vehicle_expenses")
       .insert({
@@ -33,16 +36,18 @@ export async function createVehicleExpense(
         category: "vehicle",
         repair_type: data.expenseSubcategory,
         expense_subcategory: data.expenseSubcategory,
+        expense_name: data.expenseName,
         priority: "medium",
-        description: data.description,
+        description,
         labor_cost: 0,
         parts_cost: 0,
         other_fees: 0,
-        total_cost: data.amount,
+        total_cost: totalCost,
+        vehicle_notes_amount: data.vehicleNotesAmount,
         shop_vendor: data.vendor,
         payment_method: data.paymentMethod,
         invoice_number: data.referenceNumber || null,
-        payment_status: "paid",
+        payment_status: data.paymentStatus,
         notes: data.notes || null,
         source: "expenses_module",
         created_by: userId,
@@ -81,9 +86,12 @@ export async function createVehicleExpense(
       entity_id: data.vehicleId,
       action: "REPAIR_ADDED",
       new_values: {
+        expense_name: data.expenseName,
         repair_category: data.expenseSubcategory,
-        total_cost: data.amount,
-        description: data.description,
+        base_amount: data.amount,
+        vehicle_notes_amount: data.vehicleNotesAmount,
+        total_cost: totalCost,
+        description,
         source: "expenses_module",
       },
       changed_by: userId,
@@ -93,6 +101,9 @@ export async function createVehicleExpense(
     revalidatePath("/dashboard/expenses");
     revalidatePath("/dashboard/vehicles");
     revalidatePath(`/dashboard/vehicles/${data.vehicleId}`);
+    revalidatePath("/dealer/dashboard");
+    revalidatePath("/dealer/inventory");
+    revalidatePath(`/dealer/inventory/${data.vehicleId}`);
     return { success: true, expenseId: row.id };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
