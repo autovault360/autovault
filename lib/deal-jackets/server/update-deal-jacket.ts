@@ -92,7 +92,7 @@ export async function updateDealJacket(
     })
     .eq("id", existing.customer_id);
 
-  const totalTax = formData.salePrice * 0.1025;
+  const totalTax = formData.salesTaxAmount;
   const totalFeesExtras =
     (formData.dmvFees || 0) +
     (formData.registrationFees || 0) +

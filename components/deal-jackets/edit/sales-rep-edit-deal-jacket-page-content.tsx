@@ -41,7 +41,6 @@ import { ModalThemeProvider } from "@/components/shared/modal-theme-context";
 import { formatCurrency } from "@/lib/sales-reps/types";
 import {
   DEAL_TYPES,
-  SALES_TAX_RATE,
   US_STATES,
 } from "@/lib/sales-rep/deal-jacket/constants";
 import {
@@ -154,6 +153,7 @@ export default function SalesRepEditDealJacketPageContent({
       documentationFees: 0,
       warrantyAmount: 0,
       gapAmount: 0,
+      salesTaxAmount: 0,
       lender: "",
       rosNumber: "",
       dealType: "Retail",
@@ -184,6 +184,7 @@ export default function SalesRepEditDealJacketPageContent({
         documentationFees: editData.documentationFees,
         warrantyAmount: editData.warrantyAmount,
         gapAmount: editData.gapAmount,
+        salesTaxAmount: editData.totalTax,
         lender: editData.lender,
         rosNumber: editData.rosNumber,
         dealType: editData.dealType as UnifiedDealJacketFormValues["dealType"],
@@ -200,11 +201,12 @@ export default function SalesRepEditDealJacketPageContent({
   const documentationFees = form.watch("documentationFees");
   const warrantyAmount = form.watch("warrantyAmount");
   const gapAmount = form.watch("gapAmount");
+  const salesTaxAmount = form.watch("salesTaxAmount");
 
   const derived = useMemo(() => {
     const price = Number(salePrice) || 0;
     const vehicleCost = editData?.vehicleAcquisitionCost ?? 0;
-    const salesTax = price * SALES_TAX_RATE;
+    const salesTax = Number(salesTaxAmount) || 0;
     const grossProfit = Math.max(price - vehicleCost, 0);
     const totalFeesExtras =
       (Number(dmvFees) || 0) +
@@ -250,6 +252,7 @@ export default function SalesRepEditDealJacketPageContent({
     documentationFees,
     warrantyAmount,
     gapAmount,
+    salesTaxAmount,
     downPayment,
     tradeInAllowance,
     commissionRate,
@@ -279,6 +282,7 @@ export default function SalesRepEditDealJacketPageContent({
           documentationFees: values.documentationFees,
           warrantyAmount: values.warrantyAmount,
           gapAmount: values.gapAmount,
+          salesTaxAmount: values.salesTaxAmount,
           lender: values.lender,
           rosNumber: values.rosNumber,
           dealType: values.dealType,
@@ -636,17 +640,28 @@ export default function SalesRepEditDealJacketPageContent({
                         )}
                       />
                     ))}
-                    <FormItem>
-                      <FormLabel className="text-[10px] text-[#64748b]">
-                        Sales Tax ({(SALES_TAX_RATE * 100).toFixed(2)}%)
-                      </FormLabel>
-                      <Input
-                        mode="readonly"
-                        theme="dark"
-                        value={formatCurrency(derived.salesTax)}
-                        readOnly
-                      />
-                    </FormItem>
+                    <FormField
+                      control={form.control}
+                      name="salesTaxAmount"
+                      render={({ field, fieldState }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-1 justify-between">
+                            <FieldLabel label="Sales Tax Amount" required />
+                            <FormMessage className="text-[10px] text-red-500" />
+                          </div>
+                          <FormControl>
+                            <Input
+                              mode="currency"
+                              theme="dark"
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              aria-invalid={!!fieldState.error}
+                              placeholder="$0.00"
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                     <FormItem>
                       <FormLabel className="text-[10px] text-[#64748b]">
                         Finance Amount

@@ -1,56 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import type { StateTaxReport, StateTaxTab } from "@/lib/state-tax/types";
-import StateTaxConfigForm from "./state-tax-config-form";
+import type { StateTaxReport } from "@/lib/state-tax/types";
 import StateTaxHeader from "./state-tax-header";
-import StateTaxKpiCards from "./state-tax-kpi-cards";
 import StateTaxTabs from "./state-tax-tabs";
+import StateTaxOverview from "./state-tax-overview";
+import StateTaxPeriodsList from "./state-tax-periods-list";
 import StateTaxTransactionsTable from "./state-tax-transactions-table";
-import StateTaxYtdSummary from "./state-tax-ytd-summary";
+import StateTaxConfigForm from "./state-tax-config-form";
+import StateTaxReminders from "./state-tax-reminders";
 
-export default function StateTaxPageContent({
-  report,
-}: {
+type Props = {
   report: StateTaxReport;
-}) {
-  const [activeTab, setActiveTab] = useState<StateTaxTab>("overview");
+};
+
+export default function StateTaxPageContent({ report }: Props) {
+  const [activeTab, setActiveTab] = useState<string>("overview");
 
   return (
     <div className="relative">
       <StateTaxHeader />
 
       <StateTaxTabs
-        tabs={report.tabs}
+        tabs={report.tabs.map((t) => ({ id: t.id, label: t.label }))}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
 
-      {activeTab === "overview" && (
-        <>
-          <StateTaxConfigForm
-            config={report.config}
-            options={report.configOptions}
-          />
+      {activeTab === "overview" && <StateTaxOverview report={report} />}
 
-          <StateTaxKpiCards kpis={report.kpis} />
-
-          <section className="grid gap-3.5 xl:grid-cols-2">
-            <StateTaxYtdSummary summary={report.ytdSummary} />
-            <StateTaxTransactionsTable transactions={report.transactions} />
-          </section>
-        </>
+      {activeTab === "reports" && (
+        <StateTaxPeriodsList periods={report.periods} />
       )}
 
-      {activeTab !== "overview" && (
-        <div className="rounded-sm border border-slate-700 bg-card p-8 text-center">
-          <p className="text-[13px] font-medium text-slate-300">
-            {report.tabs.find((t) => t.id === activeTab)?.label}
-          </p>
-          <p className="mt-1 text-[12px] text-slate-500">
-            This section will be available when backend integration is added.
-          </p>
-        </div>
+      {activeTab === "transactions" && (
+        <StateTaxTransactionsTable transactions={report.transactions} />
+      )}
+
+      {activeTab === "configuration" && (
+        <StateTaxConfigForm
+          settings={{
+            state: report.config.state,
+            frequency: report.config.filingFrequency.toLowerCase() as "monthly" | "quarterly" | "annual" | "custom",
+            reminderDays: 14,
+          }}
+        />
+      )}
+
+      {activeTab === "reminders" && (
+        <StateTaxReminders reminders={report.reminders} />
       )}
     </div>
   );

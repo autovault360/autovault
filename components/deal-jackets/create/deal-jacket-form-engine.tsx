@@ -40,7 +40,6 @@ import { formatCurrency } from "@/lib/sales-reps/types";
 import { useUnifiedDealJacketForm } from "@/hooks/sales-rep/use-unified-deal-jacket-form";
 import {
   DEAL_TYPES,
-  SALES_TAX_RATE,
   US_STATES,
 } from "@/lib/sales-rep/deal-jacket/constants";
 import { lookupVehicle } from "@/lib/expenses/server/lookup-vehicle";
@@ -877,17 +876,28 @@ export default function DealJacketFormEngine({
                     )}
                   />
                 ))}
-                <FormItem>
-                  <FormLabel className="text-[10px] text-[#64748b]">
-                    Sales Tax ({(SALES_TAX_RATE * 100).toFixed(2)}%)
-                  </FormLabel>
-                  <Input
-                    mode="readonly"
-                    theme="dark"
-                    value={formatCurrency(derived.salesTax)}
-                    readOnly
-                  />
-                </FormItem>
+                <FormField
+                  control={form.control}
+                  name="salesTaxAmount"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <div className="flex items-center gap-1 justify-between">
+                        <FieldLabel label="Sales Tax Amount" required />
+                        <FormMessage className="text-[10px] text-red-500" />
+                      </div>
+                      <FormControl>
+                        <Input
+                          mode="currency"
+                          theme="dark"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          aria-invalid={!!fieldState.error}
+                          placeholder="$0.00"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <FormItem>
                   <FormLabel className="text-[10px] text-[#64748b]">
                     Finance Amount

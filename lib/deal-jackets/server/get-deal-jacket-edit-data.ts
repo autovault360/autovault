@@ -26,6 +26,7 @@ export type DealJacketEditData = {
   documentationFees: number;
   warrantyAmount: number;
   gapAmount: number;
+  totalTax: number;
   lender: string;
   rosNumber: string;
   dealType: string;
@@ -135,6 +136,7 @@ export async function getDealJacketEditData(
       documentationFees: Number(fees.documentation ?? 0),
       warrantyAmount: Number(row.warranty_amount ?? 0),
       gapAmount: Number(row.gap_amount ?? 0),
+      totalTax: Number(row.total_tax ?? 0),
       lender: row.lender ?? "",
       rosNumber: row.ros_number ?? "",
       dealType: row.deal_type ?? "Retail",

@@ -1,14 +1,12 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { StateTaxTab } from "@/lib/state-tax/types";
-
-type TabItem = { id: StateTaxTab; label: string };
+type TabItem = { id: string; label: string };
 
 type Props = {
   tabs: TabItem[];
-  activeTab: StateTaxTab;
-  onTabChange: (tab: StateTaxTab) => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 };
 
 export default function StateTaxTabs({ tabs, activeTab, onTabChange }: Props) {

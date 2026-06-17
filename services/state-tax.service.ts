@@ -26,7 +26,7 @@ function currentMonth(): { from: string; to: string } {
   };
 }
 
-export async function getStateTaxReport(dealershipId: string): Promise<StateTaxReport> {
+export async function getStateTaxReport(dealershipId: string) {
   const { from: mtdFrom, to: mtdTo } = currentMonth();
   const { from: ytdFrom, to: ytdTo } = yearToDate();
 

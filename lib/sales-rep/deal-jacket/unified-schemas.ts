@@ -43,6 +43,7 @@ export const unifiedDealJacketSchema = z.object({
   documentationFees: z.coerce.number().min(0, "Documentation fees cannot be negative"),
   warrantyAmount: z.coerce.number().min(0, "Warranty amount cannot be negative"),
   gapAmount: z.coerce.number().min(0, "GAP amount cannot be negative"),
+  salesTaxAmount: z.coerce.number().min(0, "Sales tax cannot be negative"),
   lender: z.string().optional(),
   rosNumber: z.string().optional(),
   dealType: z.enum(DEAL_TYPES, { message: "Deal type is required" }),

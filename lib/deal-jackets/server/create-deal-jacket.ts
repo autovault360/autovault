@@ -12,6 +12,7 @@ import {
   registerDealJacketFileInRegistry,
   inferDocumentBucket,
 } from "./upload-deal-jacket-documents";
+import { assignDealJacketToPeriod } from "@/services/tax-filing.service";
 import type {
   CreateDealJacketSaleData,
   DealJacketDocumentInput,
@@ -313,6 +314,10 @@ export async function createDealJacket(
       console.error("Failed to mark vehicle pending deal:", pendingResult.error);
     }
   }
+
+  await assignDealJacketToPeriod(inserted.id, dealershipId).catch((err) => {
+    console.warn("Failed to assign deal jacket to filing period:", err);
+  });
 
   return { success: true, dealJacket: inserted as DealJacketRow };
 }

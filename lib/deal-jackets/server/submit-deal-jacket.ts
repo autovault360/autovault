@@ -26,6 +26,7 @@ export type SubmitDealJacketFormData = {
   documentationFees: number;
   warrantyAmount: number;
   gapAmount: number;
+  salesTaxAmount: number;
   lender?: string;
   rosNumber?: string;
   dealType: string;
@@ -146,7 +147,7 @@ export async function submitDealJacket(
     return { success: false, error: "Failed to create or find customer" };
   }
 
-  const totalTax = formData.salePrice * 0.1025;
+  const totalTax = formData.salesTaxAmount;
   const totalFeesExtras =
     (formData.dmvFees || 0) +
     (formData.registrationFees || 0) +
