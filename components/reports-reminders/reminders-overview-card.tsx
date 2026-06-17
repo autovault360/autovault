@@ -85,11 +85,12 @@ function formatKpiLabel(label: string) {
 type Props = {
   kpis: ReminderKpi[];
   topReminders: TopReminderItem[];
+  onOpen?: () => void;
 };
 
-export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
+export default function RemindersOverviewCard({ kpis, topReminders, onOpen }: Props) {
   return (
-    <ReportCardShell className="flex h-full min-w-0 flex-col overflow-hidden">
+    <ReportCardShell className="flex h-full min-w-0 flex-col overflow-hidden" onClick={onOpen}>
       <h2 className="mb-3 text-[11px] font-bold tracking-[0.08em] text-white uppercase">
         REMINDERS OVERVIEW
       </h2>
@@ -116,6 +117,10 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
             </div>
             <button
               type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOpen?.();
+              }}
               className="text-[7px] font-medium text-blue-400 hover:text-blue-300 sm:text-[7.5px]"
             >
               View All →
@@ -147,7 +152,7 @@ export default function RemindersOverviewCard({ kpis, topReminders }: Props) {
         ))}
       </ul>
 
-      <ReportViewMore label="View All Reminders" />
+      <ReportViewMore label="View All Reminders" onClick={onOpen} />
     </ReportCardShell>
   );
 }

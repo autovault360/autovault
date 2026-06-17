@@ -11,15 +11,19 @@ export type ReportsDateRange =
 
 export type ReportsFilters = {
   dateRange: ReportsDateRange;
+  customFrom?: string;
+  customTo?: string;
   salesRep: string;
   vehicle: string;
   customer: string;
   category: string;
   dealJacket: string;
   state: string;
+  search?: string;
 };
 
 export type ReportsKpi = {
+  id?: ReportsDrilldownType;
   icon: KPIIconName;
   color: string;
   label: string;
@@ -27,6 +31,93 @@ export type ReportsKpi = {
   delta: string;
   sparkColor: string;
   sparkPoints: string;
+};
+
+export type ReportsFilterOption = {
+  value: string;
+  label: string;
+};
+
+export type ReportsFilterOptions = {
+  salesReps: ReportsFilterOption[];
+  vehicles: ReportsFilterOption[];
+  customers: ReportsFilterOption[];
+  categories: ReportsFilterOption[];
+  dealJackets: ReportsFilterOption[];
+  states: ReportsFilterOption[];
+};
+
+export type ReportsDrilldownType =
+  | "total-revenue"
+  | "gross-profit"
+  | "net-profit"
+  | "vehicles-sold"
+  | "vehicles-purchased"
+  | "total-expenses"
+  | "sales-tax-due"
+  | "payroll-paid"
+  | "report-summary"
+  | "sales-performance"
+  | "inventory-overview"
+  | "expense-report"
+  | "reminders-overview"
+  | "profit-loss-breakdown"
+  | "payroll-commission"
+  | "deal-jacket-status"
+  | "cpa-report-center"
+  | "audit-readiness"
+  | "custom-report-builder";
+
+export type ReportsAction = {
+  id: string;
+  label: string;
+  href?: string;
+  kind?: "link" | "export" | "print" | "mutate";
+};
+
+export type ReportsDrilldownColumn = {
+  key: string;
+  label: string;
+  align?: "left" | "right";
+};
+
+export type ReportsDrilldownRow = {
+  id: string;
+  title?: string;
+  href?: string;
+  values: Record<string, string>;
+};
+
+export type ReportsDrilldownMetric = {
+  label: string;
+  value: string;
+  tone?: "positive" | "negative" | "neutral";
+};
+
+export type ReportsDrilldownPayload = {
+  type: ReportsDrilldownType;
+  title: string;
+  description: string;
+  periodLabel: string;
+  metrics: ReportsDrilldownMetric[];
+  columns: ReportsDrilldownColumn[];
+  rows: ReportsDrilldownRow[];
+  actions: ReportsAction[];
+  emptyMessage: string;
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    hasMore: boolean;
+  };
+};
+
+export type ReportsAiAnswer = {
+  question: string;
+  answer: string;
+  highlights: ReportsDrilldownMetric[];
+  rows: ReportsDrilldownRow[];
+  actions: ReportsAction[];
 };
 
 export type ReportSummaryRow = {
@@ -129,6 +220,7 @@ export type CustomReportField = {
 
 export type ReportsRemindersMock = {
   kpis: ReportsKpi[];
+  filterOptions?: ReportsFilterOptions;
   reportSummary: ReportSummaryRow[];
   salesPerformance: SalesRepRow[];
   expenseBars: ExpenseBarRow[];

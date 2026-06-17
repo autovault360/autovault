@@ -15,12 +15,13 @@ const AXIS_LABELS = ["$0", "$1K", "$2K", "$3K", "$4K"];
 type Props = {
   bars: ExpenseBarRow[];
   period?: string;
+  onOpen?: () => void;
 };
 
-export default function ExpenseReportCard({ bars, period = "This Month" }: Props) {
+export default function ExpenseReportCard({ bars, period = "This Month", onOpen }: Props) {
   return (
-    <ReportCardShell className="flex flex-col">
-      <ReportTitleWithPeriodAndLink title="EXPENSE REPORT" period={period} />
+    <ReportCardShell className="flex flex-col" onClick={onOpen}>
+      <ReportTitleWithPeriodAndLink title="EXPENSE REPORT" period={period} onClick={onOpen} />
       <ReportSectionLabel>Expenses by Category</ReportSectionLabel>
 
       <div className="min-h-0 flex-1 space-y-1.5">
@@ -57,7 +58,7 @@ export default function ExpenseReportCard({ bars, period = "This Month" }: Props
         ))}
       </div>
 
-      <ReportExportButtonsRow />
+      <ReportExportButtonsRow onExport={onOpen} />
     </ReportCardShell>
   );
 }

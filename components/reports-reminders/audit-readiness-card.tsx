@@ -14,15 +14,16 @@ const GAUGE_CIRCUMFERENCE = 2 * Math.PI * GAUGE_RADIUS;
 
 type Props = {
   audit: AuditReadiness;
+  onOpen?: () => void;
 };
 
-export default function AuditReadinessCard({ audit }: Props) {
+export default function AuditReadinessCard({ audit, onOpen }: Props) {
   const dashOffset =
     GAUGE_CIRCUMFERENCE - (audit.percent / 100) * GAUGE_CIRCUMFERENCE;
 
   return (
-    <ReportCardShell compact className="flex h-full flex-col">
-      <ReportCardHeaderWithLink title="AUDIT READINESS" compact />
+    <ReportCardShell compact className="flex h-full flex-col" onClick={onOpen}>
+      <ReportCardHeaderWithLink title="AUDIT READINESS" compact onClick={onOpen} />
       <ReportCardSubtitle compact>{audit.subtitle}</ReportCardSubtitle>
 
       <div className="flex min-h-0 flex-1 flex-col justify-center">

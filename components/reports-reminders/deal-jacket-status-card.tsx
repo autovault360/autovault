@@ -31,12 +31,13 @@ const columnBg: Record<DealJacketStatusSegment["tone"], string> = {
 
 type Props = {
   segments: DealJacketStatusSegment[];
+  onOpen?: () => void;
 };
 
-export default function DealJacketStatusCard({ segments }: Props) {
+export default function DealJacketStatusCard({ segments, onOpen }: Props) {
   return (
-    <ReportCardShell compact className="flex h-full flex-col">
-      <ReportCardHeaderWithLink title="DEAL JACKET STATUS" compact />
+    <ReportCardShell compact className="flex h-full flex-col" onClick={onOpen}>
+      <ReportCardHeaderWithLink title="DEAL JACKET STATUS" compact onClick={onOpen} />
 
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1" aria-hidden />
@@ -78,6 +79,7 @@ export default function DealJacketStatusCard({ segments }: Props) {
         label="View Deal Jackets"
         compact
         className="!mt-0 shrink-0"
+        onClick={onOpen}
       />
     </ReportCardShell>
   );

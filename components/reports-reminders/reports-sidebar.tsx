@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 import { REPORTS_SIDEBAR_WIDTH_CLASS } from "./reports-constants";
 import ReportsAiAssistant from "./reports-ai-assistant";
 import StickyNotesCard from "./sticky-notes-card";
-import type { ReportsRemindersMock } from "@/lib/reports-reminders/types";
+import type { ReportsFilters, ReportsRemindersMock } from "@/lib/reports-reminders/types";
 
 type Props = {
   report: Pick<ReportsRemindersMock, "aiSuggestions" | "stickyNotes">;
+  filters: ReportsFilters;
   aiOpen: boolean;
   onAiOpenChange: (open: boolean) => void;
   className?: string;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function ReportsSidebar({
   report,
+  filters,
   aiOpen,
   onAiOpenChange,
   className,
@@ -31,6 +33,7 @@ export default function ReportsSidebar({
     >
       <ReportsAiAssistant
         suggestions={report.aiSuggestions}
+        filters={filters}
         onClose={() => onAiOpenChange(false)}
       />
       <StickyNotesCard notes={report.stickyNotes} />
