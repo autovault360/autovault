@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Footer from "@/components/layout/footer";
+import Link from "next/link";
 
 export type LoginFeatureItem = {
   icon: LucideIcon;
@@ -69,7 +70,7 @@ export function LoginHeroPanel({ headline, description, features }: LoginHeroCon
         <div className="absolute inset-0 bg-gradient-to-br from-[#050708]/10 to-[#050708]/80" />
       </div>
 
-      <div className="flex items-center">
+      <Link href="/" className="flex items-center">
         <Image
           src="/logo.webp"
           alt="AutoVault Logo"
@@ -79,7 +80,7 @@ export function LoginHeroPanel({ headline, description, features }: LoginHeroCon
           className="p-2 object-cover"
           style={{ width: "auto", height: "auto" }}
         />
-      </div>
+      </Link>
 
       <div className="flex flex-col justify-between gap-12 flex-1">
         <div className="flex items-center">
