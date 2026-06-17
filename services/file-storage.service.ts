@@ -301,6 +301,7 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
     "user-images": "purple",
     "expense-receipts": "orange",
     "deal-jacket-documents": "yellow",
+    "tax-filings": "purple",
   };
 
   const folderNameMap: Record<string, string> = {
@@ -311,6 +312,7 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
     "expense-receipts": "Expenses & Receipts",
     "deal-jacket-documents": "Deal Jackets",
     "wholesale-dealer-documents": "Wholesale Dealer Documents",
+    "tax-filings": "Tax Filings",
   };
 
   const folderDescMap: Record<string, string> = {
@@ -321,6 +323,7 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
     "expense-receipts": "Expense receipts and invoices",
     "deal-jacket-documents": "All deal related documents",
     "wholesale-dealer-documents": "Wholesale dealer document vault",
+    "tax-filings": "Sales tax filing receipts and confirmations",
   };
 
   const totalFromBreakdown = report.breakdown.reduce((s, b) => s + b.totalSize, 0);

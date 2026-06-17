@@ -9,6 +9,8 @@
     "seed:sales-reps": "tsx scripts/seed-sales-reps.ts",
     "seed:deal-jackets": "npx tsx scripts/seed-deal-jackets.ts",
     "seed:full": "npx tsx scripts/seed-full.ts",
+    "seed:tax-filing": "npx tsx scripts/seed-tax-filing.ts",
+    "cron:setup-qstash": "npx tsx scripts/setup-qstash-cron.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
@@ -22,6 +24,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.1",
+    "@upstash/qstash": "^2.11.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",

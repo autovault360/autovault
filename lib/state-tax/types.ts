@@ -57,6 +57,32 @@ export type StateTaxTransaction = {
   status: "collected";
 };
 
+export type MonthlyTaxDataPoint = {
+  name: string;
+  tax: number;
+  vehicles: number;
+};
+
+export type ReminderInfo = {
+  periodId: string;
+  periodName: string;
+  dueDate: string;
+  daysUntilDue: number;
+  vehicleCount: number;
+  status: string;
+};
+
+export type PeriodSummary = {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  dueDate: string;
+  status: string;
+  vehicleCount: number;
+  totalTaxEntered: number;
+};
+
 export type StateTaxReport = {
   tabs: { id: StateTaxTab; label: string }[];
   config: StateTaxConfig;
@@ -77,4 +103,7 @@ export type StateTaxReport = {
     };
   };
   transactions: StateTaxTransaction[];
+  monthlyTaxData: MonthlyTaxDataPoint[];
+  reminders: ReminderInfo[];
+  periods: PeriodSummary[];
 };

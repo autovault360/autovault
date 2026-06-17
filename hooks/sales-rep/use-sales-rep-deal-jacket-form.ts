@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { SALES_TAX_RATE } from "@/lib/sales-rep/deal-jacket/constants";
 import {
   unifiedDealJacketSchema,
   type UnifiedDealJacketFormValues,
@@ -25,6 +24,7 @@ function buildDefaults(): UnifiedDealJacketFormValues {
     buyerState: "" as UnifiedDealJacketFormValues["buyerState"],
     salePrice: 0,
     saleDate: "",
+    salesTaxAmount: 0,
     downPayment: 0,
     tradeInAllowance: 0,
     dmvFees: 0,
@@ -79,11 +79,11 @@ export function useSalesRepDealJacketForm(
   const documentationFees = form.watch("documentationFees");
   const warrantyAmount = form.watch("warrantyAmount");
   const gapAmount = form.watch("gapAmount");
+  const salesTaxAmount = form.watch("salesTaxAmount");
 
   const derived = useMemo(() => {
     const price = Number(salePrice) || 0;
     const vehicleCost = linkedVehicle?.mileage ? 0 : 0;
-    const salesTax = price * SALES_TAX_RATE;
     const grossProfit = Math.max(price - vehicleCost, 0);
     const totalFeesExtras =
       (Number(dmvFees) || 0) +
@@ -99,7 +99,7 @@ export function useSalesRepDealJacketForm(
     const financeAmount = Math.max(
       0,
       price +
-        salesTax +
+        (Number(salesTaxAmount) || 0) +
         (Number(dmvFees) || 0) +
         (Number(registrationFees) || 0) +
         (Number(documentationFees) || 0) +
@@ -112,7 +112,6 @@ export function useSalesRepDealJacketForm(
     return {
       salePrice: price,
       vehicleCost,
-      salesTax,
       grossProfit,
       totalFeesExtras,
       netProfit,
@@ -168,6 +167,7 @@ export function useSalesRepDealJacketForm(
           buyerState: values.buyerState,
           salePrice: values.salePrice,
           saleDate: values.saleDate,
+          salesTaxAmount: values.salesTaxAmount,
           downPayment: values.downPayment,
           tradeInAllowance: values.tradeInAllowance,
           dmvFees: values.dmvFees,

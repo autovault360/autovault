@@ -8,8 +8,6 @@ export const US_STATES = [
   "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
 ] as const;
 
-export const SALES_TAX_RATE = 0.1025;
-
 export const REQUIRED_DOCUMENTS = [
   { key: "buyersOrder", label: "Buyer's Order" },
   { key: "driverLicense", label: "Driver License" },

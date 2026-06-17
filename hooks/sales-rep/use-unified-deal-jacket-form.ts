@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { SALES_TAX_RATE } from "@/lib/sales-rep/deal-jacket/constants";
 import {
   unifiedDealJacketSchema,
   type UnifiedDealJacketFormValues,
@@ -37,6 +36,7 @@ function buildDefaults(
     documentationFees: 0,
     warrantyAmount: 0,
     gapAmount: 0,
+    salesTaxAmount: 0,
     lender: "",
     rosNumber: "",
     dealType: "Retail",
@@ -120,6 +120,7 @@ export function useUnifiedDealJacketForm(
   const documentationFees = form.watch("documentationFees");
   const warrantyAmount = form.watch("warrantyAmount");
   const gapAmount = form.watch("gapAmount");
+  const salesTaxAmount = form.watch("salesTaxAmount");
 
   const selectedVehicle = useMemo(
     () => vehicles.find((v) => v.id === linkedVehicleId) ?? null,
@@ -148,7 +149,7 @@ export function useUnifiedDealJacketForm(
       selectedVehicle?.purchaseCost ??
       linkedVehicle?.acquisitionCost ??
       0;
-    const salesTax = price * SALES_TAX_RATE;
+    const tax = Number(salesTaxAmount) || 0;
     const grossProfit = Math.max(price - vehicleCost, 0);
     const totalFeesExtras =
       (Number(dmvFees) || 0) +
@@ -164,7 +165,7 @@ export function useUnifiedDealJacketForm(
     const financeAmount = Math.max(
       0,
       price +
-        salesTax +
+        tax +
         (Number(dmvFees) || 0) +
         (Number(registrationFees) || 0) +
         (Number(documentationFees) || 0) +
@@ -177,7 +178,7 @@ export function useUnifiedDealJacketForm(
     return {
       salePrice: price,
       vehicleCost,
-      salesTax,
+      salesTax: tax,
       grossProfit,
       totalFeesExtras,
       netProfit,
@@ -188,6 +189,7 @@ export function useUnifiedDealJacketForm(
     };
   }, [
     salePrice,
+    salesTaxAmount,
     selectedVehicle,
     linkedVehicle,
     dmvFees,
@@ -252,6 +254,7 @@ export function useUnifiedDealJacketForm(
           documentationFees: values.documentationFees,
           warrantyAmount: values.warrantyAmount,
           gapAmount: values.gapAmount,
+          salesTaxAmount: values.salesTaxAmount,
           lender: values.lender,
           rosNumber: values.rosNumber,
           dealType: values.dealType,

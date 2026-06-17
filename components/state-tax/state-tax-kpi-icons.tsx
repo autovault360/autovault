@@ -2,6 +2,7 @@ import {
   Calendar,
   ClipboardList,
   FileText,
+  Car,
 } from "lucide-react";
 import type { ComponentType } from "react";
 
@@ -9,7 +10,7 @@ const iconClass = "h-[22px] w-[22px] shrink-0";
 
 type KpiIconProps = { className?: string };
 
-/** Money bag with dollar sign ... matches Sales Tax Center mockup */
+/** Money bag with dollar sign */
 export function MoneyBagIcon({ className }: KpiIconProps) {
   return (
     <svg
@@ -34,16 +35,15 @@ export function MoneyBagIcon({ className }: KpiIconProps) {
 }
 
 export const stateTaxKpiIconMap: Record<string, ComponentType<KpiIconProps>> = {
-  collected: MoneyBagIcon,
-  "taxable-sales": ClipboardList,
-  "tax-due": FileText,
-  "filing-due": Calendar,
+  "total-tax": MoneyBagIcon,
+  vehicles: Car,
+  "next-filing": Calendar,
+  "active-periods": FileText,
 };
 
-/** Solid circle backgrounds ... white icon glyphs per mockup */
 export const stateTaxKpiIconBg: Record<string, string> = {
-  collected: "bg-emerald-500 text-white",
-  "taxable-sales": "bg-blue-600 text-white",
-  "tax-due": "bg-purple-600 text-white",
-  "filing-due": "bg-orange-500 text-white",
+  "total-tax": "bg-emerald-500 text-white",
+  vehicles: "bg-blue-600 text-white",
+  "next-filing": "bg-purple-600 text-white",
+  "active-periods": "bg-orange-500 text-white",
 };
