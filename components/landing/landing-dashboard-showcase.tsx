@@ -106,7 +106,7 @@ export default function LandingDashboardShowcase() {
             <div className="mt-auto rounded-[8px] border border-white/16 bg-white/4 p-1 xl:p-1.5 backdrop-blur-sm">
               <div className="flex flex-col xl:flex-row items-center gap-1.5 xl:gap-2 rounded-[7px] px-0.5 py-1">
                 <img
-                  src="https://i.pravatar.cc/70?img=5"
+                  src="https://i.pravatar.cc/70?img=12"
                   alt="John Smith"
                   className="h-[32px] w-[32px] xl:h-[44px] xl:w-[44px] rounded-full border border-white/15 object-cover"
                 />
@@ -124,7 +124,7 @@ export default function LandingDashboardShowcase() {
               <Image src="/logo_short.webp" alt="AutoVault" width={28} height={28} />
               <div className="flex items-center gap-2">
                 <img
-                  src="https://i.pravatar.cc/40?img=5"
+                  src="https://i.pravatar.cc/150?img=12"
                   alt="User"
                   className="h-7 w-7 rounded-full border border-white/20 object-cover"
                 />
