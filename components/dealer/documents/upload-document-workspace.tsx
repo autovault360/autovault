@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -137,6 +137,17 @@ export default function UploadDocumentWorkspace({
   onSuccess: () => void;
   variant?: "sidebar" | "sheet";
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      const id = requestAnimationFrame(() => setMounted(true));
+      return () => cancelAnimationFrame(id);
+    } else {
+      setMounted(false);
+    }
+  }, [open]);
+
   const {
     form,
     step,
@@ -185,6 +196,45 @@ export default function UploadDocumentWorkspace({
   };
 
   if (!open) return null;
+
+  if (!mounted) {
+    return (
+      <aside
+        className={cn(
+          "flex min-h-0 w-full flex-col border-slate-700/80 bg-card",
+          variant === "sidebar" &&
+            "sticky top-3 max-h-[calc(100vh-5.5rem)] rounded-md border shadow-lg shadow-black/20",
+          variant === "sheet" && "max-h-[92vh] rounded-t-xl border-t",
+        )}
+      >
+        <div className="animate-pulse space-y-4 p-4">
+          <div className="h-5 w-32 rounded bg-slate-800" />
+          <div className="h-3 w-48 rounded bg-slate-800/70" />
+          <div className="mt-4 flex gap-1">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex flex-1 items-center gap-1.5">
+                <div className="h-7 w-7 rounded-full bg-slate-800" />
+                <div className="h-3 w-16 rounded bg-slate-800/70" />
+              </div>
+            ))}
+          </div>
+          <div className="space-y-3 pt-4">
+            <div className="h-9 rounded bg-slate-800/60" />
+            <div className="h-9 rounded bg-slate-800/60" />
+            <div className="h-9 rounded bg-slate-800/60" />
+            <div className="h-20 rounded bg-slate-800/60" />
+            <div className="flex h-28 items-center justify-center rounded-md border-2 border-dashed border-slate-800">
+              <div className="h-10 w-10 rounded-full bg-slate-800" />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <div className="h-9 flex-1 rounded bg-slate-800/60" />
+            <div className="h-9 flex-1 rounded bg-slate-800/60" />
+          </div>
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside
@@ -271,7 +321,6 @@ export default function UploadDocumentWorkspace({
                             <FormControl>
                               <SelectTrigger
                                 theme="dark"
-                                className="h-9 border-slate-700/80 bg-[#0a101c]/80 text-[12px]"
                               >
                                 <SelectValue placeholder="Select type" />
                               </SelectTrigger>
@@ -306,7 +355,6 @@ export default function UploadDocumentWorkspace({
                             <FormControl>
                               <SelectTrigger
                                 theme="dark"
-                                className="h-9 border-slate-700/80 bg-[#0a101c]/80 text-[12px]"
                               >
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
@@ -334,7 +382,6 @@ export default function UploadDocumentWorkspace({
                             <Input
                               theme="dark"
                               {...field}
-                              className="h-9 border-slate-700/80 bg-[#0a101c]/80 text-[12px]"
                               placeholder="Enter document name"
                             />
                           </FormControl>
@@ -355,8 +402,7 @@ export default function UploadDocumentWorkspace({
                               {...field}
                               rows={3}
                               maxLength={250}
-                              className="resize-none border-slate-700/80 bg-[#0a101c]/80 text-[12px]"
-                              placeholder="Add any notes about this document..."
+                              className="resize-none"
                             />
                           </FormControl>
                           <p className="text-right text-[10px] text-slate-500">

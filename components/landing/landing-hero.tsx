@@ -1,5 +1,14 @@
 import Image from "next/image";
-import { Clock3, Cloud, ShieldCheck, TrendingUp } from "lucide-react";
+import {
+  CircleDollarSign,
+  Clock3,
+  Cloud,
+  FileText,
+  ShieldCheck,
+  TrendingUp,
+  User,
+  Users,
+} from "lucide-react";
 import LandingWaitlistForm from "@/components/landing/landing-waitlist-form";
 import landingCar from "@/assets/Landing_bg.jpeg";
 
@@ -8,6 +17,14 @@ const benefits = [
   { icon: Clock3, title: "Save Time", subtitle: "Automate daily tasks" },
   { icon: ShieldCheck, title: "Stay Compliant", subtitle: "Organized & secure" },
   { icon: Cloud, title: "Access Anywhere", subtitle: "Cloud-based platform" },
+  { icon: Users, title: "Empower Your Team", subtitle: "Role-based access for your entire dealership" },
+  {
+    icon: CircleDollarSign,
+    title: "Payroll & Commission Tracking",
+    subtitle: "Pay your team accurately and on time",
+  },
+  { icon: User, title: "CPA & Accountant Log In", subtitle: "Secure access for your trusted advisors" },
+  { icon: FileText, title: "Tax Filing Made Easy", subtitle: "All your data, organized and export-ready" },
 ];
 
 type LandingHeroProps = {
@@ -16,9 +33,9 @@ type LandingHeroProps = {
 
 export default function LandingHero({ serifClassName }: LandingHeroProps) {
   return (
-    <section className="relative mx-auto max-w-7xl overflow-hidden bg-[var(--lp-bg)] pb-0 pt-10 transition-colors duration-300 sm:pt-12 lg:pt-14">
+    <section className="relative mx-auto max-w-7xl overflow-hidden bg-[var(--lp-bg)] pb-4 pt-10 transition-colors duration-300 sm:pt-12 sm:pb-6 lg:pt-14">
       <div className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8">
-        <div className="grid items-start gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8 xl:gap-12">
+        <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-8 xl:gap-12">
           <div className="relative z-[1]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--lp-fg-accent)] sm:text-[12px]">
               The All-In-One Dealership Management Platform

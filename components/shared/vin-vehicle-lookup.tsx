@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Loader2, X } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,12 +75,10 @@ export default function VinVehicleLookup({
             value={vinInput}
             onChange={(e) => setVinInput(e.target.value.toUpperCase())}
             placeholder="Enter VIN number"
-            className="h-9 flex-1 border-slate-700/80 bg-[#0a101c]/80 uppercase text-[12px]"
             onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleLookup())}
           />
           <Button
             type="button"
-            className="h-9 shrink-0 bg-blue-600 px-4 text-[12px] hover:bg-blue-500"
             onClick={handleLookup}
             disabled={loading}
           >
@@ -90,7 +88,10 @@ export default function VinVehicleLookup({
                 Looking up...
               </>
             ) : (
-              "Lookup Vehicle"
+              <>
+                <Search className="mr-1.5 h-3.5 w-3.5" />
+                Lookup Vehicle
+              </>
             )}
           </Button>
         </div>

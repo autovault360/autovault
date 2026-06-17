@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, ChevronDown, Menu } from "lucide-react";
+import { ArrowRight, Menu } from "lucide-react";
 import LandingThemeToggle from "@/components/landing/landing-theme-toggle";
 import LandingThemeLogo from "@/components/landing/landing-theme-logo";
+import { LandingSocialLinks } from "@/components/landing/landing-social-links";
 import {
   Sheet,
   SheetContent,
@@ -12,43 +13,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Image from "next/image";
-import { useLandingTheme } from "@/components/landing/landing-theme-provider";
-
-const navLinks = [
-  { label: "Features", hasDropdown: true, href: "#features" },
-  { label: "Solutions", hasDropdown: true, href: "#solutions" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "About Us", href: "#about" },
-  { label: "Contact", href: "#contact" },
-];
 
 export default function LandingHeader() {
   const [open, setOpen] = useState(false);
-  const { isDark } = useLandingTheme();
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--lp-border)] bg-[var(--lp-bg-header)] backdrop-blur-md transition-colors duration-300">
-      <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4">
+      <div className="mx-auto flex h-[72px] max-w-[1320px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0">
           <LandingThemeLogo variant="header" />
-          {/* <Image src={isDark ? "/logos/dark.png" : "/logos/light.png"} className="" alt="AutoVault" width={68} height={68} /> */}
-          
         </Link>
 
-        <nav className="hidden items-center gap-7 lg:flex xl:gap-9">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className="flex items-center gap-1 text-[15px] font-medium text-[var(--lp-fg-nav)] transition-colors hover:text-[var(--lp-fg-nav-hover)]"
-            >
-              {link.label}
-              {link.hasDropdown ? (
-                <ChevronDown className="h-4 w-4 text-[var(--lp-fg-chevron)]" />
-              ) : null}
-            </Link>
-          ))}
-        </nav>
+        <LandingSocialLinks className="hidden items-center gap-3 lg:flex" />
 
         <div className="flex items-center gap-3">
           <LandingThemeToggle />
@@ -75,28 +50,16 @@ export default function LandingHeader() {
               className="w-[300px] border-[var(--lp-border)] bg-[var(--lp-bg-card)] p-0"
             >
               <SheetHeader className="border-b border-[var(--lp-border)] px-5 py-4">
-              <SheetTitle className="text-left">
-                <LandingThemeLogo variant="header" />
-              </SheetTitle>
+                <SheetTitle className="text-left">
+                  <LandingThemeLogo variant="header" />
+                </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col px-5 py-4">
                 <div className="mb-4 flex items-center justify-between">
                   <span className="text-sm text-[var(--lp-fg-muted)]">Theme</span>
                   <LandingThemeToggle />
                 </div>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-between border-b border-[var(--lp-border)] py-4 text-[16px] font-medium text-[var(--lp-fg-nav)]"
-                  >
-                    {link.label}
-                    {link.hasDropdown ? (
-                      <ChevronDown className="h-4 w-4 text-[var(--lp-fg-chevron)]" />
-                    ) : null}
-                  </Link>
-                ))}
+                <LandingSocialLinks className="flex items-center justify-center gap-3 py-4" />
                 <Link
                   href="#waitlist"
                   onClick={() => setOpen(false)}
