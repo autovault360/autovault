@@ -50,7 +50,7 @@ const previewInventory = [
 
 export default function LandingDashboardPreview({ serifClassName }: { serifClassName: string }) {
   return (
-    <section className="relative z-[0] overflow-x-hidden bg-[var(--lp-bg)] px-4 pb-10 pt-16 transition-colors duration-300 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:pt-24">
+    <section className="relative z-[0] overflow-x-hidden bg-[var(--lp-bg)] px-4 pb-10 pt-16 transition-colors duration-300 sm:px-6 sm:pb-12 sm:pt-8 lg:px-8 lg:pt-10 sm:pb-6">
       <div className="mx-auto w-full max-w-7xl">
         <div className="w-full overflow-hidden rounded-[12px] border border-[var(--lp-border-strong)] bg-[var(--lp-dash-bg)] shadow-[var(--lp-shadow-preview)] sm:rounded-[18px]">
           <div className="grid grid-cols-1 sm:grid-cols-[64px_minmax(0,1fr)]">

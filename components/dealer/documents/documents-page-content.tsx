@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FolderOpen, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useDealerDashboard } from "@/components/dealer/context/dealer-dashboard-context";
 import { getVehicleLabel } from "@/lib/dealer/inventory/map-wholesale-vehicle";
@@ -40,7 +41,11 @@ export default function DocumentsPageContent({ stats: initialStats, list: initia
     vehicleId: "all",
   });
   const [showDeleted, setShowDeleted] = useState(false);
-  const [uploadOpen, setUploadOpen] = useState(searchParams.get("upload") === "true");
+  const [uploadOpen, setUploadOpen] = useState(false);
+
+  useEffect(() => {
+    setUploadOpen(searchParams.get("upload") === "true");
+  }, [searchParams]);
 
   const vehicleOptions = useMemo(() => {
     const vehicles = dashboardData?.vehicles ?? [];
@@ -54,12 +59,6 @@ export default function DocumentsPageContent({ stats: initialStats, list: initia
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
   }, [search]);
-
-  useEffect(() => {
-    if (searchParams.get("upload") === "true") {
-      setUploadOpen(true);
-    }
-  }, [searchParams]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -107,7 +106,7 @@ export default function DocumentsPageContent({ stats: initialStats, list: initia
 
   return (
     <div className="w-full min-w-0 max-w-full overflow-x-hidden">
-      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] 2xl:grid-cols-[minmax(0,1fr)_440px]">
+      <div className={cn("grid grid-cols-1 items-start gap-4", uploadOpen ? "xl:grid-cols-[minmax(0,1fr)_minmax(340px,420px)] 2xl:grid-cols-[minmax(0,1fr)_440px]" : "xl:grid-cols-1")}>
         {/* LEFT COLUMN - documents list */}
         <div className="min-w-0 space-y-3.5">
           <section className="flex flex-wrap items-start justify-between gap-3 px-0.5">
@@ -124,7 +123,7 @@ export default function DocumentsPageContent({ stats: initialStats, list: initia
             </div>
             <Button
               type="button"
-              className="h-9 gap-1.5 bg-emerald-600 text-[12px] hover:bg-emerald-500 xl:hidden"
+              className="h-9 gap-1.5 bg-emerald-600 text-[12px] hover:bg-emerald-500"
               onClick={() => setUploadOpen(true)}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -180,14 +179,16 @@ export default function DocumentsPageContent({ stats: initialStats, list: initia
         </div>
 
         {/* RIGHT COLUMN - upload panel (desktop) */}
-        <div className="max-w-3xl w-full hidden xl:block">
-          <UploadDocumentWorkspace
-            open
-            onClose={() => {}}
-            onSuccess={fetchData}
-            variant="sidebar"
-          />
-        </div>
+        {uploadOpen && (
+          <div className="hidden xl:block">
+            <UploadDocumentWorkspace
+              open
+              onClose={() => setUploadOpen(false)}
+              onSuccess={fetchData}
+              variant="sidebar"
+            />
+          </div>
+        )}
       </div>
 
       {uploadOpen && (
