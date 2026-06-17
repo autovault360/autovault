@@ -61,9 +61,10 @@ function InventoryAgeDonut({
 
 type Props = {
   inventory: InventoryOverview;
+  onOpen?: () => void;
 };
 
-export default function InventoryOverviewCard({ inventory }: Props) {
+export default function InventoryOverviewCard({ inventory, onOpen }: Props) {
   const stats = [
     { label: "Total Vehicles", value: String(inventory.totalVehicles) },
     { label: "Avg. Days in Stock", value: String(inventory.avgDaysInStock) },
@@ -75,8 +76,8 @@ export default function InventoryOverviewCard({ inventory }: Props) {
   ];
 
   return (
-    <ReportCardShell className="@container flex min-w-0 flex-col overflow-hidden">
-      <ReportCardHeaderWithLink title="INVENTORY OVERVIEW" />
+    <ReportCardShell className="@container flex min-w-0 flex-col overflow-hidden" onClick={onOpen}>
+      <ReportCardHeaderWithLink title="INVENTORY OVERVIEW" onClick={onOpen} />
       <p className="mb-3 text-[9.5px] font-bold tracking-[0.1em] text-slate-500 uppercase">
         Inventory Age Breakdown
       </p>
@@ -119,7 +120,7 @@ export default function InventoryOverviewCard({ inventory }: Props) {
         </dl>
       </div>
 
-      <ReportViewMore label="View Inventory List" />
+      <ReportViewMore label="View Inventory List" onClick={onOpen} />
     </ReportCardShell>
   );
 }

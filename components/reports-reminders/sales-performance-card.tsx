@@ -9,12 +9,13 @@ import {
 
 type Props = {
   rows: SalesRepRow[];
+  onOpen?: () => void;
 };
 
-export default function SalesPerformanceCard({ rows }: Props) {
+export default function SalesPerformanceCard({ rows, onOpen }: Props) {
   return (
-    <ReportCardShell className="flex flex-col">
-      <ReportCardHeaderWithLink title="SALES PERFORMANCE" />
+    <ReportCardShell className="flex flex-col" onClick={onOpen}>
+      <ReportCardHeaderWithLink title="SALES PERFORMANCE" onClick={onOpen} />
       <div className="min-h-0 flex-1 overflow-x-auto">
         <table className="w-full border-collapse text-[11px]">
           <thead>
@@ -56,7 +57,7 @@ export default function SalesPerformanceCard({ rows }: Props) {
           </tbody>
         </table>
       </div>
-      <ReportViewMore label="View Leaderboard" />
+      <ReportViewMore label="View Leaderboard" onClick={onOpen} />
     </ReportCardShell>
   );
 }

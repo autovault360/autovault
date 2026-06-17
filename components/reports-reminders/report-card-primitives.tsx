@@ -15,16 +15,20 @@ export function ReportCardShell({
   children,
   className,
   compact = false,
+  onClick,
 }: {
   children: React.ReactNode;
   className?: string;
   /** Tighter padding for shorter dashboard rows (e.g. row 3). */
   compact?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <Card
+      onClick={onClick}
       className={cn(
         "flex flex-col rounded-sm border border-slate-700 bg-card text-slate-200 shadow-none",
+        onClick && "cursor-pointer transition hover:border-slate-600",
         compact ? "h-full p-2.5" : "h-full p-3.5",
         className,
       )}
@@ -52,11 +56,13 @@ export function ReportCardHeaderWithLink({
   linkLabel = "View Full Report",
   className,
   compact = false,
+  onClick,
 }: {
   title: string;
   linkLabel?: string;
   className?: string;
   compact?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <div
@@ -71,6 +77,10 @@ export function ReportCardHeaderWithLink({
       </h2>
       <button
         type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onClick?.();
+        }}
         className="shrink-0 text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
         {linkLabel} →
@@ -104,11 +114,13 @@ export function ReportTitleWithPeriodAndLink({
   period = "This Month",
   showLink = true,
   linkLabel = "View Full Report",
+  onClick,
 }: {
   title: string;
   period?: string;
   showLink?: boolean;
   linkLabel?: string;
+  onClick?: () => void;
 }) {
   return (
     <div className="mb-2 flex items-start justify-between gap-2">
@@ -121,6 +133,10 @@ export function ReportTitleWithPeriodAndLink({
       {showLink && (
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onClick?.();
+          }}
           className="shrink-0 pt-px text-[11px] font-medium text-blue-400 hover:text-blue-300"
         >
           {linkLabel} →
@@ -141,13 +157,19 @@ export function ReportSectionLabel({ children }: { children: React.ReactNode }) 
 export function ReportExportButtonsRow({
   excelOnly = false,
   centered = false,
+  onExport,
 }: {
   excelOnly?: boolean;
   centered?: boolean;
+  onExport?: () => void;
 }) {
   const pdfBtn = (
     <button
       type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onExport?.();
+      }}
       className="inline-flex items-center gap-1.5 rounded border border-slate-700 bg-[#0e1626] px-2.5 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-slate-600"
     >
       <FileText className="h-3.5 w-3.5 text-red-500" strokeWidth={2} />
@@ -157,6 +179,10 @@ export function ReportExportButtonsRow({
   const excelBtn = (
     <button
       type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onExport?.();
+      }}
       className="inline-flex items-center gap-1.5 rounded border border-slate-700 bg-[#0e1626] px-2.5 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-slate-600"
     >
       <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" strokeWidth={2} />
@@ -253,11 +279,15 @@ export function ReportMetricRows({
   );
 }
 
-export function ReportSummaryFooter() {
+export function ReportSummaryFooter({ onOpen }: { onOpen?: () => void }) {
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
       <button
         type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpen?.();
+        }}
         className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
         View Full Report ...
@@ -265,6 +295,10 @@ export function ReportSummaryFooter() {
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.();
+          }}
           className="inline-flex items-center gap-1.5 rounded border border-slate-700 bg-[#0e1626] px-2.5 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-slate-600"
         >
           <FileText className="h-3.5 w-3.5 text-red-500" strokeWidth={2} />
@@ -272,6 +306,10 @@ export function ReportSummaryFooter() {
         </button>
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.();
+          }}
           className="inline-flex items-center gap-1.5 rounded border border-slate-700 bg-[#0e1626] px-2.5 py-1.5 text-[11px] font-medium text-slate-200 transition hover:border-slate-600"
         >
           <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" strokeWidth={2} />
@@ -286,14 +324,20 @@ export function ReportViewMore({
   label,
   compact = false,
   className,
+  onClick,
 }: {
   label: string;
   compact?: boolean;
   className?: string;
+  onClick?: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick?.();
+      }}
       className={cn(
         "w-full shrink-0 rounded-b-sm border-t border-slate-700 bg-transparent text-center font-medium text-blue-400 hover:bg-slate-800/30",
         compact

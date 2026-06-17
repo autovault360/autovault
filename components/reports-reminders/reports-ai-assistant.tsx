@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import {
   AlertCircle,
   BarChart3,
@@ -16,7 +16,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { ReportsAiSuggestion, ReportsAiSuggestionIcon } from "@/lib/reports-reminders/types";
+import type {
+  ReportsAiAnswer,
+  ReportsAiSuggestion,
+  ReportsAiSuggestionIcon,
+  ReportsFilters,
+} from "@/lib/reports-reminders/types";
 
 const iconMap: Record<ReportsAiSuggestionIcon, typeof BarChart3> = {
   chart: BarChart3,
@@ -38,12 +43,41 @@ const iconColorMap: Record<ReportsAiSuggestionIcon, string> = {
 
 type Props = {
   suggestions: ReportsAiSuggestion[];
+  filters: ReportsFilters;
   onClose?: () => void;
 };
 
-export default function ReportsAiAssistant({ suggestions, onClose }: Props) {
+export default function ReportsAiAssistant({ suggestions, filters, onClose }: Props) {
   const [input, setInput] = useState("");
   const [collapsed, setCollapsed] = useState(false);
+  const [answer, setAnswer] = useState<ReportsAiAnswer | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function ask(question: string) {
+    if (!question.trim()) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/reports-reminders/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, filters }),
+      });
+      if (!response.ok) throw new Error("Assistant request failed");
+      setAnswer((await response.json()) as ReportsAiAnswer);
+      setInput("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Assistant request failed");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void ask(input);
+  }
 
   return (
     <Card className="flex w-full flex-col overflow-hidden rounded-sm border border-slate-700 bg-[#070d19] shadow-none">
@@ -89,6 +123,7 @@ export default function ReportsAiAssistant({ suggestions, onClose }: Props) {
                   <button
                     key={s.id}
                     type="button"
+                    onClick={() => ask(s.label)}
                     className="group flex w-full items-start gap-2.5 rounded-lg border border-slate-800/80 bg-[#0b1324] px-2.5 py-2 text-left transition hover:border-slate-700 hover:bg-[#0f1a30]"
                   >
                     <span
@@ -106,10 +141,41 @@ export default function ReportsAiAssistant({ suggestions, onClose }: Props) {
                 );
               })}
             </div>
+            {loading && (
+              <div className="rounded border border-slate-800 bg-[#0b1324] p-2.5 text-[11px] text-slate-400">
+                Reading report data...
+              </div>
+            )}
+            {error && (
+              <div className="rounded border border-red-500/30 bg-red-500/10 p-2.5 text-[11px] text-red-200">
+                {error}
+              </div>
+            )}
+            {answer && (
+              <div className="rounded border border-blue-500/20 bg-blue-500/10 p-2.5">
+                <p className="text-[11px] leading-relaxed text-slate-200">
+                  {answer.answer}
+                </p>
+                {answer.highlights.length > 0 && (
+                  <div className="mt-2 grid grid-cols-2 gap-1.5">
+                    {answer.highlights.slice(0, 4).map((metric) => (
+                      <div key={metric.label} className="rounded bg-[#07101f] p-2">
+                        <div className="truncate text-[9px] uppercase tracking-wide text-slate-500">
+                          {metric.label}
+                        </div>
+                        <div className="mt-0.5 text-[12px] font-bold text-emerald-400">
+                          {metric.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="border-t border-slate-800 p-3">
-            <div className="relative">
+            <form className="relative" onSubmit={handleSubmit}>
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -117,14 +183,15 @@ export default function ReportsAiAssistant({ suggestions, onClose }: Props) {
                 className="h-9 w-full rounded-md border border-slate-700 bg-[#0e1626] pr-10 pl-3 text-[12px] text-slate-200 outline-none placeholder:text-slate-600 focus-visible:border-blue-500"
               />
               <Button
-                type="button"
+                type="submit"
                 size="icon"
+                disabled={loading}
                 className="absolute top-1 right-1 h-7 w-7 rounded-md bg-blue-600 text-white hover:bg-blue-500"
                 aria-label="Send"
               >
                 <Send className="h-3 w-3" />
               </Button>
-            </div>
+            </form>
             <p className="mt-2 text-center text-[9px] text-slate-600">
               AI can make mistakes. Verify important info.
             </p>

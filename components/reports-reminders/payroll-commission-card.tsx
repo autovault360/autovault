@@ -13,6 +13,7 @@ type Props = {
   payroll: SummaryRow[];
   commissions: SummaryRow[];
   period?: string;
+  onOpen?: () => void;
 };
 
 function SummaryBlock({
@@ -46,17 +47,18 @@ export default function PayrollCommissionCard({
   payroll,
   commissions,
   period = "This Month",
+  onOpen,
 }: Props) {
   return (
-    <ReportCardShell className="flex h-full min-w-0 flex-col">
-      <ReportTitleWithPeriodAndLink title="PAYROLL & COMMISSION" period={period} />
+    <ReportCardShell className="flex h-full min-w-0 flex-col" onClick={onOpen}>
+      <ReportTitleWithPeriodAndLink title="PAYROLL & COMMISSION" period={period} onClick={onOpen} />
 
       <div className="min-h-0 flex-1 space-y-4 py-1">
         <SummaryBlock title="Payroll Summary" rows={payroll} />
         <SummaryBlock title="Commission Summary" rows={commissions} />
       </div>
 
-      <ReportExportButtonsRow excelOnly centered />
+      <ReportExportButtonsRow excelOnly centered onExport={onOpen} />
     </ReportCardShell>
   );
 }
