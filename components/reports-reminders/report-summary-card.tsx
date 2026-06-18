@@ -11,14 +11,15 @@ import {
 type Props = {
   rows: ReportSummaryRow[];
   period?: string;
+  onOpen?: () => void;
 };
 
-export default function ReportSummaryCard({ rows, period = "This Month" }: Props) {
+export default function ReportSummaryCard({ rows, period = "This Month", onOpen }: Props) {
   return (
-    <ReportCardShell>
+    <ReportCardShell onClick={onOpen}>
       <ReportSummaryTitle period={period} />
       <ReportMetricRows rows={rows} />
-      <ReportSummaryFooter />
+      <ReportSummaryFooter onOpen={onOpen} />
     </ReportCardShell>
   );
 }

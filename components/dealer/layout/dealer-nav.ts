@@ -6,7 +6,6 @@ import {
   Search,
   Tag,
   Receipt,
-  List,
   FolderOpen,
   Upload,
   BarChart3,
@@ -139,12 +138,6 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         color: "text-blue-500",
         href: DEALER_ROUTES.addVehicleExpense,
       },
-      {
-        label: "Expense Categories",
-        icon: List,
-        color: "text-slate-400",
-        sectionId: DEALER_SECTION_IDS.expenses,
-      },
     ],
   },
   {
@@ -173,18 +166,18 @@ export const DEALER_NAV_GROUPS: DealerNavGroup[] = [
         color: "text-green-500",
         href: "/dealer/dashboard/profit-loss",
       },
-      {
-        label: "Inventory",
-        icon: Package,
-        color: "text-blue-500",
-        comingSoon: true,
-      },
-      {
-        label: "Transaction",
-        icon: ArrowLeftRight,
-        color: "text-purple-500",
-        comingSoon: true,
-      },
+      // {
+      //   label: "Inventory",
+      //   icon: Package,
+      //   color: "text-blue-500",
+      //   comingSoon: true,
+      // },
+      // {
+      //   label: "Transaction",
+      //   icon: ArrowLeftRight,
+      //   color: "text-purple-500",
+      //   comingSoon: true,
+      // },
     ],
   },
   {

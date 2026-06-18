@@ -25,9 +25,9 @@ const CPA_TILES = [
   { id: "inventory", label: "Inventory Report", Icon: Warehouse },
 ] as const;
 
-export default function CpaReportCenterCard() {
+export default function CpaReportCenterCard({ onOpen }: { onOpen?: () => void }) {
   return (
-    <ReportCardShell compact className="flex h-full flex-col">
+    <ReportCardShell compact className="flex h-full flex-col" onClick={onOpen}>
       <h2 className="text-[11px] font-bold tracking-[0.08em] text-white uppercase">
         CPA REPORT CENTER
       </h2>
@@ -39,6 +39,10 @@ export default function CpaReportCenterCard() {
           <button
             key={id}
             type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpen?.();
+            }}
             className="flex min-w-0 flex-col items-center gap-0.5 rounded border border-slate-600/80 bg-[#0e1626] px-0.5 py-1.5 transition hover:border-slate-500"
           >
             <Icon className="h-4 w-4 shrink-0 text-slate-200" strokeWidth={1.5} />
@@ -53,6 +57,10 @@ export default function CpaReportCenterCard() {
       <div className="mt-auto flex shrink-0 gap-1">
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.();
+          }}
           className="inline-flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded border border-slate-700 bg-[#0e1626] px-1 py-1 text-[8.5px] font-medium text-slate-200 transition hover:border-slate-600"
         >
           <FileText className="h-2.5 w-2.5 shrink-0 text-red-500" strokeWidth={2} />
@@ -60,6 +68,10 @@ export default function CpaReportCenterCard() {
         </button>
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.();
+          }}
           className="inline-flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded border border-slate-700 bg-[#0e1626] px-1 py-1 text-[8.5px] font-medium text-slate-200 transition hover:border-slate-600"
         >
           <FileSpreadsheet
@@ -70,6 +82,10 @@ export default function CpaReportCenterCard() {
         </button>
         <button
           type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpen?.();
+          }}
           className="inline-flex min-w-0 flex-1 items-center justify-center gap-0.5 rounded border border-blue-600 bg-blue-600 px-1 py-1 text-[8.5px] font-medium text-white transition hover:bg-blue-500"
         >
           <Mail className="h-2.5 w-2.5 shrink-0 text-white" strokeWidth={2} />

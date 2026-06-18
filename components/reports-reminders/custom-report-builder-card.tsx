@@ -9,11 +9,12 @@ import {
 
 type Props = {
   fields: CustomReportField[];
+  onOpen?: () => void;
 };
 
-export default function CustomReportBuilderCard({ fields }: Props) {
+export default function CustomReportBuilderCard({ fields, onOpen }: Props) {
   return (
-    <ReportCardShell compact className="flex h-full flex-col">
+    <ReportCardShell compact className="flex h-full flex-col" onClick={onOpen}>
       <h2 className="text-[11px] font-bold tracking-[0.08em] text-white uppercase">
         CUSTOM REPORT BUILDER
       </h2>
@@ -32,6 +33,7 @@ export default function CustomReportBuilderCard({ fields }: Props) {
             </span>
             <button
               type="button"
+              onClick={(event) => event.stopPropagation()}
               className="inline-flex h-6 w-[58%] max-w-[9.5rem] items-center justify-between gap-1 rounded border border-slate-700 bg-[#0e1626] px-1.5 text-[10px] text-slate-200"
             >
               <span className="truncate">{field.value}</span>
@@ -43,6 +45,10 @@ export default function CustomReportBuilderCard({ fields }: Props) {
 
       <button
         type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          onOpen?.();
+        }}
         className="mt-auto shrink-0 w-full rounded bg-blue-600 py-1.5 text-center text-[11px] font-semibold text-white transition hover:bg-blue-500"
       >
         Generate Report
