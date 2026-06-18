@@ -15,7 +15,12 @@ import SoldVehicleKpiStripComponent from "./sold-vehicle-kpi-strip";
 import SoldVehiclesCalendar from "./sold-vehicles-calendar";
 import SoldVehiclesTable from "./sold-vehicles-table";
 
-const DEFAULT_CALENDAR_MONTH = { year: 2024, month: 4 };
+function getDefaultCalendarMonth() {
+  const d = new Date();
+  return { year: d.getFullYear(), month: d.getMonth() };
+}
+
+const DEFAULT_CALENDAR_MONTH = getDefaultCalendarMonth();
 
 export default function SoldVehiclesCenter({
   soldVehicles,

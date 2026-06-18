@@ -250,6 +250,8 @@ export type SoldVehicleKpiStrip = {
   pendingPayments: DealerKpi;
 };
 
+import type { CalendarReport } from "@/lib/calendar/types";
+
 export type DealerDashboardData = {
   profile: DealerProfile;
   kpis: DealerKpi[];
@@ -269,4 +271,5 @@ export type DealerDashboardData = {
   };
   topPerformers: TopPerformer;
   notificationCount: number;
+  calendarReport: CalendarReport;
 };

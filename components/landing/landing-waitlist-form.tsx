@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { joinWaitlist } from "@/lib/waitlist/server/join-waitlist";
 import { heroWaitlistSchema, type HeroWaitlistValues } from "@/lib/waitlist/actions/schemas";
 import { formatPhoneNumber } from "@/lib/vehicles/actions/utils";
+import { useEffect, useRef } from "react";
 
 export default function LandingWaitlistForm({ serifClassName }: { serifClassName: string }) {
   const {
@@ -16,6 +17,7 @@ export default function LandingWaitlistForm({ serifClassName }: { serifClassName
     control,
     formState: { errors, isSubmitting },
     reset,
+    setFocus
   } = useForm<HeroWaitlistValues>({
     resolver: zodResolver(heroWaitlistSchema),
     mode: "onChange",
@@ -27,6 +29,12 @@ export default function LandingWaitlistForm({ serifClassName }: { serifClassName
       source: "hero_form",
     },
   });
+
+  useEffect(() => {
+    if (window.location.hash === "#waitlist") {
+      setFocus("fullName");
+    }
+  }, [setFocus]);
 
   async function onSubmit(data: HeroWaitlistValues) {
     const result = await joinWaitlist(data);

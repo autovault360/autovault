@@ -24,7 +24,7 @@ function SkeletonBar({ className }: { className?: string }) {
 }
 
 const DEFAULT_SHELL_CLASS =
-  "min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm";
+  "min-w-0 max-w-full overflow-hidden border-[#1e293b] bg-card";
 
 export default function ProfitLossSummaryPanel({
   data,

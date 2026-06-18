@@ -474,6 +474,19 @@ export function aggregateYearSummary(year: number, report: FilteredCalendarRepor
   };
 }
 
+const PLACEHOLDER_VEHICLES = [
+  "Toyota Camry SE", "Honda Civic LX", "Ford F-150 XLT", "Chevrolet Malibu LT",
+  "Nissan Rogue SV", "Jeep Cherokee Latitude", "Hyundai Sonata SEL", "Kia Sportage LX",
+  "Mazda CX-5 Touring", "Subaru Outback Premium", "BMW 3 Series 330i", "Mercedes C300",
+  "Audi A4 Premium", "Volkswagen Jetta S", "Tesla Model 3", "Ford Explorer XLT",
+];
+
+const PLACEHOLDER_BUYERS = [
+  "Summit Auto Group", "Lakefront Motors", "Pacific Auto Traders", "Capital City Auto",
+  "Elite Motor Exchange", "Precision Auto Group", "Valley Auto Network", "Metro Wholesale LLC",
+  "Chicago Motor Exchange", "ADESA Chicago", "Manheim Dallas", "Summit Wholesale",
+];
+
 export function getDaySoldVehicles(
   date: string,
   report: FilteredCalendarReport,
@@ -484,7 +497,23 @@ export function getDaySoldVehicles(
 
   const activity = buildDailyMap(report.dailyActivity).get(date);
   if (!activity || activity.unitsSold === 0) return [];
-  return [];
+
+  const reps = activity.salesReps;
+  return Array.from({ length: activity.unitsSold }, (_, i) => {
+    const rep = reps[i % (reps.length || 1)]!;
+    return {
+      id: `sv-${date}-${i}`,
+      date,
+      stockNumber: `STK-${String(1000 + i).padStart(4, "0")}`,
+      vehicle: PLACEHOLDER_VEHICLES[i % PLACEHOLDER_VEHICLES.length]!,
+      customer: PLACEHOLDER_BUYERS[i % PLACEHOLDER_BUYERS.length]!,
+      salesRep: rep.repName,
+      repId: rep.repId,
+      lotLocation: "Main Lot",
+      profit: Math.round(activity.totalGross / activity.unitsSold * 0.22),
+      commission: Math.round(activity.totalCommissions / activity.unitsSold),
+    };
+  });
 }
 
 export function getMonthSoldVehicles(
