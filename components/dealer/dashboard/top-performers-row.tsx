@@ -1,8 +1,7 @@
 "use client";
 
-import { Plus, TrendingUp, Trophy } from "lucide-react";
+import { TrendingUp, Trophy } from "lucide-react";
 import { CardShell } from "@/components/dashboard/card-shell";
-import { Button, ButtonIcon } from "@/components/ui/button";
 import {
   formatCurrency,
   formatPercent,
@@ -11,14 +10,12 @@ import type { TopPerformer } from "@/lib/dealer/dashboard/types";
 
 export default function TopPerformersRow({
   data,
-  onAddVehicle,
 }: {
   data: TopPerformer;
-  onAddVehicle: () => void;
 }) {
   return (
     <div className="grid min-w-0 grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1fr_auto]">
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className="border-[#1e293b] bg-card">
         <div className="flex items-start gap-2.5">
           <div className="grid h-9 w-9 place-items-center rounded-full bg-amber-500/15 text-amber-400">
             <Trophy className="h-4 w-4" />
@@ -37,7 +34,7 @@ export default function TopPerformersRow({
         </div>
       </CardShell>
 
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className="border-[#1e293b] bg-card">
         <div className="flex items-start gap-2.5">
           <div className="grid h-9 w-9 place-items-center rounded-full bg-blue-500/15 text-blue-400">
             <TrendingUp className="h-4 w-4" />
@@ -56,7 +53,7 @@ export default function TopPerformersRow({
         </div>
       </CardShell>
 
-      <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+      <CardShell className="border-[#1e293b] bg-card">
         <div>
           <div className="text-[10px] font-bold tracking-wide text-[#64748b]">
             YTD NET PROFIT
@@ -69,18 +66,6 @@ export default function TopPerformersRow({
           </div>
         </div>
       </CardShell>
-
-      <Button
-        type="button"
-        size="action"
-        onClick={onAddVehicle}
-        className="h-auto self-stretch lg:min-w-[140px]"
-      >
-        <ButtonIcon tone="default">
-          <Plus />
-        </ButtonIcon>
-        Add Vehicle
-      </Button>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { buildSoldVehicleKpiStrip } from "./sold-vehicle-calculations";
 import { soldVehiclesMockData } from "./sold-vehicles-mock-data";
 import { buildTransactionKpiStrip } from "./transaction-calculations";
 import { transactionsMockData } from "./transactions-mock-data";
+import { CALENDAR_MOCK_REPORT } from "@/lib/calendar/mock-data";
 
 const sparkPoints =
   "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
@@ -350,6 +351,7 @@ export const dealerDashboardMock: DealerDashboardData = {
     ytdNetProfit: { value: 1046320, delta: 24.7 },
   },
   notificationCount: 3,
+  calendarReport: CALENDAR_MOCK_REPORT,
 };
 
 export async function fetchDealerDashboardMock(

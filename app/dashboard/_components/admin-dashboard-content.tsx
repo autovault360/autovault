@@ -1,7 +1,7 @@
 import type { AdminDashboardContentProps } from "@/lib/dashboard/admin/types";
 import StickyNotesSection from "./sticky-notes-section";
 import AnalyticsRow from "./analytics-row";
-import CalendarSection from "./calendar-section";
+import CalendarSection from "@/components/dashboard/calendar-section";
 import GrossProfitSection from "./gross-profit-section";
 import KPISection from "./kpi-section";
 import PerformanceRow from "./performance-row";

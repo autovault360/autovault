@@ -544,12 +544,85 @@ function tuneMaySeeds(seeds: SeedRow[]): SeedRow[] {
   return tuned;
 }
 
+function buildCurrentMonthSeeds(): SeedRow[] {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const day = (d: number) => `${y}-${m}-${String(d).padStart(2, "0")}`;
+
+  return [
+    {
+      id: "sv-cur-1", dateSold: day(2), vehicleLabel: "2022 Toyota Camry XSE", exteriorColor: "White",
+      stockNumber: "WC360-2001", buyer: "Summit Auto Group", salePrice: 28500, grossProfit: 5130,
+      paymentStatus: "paid", paymentMethod: "wire_transfer", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-2", dateSold: day(5), vehicleLabel: "2021 Honda Civic Touring", exteriorColor: "Blue",
+      stockNumber: "WC360-2002", buyer: "Lakefront Motors", salePrice: 24200, grossProfit: 4356,
+      paymentStatus: "paid", paymentMethod: "ach", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-3", dateSold: day(5), vehicleLabel: "2023 Ford Bronco Sport", exteriorColor: "Green",
+      stockNumber: "WC360-2003", buyer: "Pacific Auto Traders", salePrice: 32100, grossProfit: 5778,
+      paymentStatus: "pending", paymentMethod: "wire_transfer", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-4", dateSold: day(8), vehicleLabel: "2020 BMW X3 xDrive30i", exteriorColor: "Black",
+      stockNumber: "WC360-2004", buyer: "Elite Motor Exchange", salePrice: 35800, grossProfit: 6444,
+      paymentStatus: "paid", paymentMethod: "ach", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-5", dateSold: day(10), vehicleLabel: "2022 Hyundai Tucson Limited", exteriorColor: "Silver",
+      stockNumber: "WC360-2005", buyer: "Capital City Auto", salePrice: 26800, grossProfit: 4824,
+      paymentStatus: "paid", paymentMethod: "check", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-6", dateSold: day(12), vehicleLabel: "2021 Mazda CX-9 Carbon", exteriorColor: "Red",
+      stockNumber: "WC360-2006", buyer: "Metro Wholesale LLC", salePrice: 29500, grossProfit: 5310,
+      paymentStatus: "pending", paymentMethod: "wire_transfer", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-7", dateSold: day(15), vehicleLabel: "2023 Kia Telluride SX", exteriorColor: "White",
+      stockNumber: "WC360-2007", buyer: "Valley Auto Network", salePrice: 38900, grossProfit: 7002,
+      paymentStatus: "paid", paymentMethod: "wire_transfer", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-8", dateSold: day(18), vehicleLabel: "2020 Chevrolet Tahoe LT", exteriorColor: "Black",
+      stockNumber: "WC360-2008", buyer: "Chicago Motor Exchange", salePrice: 41200, grossProfit: 7416,
+      paymentStatus: "partial", paymentMethod: "floor_plan", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-9", dateSold: day(20), vehicleLabel: "2022 Nissan Pathfinder SL", exteriorColor: "Gray",
+      stockNumber: "WC360-2009", buyer: "Manheim Dallas", salePrice: 31400, grossProfit: 5652,
+      paymentStatus: "paid", paymentMethod: "ach", saleType: "auction", buyerType: "auction",
+    },
+    {
+      id: "sv-cur-10", dateSold: day(22), vehicleLabel: "2021 Jeep Grand Cherokee L", exteriorColor: "Silver",
+      stockNumber: "WC360-2010", buyer: "ADESA Chicago", salePrice: 33700, grossProfit: 6066,
+      paymentStatus: "paid", paymentMethod: "check", saleType: "auction", buyerType: "auction",
+    },
+    {
+      id: "sv-cur-11", dateSold: day(25), vehicleLabel: "2023 Tesla Model Y Long Range", exteriorColor: "White",
+      stockNumber: "WC360-2011", buyer: "Precision Auto Group", salePrice: 47800, grossProfit: 8604,
+      paymentStatus: "pending", paymentMethod: "wire_transfer", saleType: "wholesale", buyerType: "dealer",
+    },
+    {
+      id: "sv-cur-12", dateSold: day(28), vehicleLabel: "2022 Subaru Outback Wilderness", exteriorColor: "Green",
+      stockNumber: "WC360-2012", buyer: "Summit Wholesale", salePrice: 35200, grossProfit: 6336,
+      paymentStatus: "paid", paymentMethod: "ach", saleType: "wholesale", buyerType: "dealer",
+    },
+  ];
+}
+
 export function buildSoldVehiclesMockData(): SoldVehicleRecord[] {
   const may = tuneMaySeeds(may2024Seeds).map((seed, i) => makeRecord(seed, i + 1));
   const april = april2024Seeds.map((seed, i) =>
     makeRecord(seed, i + may.length + 1),
   );
-  return [...may, ...april];
+  const current = buildCurrentMonthSeeds().map((seed, i) =>
+    makeRecord(seed, i + may.length + april.length + 1),
+  );
+  return [...may, ...april, ...current];
 }
 
 export const soldVehiclesMockData = buildSoldVehiclesMockData();

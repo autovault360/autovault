@@ -55,6 +55,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,8 +189,8 @@ export default function LoginPage() {
 
           <p className="text-center text-[13px] text-zinc-500 font-normal">
             Don&apos;t have an account?{" "}
-            <Link href="#" className="text-[#35942e] hover:underline">
-              Contact your administrator.
+            <Link href="/#waitlist" className="text-[#35942e] hover:underline">
+              Join the Waitlist.
             </Link>
           </p>
         </form>
