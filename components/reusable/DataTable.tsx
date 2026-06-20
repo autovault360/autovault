@@ -70,6 +70,8 @@ interface DataTableProps<T> {
   loading?: boolean;
   Total?: boolean;
   TotalColumns?: number[];
+  totalRowLabel?: string;
+  totalColumnClassNames?: Partial<Record<number, string>>;
 }
 
 function getPaginationRange(
@@ -107,6 +109,8 @@ export default function DataTable<T extends Record<string, unknown>>({
   loading = false,
   Total = false,
   TotalColumns = [],
+  totalRowLabel = "Total",
+  totalColumnClassNames = {},
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -347,7 +351,7 @@ export default function DataTable<T extends Record<string, unknown>>({
             )}
           </tbody>
           {showTotalRow && (
-            <tfoot className="border-t border-slate-800 bg-slate-900/40">
+            <tfoot className="border-t border-slate-800">
               <tr>
                 {enableSelection && <td className="w-10 px-1.5 py-2.5" />}
                 {columns.map((col, index) => (
@@ -356,10 +360,11 @@ export default function DataTable<T extends Record<string, unknown>>({
                     className={cn(
                       "px-1.5 py-2.5 whitespace-nowrap font-semibold text-white",
                       col.cellClassName,
+                      totalColumnClassNames[index],
                     )}
                   >
                     {index === 0
-                      ? "Total"
+                      ? totalRowLabel
                       : totalColumnSet.has(index)
                         ? formatTotalValue(columnTotals.get(index) ?? 0)
                         : ""}
