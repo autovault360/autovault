@@ -46,7 +46,7 @@ export default function ExpenseHubSection() {
         ref={expensesRef}
         className="scroll-mt-4"
       >
-        <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+        <CardShell className="border-[#1e293b] bg-card">
           <SkeletonBar className="mb-3 h-3 w-32" />
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -67,7 +67,7 @@ export default function ExpenseHubSection() {
         ref={expensesRef}
         className="scroll-mt-4"
       >
-        <CardShell className="border-[#1e293b] bg-[#0a101d]/60 backdrop-blur-sm">
+        <CardShell className="border-[#1e293b] bg-card">
           <div className="mb-3 flex items-center justify-between">
             <CardHead title="EXPENSE SYSTEM" />
             <Button type="button" size="sm" onClick={openExpenseModal}>

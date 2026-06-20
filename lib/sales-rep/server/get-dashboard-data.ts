@@ -112,7 +112,7 @@ export async function getSalesRepDashboardData(): Promise<
   try {
     const supabase = await createClient();
 
-    // Try getUser() first (verifies token with Auth API — layout uses this)
+    // Try getUser() first (verifies token with Auth API �€” layout uses this)
     let { data: { user } } = await supabase.auth.getUser();
 
     // Fallback to getSession() if getUser() fails

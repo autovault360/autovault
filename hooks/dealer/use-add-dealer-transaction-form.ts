@@ -19,7 +19,7 @@ export function buildAddDealerTransactionDefaults(
       transactionType: transaction.type,
       vehicleId: transaction.inventoryId,
       stockNumber: transaction.stockNumber,
-      dealerAuctionName: transaction.buyerSeller === "—" ? (transaction.auction ?? "") : transaction.buyerSeller,
+      dealerAuctionName: transaction.buyerSeller === "�€”" ? (transaction.auction ?? "") : transaction.buyerSeller,
       contactPerson: transaction.contactPerson,
       dealerLicense: transaction.dealerLicense ?? "",
       phone: transaction.phone ?? "",

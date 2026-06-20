@@ -88,7 +88,7 @@ function CardHeaderLink({
         type="button"
         className="shrink-0 text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
-        {linkLabel} →
+        {linkLabel} �†’
       </button>
     </div>
   );
@@ -195,7 +195,7 @@ function NotesCard({ notes }: { notes: SalesRepInternalNote[] }) {
                     {note.content}
                   </p>
                   <div className="mt-1 text-[10px] text-slate-500">
-                    — {note.author}
+                    �€” {note.author}
                   </div>
                 </div>
               </div>

@@ -9,6 +9,7 @@ export type SidebarItem = {
   badge?: number | string;
   badgeColor?: string;
   color?: string;
+  activeClassName?: string;
   subItems?: SidebarItem[];
   sectionId?: string;
   onClick?: () => void;

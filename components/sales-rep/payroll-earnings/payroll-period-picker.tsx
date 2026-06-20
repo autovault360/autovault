@@ -10,11 +10,11 @@ import {
 import type { PayrollPeriodMonth } from "@/lib/sales-rep/payroll-earnings/types";
 
 const PERIOD_OPTIONS: { value: PayrollPeriodMonth; label: string }[] = [
-  { value: "2026-05", label: "May 1 – May 31, 2026" },
-  { value: "2026-04", label: "Apr 1 – Apr 30, 2026" },
-  { value: "2026-03", label: "Mar 1 – Mar 31, 2026" },
-  { value: "2026-02", label: "Feb 1 – Feb 28, 2026" },
-  { value: "2026-01", label: "Jan 1 – Jan 31, 2026" },
+  { value: "2026-05", label: "May 1 �€“ May 31, 2026" },
+  { value: "2026-04", label: "Apr 1 �€“ Apr 30, 2026" },
+  { value: "2026-03", label: "Mar 1 �€“ Mar 31, 2026" },
+  { value: "2026-02", label: "Feb 1 �€“ Feb 28, 2026" },
+  { value: "2026-01", label: "Jan 1 �€“ Jan 31, 2026" },
 ];
 
 type Props = {

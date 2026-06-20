@@ -277,7 +277,7 @@ export default function OverviewTab({
               value={
                 detail.salesRep.commissionPaidDate
                   ? formatDisplayDate(detail.salesRep.commissionPaidDate)
-                  : "—"
+                  : "�€”"
               }
             />
           </DetailCardBody>

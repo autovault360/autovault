@@ -415,13 +415,13 @@ export default function AddVehicleModal({ open, onOpenChange, onSuccess }: Props
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="yes" id="add-title-yes" />
                               <Label htmlFor="add-title-yes" className="text-[12px]">
-                                Yes — Title received
+                                Yes �€” Title received
                               </Label>
                             </div>
                             <div className="flex items-center space-x-2">
                               <RadioGroupItem value="no" id="add-title-no" />
                               <Label htmlFor="add-title-no" className="text-[12px]">
-                                No — Missing title
+                                No �€” Missing title
                               </Label>
                             </div>
                           </RadioGroup>

@@ -57,7 +57,7 @@ export function ProfileReadOnlyField({ label, value }: ReadOnlyFieldProps) {
         {label}
       </span>
       <span className="rounded-[4px] border border-slate-700/60 bg-slate-900/40 px-3 py-2 text-[13px] text-slate-300">
-        {value || "—"}
+        {value || "�€”"}
       </span>
     </div>
   );

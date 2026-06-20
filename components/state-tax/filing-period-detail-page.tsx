@@ -236,7 +236,7 @@ export default function FilingPeriodDetailPage({ detail }: Props) {
             {new Date(detail.startDate).toLocaleDateString("en-US", {
               month: "long", day: "numeric",
             })}
-            {" — "}
+            {" �€” "}
             {new Date(detail.endDate).toLocaleDateString("en-US", {
               month: "long", day: "numeric", year: "numeric",
             })}
@@ -297,7 +297,7 @@ export default function FilingPeriodDetailPage({ detail }: Props) {
         </div>
         <p className="mt-2 text-[11px] text-slate-500">
           {allowedNext.length > 0
-            ? `Click a status to advance. Recommended order: open → due → paid → filed → closed.`
+            ? `Click a status to advance. Recommended order: open �†’ due �†’ paid �†’ filed �†’ closed.`
             : "This period has reached its final status."}
         </p>
       </Card>

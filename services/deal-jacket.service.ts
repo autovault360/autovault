@@ -1,5 +1,5 @@
 /**
- * Deal Jacket service layer — all business logic for deal jackets.
+ * Deal Jacket service layer �€” all business logic for deal jackets.
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -39,7 +39,7 @@ export type {
   DealJacketDocumentInput,
 } from "@/lib/deal-jackets/server/db-types";
 
-/* ──────── Shared query functions for cross-module reuse ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Shared query functions for cross-module reuse �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export type JacketRow = {
   id: string;

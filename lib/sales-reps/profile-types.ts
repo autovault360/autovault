@@ -150,7 +150,7 @@ export type SalesRepProfileFilters = {
 };
 
 export function formatProfileDate(date: string): string {
-  if (!date) return "—";
+  if (!date) return "�€”";
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return date;
   return parsed.toLocaleDateString("en-US", {

@@ -14,7 +14,7 @@ function shiftMonth(startIso: string, delta: number): SalesRepProfileDateRange {
   const start = new Date(startIso);
   start.setMonth(start.getMonth() + delta);
   const end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
-  const label = `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+  const label = `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} �€“ ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
   return {
     start: start.toISOString().slice(0, 10),
     end: end.toISOString().slice(0, 10),

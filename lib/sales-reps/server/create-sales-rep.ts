@@ -135,7 +135,7 @@ export async function createSalesRep(
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const emailResult = await sendTransactionalEmail({
       to: [{ email: data.email, name: data.fullName }],
-      subject: `Welcome to AutoVault360 — Your Account Has Been Created`,
+      subject: `Welcome to AutoVault360 �€” Your Account Has Been Created`,
       htmlContent: salesRepWelcomeEmail({
         fullName: data.fullName,
         email: data.email,

@@ -38,7 +38,7 @@ function toSettings(raw: DealershipTaxSettingsRaw): DealershipTaxSettings {
   };
 }
 
-/* ──────── Period Generation ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Period Generation �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export function generatePeriods(
   frequency: FilingFrequency,
@@ -122,14 +122,14 @@ export function generatePeriods(
     }
 
     case "custom":
-      // No auto-generation for custom — the user defines periods manually
+      // No auto-generation for custom �€” the user defines periods manually
       break;
   }
 
   return periods;
 }
 
-/* ──────── Settings ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Settings �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function getTaxSettings(
   dealershipId: string,
@@ -172,7 +172,7 @@ export async function upsertTaxSettings(
   return toSettings(data as DealershipTaxSettingsRaw);
 }
 
-/* ──────── Filing Periods ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Filing Periods �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function createFilingPeriodsFromSettings(
   dealershipId: string,
@@ -371,7 +371,7 @@ export async function getFilingPeriodDetail(
   };
 }
 
-/* ──────── Status Management ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Status Management �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function updatePeriodStatus(
   periodId: string,
@@ -388,7 +388,7 @@ export async function updatePeriodStatus(
   if (error) throw new Error(error.message);
 }
 
-/* ──────── Deal Jacket Assignment ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Deal Jacket Assignment �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function assignDealJacketToPeriod(
   dealJacketId: string,
@@ -427,7 +427,7 @@ export async function assignDealJacketToPeriod(
     .maybeSingle();
 }
 
-/* ──────── Documents ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Documents �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function getDocumentsForPeriod(
   periodId: string,
@@ -459,7 +459,7 @@ export async function deleteDocument(
   if (error) throw new Error(error.message);
 }
 
-/* ──────── Reminders ──────── */
+/* �”€�”€�”€�”€�”€�”€�”€�”€ Reminders �”€�”€�”€�”€�”€�”€�”€�”€ */
 
 export async function getUpcomingReminders(
   dealershipId: string,

@@ -181,7 +181,7 @@ export default function PayrollSummaryTable({
         cellClassName: "font-mono tabular-nums",
         cell: (row) => (
           <span className="text-[11px] text-purple-400">
-            {row.bonus > 0 ? formatPayrollCurrency(row.bonus) : "—"}
+            {row.bonus > 0 ? formatPayrollCurrency(row.bonus) : "�€”"}
           </span>
         ),
       },

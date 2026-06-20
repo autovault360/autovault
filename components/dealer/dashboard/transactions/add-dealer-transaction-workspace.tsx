@@ -88,7 +88,7 @@ function VehiclePreviewCard({ vehicle }: { vehicle: WholesaleVehicle }) {
           {vehicle.year} {vehicle.make} {vehicle.model}
         </p>
         <p className="text-[10px] text-slate-500">
-          Stock #{vehicle.stockNumber} — VIN {vehicle.vin}
+          Stock #{vehicle.stockNumber} �€” VIN {vehicle.vin}
         </p>
       </div>
       <CheckCircle className="h-5 w-5 shrink-0 text-emerald-400" />
@@ -269,7 +269,7 @@ export default function AddDealerTransactionWorkspace({
                               <SelectContent theme="dark" className="border-[#1e293b]  ">
                                 {filteredVehicles.map((v) => (
                                   <SelectItem key={v.id} value={v.id} theme="dark">
-                                    {v.year} {v.make} {v.model} — {v.stockNumber}
+                                    {v.year} {v.make} {v.model} �€” {v.stockNumber}
                                   </SelectItem>
                                 ))}
                               </SelectContent>

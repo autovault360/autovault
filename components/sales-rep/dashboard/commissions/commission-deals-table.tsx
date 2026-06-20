@@ -152,7 +152,7 @@ export default function CommissionDealsTable({
       header: "Paid Date",
       cell: (row) => (
         <span className="text-[11px] text-slate-400">
-          {row.paidDate ?? "—"}
+          {row.paidDate ?? "�€”"}
         </span>
       ),
     },

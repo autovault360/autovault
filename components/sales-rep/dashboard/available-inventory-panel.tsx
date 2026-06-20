@@ -135,14 +135,14 @@ export default function AvailableInventoryPanel({
                       </div>
                       <div className="mt-1 text-[10px] font-medium text-slate-500 flex flex-wrap items-center gap-x-1 gap-y-0.5 leading-none">
                         <span>Stock # {vehicle.stockNo}</span>
-                        <span className="text-slate-700">•</span>
+                        <span className="text-slate-700">�€�</span>
                         <span className="text-slate-400 font-mono">VIN {vehicle.vin}</span>
                       </div>
                       <div className="mt-1 text-[13px] font-semibold text-slate-400 flex items-center gap-1 leading-none">
                         <span>{vehicle.mileage} mi</span>
-                        <span className="text-slate-700 font-normal">•</span>
+                        <span className="text-slate-700 font-normal">�€�</span>
                         <span>{vehicle.type}</span>
-                        <span className="text-slate-700 font-normal">•</span>
+                        <span className="text-slate-700 font-normal">�€�</span>
                         <span>{vehicle.color}</span>
                       </div>
                     </div>

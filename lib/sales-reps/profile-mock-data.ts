@@ -20,7 +20,7 @@ const MIKE_JOHNSON_PROFILE: SalesRepProfileDetail = {
   dateRange: {
     start: "2026-05-01",
     end: "2026-05-31",
-    label: "May 1 – May 31, 2026",
+    label: "May 1 �€“ May 31, 2026",
   },
   kpis: [
     {
@@ -470,7 +470,7 @@ function cloneProfile(
 }
 
 /**
- * Mock data layer — swap this function body for a service call when integrating backend.
+ * Mock data layer �€” swap this function body for a service call when integrating backend.
  */
 export function getMockSalesRepProfile(
   id: string,

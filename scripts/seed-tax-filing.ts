@@ -49,7 +49,7 @@ async function main() {
   const today = new Date();
   const currentYear = today.getFullYear();
 
-  // ── Step 1: Dealership Tax Settings ──
+  // �”€�”€ Step 1: Dealership Tax Settings �”€�”€
   console.log("\n? [1/4] Dealership Tax Settings");
 
   const { error: settingsErr } = await supabase
@@ -70,7 +70,7 @@ async function main() {
   }
   console.log("  ? Tax settings: CA, quarterly, 14-day reminder");
 
-  // ── Step 2: Filing Periods ──
+  // �”€�”€ Step 2: Filing Periods �”€�”€
   console.log("\n? [2/4] Filing Periods");
 
   const quarterNames = ["Q1", "Q2", "Q3", "Q4"];
@@ -140,7 +140,7 @@ async function main() {
     console.log("  ? All periods already exist");
   }
 
-  // ── Step 3: Fetch all inserted periods for assignment ──
+  // �”€�”€ Step 3: Fetch all inserted periods for assignment �”€�”€
   const { data: allPeriods } = await supabase
     .from("tax_filing_periods")
     .select("id, start_date, end_date")
@@ -152,7 +152,7 @@ async function main() {
     process.exit(1);
   }
 
-  // ── Step 4: Assign Deal Jackets to Periods ──
+  // �”€�”€ Step 4: Assign Deal Jackets to Periods �”€�”€
   console.log("\n? [3/4] Assign Deal Jackets to Filing Periods");
 
   const { data: jackets } = await supabase
@@ -196,7 +196,7 @@ async function main() {
     console.log(`  ? Assigned ${assigned}/${jackets.length} deal jackets to periods`);
   }
 
-  // ── Summary ──
+  // �”€�”€ Summary �”€�”€
   console.log("\n? [4/4] Verification");
 
   const { count: periodCount } = await supabase

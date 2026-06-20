@@ -415,7 +415,7 @@ async function getCreator(table: string, id: string): Promise<string | null> {
 
 async function main() {
   console.log("=== Backfilling files table ===\n");
-  console.log("Uses insert-if-missing (no upsert) — safe to re-run.\n");
+  console.log("Uses insert-if-missing (no upsert) �€” safe to re-run.\n");
 
   const totals: BackfillStats = { inserted: 0, skipped: 0, errors: 0 };
   const sections = [

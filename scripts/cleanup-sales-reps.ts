@@ -1,5 +1,5 @@
 /**
- * AutoVault360 — Sales Reps Cleanup
+ * AutoVault360 �€” Sales Reps Cleanup
  * Deletes all sales reps (role: sales_rep, manager) from auth.users + public.users
  * and nullifies their references in related tables.
  *
@@ -45,10 +45,10 @@ function parseArgs() {
 async function main() {
   const { dealershipId: requestedDealershipId, dryRun } = parseArgs();
 
-  console.log("╔═══════════════════════════════════════════�—");
-  console.log("║   AutoVault360 — Sales Reps Cleanup      ║");
-  console.log(dryRun ? "║   🔍 DRY RUN — no changes will be made ║" : "╚═══════════════════════════════════════════╝");
-  if (!dryRun) console.log("╚═══════════════════════════════════════════╝");
+  console.log("�•”�•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•�€”");
+  console.log("�•‘   AutoVault360 �€” Sales Reps Cleanup      �•‘");
+  console.log(dryRun ? "�•‘   �Ÿ”� DRY RUN �€” no changes will be made �•‘" : "�•š�•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•�");
+  if (!dryRun) console.log("�•š�•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•�");
   console.log("");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -86,12 +86,12 @@ async function main() {
 
   console.log(`Found ${reps.length} sales rep(s):\n`);
   for (const rep of reps) {
-    console.log(`  • ${rep.full_name} (${rep.email}) — ${rep.role} — id: ${rep.id}`);
+    console.log(`  �€� ${rep.full_name} (${rep.email}) �€” ${rep.role} �€” id: ${rep.id}`);
   }
   console.log("");
 
   if (dryRun) {
-    console.log("🔍 Dry run complete. Pass --dry-run to see what would be deleted.");
+    console.log("�Ÿ”� Dry run complete. Pass --dry-run to see what would be deleted.");
     process.exit(0);
   }
 
@@ -105,7 +105,7 @@ async function main() {
     .in("sales_rep_id", repIds)
     .select("id");
   if (customerErr) console.error("  customers update failed:", customerErr.message);
-  else console.log(`  ✅ Updated ${customerRefs?.length ?? 0} customer(s)`);
+  else console.log(`  �œ… Updated ${customerRefs?.length ?? 0} customer(s)`);
 
   console.log("Step 2/5: Nullifying sales_rep_id in deal_jackets...");
   const { data: jacketRefs, error: jacketErr } = await supabase
@@ -114,7 +114,7 @@ async function main() {
     .in("sales_rep_id", repIds)
     .select("id");
   if (jacketErr) console.error("  deal_jackets update failed:", jacketErr.message);
-  else console.log(`  ✅ Updated ${jacketRefs?.length ?? 0} deal jacket(s)`);
+  else console.log(`  �œ… Updated ${jacketRefs?.length ?? 0} deal jacket(s)`);
 
   console.log("Step 3/5: Nullifying sales_rep_id in calendar_events...");
   const { data: eventRefs, error: eventErr } = await supabase
@@ -123,7 +123,7 @@ async function main() {
     .in("sales_rep_id", repIds)
     .select("id");
   if (eventErr) console.error("  calendar_events update failed:", eventErr.message);
-  else console.log(`  ✅ Updated ${eventRefs?.length ?? 0} event(s)`);
+  else console.log(`  �œ… Updated ${eventRefs?.length ?? 0} event(s)`);
 
   console.log("Step 4/5: Deleting profile rows from public.users...");
   const { data: deletedUsers, error: deleteUsersErr } = await supabase
@@ -135,7 +135,7 @@ async function main() {
     console.error("  users delete failed:", deleteUsersErr.message);
     process.exit(1);
   }
-  console.log(`  ✅ Deleted ${deletedUsers?.length ?? 0} user profile(s)`);
+  console.log(`  �œ… Deleted ${deletedUsers?.length ?? 0} user profile(s)`);
 
   console.log("Step 5/5: Deleting auth users from auth.users...");
   for (const authUserId of authUserIds) {
@@ -143,11 +143,11 @@ async function main() {
     if (delAuthErr) {
       console.error(`  Failed to delete auth user ${authUserId}: ${delAuthErr.message}`);
     } else {
-      console.log(`  ✅ Deleted auth user: ${authUserId}`);
+      console.log(`  �œ… Deleted auth user: ${authUserId}`);
     }
   }
 
-  console.log("\n🎉 Cleanup complete!");
+  console.log("\n�ŸŽ‰ Cleanup complete!");
 }
 
 main().catch((err) => {

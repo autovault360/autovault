@@ -123,7 +123,7 @@ export default function RemindersOverviewCard({ kpis, topReminders, onOpen }: Pr
               }}
               className="text-[7px] font-medium text-blue-400 hover:text-blue-300 sm:text-[7.5px]"
             >
-              View All →
+              View All �†’
             </button>
           </div>
         ))}

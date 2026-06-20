@@ -89,7 +89,7 @@ export function waitlistConfirmationEmail(p: WaitlistConfirmationParams): string
                 <tr>
                   <td style="padding:0;font-size:14px;line-height:1.55;color:#616161;">
                     <span style="display:inline-block;width:22px;font-weight:700;color:#4daa4f;">3.</span>
-                    No spam — just meaningful updates about AutoVault360.
+                    No spam �€” just meaningful updates about AutoVault360.
                   </td>
                 </tr>
               </table>
@@ -156,7 +156,7 @@ export function salesRepWelcomeEmail(p: SalesRepWelcomeParams): string {
           </tr>
           <tr>
             <td style="padding:0 32px 20px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">For security, please change your password after first login.<br/>This is an automated message — do not reply.</p>
+              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">For security, please change your password after first login.<br/>This is an automated message �€” do not reply.</p>
             </td>
           </tr>
         </table>
@@ -176,7 +176,7 @@ type DocumentSendParams = {
 
 export function documentSendEmail(p: DocumentSendParams): string {
   const docsList = p.documentNames
-    .map((name) => `<li style="margin:4px 0;font-size:13px;color:#cbd5e1;">📎 ${name}</li>`)
+    .map((name) => `<li style="margin:4px 0;font-size:13px;color:#cbd5e1;">�Ÿ“Ž ${name}</li>`)
     .join("");
   return `<!DOCTYPE html>
 <html lang="en">
@@ -219,7 +219,7 @@ export function documentSendEmail(p: DocumentSendParams): string {
           </tr>` : ""}
           <tr>
             <td style="padding:24px 32px 28px;text-align:center;">
-              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">Sign in to your AutoVault360 account to view and download these documents.<br/>This is an automated message — do not reply.</p>
+              <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;">Sign in to your AutoVault360 account to view and download these documents.<br/>This is an automated message �€” do not reply.</p>
             </td>
           </tr>
         </table>
