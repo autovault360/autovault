@@ -32,9 +32,15 @@ const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
     showMonthNav: false,
   },
   "/cpa/sales-tax": {
-    title: "Sales Tax Center",
-    subtitle: "CDTFA filings, tax collected, and payment history",
-    showViewMode: false,
+    title: "Sales Tax by Vehicle",
+    subtitle: "Sales tax collected and remitted, linked to each vehicle.",
+    showViewMode: true,
+    showMonthNav: true,
+  },
+  "/cpa/expenses": {
+    title: "Expense Category Report",
+    subtitle: "All expenses for the selected period.",
+    showViewMode: true,
     showMonthNav: true,
   },
   "/cpa/dashboard/payroll-commissions": {

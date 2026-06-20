@@ -70,7 +70,6 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         label: "Expenses",
         icon: Wallet,
         color: "text-orange-400",
-        comingSoon: true,
       },
       {
         href: "/cpa/vehicles",
