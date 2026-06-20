@@ -234,7 +234,7 @@ export default function PayPeriodSummaryCard({
 
       <Dialog open={deductionOpen} onOpenChange={setDeductionOpen}>
         <DialogContent className="border-slate-700 bg-card sm:max-w-sm">
-          <DialogHeader>          <DialogTitle className="text-white">Add Deduction — {deductionType}</DialogTitle></DialogHeader>
+          <DialogHeader>          <DialogTitle className="text-white">Add Deduction �€” {deductionType}</DialogTitle></DialogHeader>
           <div><Label className="text-slate-400">Amount</Label><Input type="number" min="0" step="0.01" value={deductionAmount} onChange={(e) => setDeductionAmount(e.target.value)} className="mt-1 border-slate-700 bg-slate-900" /></div>
           <DialogFooter>
             <Button variant="outline" className="border-slate-700" onClick={() => setDeductionOpen(false)}>Cancel</Button>

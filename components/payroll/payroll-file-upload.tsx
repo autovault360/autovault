@@ -67,7 +67,7 @@ export default function PayrollFileUpload() {
           <span className="font-medium text-blue-400">Choose File</span>
         </p>
         <p className="mt-2 text-center text-[10px] text-slate-600">
-          PDF only • Max 20 MB
+          PDF only �€� Max 20 MB
         </p>
         <input
           ref={fileInputRef}

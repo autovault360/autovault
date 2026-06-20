@@ -35,7 +35,7 @@ export default function StateTaxReminders({ reminders }: Props) {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <h3 className="text-[13px] font-bold text-white">
-                    {r.periodName} — Sales Tax Filing
+                    {r.periodName} �€” Sales Tax Filing
                   </h3>
                   <p className="mt-1 text-[12px] text-slate-400">
                     {r.vehicleCount} vehicle{r.vehicleCount !== 1 ? "s" : ""} in

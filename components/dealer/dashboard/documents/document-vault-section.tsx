@@ -46,7 +46,7 @@ export default function DocumentVaultSection() {
 
   return (
     <section className="scroll-mt-4">
-      <CardShell className="border-[#1e293b] bg-card backdrop-blur-sm">
+      <CardShell className="border-[#1e293b] bg-card">
         <CardHead title="DOCUMENT VAULT" />
 
         <div className="flex flex-col gap-3 rounded-md border border-[#1e293b] bg-[#070c14]/40 p-4 sm:flex-row sm:items-center sm:justify-between">

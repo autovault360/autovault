@@ -76,7 +76,7 @@ export default function SalesRepSoldVehiclesContent({ vehicles }: Props) {
       "en-US",
       { month: "short", day: "numeric", year: "numeric" },
     );
-    return `${start} – ${end}`;
+    return `${start} �€“ ${end}`;
   }, [activeTab, customRange]);
 
   const filteredVehicles = useMemo(

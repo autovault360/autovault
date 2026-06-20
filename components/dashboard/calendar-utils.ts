@@ -110,7 +110,7 @@ export function formatWeekRange(dateStr: string): string {
   const start = new Date(`${days[0]!.date}T00:00:00`);
   const end = new Date(`${days[6]!.date}T00:00:00`);
   const fmt: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
-  return `${start.toLocaleDateString("en-US", fmt)} – ${end.toLocaleDateString("en-US", fmt)}`;
+  return `${start.toLocaleDateString("en-US", fmt)} �€“ ${end.toLocaleDateString("en-US", fmt)}`;
 }
 
 export function buildFullMonthStrip(

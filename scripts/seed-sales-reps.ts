@@ -1,5 +1,5 @@
 /**
- * AutoVault360 — Sales Reps Seeder
+ * AutoVault360 �€” Sales Reps Seeder
  * Creates sample sales reps (auth + users profile) for the first active dealership.
  *
  * Usage:
@@ -148,7 +148,7 @@ async function resolveDealershipId(
     if (error || !data) {
       throw new Error(`Dealership not found: ${requestedId}`);
     }
-    console.log(`🏢 Dealership: ${data.name} (${data.id})`);
+    console.log(`�Ÿ�� Dealership: ${data.name} (${data.id})`);
     return data.id;
   }
 
@@ -166,7 +166,7 @@ async function resolveDealershipId(
     );
   }
 
-  console.log(`🏢 Dealership: ${data.name} (${data.id})`);
+  console.log(`�Ÿ�� Dealership: ${data.name} (${data.id})`);
   return data.id;
 }
 
@@ -193,7 +193,7 @@ async function upsertSalesRep(
     .maybeSingle();
 
   if (existingProfile) {
-    console.log(`   ↷ Skipped (already exists): ${rep.fullName}`);
+    console.log(`   �†� Skipped (already exists): ${rep.fullName}`);
     return { userId: existingProfile.id, skipped: true };
   }
 
@@ -210,9 +210,9 @@ async function upsertSalesRep(
       throw new Error(`Auth create failed for ${rep.email}: ${error?.message}`);
     }
     authUser = data.user;
-    console.log(`   ✅ Auth user: ${rep.email}`);
+    console.log(`   �œ… Auth user: ${rep.email}`);
   } else {
-    console.log(`   ℹ️  Auth user exists: ${rep.email}`);
+    console.log(`   �„�️  Auth user exists: ${rep.email}`);
   }
 
   const insertPayload = {
@@ -257,11 +257,11 @@ async function upsertSalesRep(
     );
 
   if (salepProfileError) {
-    console.warn(`   ⚠️ Failed to insert sales_rep_profile: ${salepProfileError.message}`);
+    console.warn(`   �š ️ Failed to insert sales_rep_profile: ${salepProfileError.message}`);
   }
 
   console.log(
-    `   ✅ Profile: ${rep.fullName} (${rep.role}, ${rep.isActive ? "active" : "inactive"})`,
+    `   �œ… Profile: ${rep.fullName} (${rep.role}, ${rep.isActive ? "active" : "inactive"})`,
   );
   return { userId, skipped: false };
 }
@@ -281,12 +281,12 @@ async function seedMetrics(
     .limit(repUserIds.length * 2);
 
   if (vehiclesError) {
-    console.warn("⚠️  Could not load vehicles for metrics:", vehiclesError.message);
+    console.warn("�š ️  Could not load vehicles for metrics:", vehiclesError.message);
     return;
   }
 
   if (!vehicles?.length) {
-    console.log("ℹ️  No in-stock vehicles found — skipping deal metrics seed.");
+    console.log("�„�️  No in-stock vehicles found �€” skipping deal metrics seed.");
     return;
   }
 
@@ -332,7 +332,7 @@ async function seedMetrics(
         .single();
 
       if (customerError || !customer) {
-        console.warn(`   ⚠️  Customer seed failed: ${customerError?.message}`);
+        console.warn(`   �š ️  Customer seed failed: ${customerError?.message}`);
         continue;
       }
 
@@ -352,7 +352,7 @@ async function seedMetrics(
       });
 
       if (dealError) {
-        console.warn(`   ⚠️  Deal seed failed: ${dealError.message}`);
+        console.warn(`   �š ️  Deal seed failed: ${dealError.message}`);
         await supabase.from("customers").delete().eq("id", customer.id);
         continue;
       }
@@ -363,26 +363,26 @@ async function seedMetrics(
         .eq("id", vehicle.id);
 
       dealCount++;
-      console.log(`   ✅ Deal: ${rep.fullName} → ${vehicle.make} ${vehicle.model} (${saleDate})`);
+      console.log(`   �œ… Deal: ${rep.fullName} �†’ ${vehicle.make} ${vehicle.model} (${saleDate})`);
     }
   }
 
-  console.log(`\n📊 Seeded ${dealCount} sample deal(s) for dashboard metrics.`);
+  console.log(`\n�Ÿ“Š Seeded ${dealCount} sample deal(s) for dashboard metrics.`);
 }
 
 async function main() {
   const { dealershipId: requestedDealershipId, withMetrics } = parseArgs();
 
-  console.log("╔══════════════════════════════════════════�—");
-  console.log("║     AutoVault360 — Sales Reps Seeder     ║");
-  console.log("╚══════════════════════════════════════════�—\n");
+  console.log("�•”�•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•���€”");
+  console.log("�•‘     AutoVault360 �€” Sales Reps Seeder     �•‘");
+  console.log("�•š�•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•��•���€”\n");
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   if (!supabaseUrl || !serviceRoleKey) {
     console.error(
-      "�—� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
+      "��€”� Ensure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env",
     );
     process.exit(1);
   }
@@ -419,16 +419,16 @@ async function main() {
       );
     }
 
-    console.log("ℹ️  Using super admin as created_by for metrics seed.");
+    console.log("�„�️  Using super admin as created_by for metrics seed.");
     createdByUserId = superAdmin.id;
   }
 
-  console.log(`\n👥 Seeding ${SEED_REPS.length} sales reps...\n`);
+  console.log(`\n�Ÿ‘� Seeding ${SEED_REPS.length} sales reps...\n`);
 
   const createdReps: { rep: SeedRep; userId: string }[] = [];
 
   for (const rep of SEED_REPS) {
-    console.log(`→ ${rep.fullName}`);
+    console.log(`�†’ ${rep.fullName}`);
     const { userId, skipped } = await upsertSalesRep(supabase, dealershipId, rep);
     createdReps.push({ rep, userId });
     if (!skipped) {
@@ -437,15 +437,15 @@ async function main() {
   }
 
   if (withMetrics) {
-    console.log("\n📈 Seeding sample customers & deals...");
+    console.log("\n�Ÿ“ˆ Seeding sample customers & deals...");
     await seedMetrics(supabase, dealershipId, createdReps, createdByUserId);
   }
 
-  console.log("\n🎉 Sales rep seed complete!");
+  console.log("\n�ŸŽ‰ Sales rep seed complete!");
   console.log(`   Password for all seeded accounts: ${SEED_PASSWORD}`);
   console.log("   Emails:");
   for (const rep of SEED_REPS) {
-    console.log(`     • ${rep.email}`);
+    console.log(`     �€� ${rep.email}`);
   }
   if (!withMetrics) {
     console.log("\n   Tip: re-run with --with-metrics to seed sample deals (requires in-stock vehicles).");
@@ -454,6 +454,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error("�—� Seed failed:", err instanceof Error ? err.message : err);
+  console.error("��€”� Seed failed:", err instanceof Error ? err.message : err);
   process.exit(1);
 });

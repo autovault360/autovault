@@ -3,13 +3,14 @@ import {
   Calendar,
   Receipt,
   Users,
-  Folder,
-  Shield,
   Archive,
   StickyNote,
   FileDown,
-  Bot,
-  User,
+  BarChart3,
+  FileText,
+  Car,
+  Wallet,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -21,6 +22,7 @@ export type CpaNavItem = {
   comingSoon?: boolean;
   badgeKey?: "notes";
   opensNotes?: boolean;
+  activeClassName?: string;
 };
 
 export type CpaNavGroup = {
@@ -30,69 +32,82 @@ export type CpaNavGroup = {
 
 export const CPA_NAV_GROUPS: CpaNavGroup[] = [
   {
-    label: null,
+    label: "CPA PORTAL",
     items: [
       {
         href: "/cpa/dashboard",
         label: "Dashboard",
         icon: LayoutDashboard,
-        color: "text-blue-500",
+        color: "text-violet-400",
+        activeClassName: "border-violet-500/40 bg-violet-600/20 font-semibold text-white",
       },
       {
-        href: "/cpa/dashboard/monthly-financial",
-        label: "Monthly Financials",
-        icon: Calendar,
-        color: "text-emerald-500",
+        href: "/cpa/dealership-overview",
+        label: "Dealership Overview",
+        icon: Building2,
+        color: "text-blue-400",
+        comingSoon: true,
+      },
+    ],
+  },
+  {
+    label: "FINANCIALS",
+    items: [
+      {
+        href: "/cpa/monthly-financials",
+        label: "Profit & Loss",
+        icon: BarChart3,
+        color: "text-emerald-400",
+      },
+      {
+        href: "/cpa/dashboard/payroll-commissions",
+        label: "Payroll & Commissions",
+        icon: Users,
+        color: "text-violet-400",
+      },
+      {
+        href: "/cpa/expenses",
+        label: "Expenses",
+        icon: Wallet,
+        color: "text-orange-400",
         comingSoon: true,
       },
       {
-        href: "/cpa/yearly-financials",
-        label: "Yearly Financials",
-        icon: Calendar,
-        color: "text-cyan-500",
+        href: "/cpa/vehicles",
+        label: "Vehicles",
+        icon: Car,
+        color: "text-blue-400",
         comingSoon: true,
       },
       {
         href: "/cpa/sales-tax",
         label: "Sales Tax Center",
         icon: Receipt,
-        color: "text-purple-500",
-        comingSoon: true,
-      },
-      {
-        href: "/cpa/dashboard/payroll-commissions",
-        label: "Payroll & Commissions",
-        icon: Users,
-        color: "text-orange-500",
-      },
-      {
-        href: "/cpa/deal-jackets",
-        label: "Deal Jacket Review",
-        icon: Folder,
-        color: "text-blue-500",
-      },
-      {
-        href: "/cpa/audit",
-        label: "Audit Readiness",
-        icon: Shield,
-        color: "text-amber-500",
-      },
-      {
-        href: "/cpa/files",
-        label: "Files & Storage",
-        icon: Archive,
-        color: "text-cyan-500",
+        color: "text-cyan-400",
       },
     ],
   },
   {
-    label: "PROFILE",
+    label: "REPORTS",
     items: [
       {
-        href: "/cpa/profile",
-        label: "My Profile",
-        icon: User,
+        href: "/cpa/monthly-financials",
+        label: "Monthly View",
+        icon: Calendar,
+        color: "text-emerald-400",
+      },
+      {
+        href: "/cpa/yearly-financials",
+        label: "Yearly View",
+        icon: Calendar,
+        color: "text-cyan-400",
+      },
+      {
+        href: "/cpa/custom-reports",
+        label: "Custom Reports",
+        icon: FileText,
         color: "text-slate-400",
+        comingSoon: true,
       },
     ],
   },
@@ -100,25 +115,24 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
     label: "TOOLS",
     items: [
       {
+        href: "/cpa/exports",
+        label: "Export Data",
+        icon: FileDown,
+        color: "text-red-400",
+      },
+      {
+        href: "/cpa/files",
+        label: "Document Center",
+        icon: Archive,
+        color: "text-cyan-400",
+      },
+      {
         href: "/cpa/dashboard",
         label: "CPA Notes",
         icon: StickyNote,
-        color: "text-yellow-500",
+        color: "text-yellow-400",
         badgeKey: "notes",
         opensNotes: true,
-      },
-      {
-        href: "/cpa/exports",
-        label: "Exports & Reports",
-        icon: FileDown,
-        color: "text-red-500",
-        comingSoon: true,
-      },
-      {
-        href: "/cpa/ai-assistant",
-        label: "AI CPA Assistant",
-        icon: Bot,
-        color: "text-violet-500",
         comingSoon: true,
       },
     ],

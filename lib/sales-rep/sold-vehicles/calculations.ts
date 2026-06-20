@@ -106,11 +106,11 @@ export function buildSoldVehicleKpiSummary(
     commissionEarned,
     avgGrossProfit,
     closingRate,
-    vehiclesSoldTrend: "↑ 20% vs last month",
-    grossProfitTrend: "↑ 18% vs last month",
-    commissionTrend: "↑ 15% vs last month",
-    avgGrossProfitTrend: "↑ 8% vs last month",
-    closingRateTrend: "↑ 6% vs last month",
+    vehiclesSoldTrend: "�†‘ 20% vs last month",
+    grossProfitTrend: "�†‘ 18% vs last month",
+    commissionTrend: "�†‘ 15% vs last month",
+    avgGrossProfitTrend: "�†‘ 8% vs last month",
+    closingRateTrend: "�†‘ 6% vs last month",
   };
 }
 

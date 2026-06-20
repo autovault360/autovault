@@ -11,7 +11,7 @@ import {
 } from "@/lib/profit-loss/server/aggregate-pl-data";
 import { finalizePeriodTotals, type PeriodTotals } from "@/lib/profit-loss/build-report";
 
-type JacketRow = {
+export type JacketRow = {
   id: string;
   sold_price: number;
   total_invested: number;
@@ -25,7 +25,15 @@ type JacketRow = {
   amount_financed: number;
   balance_due: number;
   sales_rep_id: string | null;
-  vehicle: { acquisition_cost: number | null; year: number; make: string; model: string; stock_number: string | null; vin: string } | null;
+  vehicle: {
+    acquisition_cost: number | null;
+    year: number;
+    make: string;
+    model: string;
+    stock_number: string | null;
+    vin: string;
+    purchase_type: string | null;
+  } | null;
 };
 
 export type CpaVehicleSoldRow = {
@@ -72,7 +80,7 @@ async function fetchJacketsInRange(
       amount_financed,
       balance_due,
       sales_rep_id,
-      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin)
+      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin, purchase_type)
     `,
     )
     .eq("dealership_id", dealershipId)
@@ -497,7 +505,7 @@ export async function fetchJacketsInRangeExtended(
       amount_financed,
       balance_due,
       sales_rep_id,
-      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin),
+      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin, purchase_type),
       customer:customers(name),
       sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name)
     `,

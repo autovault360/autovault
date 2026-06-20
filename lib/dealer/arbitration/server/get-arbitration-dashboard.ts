@@ -111,18 +111,18 @@ export async function getArbitrationDashboard(): Promise<ArbitrationDashboardDat
       trim: mapped.trim,
       exteriorColor: mapped.exteriorColor,
       imageUrl: mapped.imageUrl,
-      buyerDealer: mapped.arbitrationBuyerDealer || "—",
+      buyerDealer: mapped.arbitrationBuyerDealer || "�€”",
       arbitrationReason: mapped.arbitrationReason || "Not specified",
       dateListed,
       daysInArbitration: daysSince(dateListed),
-      latestNotePreview: noteMeta?.latestPreview || "—",
+      latestNotePreview: noteMeta?.latestPreview || "�€”",
       noteCount: noteMeta?.count ?? 0,
       location: mapped.location || "Unknown",
     });
   }
 
   const dealers = [
-    ...new Set(records.map((r) => r.buyerDealer).filter((d) => d !== "—")),
+    ...new Set(records.map((r) => r.buyerDealer).filter((d) => d !== "�€”")),
   ].sort();
   const reasons = [
     ...new Set(records.map((r) => r.arbitrationReason)),

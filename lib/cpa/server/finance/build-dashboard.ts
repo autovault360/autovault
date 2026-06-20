@@ -1,8 +1,13 @@
 import type {
   CpaDashboardData,
   CpaDealJacketSegment,
+  CpaExpenseCategory,
   CpaKpi,
   CpaStorageFolder,
+  CpaTopEarner,
+  CpaVehicleHighlight,
+  CpaVehicleLossStats,
+  CpaVehicleProfitStats,
   CpaViewMode,
 } from "@/lib/cpa/types";
 import type { PeriodTotals } from "@/lib/profit-loss/build-report";
@@ -13,15 +18,18 @@ import {
   countVehiclesAdded,
   countVehiclesPurchased,
   fetchAllDealJacketsForStatus,
+  fetchJacketsInRangeExtended,
   fetchNextPayrollEventDate,
   fetchStorageFileCounts,
   mapVehiclesSold,
+  sumBenefits,
   sumBonuses,
   sumPaidCommissions,
   sumPayrollTaxes,
   sumSalaryWages,
   sumTaxPayments,
   type DealJacketStatusRow,
+  type JacketRow,
 } from "./fetch-period-data";
 import {
   boundsForCalendarMonth,
@@ -32,6 +40,21 @@ import {
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+const MONTH_NAMES_FULL = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+const EXPENSE_COLORS = [
+  "#3b82f6",
+  "#22c55e",
+  "#f97316",
+  "#a855f7",
+  "#14b8a6",
+  "#ef4444",
+  "#64748b",
 ];
 
 const DEAL_JACKET_COLORS: Record<string, string> = {
@@ -76,14 +99,166 @@ function formatDelta(
   invertPositive = false,
 ): { delta: string; deltaPositive: boolean } {
   const change = pctChange(current, previous);
-  const arrow = change >= 0 ? "+" : "-";
-  const prevLabel = MONTH_NAMES[prevMonth - 1] ?? "";
+  const arrow = change >= 0 ? "↑" : "↓";
   let positive = change >= 0;
   if (invertPositive) positive = change <= 0;
   return {
-    delta: `${arrow} ${Math.abs(change).toFixed(1)}% vs ${prevLabel} ${prevYear}`,
+    delta: `${arrow} ${Math.abs(change).toFixed(2)}%`,
     deltaPositive: positive,
   };
+}
+
+function formatPrevPeriodLabel(prevMonth: number, prevYear: number): string {
+  const monthName = MONTH_NAMES_FULL[prevMonth - 1] ?? "January";
+  const lastDay = new Date(prevYear, prevMonth, 0).getDate();
+  return `${monthName} 1 – ${monthName} ${lastDay}, ${prevYear}`;
+}
+
+function vehicleLabel(row: JacketRow): string {
+  const vehicle = Array.isArray(row.vehicle) ? row.vehicle[0] : row.vehicle;
+  const year = vehicle?.year ?? 0;
+  const make = vehicle?.make ?? "";
+  const model = vehicle?.model ?? "";
+  return `${year} ${make} ${model}`.trim() || "Unknown Vehicle";
+}
+
+function buildExpenseCategories(totals: PeriodTotals): CpaExpenseCategory[] {
+  const vehicleRepairs = totals.reconditioning + totals.parts_supplies;
+  const rentUtilities = totals.rent + totals.utilities;
+  const raw: { label: string; amount: number }[] = [
+    { label: "Advertising", amount: totals.advertising },
+    { label: "Rent", amount: totals.rent },
+    { label: "Office Supplies", amount: totals.office },
+    { label: "Vehicle Expenses", amount: vehicleRepairs },
+    { label: "Insurance", amount: totals.insurance },
+    { label: "Payroll Expenses", amount: totals.payroll },
+    { label: "Miscellaneous", amount: totals.other_expenses + totals.software },
+    { label: "Rent & Utilities", amount: rentUtilities },
+  ].filter((c) => c.amount > 0);
+
+  const total = totals.total_expenses || raw.reduce((s, c) => s + c.amount, 0) || 1;
+
+  return raw.map((c, i) => ({
+    label: c.label,
+    amount: c.amount,
+    pct: Math.round((c.amount / total) * 1000) / 10,
+    color: EXPENSE_COLORS[i % EXPENSE_COLORS.length],
+  }));
+}
+
+function buildVehicleProfitStats(
+  jackets: JacketRow[],
+  totalRevenue: number,
+  grossProfit: number,
+): CpaVehicleProfitStats {
+  const total = jackets.length;
+  const profitable = jackets.filter((j) => Number(j.profit_gross) > 0);
+  const totalProfit = profitable.reduce((s, j) => s + Number(j.profit_gross), 0);
+
+  const sortedByProfit = [...jackets].sort(
+    (a, b) => Number(b.profit_gross) - Number(a.profit_gross),
+  );
+  const highest = sortedByProfit[0];
+  const lowestProfitable = [...profitable].sort(
+    (a, b) => Number(a.profit_gross) - Number(b.profit_gross),
+  )[0];
+
+  const emptyHighlight: CpaVehicleHighlight = { amount: 0, vehicle: "N/A" };
+
+  return {
+    totalVehiclesSold: total,
+    profitableCount: profitable.length,
+    profitPct: total > 0 ? Math.round((profitable.length / total) * 10000) / 100 : 0,
+    totalProfit,
+    avgProfitPerVehicle:
+      profitable.length > 0 ? Math.round(totalProfit / profitable.length) : 0,
+    highestProfit: highest
+      ? { amount: Number(highest.profit_gross), vehicle: vehicleLabel(highest) }
+      : emptyHighlight,
+    lowestProfit: lowestProfitable
+      ? {
+          amount: Number(lowestProfitable.profit_gross),
+          vehicle: vehicleLabel(lowestProfitable),
+        }
+      : emptyHighlight,
+    grossProfitMargin:
+      totalRevenue > 0 ? Math.round((grossProfit / totalRevenue) * 10000) / 100 : 0,
+  };
+}
+
+function buildVehicleLossStats(
+  jackets: JacketRow[],
+  totalRevenue: number,
+): CpaVehicleLossStats {
+  const total = jackets.length;
+  const lossVehicles = jackets.filter((j) => Number(j.profit_gross) < 0);
+  const totalLoss = lossVehicles.reduce(
+    (s, j) => s + Math.abs(Number(j.profit_gross)),
+    0,
+  );
+
+  const sortedByLoss = [...lossVehicles].sort(
+    (a, b) => Number(a.profit_gross) - Number(b.profit_gross),
+  );
+  const highest = sortedByLoss[0];
+  const lowest = sortedByLoss[sortedByLoss.length - 1];
+
+  const returnedToAuction = lossVehicles.filter((j) => {
+    const vehicle = Array.isArray(j.vehicle) ? j.vehicle[0] : j.vehicle;
+    const purchaseType = (vehicle?.purchase_type ?? "").toLowerCase();
+    return purchaseType.includes("auction");
+  }).length;
+
+  const emptyHighlight: CpaVehicleHighlight = { amount: 0, vehicle: "N/A" };
+
+  return {
+    lossCount: lossVehicles.length,
+    lossPct: total > 0 ? Math.round((lossVehicles.length / total) * 10000) / 100 : 0,
+    totalLoss,
+    avgLossPerVehicle:
+      lossVehicles.length > 0 ? Math.round(totalLoss / lossVehicles.length) : 0,
+    highestLoss: highest
+      ? {
+          amount: Math.abs(Number(highest.profit_gross)),
+          vehicle: vehicleLabel(highest),
+        }
+      : emptyHighlight,
+    lowestLoss: lowest
+      ? {
+          amount: Math.abs(Number(lowest.profit_gross)),
+          vehicle: vehicleLabel(lowest),
+        }
+      : emptyHighlight,
+    returnedToAuction,
+    lossImpactPct:
+      totalRevenue > 0
+        ? Math.round((totalLoss / totalRevenue) * -10000) / 100
+        : 0,
+  };
+}
+
+function buildTopEarners(
+  extendedJackets: Awaited<ReturnType<typeof fetchJacketsInRangeExtended>>,
+): CpaTopEarner[] {
+  const byRep = new Map<string, { name: string; commissions: number }>();
+
+  for (const row of extendedJackets) {
+    const salesRep = Array.isArray(row.sales_rep) ? row.sales_rep[0] : row.sales_rep;
+    const repId = row.sales_rep_id ?? "unassigned";
+    const repName = salesRep?.full_name ?? "Unassigned";
+    const existing = byRep.get(repId) ?? { name: repName, commissions: 0 };
+    existing.commissions += Number(row.commission_amount);
+    byRep.set(repId, existing);
+  }
+
+  return [...byRep.values()]
+    .sort((a, b) => b.commissions - a.commissions)
+    .slice(0, 5)
+    .map((rep, i) => ({
+      rank: i + 1,
+      name: rep.name,
+      amount: rep.commissions,
+    }));
 }
 
 function classifyJacketStatus(row: DealJacketStatusRow): string {
@@ -162,6 +337,26 @@ async function buildPayrollChart(
       sumSalaryWages(period.dealershipExpenses) +
       sumPaidCommissions(period.jackets);
     values.push({ name: m.label, value: Math.round(value) });
+  }
+
+  return values;
+}
+
+async function buildLossChart(
+  dealershipId: string,
+  view: CpaViewMode,
+  month: number,
+  year: number,
+): Promise<{ name: string; value: number }[]> {
+  const months = monthRangeForTrend(view, month, year, 12);
+  const values: { name: string; value: number }[] = [];
+
+  for (const m of months) {
+    const { start, end } = boundsForCalendarMonth(m.month, m.year);
+    const period = await aggregateCpaPeriod(dealershipId, start, end);
+    const totalLoss = buildVehicleLossStats(period.jackets, period.totals.total_revenue)
+      .totalLoss;
+    values.push({ name: m.label, value: Math.round(totalLoss) });
   }
 
   return values;
@@ -291,30 +486,70 @@ export async function buildCpaDashboardData(
     bounds.prevYear,
     true,
   );
-  const commissionsPrev = sumPaidCommissions(previous.jackets);
-  const commDelta = formatDelta(
-    commissionsPaid,
-    commissionsPrev,
+  const bonusesPaid = sumBonuses(current.dealershipExpenses);
+  const payrollTaxes = sumPayrollTaxes(current.dealershipExpenses);
+  const benefitsPaid = sumBenefits(current.dealershipExpenses);
+  const deductions = payrollTaxes + benefitsPaid;
+
+  const vehicleProfitStats = buildVehicleProfitStats(
+    current.jackets,
+    cur.total_revenue,
+    cur.gross_profit,
+  );
+  const vehicleLossStats = buildVehicleLossStats(current.jackets, cur.total_revenue);
+
+  const lossDelta = formatDelta(
+    vehicleLossStats.totalLoss,
+    buildVehicleLossStats(previous.jackets, prev.total_revenue).totalLoss,
     bounds.prevMonth,
     bounds.prevYear,
     true,
   );
 
+  const extendedJackets = await fetchJacketsInRangeExtended(
+    dealershipId,
+    bounds.start,
+    bounds.end,
+  );
+
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const monthlyBudget = prev.total_expenses;
+  const vsBudgetPct =
+    monthlyBudget > 0
+      ? Math.round(((cur.total_expenses - monthlyBudget) / monthlyBudget) * 10000) / 100
+      : 0;
+
+  const totalPayments = salaryWages + commissionsPaid + bonusesPaid;
+  const payrollBreakdown = [
+    { label: "Salaries & Wages", amount: salaryWages },
+    { label: "Payroll Taxes", amount: payrollTaxes },
+    { label: "Benefits", amount: benefitsPaid },
+    { label: "Bonuses", amount: bonusesPaid },
+    { label: "Commissions", amount: commissionsPaid },
+  ].filter((item) => item.amount > 0);
+
+  const topEarners = buildTopEarners(extendedJackets);
+
+  const quarter = Math.ceil(month / 3);
+  const upcomingFiling = `California Q${quarter} Filing`;
+
+  const prevPeriodLabel = formatPrevPeriodLabel(bounds.prevMonth, bounds.prevYear);
+
   const [
     revenueChart,
     grossChart,
+    lossChart,
     netChart,
     expChart,
     payrollChart,
-    commChart,
     trendPoints,
   ] = await Promise.all([
     buildTotalsChart(dealershipId, view, month, year, (t) => t.total_revenue),
     buildTotalsChart(dealershipId, view, month, year, (t) => t.gross_profit),
+    buildLossChart(dealershipId, view, month, year),
     buildTotalsChart(dealershipId, view, month, year, (t) => t.net_profit),
     buildTotalsChart(dealershipId, view, month, year, (t) => t.total_expenses),
     buildPayrollChart(dealershipId, view, month, year),
-    buildCommissionsChart(dealershipId, view, month, year),
     (async () => {
       const months = monthRangeForTrend(view, month, year);
       const points = [];
@@ -338,7 +573,7 @@ export async function buildCpaDashboardData(
       delta: revenueDelta.delta,
       deltaPositive: revenueDelta.deltaPositive,
       icon: "dollar-sign",
-      color: "green",
+      color: "purple",
       chartData: revenueChart,
     },
     {
@@ -346,9 +581,36 @@ export async function buildCpaDashboardData(
       value: formatCurrency(cur.gross_profit),
       delta: grossDelta.delta,
       deltaPositive: grossDelta.deltaPositive,
-      icon: "bar-chart-3",
-      color: "purple",
+      icon: "trending-up",
+      color: "green",
       chartData: grossChart,
+    },
+    {
+      label: "Total Loss",
+      value: formatCurrency(vehicleLossStats.totalLoss),
+      delta: lossDelta.delta,
+      deltaPositive: lossDelta.deltaPositive,
+      icon: "trending-down",
+      color: "red",
+      chartData: lossChart,
+    },
+    {
+      label: "Total Payroll",
+      value: formatCurrency(payrollPaid),
+      delta: payrollDelta.delta,
+      deltaPositive: payrollDelta.deltaPositive,
+      icon: "users",
+      color: "purple",
+      chartData: payrollChart,
+    },
+    {
+      label: "Total Expenses",
+      value: formatCurrency(cur.total_expenses),
+      delta: expDelta.delta,
+      deltaPositive: expDelta.deltaPositive,
+      icon: "wallet",
+      color: "orange",
+      chartData: expChart,
     },
     {
       label: "Net Profit",
@@ -358,33 +620,6 @@ export async function buildCpaDashboardData(
       icon: "pie-chart",
       color: "blue",
       chartData: netChart,
-    },
-    {
-      label: "Total Expenses",
-      value: formatCurrency(cur.total_expenses),
-      delta: expDelta.delta,
-      deltaPositive: expDelta.deltaPositive,
-      icon: "trending-down",
-      color: "red",
-      chartData: expChart,
-    },
-    {
-      label: "Payroll Paid",
-      value: formatCurrency(payrollPaid),
-      delta: payrollDelta.delta,
-      deltaPositive: payrollDelta.deltaPositive,
-      icon: "landmark",
-      color: "teal",
-      chartData: payrollChart,
-    },
-    {
-      label: "Commissions Paid",
-      value: formatCurrency(commissionsPaid),
-      delta: commDelta.delta,
-      deltaPositive: commDelta.deltaPositive,
-      icon: "car",
-      color: "orange",
-      chartData: commChart,
     },
   ];
 
@@ -426,6 +661,7 @@ export async function buildCpaDashboardData(
 
   return {
     dataAsOf: `${monthLabel} ${year} - Updated ${dataAsOf}`,
+    prevPeriodLabel,
     kpis,
     salesActivity: [
       {
@@ -457,6 +693,8 @@ export async function buildCpaDashboardData(
     ],
     vehiclesSold: mapVehiclesSold(current.jackets),
     vehiclesSoldTotal: vehiclesSoldCount,
+    vehicleProfitStats,
+    vehicleLossStats,
     salesTax: {
       taxableSales,
       taxCollected,
@@ -466,6 +704,18 @@ export async function buildCpaDashboardData(
       dueDate,
       status: salesTaxStatus(balanceDue),
     },
+    salesTaxPanel: {
+      taxCollected,
+      taxPaid: taxPaymentsMade,
+      taxDue: balanceDue,
+      effectiveTaxRate:
+        taxableSales > 0
+          ? Math.round((taxCollected / taxableSales) * 10000) / 100
+          : 0,
+      upcomingFiling,
+      filingDueDate: dueDate,
+      vehiclesIncluded: vehiclesSoldCount,
+    },
     payroll: {
       totalPayroll: payrollPaid,
       employeesPaid: countDistinctPayrollEmployees(
@@ -473,8 +723,8 @@ export async function buildCpaDashboardData(
         current.jackets,
       ),
       commissionsPaid,
-      bonusesPaid: sumBonuses(current.dealershipExpenses),
-      payrollTaxes: sumPayrollTaxes(current.dealershipExpenses),
+      bonusesPaid,
+      payrollTaxes,
       nextPayrollDate: nextPayrollDate
         ? new Date(`${nextPayrollDate}T12:00:00`).toLocaleDateString("en-US", {
             month: "long",
@@ -482,6 +732,27 @@ export async function buildCpaDashboardData(
             year: "numeric",
           })
         : "N/A",
+    },
+    payrollPanel: {
+      totalPayroll: salaryWages,
+      totalCommissions: commissionsPaid,
+      bonuses: bonusesPaid,
+      payrollTaxes,
+      deductions,
+      totalPayments,
+      payrollBreakdown,
+      topEarners,
+    },
+    expensePanel: {
+      totalExpenses: cur.total_expenses,
+      expenseRatio:
+        cur.total_revenue > 0
+          ? Math.round((cur.total_expenses / cur.total_revenue) * 10000) / 100
+          : 0,
+      dailyAverage: daysInMonth > 0 ? Math.round(cur.total_expenses / daysInMonth) : 0,
+      monthlyBudget,
+      vsBudgetPct,
+      categories: buildExpenseCategories(cur),
     },
     profitLoss: [
       {

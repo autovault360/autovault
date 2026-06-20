@@ -40,7 +40,7 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
       createClient(),
     ]);
 
-  // ── KPIs ──
+  // �”€�”€ KPIs �”€�”€
   const totalTaxAll = periods.reduce((s, p) => s + p.totalTaxEntered, 0);
   const totalVehicles = periods.reduce((s, p) => s + p.vehicleCount, 0);
   const activePeriods = periods.filter(
@@ -80,7 +80,7 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
     },
   ];
 
-  // ── YTD Summary + Donut Chart ──
+  // �”€�”€ YTD Summary + Donut Chart �”€�”€
   const currentYear = new Date().getFullYear();
   const ytdPeriods = periods.filter((p) => {
     const year = new Date(p.startDate).getFullYear();
@@ -137,7 +137,7 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
     },
   ];
 
-  // ── Monthly Tax Data for Bar Chart ──
+  // �”€�”€ Monthly Tax Data for Bar Chart �”€�”€
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
@@ -154,7 +154,7 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
       return { name, tax, vehicles };
     });
 
-  // ── Recent Transactions ──
+  // �”€�”€ Recent Transactions �”€�”€
   const { data: transactions } = await supabase
     .from("deal_jackets")
     .select(
@@ -193,9 +193,9 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
     };
   });
 
-  // ── Config ──
-  const configState = settings?.state ?? "—";
-  const configFrequency = settings?.filingFrequency ?? "—";
+  // �”€�”€ Config �”€�”€
+  const configState = settings?.state ?? "�€”";
+  const configFrequency = settings?.filingFrequency ?? "�€”";
   const configReminderDays = settings?.reminderDays ?? 14;
 
   return {
@@ -208,11 +208,11 @@ export async function getStateTaxReport(): Promise<StateTaxReport> {
     ],
     config: {
       state: configState,
-      stateSalesTaxPercent: "—",
-      additionalLocalTaxPercent: "—",
+      stateSalesTaxPercent: "�€”",
+      additionalLocalTaxPercent: "�€”",
       filingFrequency: configFrequency.charAt(0).toUpperCase() + configFrequency.slice(1),
       filingDueDates: `Day ${new Date(0, 0, 0, 0, 0, 0, configReminderDays).getDate() || 20} of the following month`,
-      additionalLocalTaxApplies: "—",
+      additionalLocalTaxApplies: "�€”",
     },
     configOptions: {
       states: [],

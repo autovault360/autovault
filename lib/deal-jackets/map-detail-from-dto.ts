@@ -229,7 +229,7 @@ export function mapDealJacketDetailFromDto(
       commissionPaidDate: dto.commissionPaidAt
         ? dto.commissionPaidAt.split("T")[0]
         : null,
-      commissionPaymentMethod: "—",
+      commissionPaymentMethod: "�€”",
       transactionId: null,
     },
     financial: {

@@ -12,15 +12,15 @@ export const DEALER_PROFIT_LOSS_MOCK: DealerProfitLossData = {
   },
   kpis: {
     totalRevenue: 2_458_750,
-    totalRevenueDelta: "↑ 18.4% vs Apr 2024",
+    totalRevenueDelta: "�†‘ 18.4% vs Apr 2024",
     grossProfit: 487_350,
-    grossProfitDelta: "↑ 21.2% vs Apr 2024",
+    grossProfitDelta: "�†‘ 21.2% vs Apr 2024",
     totalExpenses: 291_580,
-    totalExpensesDelta: "↑ 11.7% vs Apr 2024",
+    totalExpensesDelta: "�†‘ 11.7% vs Apr 2024",
     netProfit: 195_770,
-    netProfitDelta: "↑ 35.6% vs Apr 2024",
+    netProfitDelta: "�†‘ 35.6% vs Apr 2024",
     grossMargin: 19.8,
-    grossMarginDelta: "↑ 2.1% vs Apr 2024",
+    grossMarginDelta: "�†‘ 2.1% vs Apr 2024",
   },
   statementRows: [
     {

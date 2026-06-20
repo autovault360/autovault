@@ -25,7 +25,7 @@ export default function SalesRepRankCell({ rank, className }: Props) {
   }
 
   if (rank <= 0) {
-    return <span className="text-slate-600">—</span>;
+    return <span className="text-slate-600">�€”</span>;
   }
 
   return (

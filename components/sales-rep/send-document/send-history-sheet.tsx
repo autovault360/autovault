@@ -114,7 +114,7 @@ export default function SendHistorySheet({
                           View thread
                         </Link>
                       ) : (
-                        <span className="text-slate-600">—</span>
+                        <span className="text-slate-600">�€”</span>
                       )}
                     </td>
                   </tr>

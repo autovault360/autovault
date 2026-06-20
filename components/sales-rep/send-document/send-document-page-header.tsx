@@ -16,7 +16,7 @@ export default function SendDocumentPageHeader({ onOpenHistory }: Props) {
         className="mb-2 text-[11px] text-slate-500"
       >
         <span>Communication</span>
-        <span className="mx-1.5 text-slate-600">›</span>
+        <span className="mx-1.5 text-slate-600">�€�</span>
         <span className="text-slate-400">Send Document</span>
       </nav>
 

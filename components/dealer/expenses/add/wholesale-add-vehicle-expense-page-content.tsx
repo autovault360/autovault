@@ -416,7 +416,7 @@ function NotesEditor({
           { icon: Italic, token: "*italic*" },
           { icon: Underline, token: "__underline__" },
           { icon: AlignLeft, token: "\n" },
-          { icon: List, token: "\n• " },
+          { icon: List, token: "\n�€� " },
           { icon: LinkIcon, token: " [link](url)" },
         ].map(({ icon: Icon, token }, index) => (
           <button
@@ -437,7 +437,7 @@ function NotesEditor({
             onChange={(e) => onChange(e.target.value)}
             maxLength={1000}
             rows={5}
-            placeholder="• $15 Mirror Borrowed&#10;• $311 parts geek&#10;• $220"
+            placeholder="�€� $15 Mirror Borrowed&#10;�€� $311 parts geek&#10;�€� $220"
             className="min-h-[105px] resize-none border-0 bg-transparent px-0 py-0 text-[12px] leading-relaxed text-slate-200 focus-visible:ring-0"
           />
           <div className="absolute bottom-0 right-0 text-[10px] text-slate-500">
@@ -531,7 +531,7 @@ function SummaryPanel({
 }) {
   const category =
     VEHICLE_EXPENSE_SUBCATEGORIES.find((item) => item.value === values.category)?.label ??
-    "•";
+    "�€�";
 
   return (
     <div className="space-y-3">
@@ -555,7 +555,7 @@ function SummaryPanel({
                   </div>
                 </>
               ) : (
-                <div className="mt-1 text-[12px] text-slate-500">•</div>
+                <div className="mt-1 text-[12px] text-slate-500">�€�</div>
               )}
             </div>
             {vehicle && (
@@ -572,12 +572,12 @@ function SummaryPanel({
           </div>
 
           {[
-            ["Expense Name", values.expenseName || "•"],
+            ["Expense Name", values.expenseName || "�€�"],
             ["Amount", formatCurrency(values.amount || 0)],
             ["Vehicle Notes Amount", `+${formatCurrency(notesAmount)}`],
             ["Total Expense", formatCurrency(total)],
-            ["Category", values.category ? category : "•"],
-            ["Vendor / Payee", values.vendor || "•"],
+            ["Category", values.category ? category : "�€�"],
+            ["Vendor / Payee", values.vendor || "�€�"],
             ["Date", formatDate(values.date)],
           ].map(([label, value], index) => (
             <div key={label} className="flex items-center justify-between gap-3">
@@ -588,7 +588,7 @@ function SummaryPanel({
                   index === 1 || index === 2 || index === 3
                     ? "font-semibold text-emerald-400"
                     : "text-slate-300",
-                  value === "•" && "text-slate-500",
+                  value === "�€�" && "text-slate-500",
                 )}
               >
                 {value}

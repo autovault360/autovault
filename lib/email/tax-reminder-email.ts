@@ -71,7 +71,7 @@ export function taxReminderEmail(p: TaxReminderEmailParams): string {
               </p>
 
               ${overdue.length > 0 ? `
-              <h2 style="margin:0 0 12px;font-size:15px;font-weight:700;color:#d32f2f;">⚠ Overdue Filing Periods</h2>
+              <h2 style="margin:0 0 12px;font-size:15px;font-weight:700;color:#d32f2f;">�š  Overdue Filing Periods</h2>
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
                 <thead>
                   <tr style="background-color:#fef2f2;">
@@ -88,7 +88,7 @@ export function taxReminderEmail(p: TaxReminderEmailParams): string {
               ` : ""}
 
               ${upcoming.length > 0 ? `
-              <h2 style="margin:0 0 12px;font-size:15px;font-weight:700;color:#1565C0;">⏰ Upcoming Deadlines</h2>
+              <h2 style="margin:0 0 12px;font-size:15px;font-weight:700;color:#1565C0;">��° Upcoming Deadlines</h2>
               <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-bottom:24px;">
                 <thead>
                   <tr style="background-color:#eef2ff;">

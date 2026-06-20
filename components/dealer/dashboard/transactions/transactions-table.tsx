@@ -101,7 +101,7 @@ export default function TransactionsTable({
       key: "auction",
       header: "Auction",
       cell: (row) => (
-        <span className="text-[11px] text-slate-400">{row.auction ?? "—"}</span>
+        <span className="text-[11px] text-slate-400">{row.auction ?? "�€”"}</span>
       ),
     },
     {
@@ -126,7 +126,7 @@ export default function TransactionsTable({
             {formatCurrencyExact(row.grossProfit)}
           </span>
         ) : (
-          <span className="text-slate-600">—</span>
+          <span className="text-slate-600">�€”</span>
         ),
     },
     {

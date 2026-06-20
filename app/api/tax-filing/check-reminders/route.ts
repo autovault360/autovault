@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
 
       const result = await sendTransactionalEmail({
         to: [{ email: owner.email, name: owner.full_name ?? undefined }],
-        subject: `Sales Tax Filing Reminder — ${dealership.name}`,
+        subject: `Sales Tax Filing Reminder �€” ${dealership.name}`,
         htmlContent,
       });
 

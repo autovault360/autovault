@@ -55,7 +55,7 @@ export function buildVehicleAlertKpiSummary(
     oldestPendingDays,
     oldestPendingDate: oldest
       ? formatAlertDate(oldest.pendingSince)
-      : "—",
+      : "�€”",
   };
 }
 
