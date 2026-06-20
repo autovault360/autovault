@@ -25,8 +25,8 @@ export default function CpaVehiclesByProfitPanel({
       title="Vehicles by Profit"
       viewDetailsLinkClass="text-green-700 border border-green-700"
       subtitle="Performance overview of profitable vehicle sales"
-      viewDetailsHref="/cpa/vehicles"
-      viewDetailsDisabled
+      viewDetailsHref="/cpa/dashboard/profit-vehicles-report"
+      viewDetailsDisabled={false}
     >
       <CpaPanelStatGrid>
         <CpaPanelStatCell
