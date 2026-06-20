@@ -37,10 +37,16 @@ const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
     showViewMode: false,
     showMonthNav: true,
   },
+  "/cpa/dashboard/payroll-commissions": {
+    title: "Payroll & Commissions",
+    subtitle: "Track payroll expenses and sales commissions for your team.",
+    showViewMode: true,
+    showMonthNav: true,
+  },
   "/cpa/payroll": {
     title: "Payroll & Commissions",
-    subtitle: "Payroll summaries, commissions, and employee payments",
-    showViewMode: false,
+    subtitle: "Track payroll expenses and sales commissions for your team.",
+    showViewMode: true,
     showMonthNav: true,
   },
   "/cpa/deal-jackets": {
@@ -96,7 +102,7 @@ export function getCpaHeaderDefaults(pathname: string): CpaHeaderDefaults {
       subtitle: "Employee payroll and commission details",
       showViewMode: false,
       showMonthNav: false,
-      backLink: { href: "/cpa/payroll", label: "Back to Payroll" },
+      backLink: { href: "/cpa/dashboard/payroll-commissions", label: "Back to Payroll" },
     };
   }
 

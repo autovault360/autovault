@@ -35,7 +35,7 @@ export default function CpaPortalHeader() {
         icon={Users}
         label="Payroll"
         tone="blue"
-        onClick={() => router.push("/cpa/payroll")}
+        onClick={() => router.push("/cpa/dashboard/payroll-commissions")}
       />
       <HeaderIconAction
         icon={Folder}

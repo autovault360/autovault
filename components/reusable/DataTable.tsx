@@ -15,6 +15,37 @@ import {
 
 type SortDirection = "asc" | "desc";
 
+function parseNumericValue(value: unknown): number {
+  if (value == null) return 0;
+  if (typeof value === "number" && !Number.isNaN(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[^0-9.-]/g, "");
+    if (!cleaned || cleaned === "-" || cleaned === ".") return 0;
+    const parsed = Number.parseFloat(cleaned);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+  return 0;
+}
+
+function formatTotalValue(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function getColumnNumericValue<T extends Record<string, unknown>>(
+  row: T,
+  column: Column<T>,
+): number {
+  const raw = column.accessor
+    ? column.accessor(row)
+    : (row[column.key] as unknown);
+  return parseNumericValue(raw);
+}
+
 export interface Column<T> {
   key: string;
   header: string;
@@ -37,6 +68,8 @@ interface DataTableProps<T> {
   activeRowKey?: string | number | null;
   paginationSummaryLabel?: string;
   loading?: boolean;
+  Total?: boolean;
+  TotalColumns?: number[];
 }
 
 function getPaginationRange(
@@ -72,6 +105,8 @@ export default function DataTable<T extends Record<string, unknown>>({
   activeRowKey = null,
   paginationSummaryLabel = "items",
   loading = false,
+  Total = false,
+  TotalColumns = [],
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -163,6 +198,32 @@ export default function DataTable<T extends Record<string, unknown>>({
   );
 
   const colSpan = columns.length + (enableSelection ? 1 : 0);
+
+  const totalColumnSet = useMemo(
+    () => new Set(TotalColumns.filter((index) => index >= 0 && index < columns.length)),
+    [TotalColumns, columns.length],
+  );
+
+  const columnTotals = useMemo(() => {
+    if (!Total || totalColumnSet.size === 0 || sortedData.length === 0) {
+      return new Map<number, number>();
+    }
+
+    const totals = new Map<number, number>();
+    for (const index of totalColumnSet) {
+      const column = columns[index];
+      if (!column) continue;
+      const sum = sortedData.reduce(
+        (acc, row) => acc + getColumnNumericValue(row as T, column),
+        0,
+      );
+      totals.set(index, sum);
+    }
+    return totals;
+  }, [Total, totalColumnSet, sortedData, columns]);
+
+  const showTotalRow =
+    Total && sortedData.length > 0 && !loading && totalColumnSet.size > 0;
 
   return (
     <div className="w-full border border-slate-800 bg-card rounded-sm">
@@ -285,6 +346,28 @@ export default function DataTable<T extends Record<string, unknown>>({
               })
             )}
           </tbody>
+          {showTotalRow && (
+            <tfoot className="border-t border-slate-800 bg-slate-900/40">
+              <tr>
+                {enableSelection && <td className="w-10 px-1.5 py-2.5" />}
+                {columns.map((col, index) => (
+                  <td
+                    key={`total-${col.key}`}
+                    className={cn(
+                      "px-1.5 py-2.5 whitespace-nowrap font-semibold text-white",
+                      col.cellClassName,
+                    )}
+                  >
+                    {index === 0
+                      ? "Total"
+                      : totalColumnSet.has(index)
+                        ? formatTotalValue(columnTotals.get(index) ?? 0)
+                        : ""}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          )}
         </table>
       </div>
 

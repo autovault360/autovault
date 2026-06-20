@@ -60,7 +60,7 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         comingSoon: true,
       },
       {
-        href: "/cpa/payroll",
+        href: "/cpa/dashboard/payroll-commissions",
         label: "Payroll & Commissions",
         icon: Users,
         color: "text-orange-500",
