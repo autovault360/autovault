@@ -60,7 +60,7 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         color: "text-emerald-400",
       },
       {
-        href: "/cpa/payroll",
+        href: "/cpa/dashboard/payroll-commissions",
         label: "Payroll & Commissions",
         icon: Users,
         color: "text-violet-400",
