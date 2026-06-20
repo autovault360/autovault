@@ -26,6 +26,7 @@ const MONTHS = [
 export type CpaHeaderProps = {
   title?: string;
   subtitle?: string;
+  titlePrefix?: React.ReactNode;
   backLink?: { href: string; label: string };
   showViewMode?: boolean;
   showMonthNav?: boolean;
@@ -35,6 +36,7 @@ export type CpaHeaderProps = {
 export default function CpaHeader({
   title: titleProp,
   subtitle: subtitleProp,
+  titlePrefix,
   backLink: backLinkProp,
   showViewMode: showViewModeProp,
   showMonthNav: showMonthNavProp,
@@ -74,17 +76,20 @@ export default function CpaHeader({
   return (
     <header className="mb-4 space-y-3 border-b border-slate-800 pb-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <PageHeaderTitle title={title} subtitle={subtitle} />
-          {backLink && (
-            <Link
-              href={backLink.href}
-              className="mt-1 inline-flex items-center gap-1 text-[12px] text-blue-400 hover:underline"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-              {backLink.label}
-            </Link>
-          )}
+        <div className="flex items-start gap-3">
+          {titlePrefix}
+          <div>
+            <PageHeaderTitle title={title} subtitle={subtitle} />
+            {backLink && (
+              <Link
+                href={backLink.href}
+                className="mt-1 inline-flex items-center gap-1 text-[12px] text-blue-400 hover:underline"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                {backLink.label}
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">

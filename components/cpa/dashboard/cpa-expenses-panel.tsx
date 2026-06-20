@@ -70,7 +70,6 @@ export default function CpaExpensesPanel({
       subtitle="Operating expense breakdown"
       viewDetailsLinkClass="border border-orange-500 text-orange-500"
       viewDetailsHref="/cpa/expenses"
-      viewDetailsDisabled
       className={className}
     >
       <div className="grid grid-cols-2 border-t border-l border-slate-700 lg:grid-cols-5">

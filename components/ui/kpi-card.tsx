@@ -348,6 +348,7 @@ export function KPICard({
   showSparkline = true,
   showLink = true,
   deltaColor = "green",
+  deltaClassName,
   layout = "default",
   valueClassName,
   className,
@@ -356,6 +357,7 @@ export function KPICard({
   showSparkline?: boolean;
   showLink?: boolean;
   deltaColor?: "green" | "red";
+  deltaClassName?: string;
   layout?: KPICardLayout;
   valueClassName?: string;
   className?: string;
@@ -407,9 +409,8 @@ export function KPICard({
             <div
               className={cn(
                 "text-[13px]",
-                deltaColor === "red"
-                  ? "text-red-400"
-                  : "text-emerald-400",
+                deltaClassName ??
+                  (deltaColor === "red" ? "text-red-400" : "text-emerald-400"),
               )}
             >
               {data.delta}
