@@ -11,6 +11,8 @@ import {
   Car,
   Wallet,
   Building2,
+  TrendingUp,
+  TrendingDown,
   type LucideIcon,
 } from "lucide-react";
 
@@ -100,6 +102,18 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         label: "Yearly View",
         icon: Calendar,
         color: "text-cyan-400",
+      },
+      {
+        href: "/cpa/dashboard/profit-vehicles-report",
+        label: "Profit Vehicles Report",
+        icon: TrendingUp,
+        color: "text-emerald-400",
+      },
+      {
+        href: "/cpa/dashboard/vehicle-losses-report",
+        label: "Vehicle Losses Report",
+        icon: TrendingDown,
+        color: "text-red-400",
       },
       {
         href: "/cpa/custom-reports",
