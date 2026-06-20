@@ -70,7 +70,7 @@ export default function PayrollDashboardContent({
     setRunDialogOpen(false);
     startTransition(() => {
       simulateRefresh();
-      toast.success("Payroll run initiated for May 11–24, 2026");
+      toast.success("Payroll run initiated for May 11�€“24, 2026");
     });
   };
 

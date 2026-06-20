@@ -1,5 +1,5 @@
 /**
- * AutoVault360 — QStash Cron Setup
+ * AutoVault360 �€” QStash Cron Setup
  *
  * Registers a daily cron job to check tax filing reminders.
  * Run once after deploying to production.
@@ -39,7 +39,7 @@ if (!QSTASH_TOKEN) {
 
 async function main() {
   console.log("\n==============================================");
-  console.log("  AutoVault360 — QStash Cron Setup");
+  console.log("  AutoVault360 �€” QStash Cron Setup");
   console.log("==============================================\n");
 
   const cronEndpoint = `${APP_URL}/api/tax-filing/check-reminders`;
@@ -68,7 +68,7 @@ async function main() {
 
   if (!response.ok) {
     const error = await response.text();
-    console.error(`??? Failed: ${response.status} — ${error}`);
+    console.error(`??? Failed: ${response.status} �€” ${error}`);
     process.exit(1);
   }
 

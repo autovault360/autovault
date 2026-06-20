@@ -389,13 +389,13 @@ export default function EditVehicleModal({
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id="edit-title-yes" />
                             <Label htmlFor="edit-title-yes" className="text-[12px]">
-                              Yes — Title received
+                              Yes �€” Title received
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="no" id="edit-title-no" />
                             <Label htmlFor="edit-title-no" className="text-[12px]">
-                              No — Missing title
+                              No �€” Missing title
                             </Label>
                           </div>
                         </RadioGroup>

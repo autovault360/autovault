@@ -10,7 +10,7 @@ const XL_GRID_COLS: Record<number, string> = {
   8: "xl:grid-cols-8",
 };
 
-/** Responsive KPI grid — matches wholesale Inventory Overview layout. */
+/** Responsive KPI grid �€” matches wholesale Inventory Overview layout. */
 export const KPI_GRID_BASE = "grid min-w-0 grid-cols-2 gap-3 md:grid-cols-3";
 
 export function kpiGridClass(cardCount: number, className?: string) {

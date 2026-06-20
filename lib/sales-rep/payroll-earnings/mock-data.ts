@@ -354,39 +354,39 @@ const PAYMENT_HISTORY: IPaymentHistoryEntry[] = [
   {
     id: "ph-1",
     payDate: "May 6, 2026",
-    period: "Apr 1 – Apr 30, 2026",
+    period: "Apr 1 �€“ Apr 30, 2026",
     totalEarnings: 11750,
     status: "paid",
   },
   {
     id: "ph-2",
     payDate: "Apr 4, 2026",
-    period: "Mar 1 – Mar 31, 2026",
+    period: "Mar 1 �€“ Mar 31, 2026",
     totalEarnings: 10920,
     status: "paid",
   },
   {
     id: "ph-3",
     payDate: "Mar 6, 2026",
-    period: "Feb 1 – Feb 28, 2026",
+    period: "Feb 1 �€“ Feb 28, 2026",
     totalEarnings: 9840,
     status: "paid",
   },
   {
     id: "ph-4",
     payDate: "Feb 6, 2026",
-    period: "Jan 1 – Jan 31, 2026",
+    period: "Jan 1 �€“ Jan 31, 2026",
     totalEarnings: 9050,
     status: "paid",
   },
 ];
 
 const PERIOD_LABELS: Record<PayrollPeriodMonth, string> = {
-  "2026-05": "May 1 – May 31, 2026",
-  "2026-04": "Apr 1 – Apr 30, 2026",
-  "2026-03": "Mar 1 – Mar 31, 2026",
-  "2026-02": "Feb 1 – Feb 28, 2026",
-  "2026-01": "Jan 1 – Jan 31, 2026",
+  "2026-05": "May 1 �€“ May 31, 2026",
+  "2026-04": "Apr 1 �€“ Apr 30, 2026",
+  "2026-03": "Mar 1 �€“ Mar 31, 2026",
+  "2026-02": "Feb 1 �€“ Feb 28, 2026",
+  "2026-01": "Jan 1 �€“ Jan 31, 2026",
 };
 
 export function getPayrollEarningsMockData(
@@ -427,10 +427,10 @@ export function getPayrollEarningsMockData(
         month === "2026-05" ? 774.72 : avgCommission,
       nextPayDate: "Jun 6, 2026",
       daysUntilPay: daysUntil,
-      totalEarningsTrend: "↑ 18.7% vs last month",
-      totalCommissionsTrend: "↑ 18.7% vs last month",
-      vehiclesSoldTrend: "↑ 20% vs last month",
-      avgCommissionTrend: "↑ 6.4% vs last month",
+      totalEarningsTrend: "�†‘ 18.7% vs last month",
+      totalCommissionsTrend: "�†‘ 18.7% vs last month",
+      vehiclesSoldTrend: "�†‘ 20% vs last month",
+      avgCommissionTrend: "�†‘ 6.4% vs last month",
     },
     breakdown: {
       totalCommissions: scaledTotal,

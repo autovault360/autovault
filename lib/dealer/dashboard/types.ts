@@ -66,7 +66,7 @@ export type WholesaleVehicle = {
   costs: VehicleCosts;
   marketValue: number;
   wholesaleValue: number;
-  /** Legacy mock field — prefer inventoryStatus */
+  /** Legacy mock field �€” prefer inventoryStatus */
   status: VehicleStatus;
   inventoryStatus: WholesaleInventoryStatus;
   titleStatus: WholesaleTitleStatus;

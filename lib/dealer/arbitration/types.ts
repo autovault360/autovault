@@ -43,7 +43,7 @@ export type ArbitrationNote = {
 };
 
 export function formatDisplayDate(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "�€”";
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
   return `${String(m).padStart(2, "0")}/${String(d).padStart(2, "0")}/${y}`;

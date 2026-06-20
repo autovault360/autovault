@@ -113,12 +113,12 @@ export type DealerPlKpiCard = {
 
 export function parseDealerPlDelta(delta: string): DealerPlKpiTrend {
   const trimmed = delta.trim();
-  const direction: DealerPlKpiTrend["direction"] = trimmed.startsWith("↓")
+  const direction: DealerPlKpiTrend["direction"] = trimmed.startsWith("�†“")
     ? "down"
-    : trimmed.startsWith("↑")
+    : trimmed.startsWith("�†‘")
       ? "up"
       : "flat";
-  const rest = trimmed.replace(/^[↑↓]\s*/, "");
+  const rest = trimmed.replace(/^[�†‘�†“]\s*/, "");
   const vsIndex = rest.indexOf(" vs ");
 
   if (vsIndex === -1) {

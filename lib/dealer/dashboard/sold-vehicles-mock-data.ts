@@ -75,7 +75,7 @@ function makeRecord(seed: SeedRow, index: number): SoldVehicleRecord {
 }
 
 /**
- * May 2024 sold vehicles — 24 records matching the wholesale sold vehicles mockup:
+ * May 2024 sold vehicles �€” 24 records matching the wholesale sold vehicles mockup:
  * $340,159 total sales · $71,407 gross profit · 8 pending · $93,079 pending amount.
  */
 const may2024Seeds: SeedRow[] = [

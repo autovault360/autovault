@@ -83,7 +83,7 @@ export function ReportCardHeaderWithLink({
         }}
         className="shrink-0 text-[11px] font-medium text-blue-400 hover:text-blue-300"
       >
-        {linkLabel} →
+        {linkLabel} �†’
       </button>
     </div>
   );
@@ -139,7 +139,7 @@ export function ReportTitleWithPeriodAndLink({
           }}
           className="shrink-0 pt-px text-[11px] font-medium text-blue-400 hover:text-blue-300"
         >
-          {linkLabel} →
+          {linkLabel} �†’
         </button>
       )}
     </div>
@@ -346,7 +346,7 @@ export function ReportViewMore({
         className,
       )}
     >
-      {label} →
+      {label} �†’
     </button>
   );
 }

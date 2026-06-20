@@ -21,7 +21,7 @@ const supabase = createClient(
   { auth: { autoRefreshToken: false, persistSession: false } },
 );
 
-// ── Re-implement service functions inline (service uses server client with cookies) ──
+// �”€�”€ Re-implement service functions inline (service uses server client with cookies) �”€�”€
 
 async function getTaxSettings(dealershipId: string) {
   const { data } = await supabase

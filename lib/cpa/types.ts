@@ -158,14 +158,88 @@ export type CpaNotePreview = {
   priority: CpaNotePriority;
 };
 
+export type CpaVehicleHighlight = {
+  amount: number;
+  vehicle: string;
+};
+
+export type CpaVehicleProfitStats = {
+  totalVehiclesSold: number;
+  profitableCount: number;
+  profitPct: number;
+  totalProfit: number;
+  avgProfitPerVehicle: number;
+  highestProfit: CpaVehicleHighlight;
+  lowestProfit: CpaVehicleHighlight;
+  grossProfitMargin: number;
+};
+
+export type CpaVehicleLossStats = {
+  lossCount: number;
+  lossPct: number;
+  totalLoss: number;
+  avgLossPerVehicle: number;
+  highestLoss: CpaVehicleHighlight;
+  lowestLoss: CpaVehicleHighlight;
+  returnedToAuction: number;
+  lossImpactPct: number;
+};
+
+export type CpaExpensePanel = {
+  totalExpenses: number;
+  expenseRatio: number;
+  dailyAverage: number;
+  monthlyBudget: number;
+  vsBudgetPct: number;
+  categories: CpaExpenseCategory[];
+};
+
+export type CpaPayrollBreakdownItem = {
+  label: string;
+  amount: number;
+};
+
+export type CpaTopEarner = {
+  rank: number;
+  name: string;
+  amount: number;
+};
+
+export type CpaPayrollPanel = {
+  totalPayroll: number;
+  totalCommissions: number;
+  bonuses: number;
+  payrollTaxes: number;
+  deductions: number;
+  totalPayments: number;
+  payrollBreakdown: CpaPayrollBreakdownItem[];
+  topEarners: CpaTopEarner[];
+};
+
+export type CpaSalesTaxPanel = {
+  taxCollected: number;
+  taxPaid: number;
+  taxDue: number;
+  effectiveTaxRate: number;
+  upcomingFiling: string;
+  filingDueDate: string;
+  vehiclesIncluded: number;
+};
+
 export type CpaDashboardData = {
   dataAsOf: string;
+  prevPeriodLabel: string;
   kpis: CpaKpi[];
   salesActivity: CpaSalesActivity[];
   vehiclesSold: CpaVehicleSold[];
   vehiclesSoldTotal: number;
+  vehicleProfitStats: CpaVehicleProfitStats;
+  vehicleLossStats: CpaVehicleLossStats;
   salesTax: CpaSalesTaxSummary;
+  salesTaxPanel: CpaSalesTaxPanel;
   payroll: CpaPayrollSummary;
+  payrollPanel: CpaPayrollPanel;
+  expensePanel: CpaExpensePanel;
   profitLoss: CpaProfitLossRow[];
   trend: CpaTrendPoint[];
   dealJackets: CpaDealJacketSegment[];

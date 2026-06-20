@@ -102,7 +102,7 @@ function buildMockVehicles(): ISalesRepSoldVehicle[] {
   const vehicles: ISalesRepSoldVehicle[] = [];
   let index = 0;
 
-  // This month — 18 vehicles (June 2026)
+  // This month �€” 18 vehicles (June 2026)
   for (let i = 0; i < 18; i++) {
     const spec = VEHICLE_SPECS[i % VEHICLE_SPECS.length]!;
     const customer = CUSTOMERS[i % CUSTOMERS.length]!;
@@ -114,7 +114,7 @@ function buildMockVehicles(): ISalesRepSoldVehicle[] {
     );
   }
 
-  // Last month — 15 vehicles (May 2026)
+  // Last month �€” 15 vehicles (May 2026)
   for (let i = 0; i < 15; i++) {
     const spec = VEHICLE_SPECS[(i + 3) % VEHICLE_SPECS.length]!;
     const customer = CUSTOMERS[(i + 2) % CUSTOMERS.length]!;
@@ -124,7 +124,7 @@ function buildMockVehicles(): ISalesRepSoldVehicle[] {
     );
   }
 
-  // Rest of year — 63 vehicles (Jan–Apr 2026)
+  // Rest of year �€” 63 vehicles (Jan�€“Apr 2026)
   for (let i = 0; i < 63; i++) {
     const spec = VEHICLE_SPECS[i % VEHICLE_SPECS.length]!;
     const customer = CUSTOMERS[i % CUSTOMERS.length]!;

@@ -45,7 +45,7 @@ export default function SendDocumentFooterActions({
             {sending ? (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Sending…
+                Sending�€�
               </>
             ) : (
               <>

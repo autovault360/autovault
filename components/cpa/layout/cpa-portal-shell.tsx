@@ -1,25 +1,46 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
 import UnifiedSidebar from "@/components/layout/unified-sidebar";
+import type { SidebarGroup, SidebarItem } from "@/components/layout/sidebar";
 import CpaPortalHeader from "./cpa-portal-header";
 import CpaFooter from "./cpa-footer";
 import { CPA_NAV_GROUPS } from "./cpa-nav";
 import type { CpaSession } from "@/lib/cpa/types";
-import { CpaPortalProvider } from "../context/cpa-portal-context";
+import { CpaPortalProvider, useCpaPortal } from "../context/cpa-portal-context";
 import CpaNotesModal from "../notes/cpa-notes-modal";
 
-export default function CpaPortalShell({
+function mapNavGroups(openNotes: () => void): SidebarGroup[] {
+  return CPA_NAV_GROUPS.map((group) => ({
+    label: group.label,
+    items: group.items.map((item) => ({
+      href: item.href,
+      label: item.label,
+      icon: item.icon,
+      color: item.color,
+      comingSoon: item.comingSoon,
+      activeClassName: item.activeClassName,
+      onClick: item.opensNotes ? openNotes : undefined,
+    })),
+  }));
+}
+
+function CpaPortalLayoutInner({
   session,
   children,
 }: {
   session: CpaSession;
   children: React.ReactNode;
 }) {
-  const profileSection = session ? (
+  const pathname = usePathname();
+  const { openNotes } = useCpaPortal();
+  const isDashboard = pathname === "/cpa/dashboard";
+
+  const profileSection = (
     <div>
       <div className="px-1.5 pb-1.5 pt-2 text-[10px] font-semibold tracking-[0.12em] text-slate-500">
         CPA ACCOUNT
@@ -49,17 +70,42 @@ export default function CpaPortalShell({
         </Link>
       </div>
     </div>
-  ) : undefined;
+  );
+
+  function handleNavigate(item: SidebarItem) {
+    if (item.onClick) {
+      item.onClick();
+    }
+  }
 
   return (
+    <AppLayout
+      sidebar={
+        <UnifiedSidebar
+          groups={mapNavGroups(openNotes)}
+          profile={profileSection}
+          logoLabel="CPA PORTAL"
+          onNavigate={handleNavigate}
+        />
+      }
+      header={isDashboard ? undefined : <CpaPortalHeader />}
+      footer={<CpaFooter />}
+    >
+      {children}
+    </AppLayout>
+  );
+}
+
+export default function CpaPortalShell({
+  session,
+  children,
+}: {
+  session: CpaSession;
+  children: React.ReactNode;
+}) {
+  return (
     <CpaPortalProvider session={session}>
-      <AppLayout
-        sidebar={<UnifiedSidebar groups={CPA_NAV_GROUPS} profile={profileSection} />}
-        header={<CpaPortalHeader />}
-        footer={<CpaFooter />}
-      >
-        {children}
-      </AppLayout>
+      <CpaPortalLayoutInner session={session}>{children}</CpaPortalLayoutInner>
       <CpaNotesModal />
     </CpaPortalProvider>
   );

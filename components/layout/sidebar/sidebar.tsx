@@ -79,7 +79,9 @@ function NavItem({
 
   const className = cn(
     "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-slate-300 transition hover:bg-slate-800/60",
-    active && "border border-slate-700 bg-slate-800/80 font-semibold text-white",
+    active &&
+      (item.activeClassName ??
+        "border border-slate-700 bg-slate-800/80 font-semibold text-white"),
     item.comingSoon && "cursor-default opacity-70",
     depth > 0 && "ml-3 pl-2 text-[12px]",
   );

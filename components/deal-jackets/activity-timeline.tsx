@@ -75,7 +75,7 @@ export default function ActivityTimeline({ activities }: Props) {
                     {DEAL_JACKET_STATUS_LABELS[item.old_status as DealJacketStatus]}
                   </span>
                 )}
-                {item.old_status && <span className="text-[10px] text-slate-600">→</span>}
+                {item.old_status && <span className="text-[10px] text-slate-600">�†’</span>}
                 <span
                   className={cn(
                     "inline-block rounded px-1.5 py-0.5 text-[10px] font-medium border",
@@ -114,7 +114,7 @@ export default function ActivityTimeline({ activities }: Props) {
               </div>
             ) : null}
             <div className="mt-1 text-[10px] text-[var(--text-muted)]">
-              {item.actor_name} — {formatDisplayDate(item.created_at.split("T")[0])}
+              {item.actor_name} �€” {formatDisplayDate(item.created_at.split("T")[0])}
             </div>
           </div>
         </li>
