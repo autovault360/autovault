@@ -12,7 +12,7 @@ import { formatLossMoney } from "@/lib/cpa/vehicle-losses-report/utils";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-[#0b1322]/90 p-4 shadow-none";
+  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const BAR_BLUE = "#3b82f6";
 const BAR_TRACK = "rgba(30, 41, 59, 0.9)";

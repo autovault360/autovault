@@ -12,7 +12,7 @@ import { formatReportMoney } from "@/lib/cpa/profit-vehicles-report/utils";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-[#0b1322]/90 p-4 shadow-none";
+  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const BAR_GREEN = "#22c55e";
 const BAR_TRACK = "rgba(30, 41, 59, 0.9)";

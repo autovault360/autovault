@@ -23,7 +23,7 @@ import { formatMoney } from "@/lib/cpa/payroll-commissions/mock-data";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-[#0b1322]/90 p-4 shadow-none";
+  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const Y_AXIS_TICKS = [0, 20_000, 40_000, 60_000, 80_000, 100_000, 120_000];
 
@@ -159,8 +159,8 @@ function TrendPanel({ data }: { data: CpaPayrollTrendPoint[] }) {
                 dataKey="payroll"
                 stroke="#a855f7"
                 strokeWidth={2}
-                dot={{ fill: "#a855f7", r: 3, strokeWidth: 0 }}
-                activeDot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }}
+                dot={{ fill: "#a855f7", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#a855f7", strokeWidth: 0 }}
                 name="Payroll"
               />
               <Line
@@ -168,8 +168,8 @@ function TrendPanel({ data }: { data: CpaPayrollTrendPoint[] }) {
                 dataKey="commissions"
                 stroke="#3b82f6"
                 strokeWidth={2}
-                dot={{ fill: "#3b82f6", r: 3, strokeWidth: 0 }}
-                activeDot={{ r: 4, fill: "#3b82f6", strokeWidth: 0 }}
+                dot={{ fill: "#3b82f6", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#3b82f6", strokeWidth: 0 }}
                 name="Commissions"
               />
             </LineChart>
@@ -233,9 +233,9 @@ function DepartmentCompensationPanel({
                   key={row.id}
                   className="last:border-0"
                 >
-                  <td className="py-2.5 pr-2 text-slate-300">{row.department}</td>
-                  <td className="w-[38%] min-w-[96px] px-2 py-2.5">
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-800/90">
+                  <td className="py-1 pr-2 text-slate-300">{row.department}</td>
+                  <td className="w-[38%] min-w-[96px] px-2 py-1">
+                    <div className="h-2 overflow-hidden rounded-full bg-slate-800/90">
                       <div
                         className="flex h-full overflow-hidden rounded-full"
                         style={{ width: `${barWidth}%` }}
