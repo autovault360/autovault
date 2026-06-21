@@ -11,8 +11,10 @@ import { formatMoney, formatPercent } from "./cpa-dashboard-utils";
 
 export default function CpaSalesTaxPanel({
   panel,
+  className
 }: {
   panel: CpaSalesTaxPanel;
+  className: string;
 }) {
   return (
     <CpaPanelShell
@@ -21,8 +23,9 @@ export default function CpaSalesTaxPanel({
       iconBgClassName="bg-cyan-700"
       title="Sales Tax"
       subtitle="Tax collection and filing summary"
-      viewDetailsLinkClass="border border-cyan-700 text-cyan-700"
+      viewDetailsLinkClass="border-cyan-700 text-cyan-700"
       viewDetailsHref="/cpa/sales-tax"
+      className={className}
     >
       <CpaPanelStatGrid gridClass="sm:grid-cols-2">
         <CpaPanelStatCell

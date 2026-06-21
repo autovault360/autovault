@@ -78,9 +78,9 @@ export default function CpaDashboardContent() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3">
-        <CpaSalesTaxPanel panel={dashboard.salesTaxPanel} />
+        <CpaExpensesPanel panel={dashboard.expensePanel} />
         <CpaPayrollCommissionPanel panel={dashboard.payrollPanel} />
-        <CpaExpensesPanel className="col-span-2 2xl:col-span-1" panel={dashboard.expensePanel} />
+        <CpaSalesTaxPanel className="col-span-2 2xl:col-span-1" panel={dashboard.salesTaxPanel} />
       </div>
     </div>
   );

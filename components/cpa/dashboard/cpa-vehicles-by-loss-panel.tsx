@@ -22,7 +22,7 @@ export default function CpaVehiclesByLossPanel({
       icon={TrendingDown}
       iconClassName="text-white"
       iconBgClassName="bg-red-500"
-      viewDetailsLinkClass="border border-red-500 text-red-500"
+      viewDetailsLinkClass="border-red-500 text-red-500"
       title="Vehicles by Loss"
       subtitle="Overview of vehicles sold at a loss"
       viewDetailsHref="/cpa/vehicles"
