@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar, ChevronDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -10,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PageHeaderTitle } from "@/components/layout/page-header-title";
-import { cn } from "@/lib/utils";
 import { useCpaPortal } from "../context/cpa-portal-context";
 import { formatMonthDateRange } from "./cpa-dashboard-utils";
 
@@ -99,27 +97,6 @@ export default function CpaDashboardHeader() {
               ))}
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg border border-slate-800/60 bg-[#0e1626]/50 px-3 py-2">
-          <div className="min-w-0 text-right">
-            <div className="truncate text-[13px] font-semibold text-white">
-              {session.dealershipName || session.fullName}
-            </div>
-            <div className="truncate text-[11px] text-slate-500">
-              {session.email}
-            </div>
-          </div>
-          <Avatar className="h-10 w-10 shrink-0">
-            {session.imageUrl ? (
-              <AvatarImage src={session.imageUrl} alt={session.fullName} />
-            ) : null}
-            <AvatarFallback
-              className={cn("bg-violet-600 text-sm font-semibold text-white")}
-            >
-              {session.initials}
-            </AvatarFallback>
-          </Avatar>
         </div>
       </div>
     </section>

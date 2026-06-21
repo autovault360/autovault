@@ -1,16 +1,13 @@
 import {
   LayoutDashboard,
-  Calendar,
-  Receipt,
+  TrendingUp,
+  TrendingDown,
   Users,
   Archive,
   StickyNote,
   FileDown,
   BarChart3,
-  FileText,
-  Car,
   Wallet,
-  Building2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -32,7 +29,7 @@ export type CpaNavGroup = {
 
 export const CPA_NAV_GROUPS: CpaNavGroup[] = [
   {
-    label: "CPA PORTAL",
+    label: "DASHBOARD",
     items: [
       {
         href: "/cpa/dashboard",
@@ -40,13 +37,6 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         icon: LayoutDashboard,
         color: "text-violet-400",
         activeClassName: "border-violet-500/40 bg-violet-600/20 font-semibold text-white",
-      },
-      {
-        href: "/cpa/dealership-overview",
-        label: "Dealership Overview",
-        icon: Building2,
-        color: "text-blue-400",
-        comingSoon: true,
       },
     ],
   },
@@ -66,47 +56,22 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         color: "text-violet-400",
       },
       {
+        href: "/cpa/dashboard/profit-vehicles-report",
+        label: "Vehicle Profit Report",
+        icon: TrendingUp,
+        color: "text-green-400",
+      },
+      {
+        href: "/cpa/dashboard/vehicle-losses-report",
+        label: "Vehicle Loss Report",
+        icon: TrendingDown,
+        color: "text-red-400",
+      },
+      {
         href: "/cpa/expenses",
         label: "Expenses",
         icon: Wallet,
         color: "text-orange-400",
-      },
-      {
-        href: "/cpa/vehicles",
-        label: "Vehicles",
-        icon: Car,
-        color: "text-blue-400",
-        comingSoon: true,
-      },
-      {
-        href: "/cpa/sales-tax",
-        label: "Sales Tax Center",
-        icon: Receipt,
-        color: "text-cyan-400",
-      },
-    ],
-  },
-  {
-    label: "REPORTS",
-    items: [
-      {
-        href: "/cpa/monthly-financials",
-        label: "Monthly View",
-        icon: Calendar,
-        color: "text-emerald-400",
-      },
-      {
-        href: "/cpa/yearly-financials",
-        label: "Yearly View",
-        icon: Calendar,
-        color: "text-cyan-400",
-      },
-      {
-        href: "/cpa/custom-reports",
-        label: "Custom Reports",
-        icon: FileText,
-        color: "text-slate-400",
-        comingSoon: true,
       },
     ],
   },
@@ -120,12 +85,6 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         color: "text-red-400",
       },
       {
-        href: "/cpa/files",
-        label: "Document Center",
-        icon: Archive,
-        color: "text-cyan-400",
-      },
-      {
         href: "/cpa/dashboard",
         label: "CPA Notes",
         icon: StickyNote,
@@ -133,6 +92,12 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
         badgeKey: "notes",
         opensNotes: true,
         comingSoon: true,
+      },
+      {
+        href: "/cpa/files",
+        label: "Document Center",
+        icon: Archive,
+        color: "text-cyan-400",
       },
     ],
   },
