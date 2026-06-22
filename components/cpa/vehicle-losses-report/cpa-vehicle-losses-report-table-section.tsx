@@ -263,30 +263,33 @@ export default function CpaVehicleLossesReportTableSection({
   return (
     <CardShell>
       <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-4 border-b border-slate-800 pb-0">
-          {TABS.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onTabChange(tab.id)}
-              className={cn(
-                "border-b-2 pb-2 text-[12px] font-medium transition-colors",
-                activeTab === tab.id
-                  ? "border-blue-500 text-white"
-                  : "border-transparent text-slate-500 hover:text-slate-300",
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="w-full">
+          <div className="flex flex-wrap items-center gap-4 border-b border-slate-800 pb-0">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => onTabChange(tab.id)}
+                className={cn(
+                  "border-b-2 pb-2 text-[12px] font-medium transition-colors",
+                  activeTab === tab.id
+                    ? "border-blue-500 text-white"
+                    : "border-transparent text-slate-500 hover:text-slate-300",
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 justify-end w-full">
           <Input
             placeholder="Search stock, VIN, model..."
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="h-8 w-full min-w-[180px] border-slate-700 bg-[#060d18] text-[11px] sm:w-[220px]"
+            theme="dark"
+            className="max-w-[230px]"
           />
 
           <Select value={makeFilter} onValueChange={setMakeFilter}>

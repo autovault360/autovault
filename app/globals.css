@@ -94,7 +94,7 @@
 
 
 :root {
-  --background: oklch(1 0 0);
+  --background: #010d19;
   --foreground: oklch(0.145 0 0);
   --card: #051322;
   --card-foreground: #e8edf5;

@@ -17,7 +17,7 @@ export default function CpaPayrollCommissionPanel({
       iconBgClassName="bg-violet-500"
       title="Payroll & Commission"
       subtitle="Total payroll, commissions, bonuses, and deductions"
-      viewDetailsLinkClass="border border-violet-500 text-violet-500"
+      viewDetailsLinkClass="border-violet-500 text-violet-500"
       viewDetailsHref="/cpa/payroll"
     >
       {/* Top Stat Row - Inheriting violet colors for the values */}

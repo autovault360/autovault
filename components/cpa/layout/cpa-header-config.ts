@@ -14,7 +14,7 @@ export type CpaHeaderDefaults = {
 const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
   "/cpa/dashboard": {
     title: "CPA Dashboard",
-    subtitle: "Real-time financials, tax reporting & compliance center",
+    subtitle: "Financial Summary Overview",
     showViewMode: true,
     showMonthNav: true,
   },
@@ -46,19 +46,6 @@ const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
   "/cpa/dashboard/payroll-commissions": {
     title: "Payroll & Commissions",
     subtitle: "Track payroll expenses and sales commissions for your team.",
-    showViewMode: true,
-    showMonthNav: true,
-  },
-  "/cpa/dashboard/profit-vehicles-report": {
-    title: "Profit Vehicles Report",
-    subtitle: "All vehicles sold at a profit.",
-    showViewMode: true,
-    showMonthNav: true,
-  },
-  "/cpa/dashboard/vehicle-losses-report": {
-    title: "Vehicle Losses Report",
-    subtitle:
-      "All vehicles sold at a loss, returned to auction, or with negative profit.",
     showViewMode: true,
     showMonthNav: true,
   },

@@ -122,6 +122,9 @@ export const FILES_STORAGE_MOCK: FilesStorageReport = {
       uploadedAt: "2025-05-20T10:24:00",
       sizeBytes: 2516582,
       fileType: "pdf",
+      mimeType: "application/pdf",
+      storagePath: "deal-jacket-documents/RO-1012_DealJacket.pdf",
+      uploadedBy: "John Dealer",
     },
     {
       id: "upload-2",
@@ -130,6 +133,10 @@ export const FILES_STORAGE_MOCK: FilesStorageReport = {
       uploadedAt: "2025-05-20T09:15:00",
       sizeBytes: 1887436,
       fileType: "jpg",
+      signedUrl: "/image.png",
+      mimeType: "image/jpeg",
+      storagePath: "vehicle-images/VIN_Photo_Front.jpg",
+      uploadedBy: "John Dealer",
     },
     {
       id: "upload-3",
@@ -138,6 +145,9 @@ export const FILES_STORAGE_MOCK: FilesStorageReport = {
       uploadedAt: "2025-05-19T16:42:00",
       sizeBytes: 524288,
       fileType: "pdf",
+      mimeType: "application/pdf",
+      storagePath: "expense-receipts/Expense_Receipt_May19.pdf",
+      uploadedBy: "John Dealer",
     },
     {
       id: "upload-4",
@@ -146,6 +156,9 @@ export const FILES_STORAGE_MOCK: FilesStorageReport = {
       uploadedAt: "2025-05-18T11:30:00",
       sizeBytes: 1048576,
       fileType: "xlsx",
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      storagePath: "payroll-hr/Payroll_May2025.xlsx",
+      uploadedBy: "John Dealer",
     },
     {
       id: "upload-5",
@@ -154,6 +167,9 @@ export const FILES_STORAGE_MOCK: FilesStorageReport = {
       uploadedAt: "2025-05-17T14:20:00",
       sizeBytes: 15728640,
       fileType: "mp4",
+      mimeType: "video/mp4",
+      storagePath: "vehicle-images/Vehicle_Walkaround.mp4",
+      uploadedBy: "John Dealer",
     },
   ],
   storageTips: [

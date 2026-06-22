@@ -108,7 +108,14 @@ function formatDelta(
   };
 }
 
-function formatPrevPeriodLabel(prevMonth: number, prevYear: number): string {
+function formatPrevPeriodLabel(
+  view: CpaViewMode,
+  prevMonth: number,
+  prevYear: number,
+): string {
+  if (view === "yearly") {
+    return `January 1 – December 31, ${prevYear}`;
+  }
   const monthName = MONTH_NAMES_FULL[prevMonth - 1] ?? "January";
   const lastDay = new Date(prevYear, prevMonth, 0).getDate();
   return `${monthName} 1 – ${monthName} ${lastDay}, ${prevYear}`;
@@ -512,7 +519,12 @@ export async function buildCpaDashboardData(
     bounds.end,
   );
 
-  const daysInMonth = new Date(year, month, 0).getDate();
+  const periodStart = new Date(bounds.start);
+  const periodEnd = new Date(bounds.end);
+  const daysInPeriod =
+    Math.round(
+      (periodEnd.getTime() - periodStart.getTime()) / (1000 * 60 * 60 * 24),
+    ) + 1;
   const monthlyBudget = prev.total_expenses;
   const vsBudgetPct =
     monthlyBudget > 0
@@ -533,7 +545,11 @@ export async function buildCpaDashboardData(
   const quarter = Math.ceil(month / 3);
   const upcomingFiling = `California Q${quarter} Filing`;
 
-  const prevPeriodLabel = formatPrevPeriodLabel(bounds.prevMonth, bounds.prevYear);
+  const prevPeriodLabel = formatPrevPeriodLabel(
+    view,
+    bounds.prevMonth,
+    bounds.prevYear,
+  );
 
   const [
     revenueChart,
@@ -659,8 +675,11 @@ export async function buildCpaDashboardData(
     minute: "2-digit",
   });
 
+  const periodLabel =
+    view === "yearly" ? String(year) : `${monthLabel} ${year}`;
+
   return {
-    dataAsOf: `${monthLabel} ${year} - Updated ${dataAsOf}`,
+    dataAsOf: `${periodLabel} - Updated ${dataAsOf}`,
     prevPeriodLabel,
     kpis,
     salesActivity: [
@@ -749,7 +768,8 @@ export async function buildCpaDashboardData(
         cur.total_revenue > 0
           ? Math.round((cur.total_expenses / cur.total_revenue) * 10000) / 100
           : 0,
-      dailyAverage: daysInMonth > 0 ? Math.round(cur.total_expenses / daysInMonth) : 0,
+      dailyAverage:
+        daysInPeriod > 0 ? Math.round(cur.total_expenses / daysInPeriod) : 0,
       monthlyBudget,
       vsBudgetPct,
       categories: buildExpenseCategories(cur),

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLayout from "@/components/layout/app-layout";
@@ -36,9 +35,7 @@ function CpaPortalLayoutInner({
   session: CpaSession;
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const { openNotes } = useCpaPortal();
-  const isDashboard = pathname === "/cpa/dashboard";
 
   const profileSection = (
     <div>
@@ -88,7 +85,7 @@ function CpaPortalLayoutInner({
           onNavigate={handleNavigate}
         />
       }
-      header={isDashboard ? undefined : <CpaPortalHeader />}
+      header={<CpaPortalHeader />}
       footer={<CpaFooter />}
     >
       {children}
