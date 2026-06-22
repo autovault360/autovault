@@ -1,6 +1,7 @@
 "use client";
 
 import CpaDashboardHeader from "./cpa-dashboard-header";
+import CpaMonthSelector from "./cpa-month-selector";
 import CpaDashboardSkeleton from "./cpa-dashboard-skeleton";
 import CpaVehiclesByProfitPanel from "./cpa-vehicles-by-profit-panel";
 import CpaVehiclesByLossPanel from "./cpa-vehicles-by-loss-panel";
@@ -12,6 +13,7 @@ import { KPICard } from "@/components/ui/kpi-card";
 import { ADMIN_PANEL_SHELL_CLASS } from "@/app/dashboard/_components/admin-panel-styles";
 import { kpiGridClass } from "@/lib/ui/kpi-grid";
 import { toKpiCardData } from "./cpa-dashboard-utils";
+import { Loader2 } from "lucide-react";
 
 export default function CpaDashboardContent() {
   const { dashboard, loading } = useCpaPortal();
@@ -31,33 +33,16 @@ export default function CpaDashboardContent() {
   return (
     <div className="relative">
       {loading && (
-        <div className="absolute inset-0 z-50 flex items-start justify-center bg-slate-950/60 pt-32 backdrop-blur-[1px]">
-          <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 shadow-2xl">
-            <svg
-              className="h-5 w-5 animate-spin text-blue-400"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              />
-            </svg>
-            <span className="text-sm text-slate-300">Updating data...</span>
+        <div className="absolute inset-0 z-50 flex items-start justify-center bg-background/60 pt-32 backdrop-blur-[1px]">
+          <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-background px-5 py-3 shadow-2xl">
+            <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
+            <span className="text-sm text-white">Updating data...</span>
           </div>
         </div>
       )}
 
       <CpaDashboardHeader />
+      <CpaMonthSelector />
 
       <div className={kpiGridClass(dashboard.kpis.length, "mb-4")}>
         {dashboard.kpis.map((kpi) => (
@@ -82,6 +67,11 @@ export default function CpaDashboardContent() {
         <CpaPayrollCommissionPanel panel={dashboard.payrollPanel} />
         <CpaSalesTaxPanel className="col-span-2 2xl:col-span-1" panel={dashboard.salesTaxPanel} />
       </div>
+
+      <p className="mt-6 text-center text-[11px] text-slate-600">
+        All financial data is based on the selected time period. Switch between
+        Monthly and Yearly views to analyze performance.
+      </p>
     </div>
   );
 }

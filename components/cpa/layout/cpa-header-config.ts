@@ -14,7 +14,7 @@ export type CpaHeaderDefaults = {
 const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
   "/cpa/dashboard": {
     title: "CPA Dashboard",
-    subtitle: "Real-time financials, tax reporting & compliance center",
+    subtitle: "Financial Summary Overview",
     showViewMode: true,
     showMonthNav: true,
   },

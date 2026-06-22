@@ -25,8 +25,7 @@ export default function CpaVehiclesByLossPanel({
       viewDetailsLinkClass="border-red-500 text-red-500"
       title="Vehicles by Loss"
       subtitle="Overview of vehicles sold at a loss"
-      viewDetailsHref="/cpa/vehicles"
-      viewDetailsDisabled
+      viewDetailsHref="/cpa/dashboard/vehicle-losses-report"
     >
       <CpaPanelStatGrid>
         <CpaPanelStatCell

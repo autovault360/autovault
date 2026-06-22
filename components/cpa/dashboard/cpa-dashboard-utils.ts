@@ -1,4 +1,4 @@
-import type { CpaDashboardData, CpaKpi } from "@/lib/cpa/types";
+import type { CpaDashboardData, CpaKpi, CpaViewMode } from "@/lib/cpa/types";
 import type { KPICardData, KPIIconName } from "@/components/ui/kpi-card";
 
 const MONTH_NAMES_FULL = [
@@ -33,6 +33,29 @@ export function formatMonthDateRange(month: number, year: number) {
   const monthName = MONTH_NAMES_FULL[month - 1] ?? "January";
   const lastDay = new Date(year, month, 0).getDate();
   return `${monthName} 1 – ${monthName} ${lastDay}, ${year}`;
+}
+
+export function formatYearDateRange(year: number) {
+  return `January 1 – December 31, ${year}`;
+}
+
+export function formatPeriodDateRange(
+  view: CpaViewMode,
+  month: number,
+  year: number,
+) {
+  return view === "yearly"
+    ? formatYearDateRange(year)
+    : formatMonthDateRange(month, year);
+}
+
+export function formatPeriodStatusLine(
+  view: CpaViewMode,
+  month: number,
+  year: number,
+) {
+  const range = formatPeriodDateRange(view, month, year);
+  return `Showing data for ${range}`;
 }
 
 const cpaColorToTailwind: Record<string, string> = {

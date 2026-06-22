@@ -72,10 +72,10 @@ export default function CpaExpensesContent() {
   return (
     <div className="relative">
       {loading && data && (
-        <div className="absolute inset-0 z-50 flex items-start justify-center bg-slate-950/60 pt-32 backdrop-blur-[1px]">
-          <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-900 px-5 py-3 shadow-2xl">
+        <div className="absolute inset-0 z-50 flex items-start justify-center bg-background pt-32 backdrop-blur-[1px]">
+          <div className="flex items-center gap-3 rounded-lg border border-slate-700 bg-background px-5 py-3 shadow-2xl">
             <Loader2 className="h-5 w-5 animate-spin text-blue-400" />
-            <span className="text-sm text-slate-300">Updating data...</span>
+            <span className="text-sm text-white">Updating data...</span>
           </div>
         </div>
       )}
