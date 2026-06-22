@@ -188,7 +188,7 @@ export default function CommissionDealsTable({
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger
             theme="dark"
-            className="h-8 w-[120px] border-slate-700/80 bg-slate-800/50 text-[11px]"
+            className="w-[120px]"
           >
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
@@ -205,7 +205,7 @@ export default function CommissionDealsTable({
         <Select value={dealFilter} onValueChange={setDealFilter}>
           <SelectTrigger
             theme="dark"
-            className="h-8 w-[140px] border-slate-700/80 bg-slate-800/50 text-[11px]"
+            className="w-[140px]"
           >
             <SelectValue placeholder="All Deal Jackets" />
           </SelectTrigger>
@@ -229,7 +229,7 @@ export default function CommissionDealsTable({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by Deal Jacket #, Vehicle, or Buyer..."
-            className="h-8 border-slate-700/80 bg-slate-800/50 pl-8 text-[11px]"
+            className="pl-8"
           />
         </div>
       </div>
