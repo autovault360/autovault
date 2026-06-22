@@ -228,14 +228,43 @@ function DepartmentCompensationPanel({
               const commissionShare =
                 row.total > 0 ? (row.commissions / row.total) * 100 : 0;
 
-              return (
-                <tr
-                  key={row.id}
-                  className="last:border-0"
-                >
-                  <td className="py-1 pr-2 text-slate-300">{row.department}</td>
-                  <td className="w-[38%] min-w-[96px] px-2 py-1">
-                    <div className="h-2 overflow-hidden rounded-full bg-slate-800/90">
+              return (  
+                <>
+                  <tr
+                    key={row.id}
+                    className="last:border-0"
+                  >
+                    <td className="py-1 pr-2 text-slate-300">{row.department}</td>
+                    <td className="md:hidden" />
+                    <td className="hidden md:table-cell w-full px-2 py-1">
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-800/90">
+                        <div
+                          className="flex h-full overflow-hidden rounded-full"
+                          style={{ width: `${barWidth}%` }}
+                        >
+                          <div
+                            className="h-full bg-purple-500"
+                            style={{ width: `${payrollShare}%` }}
+                          />
+                          <div
+                            className="h-full bg-blue-500"
+                            style={{ width: `${commissionShare}%` }}
+                          /> 
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2.5 pl-2 text-right tabular-nums text-slate-300">
+                      {formatMoney(row.payroll)}
+                    </td>
+                    <td className="py-2.5 text-right tabular-nums text-slate-300">
+                      {formatMoney(row.commissions)}
+                    </td>
+                    <td className="py-2.5 text-right font-medium tabular-nums text-white">
+                      {formatMoney(row.total)}
+                    </td>
+                  </tr>
+                  <tr className="md:hidden w-full mt-1">
+                    <td colSpan={5} className="h-2 overflow-hidden rounded-full bg-slate-800/90">
                       <div
                         className="flex h-full overflow-hidden rounded-full"
                         style={{ width: `${barWidth}%` }}
@@ -249,18 +278,9 @@ function DepartmentCompensationPanel({
                           style={{ width: `${commissionShare}%` }}
                         />
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-2.5 pl-2 text-right tabular-nums text-slate-300">
-                    {formatMoney(row.payroll)}
-                  </td>
-                  <td className="py-2.5 text-right tabular-nums text-slate-300">
-                    {formatMoney(row.commissions)}
-                  </td>
-                  <td className="py-2.5 text-right font-medium tabular-nums text-white">
-                    {formatMoney(row.total)}
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                </>
               );
             })}
           </tbody>
@@ -299,11 +319,11 @@ export default function CpaPayrollCommissionsChartsRow({
   return (
     <div
       className={cn(
-        "mb-4 grid grid-cols-1 gap-3 lg:grid-cols-3 lg:items-stretch",
+        "mb-4",
       )}
     >
-      <PayrollBreakdownPanel segments={payrollBreakdown} total={payrollBreakdownTotal} />
-      <TrendPanel data={trend} />
+      {/* <PayrollBreakdownPanel segments={payrollBreakdown} total={payrollBreakdownTotal} />
+      <TrendPanel data={trend} /> */}
       <DepartmentCompensationPanel rows={departmentCompensation} />
     </div>
   );
