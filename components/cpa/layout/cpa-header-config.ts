@@ -18,17 +18,10 @@ const PAGE_DEFAULTS: Record<string, CpaHeaderDefaults> = {
     showViewMode: true,
     showMonthNav: true,
   },
-  "/cpa/dashboard/monthly-financial": {
-    title: "Monthly Financials",
-    subtitle: "Detailed financial summary and activity",
+  "/cpa/profit-loss": {
+    title: "Profit & Loss",
+    subtitle: "Comprehensive profit and loss statement",
     showViewMode: false,
-    showMonthNav: true,
-    backLink: { href: "/cpa/dashboard", label: "Back to Dashboard" },
-  },
-  "/cpa/yearly-financials": {
-    title: "Yearly Financials",
-    subtitle: "Annual financial overview and year-end reporting",
-    showViewMode: true,
     showMonthNav: false,
   },
   "/cpa/sales-tax": {

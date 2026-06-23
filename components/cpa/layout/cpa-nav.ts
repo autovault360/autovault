@@ -44,7 +44,7 @@ export const CPA_NAV_GROUPS: CpaNavGroup[] = [
     label: "FINANCIALS",
     items: [
       {
-        href: "/cpa/monthly-financials",
+        href: "/cpa/profit-loss",
         label: "Profit & Loss",
         icon: BarChart3,
         color: "text-emerald-400",
