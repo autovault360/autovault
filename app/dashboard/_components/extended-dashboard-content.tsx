@@ -8,12 +8,18 @@ import GrossProfitSection from "./gross-profit-section";
 
 type Props = {
   dealStatusFilter?: string;
+  viewMode?: "monthly" | "yearly";
+  month?: number;
+  year?: number;
 };
 
 export default async function ExtendedDashboardContent({
   dealStatusFilter,
+  viewMode,
+  month,
+  year,
 }: Props) {
-  const data = await getAdminDashboardData(dealStatusFilter);
+  const data = await getAdminDashboardData(dealStatusFilter, viewMode, month, year);
 
   return (
     <>
@@ -31,7 +37,7 @@ export default async function ExtendedDashboardContent({
         topSalesRep={data.topSalesRep}
         todayEvents={data.todayEvents}
       />
-      <SalesRepSection />
+      <SalesRepSection viewMode={viewMode} month={month} year={year} />
       <GrossProfitSection
         periodLabel={data.grossProfitPeriodLabel}
         rows={data.grossProfitRows}

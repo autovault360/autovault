@@ -42,7 +42,7 @@ export default function CpaDashboardContent() {
       )}
 
       <CpaDashboardHeader />
-      <CpaMonthSelector />
+      {/* <CpaMonthSelector /> */}
 
       <div className={kpiGridClass(dashboard.kpis.length, "mb-4")}>
         {dashboard.kpis.map((kpi) => (

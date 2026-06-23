@@ -22,7 +22,7 @@ import { formatMoney } from "@/components/cpa/dashboard/cpa-dashboard-utils";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[320px] flex-col rounded-lg border-slate-800 bg-card p-4 shadow-none";
+  "flex h-full flex-col rounded-lg border-slate-800 bg-card p-4 shadow-none";
 
 function formatAxisMoney(value: number): string {
   if (value === 0) return "$0";
@@ -231,9 +231,9 @@ export default function CpaExpensesChartsRow({
   trend: CpaExpensesTrendPoint[];
 }) {
   return (
-    <div className={cn("mb-4 grid grid-cols-1 gap-4 xl:grid-cols-3 xl:items-stretch")}>
-      <ExpenseBreakdownPanel categories={categories} total={breakdownTotal} />
-      <ExpensesTrendPanel data={trend} />
+    <div className={cn("mb-4 w-full")}>
+      {/* <ExpenseBreakdownPanel categories={categories} total={breakdownTotal} />
+      <ExpensesTrendPanel data={trend} /> */}
       <ExpensesByCategoryPanel categories={categories} />
     </div>
   );

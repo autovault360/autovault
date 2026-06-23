@@ -5,6 +5,7 @@ import { getEssentialDashboardData } from "@/lib/dashboard/server/get-essential-
 import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import KPISection from "./_components/kpi-section";
 import ExtendedDashboardContent from "./_components/extended-dashboard-content";
+import DashboardPeriodFilter from "./_components/dashboard-period-filter";
 
 import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 
@@ -29,9 +30,9 @@ function ExtendedFallback() {
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; view?: string; month?: string; year?: string }>;
 }) {
-  const { status: dealStatusFilter } = await searchParams;
+  const { status: dealStatusFilter, view, month: monthStr, year: yearStr } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -39,7 +40,11 @@ export default async function DashboardPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const essential = await getEssentialDashboardData(dealStatusFilter);
+  const viewMode = (view ?? "monthly") as "monthly" | "yearly";
+  const filterMonth = monthStr ? Number(monthStr) : undefined;
+  const filterYear = yearStr ? Number(yearStr) : undefined;
+
+  const essential = await getEssentialDashboardData(dealStatusFilter, viewMode, filterMonth, filterYear);
 
   return (
     <div>
@@ -48,12 +53,18 @@ export default async function DashboardPage({
           title="Retail Dashboard Overview"
           subtitle={essential.periodLabel}
         />
+        <DashboardPeriodFilter />
       </section>
 
       <KPISection kpis={essential.kpiCards} />
 
       <Suspense fallback={<ExtendedFallback />}>
-        <ExtendedDashboardContent dealStatusFilter={dealStatusFilter} />
+        <ExtendedDashboardContent
+          dealStatusFilter={dealStatusFilter}
+          viewMode={viewMode}
+          month={filterMonth}
+          year={filterYear}
+        />
       </Suspense>
     </div>
   );

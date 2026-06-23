@@ -12,7 +12,7 @@ import { formatReportMoney } from "@/lib/cpa/profit-vehicles-report/utils";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
+  "flex h-full flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const BAR_GREEN = "#22c55e";
 const BAR_TRACK = "rgba(30, 41, 59, 0.9)";
@@ -189,11 +189,11 @@ export default function CpaProfitVehiclesReportChartsRow({
   return (
     <div
       className={cn(
-        "mb-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 lg:items-stretch",
+        "mb-4 w-full",
       )}
     >
-      <ProfitBreakdownPanel segments={profitBreakdown} total={profitBreakdownTotal} />
-      <ProfitBySourcePanel items={profitBySource} />
+      {/* <ProfitBreakdownPanel segments={profitBreakdown} total={profitBreakdownTotal} />
+      <ProfitBySourcePanel items={profitBySource} /> */}
       <ProfitByVehicleTypePanel items={profitByVehicleType} />
     </div>
   );
