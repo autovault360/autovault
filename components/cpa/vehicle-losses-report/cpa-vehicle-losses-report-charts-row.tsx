@@ -12,7 +12,7 @@ import { formatLossMoney } from "@/lib/cpa/vehicle-losses-report/utils";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
+  "flex h-full flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const BAR_BLUE = "#3b82f6";
 const BAR_TRACK = "rgba(30, 41, 59, 0.9)";
@@ -144,34 +144,40 @@ function LossByVehicleTypePanel({ items }: { items: CpaLossByTypeItem[] }) {
   return (
     <CardShell className={CHART_CARD_CLASS}>
       <CardHead title="LOSS BY VEHICLE TYPE" />
-      <ul className="flex min-h-0 flex-1 flex-col justify-center space-y-3.5">
-        {items.map((item) => (
-          <li
-            key={item.id}
-            className="grid grid-cols-[52px_minmax(0,1fr)_auto_auto] items-center gap-x-3 text-[11px]"
-          >
-            <span className="truncate font-medium text-slate-300">{item.label}</span>
-            <div
-              className="h-2 overflow-hidden rounded-full"
-              style={{ backgroundColor: BAR_TRACK }}
+      {items.length > 0 ? (
+        <ul className="flex min-h-0 flex-1 flex-col justify-center space-y-3.5">
+          {items.map((item) => (
+            <li
+              key={item.id}
+              className="grid grid-cols-[52px_minmax(0,1fr)_auto_auto] items-center gap-x-3 text-[11px]"
             >
+              <span className="truncate font-medium text-slate-300">{item.label}</span>
               <div
-                className="h-full rounded-full transition-all"
-                style={{
-                  width: `${Math.min(item.percent, 100)}%`,
-                  backgroundColor: BAR_BLUE,
-                }}
-              />
-            </div>
-            <span className="whitespace-nowrap tabular-nums text-red-400">
-              {formatLossMoney(item.amount)}
-            </span>
-            <span className="w-12 text-right font-medium tabular-nums text-white">
-              {item.percent.toFixed(1)}%
-            </span>
-          </li>
-        ))}
-      </ul>
+                className="h-2 overflow-hidden rounded-full"
+                style={{ backgroundColor: BAR_TRACK }}
+              >
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${Math.min(item.percent, 100)}%`,
+                    backgroundColor: BAR_BLUE,
+                  }}
+                />
+              </div>
+              <span className="whitespace-nowrap tabular-nums text-red-400">
+                {formatLossMoney(item.amount)}
+              </span>
+              <span className="w-12 text-right font-medium tabular-nums text-white">
+                {item.percent.toFixed(1)}%
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          <span className="text-[11px] text-slate-500">No vehicle loss data found.</span>
+        </div>
+      )}
     </CardShell>
   );
 }
@@ -190,11 +196,11 @@ export default function CpaVehicleLossesReportChartsRow({
   return (
     <div
       className={cn(
-        "mb-4 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 lg:items-stretch",
+        "mb-4 w-full",
       )}
     >
-      <LossBreakdownPanel segments={lossBreakdown} total={lossBreakdownTotal} />
-      <LossByReasonPanel items={lossByReason} />
+      {/* <LossBreakdownPanel segments={lossBreakdown} total={lossBreakdownTotal} />
+      <LossByReasonPanel items={lossByReason} /> */}
       <LossByVehicleTypePanel items={lossByVehicleType} />
     </div>
   );

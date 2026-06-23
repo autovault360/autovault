@@ -6,17 +6,7 @@ import {
 import { getExpenseTotals } from "@/services/expense.service";
 import { getAuthContext } from "./auth-context";
 import { buildAdminDashboardMock } from "../admin/mock-data";
-
-function monthRange(monthsAgo: number = 0): { from: string; to: string } {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() - monthsAgo);
-  const from = d.toISOString().slice(0, 7) + "-01";
-  const to = new Date(d.getFullYear(), d.getMonth() + 1, 0)
-    .toISOString()
-    .slice(0, 10);
-  return { from, to };
-}
+import { getPeriodRange, getComparisonPeriodRange, buildPeriodLabel } from "./period-utils";
 
 function formatCurrency(n: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -36,22 +26,29 @@ export type EssentialDashboardData = {
 
 export async function getEssentialDashboardData(
   dealStatusFilter?: string,
+  viewMode: "monthly" | "yearly" = "monthly",
+  month?: number,
+  year?: number,
 ): Promise<EssentialDashboardData> {
   const auth = await getAuthContext();
+
+  const now = new Date();
+  const currentMonth = month ?? now.getMonth() + 1;
+  const currentYear = year ?? now.getFullYear();
+
+  const { from: mtdFrom, to: mtdTo } = getPeriodRange(viewMode, currentMonth, currentYear);
+  const { from: ltdFrom, to: ltdTo } = getComparisonPeriodRange(viewMode, currentMonth, currentYear);
 
   if (!auth) {
     const mock = buildAdminDashboardMock();
     return {
-      periodLabel: mock.periodLabel,
+      periodLabel: buildPeriodLabel(mtdFrom, mtdTo),
       kpiCards: mock.kpiCards,
-      periodFrom: "",
-      periodTo: "",
+      periodFrom: mtdFrom,
+      periodTo: mtdTo,
       today: new Date().toISOString().slice(0, 10),
     };
   }
-
-  const { from: mtdFrom, to: mtdTo } = monthRange(0);
-  const { from: ltdFrom, to: ltdTo } = monthRange(1);
 
   const [totalInventory, thisMonthAgg, lastMonthAgg, mtdExpenses, ltdExpenses, inventoryValue, statusCounts] =
     await Promise.all([
@@ -91,17 +88,7 @@ export async function getEssentialDashboardData(
         ).toFixed(1)
       : "0";
 
-  const buildPeriodLabel = (from: string, to: string): string => {
-    const fromDate = new Date(`${from}T00:00:00`);
-    const toDate = new Date(`${to}T00:00:00`);
-    const fmt = (d: Date) =>
-      d.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      });
-    const year = toDate.getFullYear();
-    return `${fmt(fromDate)} - ${fmt(toDate)}, ${year}`;
-  };
+  const deltaSuffix = viewMode === "yearly" ? "vs last year" : "vs last month";
 
   return {
     periodLabel: buildPeriodLabel(mtdFrom, mtdTo),
@@ -134,7 +121,7 @@ export async function getEssentialDashboardData(
         color: "violet",
         label: "Total Retail Revenue",
         value: formatCurrency(thisMonthAgg.totalSales),
-        delta: `... ${grossProfitDelta}% vs last month`,
+        delta: `... ${grossProfitDelta}% ${deltaSuffix}`,
         link: "View Revenue",
         sparkColor: "#a855f7",
         sparkPoints: "",
@@ -144,7 +131,7 @@ export async function getEssentialDashboardData(
         color: "red",
         label: "Total Expenses",
         value: formatCurrency(mtdExpenses.grandTotal),
-        delta: `... ${expenseDelta}% vs last month`,
+        delta: `... ${expenseDelta}% ${deltaSuffix}`,
         link: "View Expenses",
         sparkColor: "#ef4444",
         sparkPoints: "",
@@ -154,7 +141,7 @@ export async function getEssentialDashboardData(
         color: "amber",
         label: "Gross Profit",
         value: formatCurrency(thisMonthAgg.grossProfit),
-        delta: `... ${grossProfitDelta}% vs last month`,
+        delta: `... ${grossProfitDelta}% ${deltaSuffix}`,
         link: "View Resales",
         sparkColor: "#22c55e",
         sparkPoints: "",
@@ -164,7 +151,7 @@ export async function getEssentialDashboardData(
         color: "violet",
         label: "Net Profit",
         value: formatCurrency(thisMonthAgg.netProfit),
-        delta: `... ${netProfitDelta}% vs last month`,
+        delta: `... ${netProfitDelta}% ${deltaSuffix}`,
         link: "View Report",
         sparkColor: "#a855f7",
         sparkPoints: "",

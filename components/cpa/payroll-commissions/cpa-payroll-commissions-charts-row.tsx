@@ -23,7 +23,7 @@ import { formatMoney } from "@/lib/cpa/payroll-commissions/mock-data";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
+  "flex h-full flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const Y_AXIS_TICKS = [0, 20_000, 40_000, 60_000, 80_000, 100_000, 120_000];
 
@@ -196,8 +196,14 @@ function DepartmentCompensationPanel({
 }: {
   rows: CpaDepartmentCompensation[];
 }) {
-  const maxTotal = Math.max(...rows.map((row) => row.total), 1);
-  const totals = rows.reduce(
+  const kept = rows
+    .filter((r) => ["Sales", "Service", "Management"].includes(r.department))
+    .map((r) => ({
+      ...r,
+      department: r.department === "Sales" ? "Sales Rep" : r.department,
+    }));
+  const maxTotal = Math.max(...kept.map((row) => row.total), 1);
+  const totals = kept.reduce(
     (acc, row) => ({
       payroll: acc.payroll + row.payroll,
       commissions: acc.commissions + row.commissions,
@@ -221,7 +227,7 @@ function DepartmentCompensationPanel({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => {
+            {kept.map((row) => {
               const barWidth = (row.total / maxTotal) * 100;
               const payrollShare =
                 row.total > 0 ? (row.payroll / row.total) * 100 : 0;

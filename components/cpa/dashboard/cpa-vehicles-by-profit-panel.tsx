@@ -23,7 +23,7 @@ export default function CpaVehiclesByProfitPanel({
       iconClassName="text-white"
       iconBgClassName="bg-green-700"
       title="Vehicles by Profit"
-      viewDetailsLinkClass="text-green-700 border border-green-700"
+      viewDetailsLinkClass="text-green-700 border-green-700"
       subtitle="Performance overview of profitable vehicle sales"
       viewDetailsHref="/cpa/dashboard/profit-vehicles-report"
     >
