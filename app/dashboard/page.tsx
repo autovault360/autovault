@@ -6,6 +6,7 @@ import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import KPISection from "./_components/kpi-section";
 import ExtendedDashboardContent from "./_components/extended-dashboard-content";
 import DashboardPeriodFilter from "./_components/dashboard-period-filter";
+import FinancialsSection from "@/components/financials/financials-section";
 
 import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 
@@ -57,6 +58,8 @@ export default async function DashboardPage({
       </section>
 
       <KPISection kpis={essential.kpiCards} />
+
+      <FinancialsSection />
 
       <Suspense fallback={<ExtendedFallback />}>
         <ExtendedDashboardContent
