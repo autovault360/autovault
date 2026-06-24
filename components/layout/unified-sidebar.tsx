@@ -9,9 +9,10 @@ type Props = {
   logoLabel?: string;
   isActive?: (item: SidebarItem) => boolean;
   onNavigate?: (item: SidebarItem) => void;
+  renderItem?: (item: SidebarItem, defaultRender: () => React.ReactNode) => React.ReactNode;
 };
 
-export default function UnifiedSidebar({ groups, profile, logoLabel, isActive, onNavigate }: Props) {
+export default function UnifiedSidebar({ groups, profile, logoLabel, isActive, onNavigate, renderItem }: Props) {
   return (
     <AppSidebar
       groups={groups}
@@ -21,6 +22,7 @@ export default function UnifiedSidebar({ groups, profile, logoLabel, isActive, o
       logoHeight={40}
       isActive={isActive}
       onNavigate={onNavigate}
+      renderItem={renderItem}
     />
   );
 }

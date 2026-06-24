@@ -14,6 +14,7 @@ import {
   Receipt,
   BookOpen,
   Wallet,
+  TrendingDown,
 } from "lucide-react";
 import type { SidebarGroup } from "@/components/layout/sidebar";
 
@@ -47,7 +48,44 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         icon: DollarSign,
         color: "text-red-500",
       },
-      { href: "/dashboard/customers", label: "Customers", icon: User, color: "text-purple-500" },
+      {
+        label: "Financials",
+        icon: TrendingUp,
+        color: "text-emerald-400",
+        sectionId: "financials",
+        subItems: [
+          {
+            href: "/dashboard/financials/payroll-commissions",
+            label: "Payroll & Commissions",
+            icon: Users,
+            color: "text-violet-400",
+          },
+          {
+            href: "/dashboard/financials/profit-vehicles-report",
+            label: "Vehicle Profit Report",
+            icon: TrendingUp,
+            color: "text-green-400",
+          },
+          {
+            href: "/dashboard/financials/vehicle-losses-report",
+            label: "Vehicle Loss Report",
+            icon: TrendingDown,
+            color: "text-red-400",
+          },
+          {
+            href: "/dashboard/financials/expenses",
+            label: "Expenses",
+            icon: Wallet,
+            color: "text-orange-400",
+          },
+        ],
+      },
+      {
+        label: "Customers",
+        href: "/dashboard/customers",
+        icon: User,
+        color: "text-purple-500",
+      },
     ],
   },
   {
