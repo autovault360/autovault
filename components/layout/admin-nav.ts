@@ -40,12 +40,12 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         icon: Car,
         color: "text-amber-500",
       },
-      {
-        href: "/dashboard/sold-vehicles",
-        label: "Sold Vehicles",
-        icon: Tag,
-        color: "text-green-500",
-      },
+      // {
+      //   href: "/dashboard/sold-vehicles",
+      //   label: "Sold Vehicles",
+      //   icon: Tag,
+      //   color: "text-green-500",
+      // },
       {
         href: "/dashboard/financials/profit-vehicles-report",
         label: "Vehicles by Profit",
@@ -87,12 +87,12 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         icon: Handshake,
         color: "text-green-500",
       },
-      {
-        href: "/dashboard/users",
-        label: "Users",
-        icon: Shield,
-        color: "text-purple-500",
-      },
+      // {
+      //   href: "/dashboard/users",
+      //   label: "Users",
+      //   icon: Shield,
+      //   color: "text-purple-500",
+      // },
     ],
   },
   {
