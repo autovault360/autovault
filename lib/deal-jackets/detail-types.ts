@@ -135,6 +135,10 @@ export type DealJacketDetail = {
   internalNotes: string;
   lastNoteBy: string;
   lastNoteAt: string;
+  createdAt: string;
+  updatedAt: string;
+  createdByName: string;
+  updatedByName: string;
 
   tabCounts: {
     documents: number;

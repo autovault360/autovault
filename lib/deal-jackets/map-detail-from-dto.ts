@@ -104,6 +104,19 @@ function mapFileItems(
     }));
 }
 
+function inferPaymentMethod(
+  amountFinanced: number,
+  downPayment: number,
+): { paymentMethod: PaymentMethod; paymentMethodLabel: string } {
+  if (amountFinanced > 0) {
+    return { paymentMethod: "finance", paymentMethodLabel: "Finance" };
+  }
+  if (downPayment > 0) {
+    return { paymentMethod: "cash", paymentMethodLabel: "Cash" };
+  }
+  return { paymentMethod: "check", paymentMethodLabel: "Check" };
+}
+
 export function mapDealJacketDetailFromDto(
   dto: DealJacketDetailDto,
   options?: {
@@ -130,6 +143,7 @@ export function mapDealJacketDetailFromDto(
   const commissionRate = dto.salesRep?.commissionRate ?? 0.1;
   const commissionPercent = Math.round(commissionRate * 1000) / 10;
   const saleDate = dto.dateSold.split("T")[0];
+  const payment = inferPaymentMethod(dto.amountFinanced, dto.downPayment);
 
   const documents = mapFileItems(dto.documents, "document");
   const receipts = mapFileItems(dto.documents, "receipt");
@@ -215,8 +229,8 @@ export function mapDealJacketDetailFromDto(
       downPayment: dto.downPayment,
       amountFinanced: dto.amountFinanced,
       balanceDue: dto.balanceDue,
-      paymentMethod: "finance" as PaymentMethod,
-      paymentMethodLabel: "Finance",
+      paymentMethod: payment.paymentMethod,
+      paymentMethodLabel: payment.paymentMethodLabel,
       rosNumber: options?.rosNumber ?? `ROS-${saleDate.slice(0, 4)}-${dto.vehicle.stockNumber}`,
     },
     salesRep: {
@@ -229,7 +243,7 @@ export function mapDealJacketDetailFromDto(
       commissionPaidDate: dto.commissionPaidAt
         ? dto.commissionPaidAt.split("T")[0]
         : null,
-      commissionPaymentMethod: "�€”",
+      commissionPaymentMethod: "--",
       transactionId: null,
     },
     financial: {
@@ -252,6 +266,10 @@ export function mapDealJacketDetailFromDto(
     internalNotes: "",
     lastNoteBy: repName,
     lastNoteAt: saleDate,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+    createdByName: dto.createdByName,
+    updatedByName: dto.updatedByName,
     tabCounts: {
       documents: Math.max(documents.length, 1),
       expenses: Math.max(expenses.length, 1),

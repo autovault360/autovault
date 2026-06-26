@@ -230,17 +230,26 @@ export function ReadOnlyField({
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
+  const theme = useModalTheme();
+  const lightStyles: Record<string, string> = {
     "In Stock": "bg-emerald-50 text-emerald-700 border-emerald-200",
     "Needs Attention": "bg-amber-100 text-amber-700 border-amber-200",
     "Pending Deal": "bg-blue-50 text-blue-700 border-blue-200",
     "Marked Sold": "bg-red-50 text-red-700 border-red-200",
   };
+  const darkStyles: Record<string, string> = {
+    "In Stock": "bg-emerald-900/30 text-emerald-300 border-emerald-700",
+    "Needs Attention": "bg-amber-900/30 text-amber-300 border-amber-700",
+    "Pending Deal": "bg-blue-900/30 text-blue-300 border-blue-700",
+    "Marked Sold": "bg-red-900/30 text-red-300 border-red-700",
+  };
   return (
     <span
       className={cn(
-        "inline-flex rounded-sm px-2.5 py-0.5 text-[11px] font-semibold",
-        styles[status] ?? getStatusStyle(status as never),
+        "inline-flex rounded-sm px-2.5 py-0.5 text-[11px] font-semibold border",
+        theme === "dark"
+          ? (darkStyles[status] ?? "bg-slate-700 text-slate-300 border-slate-600")
+          : (lightStyles[status] ?? getStatusStyle(status as never)),
       )}
     >
       {status}
@@ -259,9 +268,10 @@ export function VehicleSummaryBlock({
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const displayPhoto = photoPreview ?? vehicle.images[0] ?? vehicle.image;
+  const theme = useModalTheme();
 
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-lg border border-gray-100 bg-gray-50/50 p-4 md:grid-cols-[1fr_auto]">
+    <div className={cn("grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-[1fr_auto]", theme === "dark" ? "border-slate-700 bg-slate-800/50" : "border-gray-100 bg-gray-50/50")}>
       <FormGrid cols={4}>
         <ReadOnlyField label="Stock Number" value={vehicle.stockNumber} />
         <ReadOnlyField label="VIN" value={vehicle.vin} />
@@ -281,7 +291,7 @@ export function VehicleSummaryBlock({
         </div>
       </FormGrid>
       <div className="flex flex-col items-center gap-2">
-        <div className="relative w-[200px] h-[150px] overflow-hidden rounded-md border border-gray-200 bg-white">
+        <div className={cn("relative w-[200px] h-[150px] overflow-hidden rounded-md border", theme === "dark" ? "border-slate-600 bg-slate-800" : "border-gray-200 bg-white")}>
           {displayPhoto && (
             <Image
               src={displayPhoto}
@@ -306,7 +316,7 @@ export function VehicleSummaryBlock({
           type="button"
           variant="outline"
           size="sm"
-          className="w-full h-8 border-gray-200 bg-white text-[11px] text-gray-700 hover:bg-gray-50"
+          className={cn("w-full h-8 text-[11px]", theme === "dark" ? "border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600" : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50")}
           onClick={() => inputRef.current?.click()}
         >
           <Camera className="mr-1.5 h-3.5 w-3.5" />
@@ -328,12 +338,13 @@ export function MarketStatCard({
   badge?: string;
   valueClassName?: string;
 }) {
+  const theme = useModalTheme();
   return (
-    <div className="rounded-md border border-gray-200 bg-white p-3">
-      <p className="text-[13px] text-gray-500">{label}</p>
+    <div className={cn("rounded-md border p-3", theme === "dark" ? "border-slate-600 bg-slate-800" : "border-gray-200 bg-white")}>
+      <p className={cn("text-[13px]", theme === "dark" ? "text-slate-400" : "text-gray-500")}>{label}</p>
       <div className="mt-1 flex items-end justify-between gap-2">
         <p
-          className={cn("text-[15px] font-bold text-gray-900", valueClassName)}
+          className={cn("text-[15px] font-bold", theme === "dark" ? "text-slate-100" : "text-gray-900", valueClassName)}
         >
           {value}
         </p>
@@ -352,16 +363,17 @@ export function CompareToMarket({
   text: string;
   isBelowMarket: boolean;
 }) {
+  const theme = useModalTheme();
   return (
     <div>
       <FieldLabel label="Compare to Market">
-        <Info className="h-3 w-3 text-gray-400" />
+        <Info className={cn("h-3 w-3", theme === "dark" ? "text-slate-500" : "text-gray-400")} />
       </FieldLabel>
       <div className="flex h-10 items-center">
         <span
           className={cn(
             "text-[13px] font-medium",
-            isBelowMarket ? "text-emerald-600" : "text-gray-700",
+            isBelowMarket ? (theme === "dark" ? "text-emerald-400" : "text-emerald-600") : (theme === "dark" ? "text-slate-300" : "text-gray-700"),
           )}
         >
           {text}
@@ -378,11 +390,12 @@ export function InternalRepairRadio({
   value: "yes" | "no";
   onChange: (value: "yes" | "no") => void;
 }) {
+  const theme = useModalTheme();
   return (
     <div>
       <div className="flex items-center gap-1 justify-between mb-1.5">
         <FieldLabel label="Is this an Internal Repair?">
-          <Info className="h-3 w-3 text-blue-500" />
+          <Info className={cn("h-3 w-3", theme === "dark" ? "text-blue-400" : "text-blue-500")} />
         </FieldLabel>
       </div>
       <RadioGroup
@@ -392,13 +405,13 @@ export function InternalRepairRadio({
       >
         <div className="flex items-center gap-2">
           <RadioGroupItem value="yes" id="internal-yes" />
-          <Label htmlFor="internal-yes" className="text-[12px] text-gray-700">
+          <Label htmlFor="internal-yes" className={cn("text-[12px]", theme === "dark" ? "text-slate-300" : "text-gray-700")}>
             Yes (In-house)
           </Label>
         </div>
         <div className="flex items-center gap-2">
           <RadioGroupItem value="no" id="internal-no" />
-          <Label htmlFor="internal-no" className="text-[12px] text-gray-700">
+          <Label htmlFor="internal-no" className={cn("text-[12px]", theme === "dark" ? "text-slate-300" : "text-gray-700")}>
             No (External Shop)
           </Label>
         </div>
@@ -423,6 +436,7 @@ export function FileUploadZone({
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const theme = useModalTheme();
 
   const processFiles = (fileList: FileList | null) => {
     if (!fileList?.length) return;
@@ -459,15 +473,15 @@ export function FileUploadZone({
         className={cn(
           "flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed px-4 py-8 transition-colors duration-150",
           dragOver
-            ? "border-blue-400 bg-blue-50"
-            : "border-gray-200 bg-gray-50/50 hover:border-gray-300",
+            ? theme === "dark" ? "border-blue-400 bg-blue-900/20" : "border-blue-400 bg-blue-50"
+            : theme === "dark" ? "border-slate-600 bg-slate-800/50 hover:border-slate-500" : "border-gray-200 bg-gray-50/50 hover:border-gray-300",
         )}
       >
-        <Camera className="mb-2 h-8 w-8 text-gray-400" />
-        <p className="text-[13px] font-medium text-gray-700">
+        <Camera className={cn("mb-2 h-8 w-8", theme === "dark" ? "text-slate-400" : "text-gray-400")} />
+        <p className={cn("text-[13px] font-medium", theme === "dark" ? "text-slate-300" : "text-gray-700")}>
           Drag and drop files here or click to browse
         </p>
-        <p className="mt-1 text-[11px] text-gray-500">{hint}</p>
+        <p className={cn("mt-1 text-[11px]", theme === "dark" ? "text-slate-400" : "text-gray-500")}>{hint}</p>
       </div>
       <input
         ref={inputRef}
@@ -494,6 +508,7 @@ export function FilePreviewCard({
   onRemove: () => void;
 }) {
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const theme = useModalTheme();
 
   React.useEffect(() => {
     if (isImageFile(file)) {
@@ -505,10 +520,10 @@ export function FilePreviewCard({
   }, [file]);
 
   return (
-    <div className="animate-in fade-in zoom-in-95 flex items-center gap-3 rounded-md border border-gray-200 bg-white p-2.5 duration-200 motion-reduce:animate-none">
+    <div className={cn("animate-in fade-in zoom-in-95 flex items-center gap-3 rounded-md border p-2.5 duration-200 motion-reduce:animate-none", theme === "dark" ? "border-slate-600 bg-slate-800" : "border-gray-200 bg-white")}>
       {isPdfFile(file) ? (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-red-50">
-          <FileText className="h-5 w-5 text-red-500" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-red-900/30">
+          <FileText className="h-5 w-5 text-red-400" />
         </div>
       ) : previewUrl ? (
         <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded">
@@ -521,20 +536,20 @@ export function FilePreviewCard({
           />
         </div>
       ) : (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-gray-100">
-          <FileText className="h-5 w-5 text-gray-500" />
+        <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded", theme === "dark" ? "bg-slate-700" : "bg-gray-100")}>
+          <FileText className={cn("h-5 w-5", theme === "dark" ? "text-slate-400" : "text-gray-500")} />
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[12px] font-medium text-gray-800">
+        <p className={cn("truncate text-[12px] font-medium", theme === "dark" ? "text-slate-200" : "text-gray-800")}>
           {file.name}
         </p>
-        <p className="text-[10px] text-gray-500">{formatFileSize(file.size)}</p>
+        <p className={cn("text-[10px]", theme === "dark" ? "text-slate-400" : "text-gray-500")}>{formatFileSize(file.size)}</p>
       </div>
       <button
         type="button"
         onClick={onRemove}
-        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+        className={cn("rounded p-1", theme === "dark" ? "text-slate-400 hover:bg-slate-700 hover:text-slate-200" : "text-gray-400 hover:bg-gray-100 hover:text-gray-600")}
         aria-label="Remove file"
       >
         <X className="h-4 w-4" />
@@ -558,6 +573,7 @@ export function ImageUploadSlot({
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const theme = useModalTheme();
 
   React.useEffect(() => {
     if (file && isImageFile(file)) {
@@ -580,9 +596,9 @@ export function ImageUploadSlot({
         className={cn(
           "relative flex aspect-[4/3] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-md border-2 border-dashed transition-colors duration-150",
           error
-            ? "border-red-300 bg-red-50/30"
-            : "border-gray-200 bg-blue-50/30 hover:border-blue-300",
-          previewUrl && "border-solid border-gray-200",
+            ? theme === "dark" ? "border-red-700 bg-red-900/20" : "border-red-300 bg-red-50/30"
+            : theme === "dark" ? "border-slate-600 bg-slate-800/50 hover:border-blue-500" : "border-gray-200 bg-blue-50/30 hover:border-blue-300",
+          previewUrl && (theme === "dark" ? "border-solid border-slate-600" : "border-solid border-gray-200"),
         )}
       >
         {previewUrl ? (
@@ -611,7 +627,7 @@ export function ImageUploadSlot({
             <span className="text-[10px] font-medium text-blue-500">
               Upload JPG
             </span>
-            <span className="text-[9px] text-gray-400">Max 5MB</span>
+            <span className={cn("text-[9px]", theme === "dark" ? "text-slate-400" : "text-gray-400")}>Max 5MB</span>
           </>
         )}
       </div>
@@ -642,10 +658,11 @@ export function ImageUploadSlot({
 }
 
 export function InfoBanner({ children }: { children: React.ReactNode }) {
+  const theme = useModalTheme();
   return (
-    <div className="flex items-start gap-2 rounded-md bg-[#e5edf6] px-4 py-3">
-      <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
-      <p className="text-[12px] leading-relaxed">{children}</p>
+    <div className={cn("flex items-start gap-2 rounded-md px-4 py-3", theme === "dark" ? "bg-slate-800" : "bg-[#e5edf6]")}>
+      <InfoIcon className={cn("mt-0.5 h-4 w-4 shrink-0", theme === "dark" ? "text-blue-400" : "text-blue-500")} />
+      <p className={cn("text-[12px] leading-relaxed", theme === "dark" ? "text-slate-300" : "")}>{children}</p>
     </div>
   );
 }
@@ -720,14 +737,16 @@ export function ModalFooter({
 }
 
 export function AutoCalculatedCaption() {
-  return <p className="text-[10px] text-blue-500">Auto-calculated</p>;
+  const theme = useModalTheme();
+  return <p className={cn("text-[10px]", theme === "dark" ? "text-blue-400" : "text-blue-500")}>Auto-calculated</p>;
 }
 
 export function MarketDataFooter({ date }: { date: string }) {
+  const theme = useModalTheme();
   const display =
     date.includes("-") && date.length === 10 ? formatDisplayDate(date) : date;
   return (
-    <p className="flex items-center gap-1 text-[13px] text-gray-400">
+    <p className={cn("flex items-center gap-1 text-[13px]", theme === "dark" ? "text-slate-400" : "text-gray-400")}>
       <Info className="h-3 w-3" />
       Data updated on {display}
     </p>
@@ -755,10 +774,11 @@ export function UploadSectionHint({
   left: string;
   right?: string;
 }) {
+  const theme = useModalTheme();
   return (
     <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-      <p className="text-[11px] text-gray-500">{left}</p>
-      {right && <p className="text-[10px] text-gray-400">{right}</p>}
+      <p className={cn("text-[11px]", theme === "dark" ? "text-slate-400" : "text-gray-500")}>{left}</p>
+      {right && <p className={cn("text-[10px]", theme === "dark" ? "text-slate-500" : "text-gray-400")}>{right}</p>}
     </div>
   );
 }
