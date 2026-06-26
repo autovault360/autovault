@@ -14,6 +14,12 @@ import {
   FileText,
   Receipt,
   BookOpen,
+  Users,
+  Handshake,
+  Shield,
+  Building2,
+  Settings,
+  Bell,
 } from "lucide-react";
 import type { SidebarGroup } from "@/components/layout/sidebar";
 
@@ -67,6 +73,29 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
     ],
   },
   {
+    label: "PEOPLE",
+    items: [
+      {
+        href: "/dashboard/customers",
+        label: "Customers",
+        icon: Users,
+        color: "text-blue-500",
+      },
+      {
+        href: "/dashboard/sales-reps",
+        label: "Sales Reps",
+        icon: Handshake,
+        color: "text-green-500",
+      },
+      {
+        href: "/dashboard/users",
+        label: "Users",
+        icon: Shield,
+        color: "text-purple-500",
+      },
+    ],
+  },
+  {
     label: "DOCUMENTS",
     items: [
       {
@@ -111,9 +140,15 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/reports",
-        label: "Reports & Reminders",
+        label: "Reports",
         icon: FileText,
         color: "text-red-500",
+      },
+      {
+        href: "/dashboard/reminders",
+        label: "Reminders",
+        icon: Bell,
+        color: "text-amber-500",
       },
       {
         href: "/dashboard/state-tax",
@@ -126,6 +161,23 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         label: "CPA Portal",
         icon: BookOpen,
         color: "text-cyan-500",
+      },
+    ],
+  },
+  {
+    label: "ADMIN",
+    items: [
+      {
+        href: "/dashboard/dealerships",
+        label: "Dealerships",
+        icon: Building2,
+        color: "text-indigo-500",
+      },
+      {
+        href: "/dashboard/settings",
+        label: "Settings",
+        icon: Settings,
+        color: "text-slate-400",
       },
     ],
   },

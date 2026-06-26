@@ -67,7 +67,7 @@ export default function UpdatePricingModal({
         : "readonly";
 
   return (
-    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="lg">
+    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="lg" theme="dark">
       <ModalHeader
         icon={<Tag className="h-4 w-4 text-white" />}
         iconClassName="bg-[#2563eb]"
@@ -85,7 +85,7 @@ export default function UpdatePricingModal({
               onPhotoChange={handlePhotoChange}
             />
 
-            <FormSection title="Pricing Information">
+            <FormSection theme="dark" title="Pricing Information">
               <FormGrid cols={4}>
                 <FormField
                   control={form.control}
@@ -94,7 +94,7 @@ export default function UpdatePricingModal({
                     <FormItem>
                       <FieldLabel label="Asking Price (Current)" required />
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -114,7 +114,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -126,7 +126,7 @@ export default function UpdatePricingModal({
                 />
                 <FormItem>
                   <FieldLabel label="Price Change" />
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.priceChangeDisplay}
                     onValueChange={() => {}}
@@ -136,7 +136,7 @@ export default function UpdatePricingModal({
                 </FormItem>
                 <FormItem>
                   <FieldLabel label="Change %" />
-                  <Input
+                  <Input theme="dark"
                     mode="percent"
                     value={derived.changePctDisplay}
                     tone={changeTone}
@@ -156,7 +156,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -176,7 +176,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -196,7 +196,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -216,7 +216,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -240,12 +240,12 @@ export default function UpdatePricingModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Strategy" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={PRICING_STRATEGIES} label="Pricing Strategy" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={PRICING_STRATEGIES} label="Pricing Strategy" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -262,12 +262,12 @@ export default function UpdatePricingModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select reason" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={PRICE_UPDATE_REASONS} label="Reason for Price Update" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={PRICE_UPDATE_REASONS} label="Reason for Price Update" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -283,7 +283,7 @@ export default function UpdatePricingModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="date"
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -300,7 +300,7 @@ export default function UpdatePricingModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Market Comparison">
+            <FormSection theme="dark" title="Market Comparison">
               <FormGrid cols={4}>
                 <MarketStatCard
                   label="Market Average"
@@ -327,7 +327,7 @@ export default function UpdatePricingModal({
               <MarketDataFooter date={vehicle.lastUpdated} />
             </FormSection>
 
-            <FormSection title="Additional Notes">
+            <FormSection theme="dark" title="Additional Notes">
               <FormField
                 control={form.control}
                 name="notes"
@@ -338,7 +338,7 @@ export default function UpdatePricingModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <Textarea
+                      <Textarea theme="dark"
                         showCount
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -364,7 +364,7 @@ export default function UpdatePricingModal({
             submitLabel="Update Price"
             submitClassName="bg-[#2563eb] hover:bg-[#1d4ed8]"
             isSubmitting={isSubmitting}
-            className="sticky bottom-0 bg-white"
+            className="sticky bottom-0"
           />
         </form>
       </Form>

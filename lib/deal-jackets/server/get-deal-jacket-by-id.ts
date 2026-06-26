@@ -26,6 +26,9 @@ export type DealJacketDetailDto = {
   profitNet: number;
   dateSold: string;
   createdAt: string;
+  updatedAt: string;
+  createdByName: string;
+  updatedByName: string;
   vehicle: {
     id: string;
     year: number;
@@ -109,7 +112,9 @@ export async function getDealJacketById(
         id,
         full_name,
         sales_rep_profile:sales_rep_profiles(commission_rate)
-      )
+      ),
+      created_by_user:users!deal_jackets_created_by_fkey(full_name),
+      reviewed_by_user:users!deal_jackets_reviewed_by_fkey(full_name)
     `,
     )
     .eq("id", id)
@@ -129,6 +134,12 @@ export async function getDealJacketById(
     ? row.sales_rep[0]
     : row.sales_rep;
   const deal = Array.isArray(row.deal) ? row.deal[0] : row.deal;
+  const createdByUser = Array.isArray(row.created_by_user)
+    ? row.created_by_user[0]
+    : row.created_by_user;
+  const reviewedByUser = Array.isArray(row.reviewed_by_user)
+    ? row.reviewed_by_user[0]
+    : row.reviewed_by_user;
 
   const images = vehicle?.images ?? [];
   const primary =
@@ -228,6 +239,13 @@ export async function getDealJacketById(
     profitNet: Number(row.profit_net),
     dateSold: row.date_sold,
     createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    createdByName: createdByUser?.full_name ?? salesRep?.full_name ?? "System",
+    updatedByName:
+      reviewedByUser?.full_name ??
+      salesRep?.full_name ??
+      createdByUser?.full_name ??
+      "System",
     workflowStatus: row.workflow_status ?? "pending_review",
     reviewNotes: row.review_notes ?? null,
     reviewedBy: row.reviewed_by ?? null,
