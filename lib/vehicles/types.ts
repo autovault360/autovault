@@ -58,6 +58,15 @@ export function formatMileage(value: number): string {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
+export function formatDate(date: string | null | undefined): string {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 const OPTION_MAP: Record<
   string,
   readonly { value: string; label: string }[]

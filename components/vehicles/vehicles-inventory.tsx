@@ -32,6 +32,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
+  formatDate,
   formatField,
   formatMileage,
   getDaysColor,
@@ -146,6 +147,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
 
   const exportToCSV = () => {
     const headers = [
+      "Purchase Date",
       "Vehicle",
       "Stock #",
       "VIN",
@@ -164,6 +166,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
     ];
 
     const rows = filtered.map((v) => [
+      formatDate(v.arrivalDate),
       getVehicleName(v),
       v.stockNumber,
       v.vin,
@@ -211,6 +214,15 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   };
 
   const columns: Column<Vehicle>[] = [
+    {
+      key: "purchaseDate",
+      header: "Purchase Date",
+      sortable: true,
+      accessor: (v) => v.arrivalDate ?? "",
+      cell: (v) => (
+        <span className="text-slate-300">{formatDate(v.arrivalDate)}</span>
+      ),
+    },
     {
       key: "vehicle",
       header: "Vehicle",
