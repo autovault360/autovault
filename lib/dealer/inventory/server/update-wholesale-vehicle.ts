@@ -29,6 +29,7 @@ const schema = z.object({
   lotLocation: z.string().optional(),
   condition: z.enum(["excellent", "good", "fair"]).optional(),
   acquisitionCost: z.coerce.number().min(0),
+  registrationFees: z.coerce.number().min(0).default(0),
   auctionFees: z.coerce.number().min(0).default(0),
   transportationCosts: z.coerce.number().min(0).default(0),
   reconRepairDetails: z.coerce.number().min(0).default(0),
@@ -104,6 +105,7 @@ export async function updateWholesaleVehicle(
       data.acquisitionCost +
       reconditioningCost +
       data.auctionFees +
+      data.registrationFees +
       data.transportationCosts +
       data.storageFees +
       data.dealerFees;
@@ -125,6 +127,7 @@ export async function updateWholesaleVehicle(
       wholesale_price: wholesaleValue,
       reconditioning_cost: reconditioningCost,
       wholesale_auction_fees: data.auctionFees,
+      wholesale_registration_fees: data.registrationFees,
       wholesale_transport_cost: data.transportationCosts,
       wholesale_storage_cost: data.storageFees,
       wholesale_dealer_fees: data.dealerFees,

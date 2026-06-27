@@ -29,6 +29,8 @@ const schema = z.object({
   sellerAuction: z.string().optional(),
   purchaseType: z.string().optional(),
   acquisitionCost: z.coerce.number().positive(),
+  registrationFees: z.coerce.number().min(0).optional(),
+  auctionFees: z.coerce.number().min(0).optional(),
   askingPrice: z.coerce.number().positive(),
   marketValue: z.coerce.number().optional(),
   wholesalePrice: z.coerce.number().optional(),
@@ -95,7 +97,9 @@ export async function updateVehicle(formData: FormData) {
     if (!existing) return { success: false, error: "Vehicle not found" };
 
     const reconditioningCost = data.reconditioningCost ?? 0;
-    const totalInvested = data.acquisitionCost + reconditioningCost;
+    const registrationFees = data.registrationFees ?? 0;
+    const auctionFees = data.auctionFees ?? 0;
+    const totalInvested = data.acquisitionCost + registrationFees + auctionFees + reconditioningCost;
     const titleFields = resolveTitleReceivedFields(
       data.titleReceived,
       existing.title_missing_since as string | null | undefined,
@@ -119,6 +123,8 @@ export async function updateVehicle(formData: FormData) {
         lot_location: data.lotLocation,
         acquisition_date: data.acquisitionDate || null,
         acquisition_cost: data.acquisitionCost,
+        registration_fees: registrationFees,
+        auction_fees: auctionFees,
         asking_price: data.askingPrice,
         market_value: data.marketValue,
         wholesale_price: data.wholesalePrice,
