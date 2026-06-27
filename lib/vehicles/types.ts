@@ -26,6 +26,10 @@ export type Vehicle = {
   mileage: number;
   price: number;
   cost: number;
+  purchasePrice?: number;
+  registrationFees?: number;
+  auctionFees?: number;
+  totalInvested?: number;
   daysInInventory: number;
   status: VehicleStatus;
   location: string;

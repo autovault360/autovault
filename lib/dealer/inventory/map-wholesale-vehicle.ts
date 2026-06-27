@@ -25,6 +25,7 @@ export type VehicleDbRow = {
   wholesale_price?: number | null;
   reconditioning_cost?: number | null;
   wholesale_auction_fees?: number | null;
+  wholesale_registration_fees?: number | null;
   wholesale_transport_cost?: number | null;
   wholesale_storage_cost?: number | null;
   wholesale_dealer_fees?: number | null;
@@ -124,6 +125,7 @@ export function buildVehicleCosts(row: VehicleDbRow): VehicleCosts {
   return {
     acquisition: Number(row.acquisition_cost ?? 0),
     auction: Number(row.wholesale_auction_fees ?? 0),
+    registration: Number(row.wholesale_registration_fees ?? 0),
     transport: Number(row.wholesale_transport_cost ?? 0),
     recon: Number(row.reconditioning_cost ?? 0),
     storage: Number(row.wholesale_storage_cost ?? 0),

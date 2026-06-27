@@ -67,6 +67,8 @@ type DbVehicleRow = {
   lot_location: string | null;
   acquisition_date: string | null;
   acquisition_cost: number | null;
+  registration_fees: number | null;
+  auction_fees: number | null;
   asking_price: number | null;
   market_value: number | null;
   title_status: string | null;
@@ -174,15 +176,17 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
     const row = vehicle as unknown as DbVehicleRow;
     const askingPrice = Number(row.asking_price ?? 0);
     const acquisitionCost = Number(row.acquisition_cost ?? 0);
+    const registrationFees = Number(row.registration_fees ?? 0);
+    const auctionFees = Number(row.auction_fees ?? 0);
     const marketValue = Number(row.market_value ?? 0);
     const sumOfExpenses = (row.expenses ?? []).reduce(
       (sum, e) => sum + Number(e.total_cost),
       0,
     );
     const totalReconditioning = Math.max(Number(row.reconditioning_cost ?? 0), sumOfExpenses);
-    const grossProfit = askingPrice - totalReconditioning - acquisitionCost;
-    const grossProfitPct = totalReconditioning + acquisitionCost > 0
-      ? (grossProfit / (acquisitionCost + totalReconditioning)) * 100
+    const grossProfit = askingPrice - totalReconditioning - acquisitionCost - registrationFees - auctionFees;
+    const grossProfitPct = totalReconditioning + acquisitionCost + registrationFees + auctionFees > 0
+      ? (grossProfit / (acquisitionCost + registrationFees + auctionFees + totalReconditioning)) * 100
       : 0;
 
     const activeImages = (row.images ?? []).filter((img) => !img.deleted_at);
@@ -321,6 +325,8 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
       expenses,
       dateAcquired: formatDate(row.acquisition_date),
       acquisitionCost,
+      registrationFees,
+      auctionFees,
       titleReceived: mapDbTitleReceived(row.title_received, row.title_status),
       titleStatus: mapDbTitleReceived(row.title_received, row.title_status)
         ? "received"

@@ -38,14 +38,16 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
   });
 
   const acquisitionCost = form.watch("acquisitionCost");
+  const registrationFees = form.watch("registrationFees");
+  const auctionFees = form.watch("auctionFees");
   const reconditioningCost = form.watch("reconditioningCost");
   const photos = form.watch("photos");
   const make = form.watch("make");
   const vin = form.watch("vin");
 
   const totalInvested = useMemo(
-    () => computeTotalInvested(acquisitionCost, reconditioningCost),
-    [acquisitionCost, reconditioningCost],
+    () => computeTotalInvested(acquisitionCost, registrationFees, auctionFees, reconditioningCost),
+    [acquisitionCost, registrationFees, auctionFees, reconditioningCost],
   );
 
   useEffect(() => {
@@ -202,6 +204,8 @@ export function useAddVehicleForm(open: boolean, onSuccess: () => void) {
           sellerAuction: values.sellerAuction ?? "",
           purchaseType: values.purchaseType ?? "",
           acquisitionCost: values.acquisitionCost,
+          registrationFees: values.registrationFees,
+          auctionFees: values.auctionFees,
           askingPrice: values.askingPrice,
           marketValue: values.marketValue,
           wholesalePrice: values.wholesalePrice,

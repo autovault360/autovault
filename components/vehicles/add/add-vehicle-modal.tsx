@@ -531,7 +531,7 @@ export default function AddVehicleModal({ open, onOpenChange, onSuccess }: Props
                     name="acquisitionCost"
                     render={({ field, fieldState }) => (
                       <FormItem>
-                        <FieldLabel label="Acquisition Cost" required />
+                        <FieldLabel label="Purchase Price" required />
                         <FormControl>
                           <Input
                             mode="currency"
@@ -545,6 +545,46 @@ export default function AddVehicleModal({ open, onOpenChange, onSuccess }: Props
                       </FormItem>
                     )}
                   />
+                  <FormField
+                    control={form.control}
+                    name="registrationFees"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FieldLabel label="Registration Fees" />
+                        <FormControl>
+                          <Input
+                            mode="currency"
+                            theme="dark"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            aria-invalid={!!fieldState.error}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="auctionFees"
+                    render={({ field, fieldState }) => (
+                      <FormItem>
+                        <FieldLabel label="Auction Fees" />
+                        <FormControl>
+                          <Input
+                            mode="currency"
+                            theme="dark"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            aria-invalid={!!fieldState.error}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </FormGrid>
+                <FormGrid cols={3}>
                   <FormField
                     control={form.control}
                     name="askingPrice"

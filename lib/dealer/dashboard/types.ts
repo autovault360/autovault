@@ -48,6 +48,7 @@ export type TransactionPaymentMethod =
 export type VehicleCosts = {
   acquisition: number;
   auction: number;
+  registration?: number;
   transport: number;
   recon: number;
   storage: number;

@@ -48,7 +48,16 @@ export async function getVehicles(filters: VehicleFilters = {}) {
   const { data, count, error } = await query;
   if (error) throw new Error(error.message);
 
-  return { vehicles: data, total: count ?? 0, page, limit };
+  const vehicles = (data ?? []).map((v) => ({
+    ...v,
+    purchasePrice: Number(v.acquisition_cost ?? 0),
+    registrationFees: Number(v.registration_fees ?? 0),
+    auctionFees: Number(v.auction_fees ?? 0),
+    totalInvested: Number(v.total_invested ?? 0),
+    cost: Number(v.acquisition_cost ?? 0),
+  }));
+
+  return { vehicles, total: count ?? 0, page, limit };
 }
 
 type ImageRow = {
@@ -73,6 +82,9 @@ type VehicleRow = {
   acquisition_date: string | null;
   total_invested: number | null;
   asking_price: number | null;
+  acquisition_cost: number | null;
+  registration_fees: number | null;
+  auction_fees: number | null;
   year: number;
   make: string;
   model: string;
@@ -125,6 +137,9 @@ export async function getVehicleById(id: string) {
 
   const totalInvested = Number(vehicleRow.total_invested ?? 0);
   const askingPrice = Number(vehicleRow.asking_price ?? 0);
+  const acquisitionCost = Number(vehicleRow.acquisition_cost ?? 0);
+  const registrationFees = Number(vehicleRow.registration_fees ?? 0);
+  const auctionFees = Number(vehicleRow.auction_fees ?? 0);
   const grossProfit = askingPrice - totalInvested;
   const grossProfitPct = totalInvested > 0
     ? (grossProfit / totalInvested) * 100
@@ -154,6 +169,9 @@ export async function getVehicleById(id: string) {
     totalInvested,
     grossProfit,
     grossProfitPct,
+    purchasePrice: acquisitionCost,
+    registrationFees,
+    auctionFees,
     displayTitle: `${vehicleRow.year} ${formatField("make", vehicleRow.make)} ${formatField("model", vehicleRow.model, vehicleRow.make)}`,
     _docUrls: { buyerIdFrontUrl },
   };
