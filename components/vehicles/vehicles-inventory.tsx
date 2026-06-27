@@ -16,6 +16,8 @@ import {
   Loader2,
   Copy,
   Shuffle,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,7 +34,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
-  formatField,
+  formatDate,
   formatMileage,
   getDaysColor,
   getStatusStyle,
@@ -146,12 +148,12 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
 
   const exportToCSV = () => {
     const headers = [
+      "Purchase Date",
       "Vehicle",
       "Stock #",
       "VIN",
       "Year",
       "Mileage",
-      "Price",
       "Purchase Price",
       "Registration Fees",
       "Auction Fees",
@@ -159,17 +161,17 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       "Cost",
       "Days in Inventory",
       "Status",
-      "Location",
+      "Title",
       "Image URL",
     ];
 
     const rows = filtered.map((v) => [
+      formatDate(v.arrivalDate),
       getVehicleName(v),
       v.stockNumber,
       v.vin,
       String(v.year),
       formatMileage(v.mileage),
-      formatCurrency(v.price),
       formatCurrency(v.purchasePrice ?? v.cost),
       formatCurrency(v.registrationFees ?? 0),
       formatCurrency(v.auctionFees ?? 0),
@@ -177,7 +179,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       formatCurrency(v.cost),
       String(v.daysInInventory),
       v.status,
-      formatField("location", v.location),
+      v.titleReceived ? "Title Received" : "Missing Title",
       v.image,
     ]);
 
@@ -211,6 +213,15 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   };
 
   const columns: Column<Vehicle>[] = [
+    {
+      key: "purchaseDate",
+      header: "Purchase Date",
+      sortable: true,
+      accessor: (v) => v.arrivalDate ?? "",
+      cell: (v) => (
+        <span className="text-slate-300">{formatDate(v.arrivalDate)}</span>
+      ),
+    },
     {
       key: "vehicle",
       header: "Vehicle",
@@ -281,17 +292,6 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       accessor: (v) => v.mileage,
       cell: (v) => (
         <span className="text-slate-300">{formatMileage(v.mileage)}</span>
-      ),
-    },
-    {
-      key: "price",
-      header: "Price",
-      sortable: true,
-      accessor: (v) => v.price,
-      cell: (v) => (
-        <span className="font-medium text-white">
-          {formatCurrency(v.price)}
-        </span>
       ),
     },
     {
@@ -366,10 +366,25 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       ),
     },
     {
-      key: "location",
-      header: "Location",
+      key: "titleReceived",
+      header: "Title",
       sortable: true,
-      cell: (v) => <span className="text-slate-400">{formatField("location", v.location)}</span>,
+      accessor: (v) => (v.titleReceived ? 1 : 0),
+      cell: (v) => {
+        const received = v.titleReceived ?? false;
+        return (
+          <span className="inline-flex items-center gap-1.5">
+            {received ? (
+              <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />
+            ) : (
+              <AlertCircle className="h-3.5 w-3.5 text-red-400" />
+            )}
+            <span className={received ? "text-emerald-400" : "text-red-400"}>
+              {received ? "Title Received" : "Missing Title"}
+            </span>
+          </span>
+        );
+      },
     },
     {
       key: "actions",
