@@ -34,6 +34,7 @@ export type Vehicle = {
   status: VehicleStatus;
   location: string;
   arrivalDate?: string;
+  titleReceived?: boolean;
 };
 
 export function formatCurrency(value: number): string {

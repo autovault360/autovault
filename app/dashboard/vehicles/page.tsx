@@ -89,6 +89,7 @@ export default async function VehiclesPage({
           status: mapStatus(r.status as string),
           location: (r.lot_location as string) ?? "",
           arrivalDate: formatISO(r.acquisition_date as string),
+          titleReceived: r.title_received as boolean | undefined,
         });
       }
     }
