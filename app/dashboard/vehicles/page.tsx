@@ -30,11 +30,11 @@ function formatISO(date: string | null | undefined): string {
 export default async function VehiclesPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ add?: string; edit?: string }> | { add?: string; edit?: string };
+  searchParams?: Promise<{ add?: string; edit?: string }>;
 }) {
-  const resolved = searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
-  const defaultOpen = resolved.add === "true";
-  const defaultEditId = resolved.edit;
+  const resolved = await searchParams;
+  const defaultOpen = resolved?.add === "true";
+  const defaultEditId = resolved?.edit;
   const auth = await authenticateUser();
   const vehicles: Vehicle[] = [];
 

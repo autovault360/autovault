@@ -369,7 +369,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       key: "titleReceived",
       header: "Title",
       sortable: true,
-      accessor: (v) => v.titleReceived ?? false,
+      accessor: (v) => (v.titleReceived ? 1 : 0),
       cell: (v) => {
         const received = v.titleReceived ?? false;
         return (
