@@ -81,12 +81,12 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         icon: Users,
         color: "text-blue-500",
       },
-      {
-        href: "/dashboard/sales-reps",
-        label: "Sales Reps",
-        icon: Handshake,
-        color: "text-green-500",
-      },
+      // {
+      //   href: "/dashboard/sales-reps",
+      //   label: "Sales Reps",
+      //   icon: Handshake,
+      //   color: "text-green-500",
+      // },
       // {
       //   href: "/dashboard/users",
       //   label: "Users",
