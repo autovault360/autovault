@@ -50,29 +50,28 @@ export function buildAddRepairCostDefaults(): AddRepairCostFormValues {
 export function buildMarkAsSoldDefaults(
   vehicle: VehicleDetail,
 ): MarkAsSoldFormValues {
-  const suggestedTax = Math.round(vehicle.price * 0.075 * 100) / 100;
+  const suggestedTax = Math.round(vehicle.price * 0.07 * 100) / 100;
   return {
-    customerType: "individual",
     customerName: "",
     phoneNumber: "",
     email: "",
     address: "",
-    address2: "",
     city: "",
     state: "CA",
     zipCode: "",
     saleDate: todayISO(),
-    totalPriceOtd: vehicle.price,
+    soldPriceBeforeTax: vehicle.price,
     salesTaxAmount: suggestedTax,
-    licenseRegistrationFees: 450,
-    dmvDocFees: 85,
-    otherFees: 0,
+    licenseRegistrationFees: 350,
     rosNumber: "",
     zipCodeOfSale: "",
-    buyerIdFront: undefined,
-    buyerIdBack: null,
-    driversLicense: null,
-    otherDocument: null,
+    salesRepId: "",
+    commissionType: "percentage",
+    commissionRate: 10,
+    manualCommissionAmount: 0,
+    dealerPayoutsEnabled: false,
+    payoutItems: [],
+    documents: [],
     notes: "",
   };
 }

@@ -88,6 +88,7 @@ export default function PricingActionsCard({
           <DetailRow label="Purchase Price" value={formatCurrency(vehicle.acquisitionCost)} />
           <DetailRow label="Registration Fees" value={formatCurrency(vehicle.registrationFees ?? 0)} />
           <DetailRow label="Auction Fees" value={formatCurrency(vehicle.auctionFees ?? 0)} />
+          <DetailRow label="Flooring Fees" value={formatCurrency(vehicle.flooringFees ?? 0)} />
           <DetailRow
             label="Total Reconditioning"
             value={formatCurrency(vehicle.totalReconditioning)}
@@ -96,7 +97,14 @@ export default function PricingActionsCard({
             label="Total Invested"
             value={
               <span className="font-semibold text-emerald-400">
-                {formatCurrency(vehicle.acquisitionCost + (vehicle.registrationFees ?? 0) + (vehicle.auctionFees ?? 0) + vehicle.totalReconditioning)}
+                {formatCurrency(
+                  vehicle.totalInvested ??
+                    vehicle.acquisitionCost +
+                      (vehicle.registrationFees ?? 0) +
+                      (vehicle.auctionFees ?? 0) +
+                      (vehicle.flooringFees ?? 0) +
+                      vehicle.totalReconditioning,
+                )}
               </span>
             }
           />

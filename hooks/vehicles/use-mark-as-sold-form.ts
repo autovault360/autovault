@@ -13,6 +13,14 @@ import {
 import { formatPhoneNumber } from "@/lib/vehicles/actions/utils";
 import { getSuccessMessage } from "@/lib/vehicles/actions/submit";
 import { markAsSold } from "@/lib/vehicles/server/mark-as-sold";
+import {
+  buildVehicleCostBreakdown,
+  calculateMarkAsSoldFinancials,
+} from "@/lib/vehicles/cost-breakdown";
+import {
+  getMarkAsSoldOptions,
+  type MarkAsSoldSalesRepOption,
+} from "@/lib/vehicles/server/get-mark-as-sold-options";
 
 export function useMarkAsSoldForm(
   vehicle: VehicleDetail,
@@ -21,6 +29,12 @@ export function useMarkAsSoldForm(
 ) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [shake, setShake] = useState(false);
+  const [salesReps, setSalesReps] = useState<MarkAsSoldSalesRepOption[]>([]);
+
+  const costBreakdown = useMemo(
+    () => buildVehicleCostBreakdown(vehicle),
+    [vehicle],
+  );
 
   const form = useForm<MarkAsSoldFormValues>({
     resolver: zodResolver(markAsSoldSchema) as Resolver<MarkAsSoldFormValues>,
@@ -31,32 +45,55 @@ export function useMarkAsSoldForm(
   useEffect(() => {
     if (open) {
       form.reset(buildMarkAsSoldDefaults(vehicle));
+      getMarkAsSoldOptions().then(({ salesReps: reps }) => {
+        setSalesReps(reps);
+      });
     }
   }, [open, vehicle, form]);
 
-  const totalPriceOtd = form.watch("totalPriceOtd");
+  const soldPriceBeforeTax = form.watch("soldPriceBeforeTax");
   const salesTaxAmount = form.watch("salesTaxAmount");
   const licenseRegistrationFees = form.watch("licenseRegistrationFees");
-  const dmvDocFees = form.watch("dmvDocFees");
-  const otherFees = form.watch("otherFees");
+  const commissionType = form.watch("commissionType");
+  const commissionRate = form.watch("commissionRate");
+  const manualCommissionAmount = form.watch("manualCommissionAmount");
+  const dealerPayoutsEnabled = form.watch("dealerPayoutsEnabled");
+  const payoutItems = form.watch("payoutItems");
+  const salesRepId = form.watch("salesRepId");
 
   const derived = useMemo(
-    () => ({
-      totalCollected:
-        totalPriceOtd +
-        salesTaxAmount +
-        licenseRegistrationFees +
-        dmvDocFees +
-        otherFees,
-    }),
+    () =>
+      calculateMarkAsSoldFinancials({
+        totalInvestment: costBreakdown.totalInvestment,
+        soldPriceBeforeTax,
+        salesTaxAmount,
+        licenseRegistrationFees,
+        commissionType,
+        commissionRate,
+        manualCommissionAmount,
+        dealerPayoutsEnabled,
+        payoutItems,
+      }),
     [
-      totalPriceOtd,
+      costBreakdown.totalInvestment,
+      soldPriceBeforeTax,
       salesTaxAmount,
       licenseRegistrationFees,
-      dmvDocFees,
-      otherFees,
+      commissionType,
+      commissionRate,
+      manualCommissionAmount,
+      dealerPayoutsEnabled,
+      payoutItems,
     ],
   );
+
+  useEffect(() => {
+    if (commissionType === "percentage") {
+      const amount =
+        Math.round(soldPriceBeforeTax * (commissionRate / 100) * 100) / 100;
+      form.setValue("manualCommissionAmount", amount, { shouldDirty: false });
+    }
+  }, [commissionType, soldPriceBeforeTax, commissionRate, form]);
 
   const handlePhoneChange = (value: string) => {
     form.setValue("phoneNumber", formatPhoneNumber(value), {
@@ -65,38 +102,58 @@ export function useMarkAsSoldForm(
     });
   };
 
+  const handleSalesRepChange = (repId: string) => {
+    form.setValue("salesRepId", repId, { shouldDirty: true });
+    const rep = salesReps.find((r) => r.id === repId);
+    if (rep) {
+      form.setValue("commissionRate", rep.commissionRate, { shouldDirty: true });
+      if (commissionType === "percentage") {
+        const amount =
+          Math.round(soldPriceBeforeTax * (rep.commissionRate / 100) * 100) /
+          100;
+        form.setValue("manualCommissionAmount", amount, { shouldDirty: true });
+      }
+    }
+  };
+
   const onSubmit = form.handleSubmit(async (values) => {
     setIsSubmitting(true);
     try {
       const payload = {
         vehicleId: vehicle.id,
-        customerType: values.customerType,
         customerName: values.customerName,
         phoneNumber: values.phoneNumber,
         email: values.email,
         address: values.address,
-        address2: values.address2,
         city: values.city,
         state: values.state,
         zipCode: values.zipCode,
         saleDate: values.saleDate,
-        totalPriceOtd: values.totalPriceOtd,
+        soldPriceBeforeTax: values.soldPriceBeforeTax,
         salesTaxAmount: values.salesTaxAmount,
         licenseRegistrationFees: values.licenseRegistrationFees,
-        dmvDocFees: values.dmvDocFees,
-        otherFees: values.otherFees,
-        totalCollected: derived.totalCollected,
+        totalPriceWithTaxAndFees: derived.totalPriceWithTaxAndFees,
         rosNumber: values.rosNumber,
         zipCodeOfSale: values.zipCodeOfSale,
+        salesRepId: values.salesRepId || null,
+        commissionType: values.commissionType,
+        commissionRate: values.commissionRate,
+        manualCommissionAmount: values.manualCommissionAmount,
+        commissionAmount: derived.commissionAmount,
+        dealerPayoutsEnabled: values.dealerPayoutsEnabled,
+        payoutItems: values.dealerPayoutsEnabled ? values.payoutItems : [],
+        otherPayoutsTotal: derived.otherPayoutsTotal,
+        netProfit: derived.netProfit,
+        roiPercent: derived.roiPercent,
+        totalInvestment: costBreakdown.totalInvestment,
         notes: values.notes,
       };
 
       const formData = new FormData();
       formData.set("payload", JSON.stringify(payload));
-      if (values.buyerIdFront) formData.append("buyerIdFront", values.buyerIdFront as File);
-      if (values.buyerIdBack) formData.append("buyerIdBack", values.buyerIdBack);
-      if (values.driversLicense) formData.append("driversLicense", values.driversLicense);
-      if (values.otherDocument) formData.append("otherDocument", values.otherDocument);
+      values.documents.forEach((file, i) => {
+        formData.append(`document_${i}`, file);
+      });
 
       const result = await markAsSold(formData);
 
@@ -121,7 +178,11 @@ export function useMarkAsSoldForm(
     onSubmit,
     isSubmitting,
     derived,
+    costBreakdown,
     shake,
     handlePhoneChange,
+    handleSalesRepChange,
+    salesReps,
+    salesRepId,
   };
 }

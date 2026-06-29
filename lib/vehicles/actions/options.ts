@@ -136,3 +136,15 @@ export const LOSS_TYPES = [
   { value: "write_off", label: "Write-Off" },
   { value: "insurance_claim", label: "Insurance Claim" },
 ] as const;
+
+export const COMMISSION_TYPES = [
+  { value: "percentage", label: "Percentage" },
+  { value: "manual", label: "Flat Amount" },
+] as const;
+
+export const PAYOUT_FREQUENCY_OPTIONS = [
+  { value: "one_time", label: "One Time" },
+  { value: "weekly", label: "Weekly" },
+  { value: "monthly", label: "Monthly" },
+  { value: "per_deal", label: "Per Deal" },
+] as const;

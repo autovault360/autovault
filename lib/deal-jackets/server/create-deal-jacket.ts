@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   calculateDealJacketFinancials,
   normalizeFees,
+  roundMoney,
   sumVehicleExpenses,
 } from "./calculate-financials";
 import { logDealJacketActivity } from "./activity";
@@ -163,7 +164,10 @@ export async function createDealJacket(
     createdBy,
   );
 
-  const commissionRate = await resolveCommissionRate(supabase, salesRepId);
+  const commissionRate =
+    sale.commissionRate != null
+      ? sale.commissionRate
+      : await resolveCommissionRate(supabase, salesRepId);
   const fees = normalizeFees(sale.fees);
   const additionalExpenses = sale.additionalExpenses ?? 0;
   const notes = sale.notes ?? null;
@@ -175,6 +179,14 @@ export async function createDealJacket(
     additionalExpenses,
     commissionRate,
   });
+
+  const commissionAmount =
+    sale.commissionAmount != null
+      ? roundMoney(sale.commissionAmount)
+      : financials.commissionAmount;
+  const profitNet = roundMoney(
+    financials.profitGross - commissionAmount - additionalExpenses,
+  );
 
   const jacketNumber = await nextJacketNumber(supabase, dealershipId);
   const dateSold = sale.saleDate.includes("T")
@@ -199,11 +211,12 @@ export async function createDealJacket(
       balance_due: sale.balanceDue ?? 0,
       total_invested: financials.totalInvested,
       additional_expenses: additionalExpenses,
-      commission_amount: financials.commissionAmount,
+      commission_amount: commissionAmount,
       profit_gross: financials.profitGross,
-      profit_net: financials.profitNet,
+      profit_net: profitNet,
       date_sold: dateSold,
       workflow_status: "pending_review",
+      ros_number: sale.rosNumber ?? null,
       notes,
       created_by: createdBy,
     })
@@ -297,7 +310,7 @@ export async function createDealJacket(
     dealershipId,
     salesRepId: salesRepId ?? createdBy,
     dealJacketId: inserted.id,
-    commissionAmount: financials.commissionAmount,
+    commissionAmount,
     commissionRate,
     grossProfit: financials.profitGross,
     soldPrice: sale.soldPrice,

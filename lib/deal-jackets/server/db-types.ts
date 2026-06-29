@@ -76,6 +76,9 @@ export type CreateDealJacketSaleData = {
   amountFinanced?: number;
   balanceDue?: number;
   additionalExpenses?: number;
+  commissionAmount?: number;
+  commissionRate?: number;
+  rosNumber?: string | null;
   notes?: string | null;
 };
 
