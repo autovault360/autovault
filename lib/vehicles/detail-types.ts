@@ -49,6 +49,8 @@ export type VehicleDetailExtras = {
   expenses: VehicleExpense[];
   dateAcquired: string;
   acquisitionCost: number;
+  registrationFees: number;
+  auctionFees: number;
   titleReceived: boolean;
   titleStatus: string;
   licensePlate: string;

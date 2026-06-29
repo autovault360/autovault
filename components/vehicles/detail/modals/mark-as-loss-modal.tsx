@@ -56,7 +56,7 @@ export default function MarkAsLossModal({
   } = useMarkAsLossForm(vehicle, open, () => onOpenChange(false));
 
   return (
-    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="md">
+    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="md" theme="dark">
       <ModalHeader
         icon={<AlertCircle className="h-4 w-4 text-white" />}
         iconClassName="bg-red-600"
@@ -68,7 +68,7 @@ export default function MarkAsLossModal({
       <Form {...form}>
         <form onSubmit={onSubmit}>
           <ModalBody shake={shake}>
-            <FormSection title="Vehicle Information">
+            <FormSection theme="dark" title="Vehicle Information">
               <FormGrid cols={3}>
                 <ReadOnlyField label="Stock Number" value={vehicle.stockNumber} />
                 <ReadOnlyField label="VIN" value={vehicle.vin} />
@@ -76,7 +76,7 @@ export default function MarkAsLossModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Loss Details">
+            <FormSection theme="dark" title="Loss Details">
               <FormGrid cols={3}>
                 <FormField
                   control={form.control}
@@ -88,7 +88,7 @@ export default function MarkAsLossModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="date"
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -108,11 +108,11 @@ export default function MarkAsLossModal({
                         <FormMessage />
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger aria-invalid={!!fieldState.error}>
+                        <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                           <SelectValue placeholder="Select Loss Reason" />
                         </SelectTrigger>
-                        <SelectContent>
-                           <SelectOptions options={LOSS_REASONS} label="Loss Reason" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={LOSS_REASONS} label="Loss Reason" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -129,11 +129,11 @@ export default function MarkAsLossModal({
                       </div>
                       <FormControl>
                         <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Loss Type" />
                           </SelectTrigger>
-                          <SelectContent>
-                             <SelectOptions options={LOSS_TYPES} label="Loss Type" />
+                          <SelectContent theme="dark">
+                             <SelectOptions theme="dark" options={LOSS_TYPES} label="Loss Type" />
                            </SelectContent>
                          </Select>
                        </FormControl>
@@ -151,7 +151,7 @@ export default function MarkAsLossModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <Textarea
+                      <Textarea theme="dark"
                         showCount
                         value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -165,11 +165,11 @@ export default function MarkAsLossModal({
               />
             </FormSection>
 
-            <FormSection title="Financial Summary">
+            <FormSection theme="dark" title="Financial Summary">
               <FormGrid cols={3}>
                 <div>
                   <FieldLabel label="Total Investment" />
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.totalInvestment}
                     onValueChange={() => {}}
@@ -178,7 +178,7 @@ export default function MarkAsLossModal({
                 </div>
                 <div>
                   <FieldLabel label="Total Expenses (to date)" />
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.totalExpenses}
                     onValueChange={() => {}}
@@ -187,7 +187,7 @@ export default function MarkAsLossModal({
                 </div>
                 <div>
                   <FieldLabel label="Total Cost Basis" />
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.totalCostBasis}
                     onValueChange={() => {}}
@@ -206,7 +206,7 @@ export default function MarkAsLossModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -226,7 +226,7 @@ export default function MarkAsLossModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -241,7 +241,7 @@ export default function MarkAsLossModal({
                     <FieldLabel label="Net Loss" />
                     <p className="text-[10px] text-blue-500">Auto-calculated</p>
                   </div>
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.netLoss}
                     onValueChange={() => {}}
@@ -252,7 +252,7 @@ export default function MarkAsLossModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Additional Documentation">
+            <FormSection theme="dark" title="Additional Documentation">
               <p className="text-[11px] text-gray-500">
                 Upload Supporting Documents (if any)
               </p>
@@ -289,7 +289,7 @@ export default function MarkAsLossModal({
             submitLabel="Mark as Loss & Save"
             submitClassName="bg-red-600 hover:bg-red-500"
             isSubmitting={isSubmitting}
-            className="sticky bottom-0 bg-white"
+            className="sticky bottom-0"
           />
         </form>
       </Form>

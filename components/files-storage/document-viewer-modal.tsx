@@ -11,6 +11,141 @@ import { formatUploadTime } from "@/lib/files-storage/format-utils";
 import { formatFileSize } from "@/lib/files-storage/file-type-utils";
 import type { FolderFileDetail } from "@/lib/files-storage/types";
 
+function ImageZoomPan({
+  src,
+  alt,
+  onLoad,
+  onError,
+}: {
+  src: string;
+  alt: string;
+  onLoad?: () => void;
+  onError?: () => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+  const dragPosStart = useRef({ x: 0, y: 0 });
+  const lastScale = useRef(1);
+  const lastPos = useRef({ x: 0, y: 0 });
+
+  function clampPosition(pos: { x: number; y: number }, s: number) {
+    if (!imgRef.current || !containerRef.current) return pos;
+    const cw = containerRef.current.clientWidth;
+    const ch = containerRef.current.clientHeight;
+    const iw = imgRef.current.clientWidth * s;
+    const ih = imgRef.current.clientHeight * s;
+    const minX = -Math.max(0, iw - cw) / 2;
+    const maxX = Math.max(0, iw - cw) / 2;
+    const minY = -Math.max(0, ih - ch) / 2;
+    const maxY = Math.max(0, ih - ch) / 2;
+    return {
+      x: Math.max(minX, Math.min(maxX, pos.x)),
+      y: Math.max(minY, Math.min(maxY, pos.y)),
+    };
+  }
+
+  function handleWheel(e: React.WheelEvent) {
+    e.preventDefault();
+    const container = containerRef.current;
+    const img = imgRef.current;
+    if (!container || !img) return;
+
+    const rect = container.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const cursorOffset = { x: cursorX - centerX, y: cursorY - centerY };
+
+    const delta = -e.deltaY;
+    const factor = delta > 0 ? 1.12 : 1 / 1.12;
+    const newScale = Math.max(0.25, Math.min(10, scale * factor));
+
+    const oldPos = lastPos.current;
+    const newPos = {
+      x: cursorOffset.x + (oldPos.x - cursorOffset.x) * (newScale / scale),
+      y: cursorOffset.y + (oldPos.y - cursorOffset.y) * (newScale / scale),
+    };
+
+    const clamped = clampPosition(newPos, newScale);
+    setScale(newScale);
+    setPosition(clamped);
+    lastScale.current = newScale;
+    lastPos.current = clamped;
+  }
+
+  function handleMouseDown(e: React.MouseEvent) {
+    if (scale <= 1) return;
+    isDragging.current = true;
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    dragPosStart.current = { ...position };
+  }
+
+  function handleMouseMove(e: React.MouseEvent) {
+    if (!isDragging.current) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    const newPos = {
+      x: dragPosStart.current.x + dx,
+      y: dragPosStart.current.y + dy,
+    };
+    const clamped = clampPosition(newPos, scale);
+    setPosition(clamped);
+    lastPos.current = clamped;
+  }
+
+  function handleMouseUp() {
+    isDragging.current = false;
+  }
+
+  function handleDoubleClick() {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+    lastScale.current = 1;
+    lastPos.current = { x: 0, y: 0 };
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="flex h-full w-full items-center justify-center overflow-hidden"
+      onWheel={handleWheel}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      onDoubleClick={handleDoubleClick}
+      style={{ cursor: scale > 1 ? "move" : "default" }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={imgRef}
+        src={src}
+        alt={alt}
+        className="max-h-full max-w-full"
+        style={{
+          transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+          transformOrigin: "center center",
+          userSelect: "none",
+          pointerEvents: "none",
+        }}
+        onLoad={onLoad}
+        onError={onError}
+        draggable={false}
+      />
+      {scale !== 1 && (
+        <div className="pointer-events-none absolute bottom-4 right-4 rounded bg-black/60 px-2 py-1 text-[12px] text-white">
+          {Math.round(scale * 100)}%
+        </div>
+      )}
+    </div>
+  );
+}
+
 type Props = {
   file: FolderFileDetail | null;
   files: FolderFileDetail[];
@@ -205,19 +340,12 @@ export default function DocumentViewerModal({
           )}
 
           {isImage && currentFile.signedUrl && (
-            <div
-              ref={scrollContainerRef}
-              className="flex h-full items-center justify-center overflow-auto p-4"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={currentFile.signedUrl}
-                alt={currentFile.fileName}
-                className="max-h-full max-w-full object-contain"
-                onLoad={handleContentLoaded}
-                onError={handleContentLoaded}
-              />
-            </div>
+            <ImageZoomPan
+              src={currentFile.signedUrl}
+              alt={currentFile.fileName}
+              onLoad={handleContentLoaded}
+              onError={handleContentLoaded}
+            />
           )}
 
           {isPdf && currentFile.signedUrl && (

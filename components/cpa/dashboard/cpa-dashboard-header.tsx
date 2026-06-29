@@ -1,7 +1,6 @@
 "use client";
 
 import { Calendar, ChevronDown } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -12,7 +11,7 @@ import {
 import { PageHeaderTitle } from "@/components/layout/page-header-title";
 import { cn } from "@/lib/utils";
 import { useCpaPortal } from "../context/cpa-portal-context";
-import { formatMonthDateRange } from "./cpa-dashboard-utils";
+import { formatPeriodDateRange } from "./cpa-dashboard-utils";
 
 const MONTHS = [
   "January",
@@ -35,11 +34,12 @@ const YEARS = Array.from(
 );
 
 export default function CpaDashboardHeader() {
-  const { session, month, year, setMonth, setYear } = useCpaPortal();
+  const { session, viewMode, setViewMode, month, year, setMonth, setYear } =
+    useCpaPortal();
 
   if (!session) return null;
 
-  const dateRangeLabel = formatMonthDateRange(month, year);
+  const dateRangeLabel = formatPeriodDateRange(viewMode, month, year);
 
   return (
     <section className="mb-4 flex flex-col gap-4 border-b border-slate-800/60 pb-4 lg:flex-row lg:items-start lg:justify-between">
@@ -51,7 +51,7 @@ export default function CpaDashboardHeader() {
       />
 
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2 rounded-lg border border-slate-700/80 bg-[#0e1626] px-3 py-2">
             <Calendar className="h-4 w-4 shrink-0 text-slate-500" />
             <span className="text-[12px] font-medium text-slate-200 tabular-nums">
@@ -59,28 +59,50 @@ export default function CpaDashboardHeader() {
             </span>
             <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
           </div>
-          <Select
-            value={String(month)}
-            onValueChange={(value) => setMonth(Number(value))}
-          >
-            <SelectTrigger
-              theme="dark"
-              className="h-9 w-[130px] border-slate-700/80 bg-[#0e1626] text-[11px] text-slate-300"
+
+          <div className="flex rounded-lg border border-slate-700/80 bg-[#0e1626] p-0.5">
+            {(["monthly", "yearly"] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setViewMode(mode)}
+                className={cn(
+                  "rounded-md px-4 py-1.5 text-[12px] font-medium capitalize transition-colors",
+                  viewMode === mode
+                    ? "bg-violet-600 text-white"
+                    : "text-slate-400 hover:text-white",
+                )}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+
+          {viewMode === "monthly" && (
+            <Select
+              value={String(month)}
+              onValueChange={(value) => setMonth(Number(value))}
             >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent theme="dark">
-              {MONTHS.map((label, i) => (
-                <SelectItem
-                  key={label}
-                  value={String(i + 1)}
-                  className="text-[11px]"
-                >
-                  {label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+              <SelectTrigger
+                theme="dark"
+                className="h-9 w-[130px] border-slate-700/80 bg-[#0e1626] text-[11px] text-slate-300"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent theme="dark">
+                {MONTHS.map((label, i) => (
+                  <SelectItem
+                    key={label}
+                    value={String(i + 1)}
+                    className="text-[11px]"
+                  >
+                    {label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
           <Select
             value={String(year)}
             onValueChange={(value) => setYear(Number(value))}
@@ -99,27 +121,6 @@ export default function CpaDashboardHeader() {
               ))}
             </SelectContent>
           </Select>
-        </div>
-
-        <div className="flex items-center gap-3 rounded-lg border border-slate-800/60 bg-[#0e1626]/50 px-3 py-2">
-          <div className="min-w-0 text-right">
-            <div className="truncate text-[13px] font-semibold text-white">
-              {session.dealershipName || session.fullName}
-            </div>
-            <div className="truncate text-[11px] text-slate-500">
-              {session.email}
-            </div>
-          </div>
-          <Avatar className="h-10 w-10 shrink-0">
-            {session.imageUrl ? (
-              <AvatarImage src={session.imageUrl} alt={session.fullName} />
-            ) : null}
-            <AvatarFallback
-              className={cn("bg-violet-600 text-sm font-semibold text-white")}
-            >
-              {session.initials}
-            </AvatarFallback>
-          </Avatar>
         </div>
       </div>
     </section>

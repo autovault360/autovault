@@ -37,6 +37,8 @@ const editVehicleSchema = z.object({
   sellerAuction: z.string().optional(),
   purchaseType: z.string().optional(),
   acquisitionCost: currencyField.refine((v) => v > 0, "Acquisition cost is required"),
+  registrationFees: currencyField,
+  auctionFees: currencyField,
   askingPrice: currencyField.refine((v) => v > 0, "Asking price is required"),
   marketValue: currencyField,
   wholesalePrice: currencyField,
@@ -110,7 +112,9 @@ export function useEditVehicleForm(
     expirationDate: vehicle.expirationDate || "",
     sellerAuction: vehicle.sellerAuction || "",
     purchaseType: vehicle.purchaseType || "",
-    acquisitionCost: vehicle.cost,
+    acquisitionCost: vehicle.acquisitionCost ?? vehicle.cost,
+    registrationFees: vehicle.registrationFees ?? 0,
+    auctionFees: vehicle.auctionFees ?? 0,
     askingPrice: vehicle.price,
     marketValue: vehicle.marketValue,
     wholesalePrice: vehicle.wholesalePrice ?? 0,
@@ -137,13 +141,15 @@ export function useEditVehicleForm(
   }, [open, form, buildDefaults, vehicle]);
 
   const acquisitionCost = form.watch("acquisitionCost");
+  const registrationFees = form.watch("registrationFees");
+  const auctionFees = form.watch("auctionFees");
   const reconditioningCost = form.watch("reconditioningCost");
   const make = form.watch("make");
   const vin = form.watch("vin");
 
   const totalInvested = useMemo(
-    () => computeTotalInvested(acquisitionCost ?? 0, reconditioningCost ?? 0),
-    [acquisitionCost, reconditioningCost],
+    () => computeTotalInvested(acquisitionCost ?? 0, registrationFees ?? 0, auctionFees ?? 0, reconditioningCost ?? 0),
+    [acquisitionCost, registrationFees, auctionFees, reconditioningCost],
   );
 
   const galleryItems: PhotoGalleryItem[] = useMemo(
@@ -261,6 +267,8 @@ export function useEditVehicleForm(
           sellerAuction: values.sellerAuction ?? "",
           purchaseType: values.purchaseType ?? "",
           acquisitionCost: values.acquisitionCost,
+          registrationFees: values.registrationFees,
+          auctionFees: values.auctionFees,
           askingPrice: values.askingPrice,
           marketValue: values.marketValue,
           wholesalePrice: values.wholesalePrice,

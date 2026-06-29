@@ -25,7 +25,7 @@ export type StorageFolder = {
   pinned?: boolean;
 };
 
-export type RecentUploadFileType = "pdf" | "jpg" | "xlsx" | "mp4" | "other";
+export type RecentUploadFileType = "pdf" | "jpg" | "png" | "webp" | "xlsx" | "mp4" | "other";
 
 export type RecentUpload = {
   id: string;
@@ -34,6 +34,11 @@ export type RecentUpload = {
   uploadedAt: string;
   sizeBytes: number;
   fileType: RecentUploadFileType;
+  thumbnailUrl?: string;
+  mimeType?: string;
+  storagePath?: string;
+  signedUrl?: string;
+  uploadedBy?: string;
 };
 
 export type StorageBreakdownSegment = {

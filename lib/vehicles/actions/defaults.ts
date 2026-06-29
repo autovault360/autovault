@@ -80,12 +80,12 @@ export function buildMarkAsSoldDefaults(
 export function buildMarkAsLossDefaults(
   vehicle: VehicleDetail,
 ): MarkAsLossFormValues {
-  const totalInvestment = vehicle.price;
+  const totalInvestment = vehicle.acquisitionCost + (vehicle.registrationFees ?? 0) + (vehicle.auctionFees ?? 0) + vehicle.totalReconditioning;
   const totalExpenses = vehicle.totalReconditioning;
-  const totalCostBasis = totalInvestment + totalExpenses;
+  const totalCostBasis = totalInvestment;
   const estimatedLoss = Math.max(
     0,
-    totalCostBasis - vehicle.cost - vehicle.marketValue * 0.5,
+    totalCostBasis - vehicle.price - vehicle.marketValue * 0.5,
   );
 
   return {
@@ -100,9 +100,9 @@ export function buildMarkAsLossDefaults(
 }
 
 export function getLossFinancials(vehicle: VehicleDetail) {
-  const totalInvestment = vehicle.price;
+  const totalInvestment = vehicle.acquisitionCost + (vehicle.registrationFees ?? 0) + (vehicle.auctionFees ?? 0) + vehicle.totalReconditioning;
   const totalExpenses = vehicle.totalReconditioning;
-  const totalCostBasis = totalInvestment + totalExpenses;
+  const totalCostBasis = totalInvestment;
   return { totalInvestment, totalExpenses, totalCostBasis };
 }
 

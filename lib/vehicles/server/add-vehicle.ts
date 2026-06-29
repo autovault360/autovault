@@ -28,6 +28,8 @@ const schema = z.object({
   sellerAuction: z.string().optional(),
   purchaseType: z.string().optional(),
   acquisitionCost: z.coerce.number().positive(),
+  registrationFees: z.coerce.number().min(0).optional(),
+  auctionFees: z.coerce.number().min(0).optional(),
   askingPrice: z.coerce.number().positive(),
   marketValue: z.coerce.number().optional(),
   wholesalePrice: z.coerce.number().optional(),
@@ -53,8 +55,10 @@ export async function addVehicle(
     const raw = JSON.parse(formData.get("payload") as string);
     const data = schema.parse(raw);
 
+    const registrationFees = data.registrationFees ?? 0;
+    const auctionFees = data.auctionFees ?? 0;
     const reconditioningCost = data.reconditioningCost ?? 0;
-    const totalInvested = data.acquisitionCost + reconditioningCost;
+    const totalInvested = data.acquisitionCost + registrationFees + auctionFees + reconditioningCost;
     const titleFields = resolveTitleReceivedFields(data.titleReceived);
 
     const supabase = await createClient();
@@ -78,6 +82,8 @@ export async function addVehicle(
         lot_location: data.lotLocation,
         acquisition_date: data.acquisitionDate,
         acquisition_cost: data.acquisitionCost,
+        registration_fees: registrationFees,
+        auction_fees: auctionFees,
         asking_price: data.askingPrice,
         market_value: data.marketValue,
         wholesale_price: data.wholesalePrice,

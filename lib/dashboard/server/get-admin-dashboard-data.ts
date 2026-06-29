@@ -18,24 +18,16 @@ import { buildAdminDashboardMock } from "../admin/mock-data";
 import { assembleAdminDashboardProps } from "../admin/map-admin-dashboard-data";
 import { mergeAdminDashboardWithMock } from "../admin/merge-admin-dashboard-mock";
 import type { AdminDashboardContentProps } from "../admin/types";
-
-function monthRange(monthsAgo: number = 0): { from: string; to: string } {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() - monthsAgo);
-  const from = d.toISOString().slice(0, 7) + "-01";
-  const to = new Date(d.getFullYear(), d.getMonth() + 1, 0)
-    .toISOString()
-    .slice(0, 10);
-  return { from, to };
-}
+import { getPeriodRange, getComparisonPeriodRange } from "./period-utils";
 
 async function getWeeklyProfitLoss(
   dealershipId: string,
+  periodFrom?: string,
+  periodTo?: string,
 ): Promise<ProfitLossPoint[]> {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const year = periodFrom ? new Date(periodFrom).getFullYear() : now.getFullYear();
+  const month = periodFrom ? new Date(periodFrom).getMonth() : now.getMonth();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const weeks: Array<{ week: string; from: string; to: string }> = [];
@@ -105,9 +97,17 @@ async function resolveJacketImages(
 
 export async function getAdminDashboardData(
   dealStatusFilter?: string,
+  viewMode: "monthly" | "yearly" = "monthly",
+  month?: number,
+  year?: number,
 ): Promise<AdminDashboardContentProps> {
   const auth = await authenticateUser();
-  const { from: periodFrom, to: periodTo } = monthRange(0);
+  const now = new Date();
+  const currentMonth = month ?? now.getMonth() + 1;
+  const currentYear = year ?? now.getFullYear();
+
+  const { from: periodFrom, to: periodTo } = getPeriodRange(viewMode, currentMonth, currentYear);
+  const { from: comparisonFrom, to: comparisonTo } = getComparisonPeriodRange(viewMode, currentMonth, currentYear);
   const today = new Date().toISOString().slice(0, 10);
   const mockOpts = { periodFrom, periodTo, today };
 
@@ -116,7 +116,6 @@ export async function getAdminDashboardData(
   }
 
   const dealershipId = auth.user.dealershipId;
-  const currentYear = new Date().getFullYear();
 
   const [
     dashData,
@@ -126,12 +125,12 @@ export async function getAdminDashboardData(
     inventoryRows,
     profitLossPoints,
   ] = await Promise.all([
-    getDashboardData(dealStatusFilter),
+    getDashboardData(dealStatusFilter, periodFrom, periodTo, comparisonFrom, comparisonTo),
     getCalendarReport(currentYear),
-    getSalesRepsDashboard("this_month"),
+    getSalesRepsDashboard(viewMode === "yearly" ? "ytd" : "this_month"),
     fetchJacketsInRangeExtended(dealershipId, periodFrom, periodTo),
     getDashboardInventoryPreview(dealershipId, 5),
-    getWeeklyProfitLoss(dealershipId),
+    getWeeklyProfitLoss(dealershipId, periodFrom, periodTo),
   ]);
 
   const jacketImageMap = await resolveJacketImages(jackets);

@@ -97,9 +97,17 @@ function lastMonthRange(): { from: string; to: string } {
 export async function getDashboardData(
   dealershipId: string,
   dealStatusFilter?: string,
+  periodFrom?: string,
+  periodTo?: string,
+  comparisonFrom?: string,
+  comparisonTo?: string,
 ): Promise<DashboardData> {
-  const { from: mtdFrom, to: mtdTo } = monthRange(0);
-  const { from: ltdFrom, to: ltdTo } = lastMonthRange();
+  const { from: mtdFrom, to: mtdTo } = periodFrom && periodTo
+    ? { from: periodFrom, to: periodTo }
+    : monthRange(0);
+  const { from: ltdFrom, to: ltdTo } = comparisonFrom && comparisonTo
+    ? { from: comparisonFrom, to: comparisonTo }
+    : lastMonthRange();
   const ytdFrom = `${new Date().getFullYear()}-01-01`;
   const now = new Date().toISOString().slice(0, 10);
 

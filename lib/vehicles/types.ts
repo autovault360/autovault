@@ -26,10 +26,15 @@ export type Vehicle = {
   mileage: number;
   price: number;
   cost: number;
+  purchasePrice?: number;
+  registrationFees?: number;
+  auctionFees?: number;
+  totalInvested?: number;
   daysInInventory: number;
   status: VehicleStatus;
   location: string;
   arrivalDate?: string;
+  titleReceived?: boolean;
 };
 
 export function formatCurrency(value: number): string {
@@ -52,6 +57,15 @@ export function formatCurrencyDecimal(value: number): string {
 export function formatMileage(value: number): string {
   if (value === 0) return "...";
   return new Intl.NumberFormat("en-US").format(value);
+}
+
+export function formatDate(date: string | null | undefined): string {
+  if (!date) return "";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 const OPTION_MAP: Record<

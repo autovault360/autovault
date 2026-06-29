@@ -191,6 +191,7 @@ export type StorageReport = {
     uploadedAt: string;
     uploadedByName: string;
     storagePath: string;
+    mimeType: string;
   }>;
 };
 
@@ -275,6 +276,7 @@ export async function getDealershipStorageReport(dealershipId: string): Promise<
       uploadedAt: f.uploaded_at,
       uploadedByName: f.uploaded_by ? (userMap[f.uploaded_by] ?? "Unknown") : "Unknown",
       storagePath: f.storage_path,
+      mimeType: f.mime_type ?? "application/octet-stream",
     })),
   };
 }
@@ -282,7 +284,7 @@ export async function getDealershipStorageReport(dealershipId: string): Promise<
 /**
  * Convert StorageReport to FilesStorageReport (for the UI types).
  */
-export function toFilesStorageReport(report: StorageReport): FilesStorageReport {
+export async function toFilesStorageReport(report: StorageReport): Promise<FilesStorageReport> {
   const totalStorageGb = 1024;
   const usedStorageGb = +(report.totalBytes / 1e9).toFixed(2);
   const usagePercent = Math.min(100, +((report.totalBytes / (totalStorageGb * 1e9)) * 100).toFixed(1));
@@ -356,13 +358,24 @@ export function toFilesStorageReport(report: StorageReport): FilesStorageReport 
       lastModified: report.recentUploads.find((r) => r.bucket === f.bucket)?.uploadedAt ?? "",
       iconColor: iconColorMap[f.bucket] ?? "blue",
     })),
-    recentUploads: report.recentUploads.map((r) => ({
-      id: r.id,
-      fileName: r.originalName,
-      category: folderNameMap[r.bucket] ?? r.bucket,
-      uploadedAt: r.uploadedAt,
-      sizeBytes: r.fileSize,
-      fileType: r.fileType as RecentUpload["fileType"],
+    recentUploads: await Promise.all(report.recentUploads.map(async (r) => {
+      const isImage = r.mimeType?.startsWith("image/");
+      let signedUrl: string | undefined;
+      if (isImage) {
+        signedUrl = await getSignedUrl(r.bucket as StorageBucket, r.storagePath, 3600).catch(() => undefined);
+      }
+      return {
+        id: r.id,
+        fileName: r.originalName,
+        category: folderNameMap[r.bucket] ?? r.bucket,
+        uploadedAt: r.uploadedAt,
+        sizeBytes: r.fileSize,
+        fileType: r.fileType as RecentUpload["fileType"],
+        mimeType: r.mimeType,
+        storagePath: r.storagePath,
+        signedUrl,
+        uploadedBy: r.uploadedByName,
+      };
     })),
     storageTips: [
       "Delete old or unused files to free up space",

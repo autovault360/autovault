@@ -6,6 +6,10 @@ import type { DashboardData } from "@/services/report.service";
 
 export async function getDashboardData(
   dealStatusFilter?: string,
+  periodFrom?: string,
+  periodTo?: string,
+  comparisonFrom?: string,
+  comparisonTo?: string,
 ): Promise<DashboardData> {
   const auth = await authenticateUser();
   if (!auth.ok) {
@@ -28,5 +32,5 @@ export async function getDashboardData(
     };
   }
 
-  return getDashboardDataFromService(auth.user.dealershipId, dealStatusFilter);
+  return getDashboardDataFromService(auth.user.dealershipId, dealStatusFilter, periodFrom, periodTo, comparisonFrom, comparisonTo);
 }

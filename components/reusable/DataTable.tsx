@@ -72,6 +72,7 @@ interface DataTableProps<T> {
   TotalColumns?: number[];
   totalRowLabel?: string;
   totalColumnClassNames?: Partial<Record<number, string>>;
+  className?: string;
 }
 
 function getPaginationRange(
@@ -111,6 +112,7 @@ export default function DataTable<T extends Record<string, unknown>>({
   TotalColumns = [],
   totalRowLabel = "Total",
   totalColumnClassNames = {},
+  className,
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -230,13 +232,18 @@ export default function DataTable<T extends Record<string, unknown>>({
     Total && sortedData.length > 0 && !loading && totalColumnSet.size > 0;
 
   return (
-    <div className="w-full border border-slate-800 bg-card rounded-sm">
+    <div className={
+      cn(
+        "w-full border border-slate-800 bg-card rounded-sm",
+        className,
+      )
+    }>
       <div className="overflow-x-auto">
         <table className="min-w-[960px] w-full text-[11.5px]">
-          <thead className="text-slate-500 bg-background/5">
+          <thead className="text-slate-400 text-[12px] bg-background/5 tracking-[0.08em]">
             <tr className="border-b border-slate-800">
               {enableSelection && (
-                <th className="w-10 px-1.5 py-2 text-left">
+                <th className="w-10 px-3 py-3 text-left">
                   <input
                     type="checkbox"
                     checked={
@@ -254,7 +261,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-1.5 py-2 text-left font-medium whitespace-nowrap",
+                    "px-3 py-3 text-left font-medium whitespace-nowrap",
                     col.sortable && "cursor-pointer select-none",
                     col.headerClassName,
                   )}
@@ -282,14 +289,14 @@ export default function DataTable<T extends Record<string, unknown>>({
               Array.from({ length: pageSize }).map((_, i) => (
                 <tr key={`skeleton-${i}`} className="animate-pulse border-b border-slate-800/60 last:border-0">
                   {enableSelection && (
-                    <td className="w-10 px-1.5 py-2.5">
+                    <td className="w-10 px-3 py-3">
                       <div className="h-3.5 w-3.5 rounded bg-slate-800" />
                     </td>
                   )}
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className={cn("px-1.5 py-2.5", col.cellClassName)}
+                      className={cn("px-3 py-3", col.cellClassName)}
                     >
                       <div className="h-3.5 w-3/4 rounded bg-slate-800" />
                     </td>
@@ -300,7 +307,7 @@ export default function DataTable<T extends Record<string, unknown>>({
               <tr>
                 <td
                   colSpan={colSpan}
-                  className="px-1.5 py-12 text-center text-slate-500"
+                  className="px-3 py-12 text-center text-slate-400 text-[12px]"
                 >
                   {emptyMessage}
                 </td>
@@ -323,7 +330,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                     )}
                   >
                     {enableSelection && (
-                      <td className="w-10 px-1.5 py-2.5">
+                      <td className="w-10 px-3 py-3">
                         <input
                           type="checkbox"
                           checked={selectedKeys.has(key)}
@@ -336,7 +343,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                       <td
                         key={col.key}
                         className={cn(
-                          "px-1.5 py-2.5 whitespace-nowrap",
+                          "px-3 py-3 whitespace-nowrap",
                           col.cellClassName,
                         )}
                       >
@@ -351,14 +358,14 @@ export default function DataTable<T extends Record<string, unknown>>({
             )}
           </tbody>
           {showTotalRow && (
-            <tfoot className="border-t border-slate-800">
+            <tfoot className="px-3 py-3 border-t border-slate-800">
               <tr>
-                {enableSelection && <td className="w-10 px-1.5 py-2.5" />}
+                {enableSelection && <td className="w-10 px-3 py-3" />}
                 {columns.map((col, index) => (
                   <td
                     key={`total-${col.key}`}
                     className={cn(
-                      "px-1.5 py-2.5 whitespace-nowrap font-semibold text-white",
+                      "px-3 py-3 whitespace-nowrap font-semibold text-white",
                       col.cellClassName,
                       totalColumnClassNames[index],
                     )}

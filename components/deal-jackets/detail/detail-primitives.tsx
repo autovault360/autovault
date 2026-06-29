@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const cardSurfaceClass =
-  "gap-0 rounded-sm border border-slate-700 bg-transparent py-0 text-slate-200 shadow-none ring-0";
+  "gap-0 rounded-sm border border-slate-700 bg-card py-0 text-slate-200 shadow-none ring-0";
 
 export function DetailCard({
   children,

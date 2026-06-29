@@ -64,7 +64,7 @@ export default function AddRepairCostModal({
   } = useAddRepairCostForm(vehicle, open, () => onOpenChange(false));
 
   return (
-    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="md">
+    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="md" theme="dark">
       <ModalHeader
         icon={<Wrench className="h-4 w-4 text-white" />}
         iconClassName="bg-[#2563eb]"
@@ -76,7 +76,7 @@ export default function AddRepairCostModal({
       <Form {...form}>
         <form onSubmit={onSubmit}>
           <ModalBody shake={shake}>
-            <FormSection title="Vehicle Information">
+            <FormSection theme="dark" title="Vehicle Information">
               <FormGrid cols={4}>
                 <ReadOnlyField label="Stock Number" value={vehicle.stockNumber} />
                 <ReadOnlyField label="VIN" value={vehicle.vin} />
@@ -88,7 +88,7 @@ export default function AddRepairCostModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Repair Details">
+            <FormSection theme="dark" title="Repair Details">
               <FormGrid cols={4}>
                 <FormField
                   control={form.control}
@@ -100,7 +100,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="date"
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -121,12 +121,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Category" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={REPAIR_CATEGORIES} label="Repair Category" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={REPAIR_CATEGORIES} label="Repair Category" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -143,12 +143,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Type" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={REPAIR_TYPES} label="Repair Type" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={REPAIR_TYPES} label="Repair Type" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -165,12 +165,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Priority" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={REPAIR_PRIORITIES} label="Priority" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={REPAIR_PRIORITIES} label="Priority" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -190,7 +190,7 @@ export default function AddRepairCostModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <Textarea
+                      <Textarea theme="dark"
                         showCount
                         value={field.value}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -204,7 +204,7 @@ export default function AddRepairCostModal({
               />
             </FormSection>
 
-            <FormSection title="Cost Information">
+            <FormSection theme="dark" title="Cost Information">
               <FormGrid cols={4}>
                 <FormField
                   control={form.control}
@@ -216,7 +216,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -236,7 +236,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -257,12 +257,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Vendor" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={VENDORS} label="Shop / Vendor" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={VENDORS} label="Shop / Vendor" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -278,7 +278,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
@@ -292,7 +292,7 @@ export default function AddRepairCostModal({
               <FormGrid cols={2}>
                 <FormItem>
                   <FieldLabel label="Total Repair Cost" required />
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.totalRepairCost}
                     onValueChange={() => {}}
@@ -314,7 +314,7 @@ export default function AddRepairCostModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Payment Information">
+            <FormSection theme="dark" title="Payment Information">
               <FormGrid cols={4}>
                 <FormField
                   control={form.control}
@@ -327,12 +327,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Method" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={PAYMENT_METHODS} label="Payment Method" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={PAYMENT_METHODS} label="Payment Method" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -348,7 +348,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -367,12 +367,12 @@ export default function AddRepairCostModal({
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger aria-invalid={!!fieldState.error}>
+                          <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                             <SelectValue placeholder="Select Status" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                           <SelectOptions options={PAYMENT_STATUSES} label="Payment Status" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={PAYMENT_STATUSES} label="Payment Status" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -388,7 +388,7 @@ export default function AddRepairCostModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="date"
                           value={field.value ?? ""}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -401,7 +401,7 @@ export default function AddRepairCostModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Attachments (Optional)">
+            <FormSection theme="dark" title="Attachments (Optional)">
               <p className="text-[11px] text-gray-500">
                 Upload Invoice / Receipt / Photos
               </p>
@@ -431,7 +431,7 @@ export default function AddRepairCostModal({
               </div>
             </FormSection>
 
-            <FormSection title="Additional Notes (Optional)">
+            <FormSection theme="dark" title="Additional Notes (Optional)">
               <FormField
                 control={form.control}
                 name="notes"
@@ -442,7 +442,7 @@ export default function AddRepairCostModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <Textarea
+                      <Textarea theme="dark"
                         showCount
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -463,7 +463,7 @@ export default function AddRepairCostModal({
             submitLabel="Save Repair Cost"
             submitClassName="bg-[#2563eb] hover:bg-[#1d4ed8]"
             isSubmitting={isSubmitting}
-            className="sticky bottom-0 bg-white"
+            className="sticky bottom-0"
           />
         </form>
       </Form>

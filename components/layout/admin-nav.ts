@@ -1,19 +1,25 @@
 import {
   LayoutDashboard,
-  Users,
   Car,
+  Tag,
   TrendingUp,
+  TrendingDown,
   DollarSign,
-  User,
+  BarChart3,
   Folder,
   FolderPlus,
   Archive,
-  BarChart3,
+  Wallet,
   Calendar,
   FileText,
   Receipt,
   BookOpen,
-  Wallet,
+  Users,
+  Handshake,
+  Shield,
+  Building2,
+  Settings,
+  Bell,
 } from "lucide-react";
 import type { SidebarGroup } from "@/components/layout/sidebar";
 
@@ -29,16 +35,33 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         exact: true,
       },
       {
-        href: "/dashboard/sales-reps",
-        label: "Sales Reps",
-        icon: Users,
-        color: "text-emerald-500",
+        href: "/dashboard/vehicles",
+        label: "Inventory",
+        icon: Car,
+        color: "text-amber-500",
       },
-      { href: "/dashboard/vehicles", label: "Vehicles", icon: Car, color: "text-amber-500" },
+      // {
+      //   href: "/dashboard/sold-vehicles",
+      //   label: "Sold Vehicles",
+      //   icon: Tag,
+      //   color: "text-green-500",
+      // },
+      {
+        href: "/dashboard/financials/profit-vehicles-report",
+        label: "Vehicles by Profit",
+        icon: TrendingUp,
+        color: "text-green-500",
+      },
+      {
+        href: "/dashboard/financials/vehicle-losses-report",
+        label: "Vehicles by Loss",
+        icon: TrendingDown,
+        color: "text-red-500",
+      },
       {
         href: "/dashboard/profit-loss",
         label: "Profit & Loss",
-        icon: TrendingUp,
+        icon: BarChart3,
         color: "text-green-500",
       },
       {
@@ -47,18 +70,45 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         icon: DollarSign,
         color: "text-red-500",
       },
-      { href: "/dashboard/customers", label: "Customers", icon: User, color: "text-purple-500" },
+    ],
+  },
+  {
+    label: "PEOPLE",
+    items: [
+      {
+        href: "/dashboard/customers",
+        label: "Customers",
+        icon: Users,
+        color: "text-blue-500",
+      },
+      // {
+      //   href: "/dashboard/sales-reps",
+      //   label: "Sales Reps",
+      //   icon: Handshake,
+      //   color: "text-green-500",
+      // },
+      // {
+      //   href: "/dashboard/users",
+      //   label: "Users",
+      //   icon: Shield,
+      //   color: "text-purple-500",
+      // },
     ],
   },
   {
     label: "DOCUMENTS",
     items: [
-      { href: "/dashboard/deal-jackets", label: "Deal Jacket", icon: Folder, color: "text-blue-500" },
       {
         href: "/dashboard/deal-jackets/create",
-        label: "Create Deal Jacket",
+        label: "Create a Deal Jacket",
         icon: FolderPlus,
         color: "text-cyan-500",
+      },
+      {
+        href: "/dashboard/deal-jackets",
+        label: "Deal Jacket",
+        icon: Folder,
+        color: "text-blue-500",
       },
       {
         href: "/dashboard/files-storage",
@@ -72,16 +122,10 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
     label: "PAYROLL",
     items: [
       {
-        label: "Payroll",
+        href: "/dashboard/financials/payroll-commissions",
+        label: "Payroll & Commissions",
         icon: Wallet,
         color: "text-emerald-500",
-        subItems: [
-          { href: "/dashboard/payroll", label: "Payroll Dashboard", exact: true },
-          { href: "/dashboard/payroll/runs", label: "Payroll Runs", comingSoon: true },
-          { href: "/dashboard/payroll/commission-payouts", label: "Commission Payouts", comingSoon: true },
-          { href: "/dashboard/payroll/deductions", label: "Deductions", comingSoon: true },
-          { href: "/dashboard/payroll/history", label: "Payroll History", comingSoon: true },
-        ],
       },
     ],
   },
@@ -89,16 +133,22 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
     label: "TOOLS",
     items: [
       {
-        href: "/dashboard/reports",
-        label: "Reports & Reminders",
-        icon: BarChart3,
-        color: "text-red-500",
-      },
-      {
         href: "/dashboard/calendar",
         label: "Calendar",
         icon: Calendar,
         color: "text-emerald-500",
+      },
+      {
+        href: "/dashboard/reports",
+        label: "Reports",
+        icon: FileText,
+        color: "text-red-500",
+      },
+      {
+        href: "/dashboard/reminders",
+        label: "Reminders",
+        icon: Bell,
+        color: "text-amber-500",
       },
       {
         href: "/dashboard/state-tax",
@@ -111,6 +161,23 @@ export const ADMIN_NAV_GROUPS: SidebarGroup[] = [
         label: "CPA Portal",
         icon: BookOpen,
         color: "text-cyan-500",
+      },
+    ],
+  },
+  {
+    label: "ADMIN",
+    items: [
+      {
+        href: "/dashboard/dealerships",
+        label: "Dealerships",
+        icon: Building2,
+        color: "text-indigo-500",
+      },
+      {
+        href: "/dashboard/settings",
+        label: "Settings",
+        icon: Settings,
+        color: "text-slate-400",
       },
     ],
   },

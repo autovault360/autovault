@@ -68,11 +68,11 @@ export default function CpaExpensesPanel({
       iconBgClassName="bg-orange-500"
       title="Expenses"
       subtitle="Operating expense breakdown"
-      viewDetailsLinkClass="border border-orange-500 text-orange-500"
+      viewDetailsLinkClass="border-orange-500 text-orange-500"
       viewDetailsHref="/cpa/expenses"
       className={className}
     >
-      <div className="grid grid-cols-2 border-t border-l border-slate-700 lg:grid-cols-5">
+      <div className="grid grid-cols-2 border-t border-l border-slate-700 sm:grid-cols-3 xl:grid-cols-5">
         <CpaPanelStatCell
           label="Total Expenses"
           value={formatMoney(panel.totalExpenses)}

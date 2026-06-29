@@ -29,6 +29,8 @@ export const addVehicleSchema = z
     sellerAuction: z.string().optional(),
     purchaseType: z.string().optional(),
     acquisitionCost: currencyField.refine((v) => v > 0, "Acquisition cost is required"),
+    registrationFees: currencyField,
+    auctionFees: currencyField,
     askingPrice: currencyField.refine((v) => v > 0, "Asking price is required"),
     marketValue: currencyField,
     wholesalePrice: currencyField,

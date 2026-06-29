@@ -39,7 +39,15 @@ function SalesRepSkeleton() {
   return <KpiGridSkeleton count={SALES_REP_KPI_COUNT} />;
 }
 
-export default function SalesRepSection() {
+export default function SalesRepSection({
+  viewMode,
+  month,
+  year,
+}: {
+  viewMode?: "monthly" | "yearly";
+  month?: number;
+  year?: number;
+} = {}) {
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<{
@@ -55,7 +63,7 @@ export default function SalesRepSection() {
       const { getSalesRepSectionData } = await import(
         "@/lib/dashboard/server/get-sales-rep-section-data"
       );
-      const result = await getSalesRepSectionData();
+      const result = await getSalesRepSectionData(viewMode, month, year);
       setData(result);
     } catch {
       setData({
@@ -66,7 +74,7 @@ export default function SalesRepSection() {
     } finally {
       setLoading(false);
     }
-  }, [data, loading]);
+  }, [data, loading, viewMode, month, year]);
 
   const handleToggle = useCallback(
     (next: boolean) => {

@@ -15,7 +15,7 @@ export async function getFilesStorageReport(
     }
 
     const report = await getDealershipStorageReport(auth.user.dealershipId);
-    return toFilesStorageReport(report);
+    return await toFilesStorageReport(report);
   } catch (err) {
     console.error("getFilesStorageReport failed:", err);
     return getEmptyReport();

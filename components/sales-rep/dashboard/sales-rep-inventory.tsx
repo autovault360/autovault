@@ -144,7 +144,10 @@ export default function SalesRepInventory({ vehicles, defaultEditId }: Props) {
       "Year",
       "Mileage",
       "Price",
-      "Cost",
+      "Purchase Price",
+      "Registration Fees",
+      "Auction Fees",
+      "Total Invested",
       "Days in Inventory",
       "Status",
       "Location",
@@ -158,7 +161,10 @@ export default function SalesRepInventory({ vehicles, defaultEditId }: Props) {
       String(v.year),
       formatMileage(v.mileage),
       formatCurrency(v.price),
-      formatCurrency(v.cost),
+      formatCurrency(v.purchasePrice ?? v.cost),
+      formatCurrency(v.registrationFees ?? 0),
+      formatCurrency(v.auctionFees ?? 0),
+      formatCurrency(v.totalInvested ?? v.cost),
       String(v.daysInInventory),
       v.status,
       formatField("location", v.location),
@@ -276,6 +282,42 @@ export default function SalesRepInventory({ vehicles, defaultEditId }: Props) {
         <span className="font-medium text-white">
           {formatCurrency(v.price)}
         </span>
+      ),
+    },
+    {
+      key: "purchasePrice",
+      header: "Purchase Price",
+      sortable: true,
+      accessor: (v) => v.purchasePrice ?? v.cost,
+      cell: (v) => (
+        <span className="text-slate-400">{formatCurrency(v.purchasePrice ?? v.cost)}</span>
+      ),
+    },
+    {
+      key: "registrationFees",
+      header: "Registration Fees",
+      sortable: true,
+      accessor: (v) => v.registrationFees ?? 0,
+      cell: (v) => (
+        <span className="text-slate-400">{formatCurrency(v.registrationFees ?? 0)}</span>
+      ),
+    },
+    {
+      key: "auctionFees",
+      header: "Auction Fees",
+      sortable: true,
+      accessor: (v) => v.auctionFees ?? 0,
+      cell: (v) => (
+        <span className="text-slate-400">{formatCurrency(v.auctionFees ?? 0)}</span>
+      ),
+    },
+    {
+      key: "totalInvested",
+      header: "Total Invested",
+      sortable: true,
+      accessor: (v) => v.totalInvested ?? v.cost,
+      cell: (v) => (
+        <span className="font-medium text-emerald-400">{formatCurrency(v.totalInvested ?? v.cost)}</span>
       ),
     },
     {

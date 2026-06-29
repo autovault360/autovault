@@ -24,6 +24,8 @@ export function buildAddVehicleDefaults(): AddVehicleFormValues {
     sellerAuction: "",
     purchaseType: "",
     acquisitionCost: 0,
+    registrationFees: 0,
+    auctionFees: 0,
     askingPrice: 0,
     marketValue: 0,
     wholesalePrice: 0,
@@ -37,9 +39,11 @@ export function buildAddVehicleDefaults(): AddVehicleFormValues {
 
 export function computeTotalInvested(
   acquisitionCost: number,
+  registrationFees: number,
+  auctionFees: number,
   reconditioningCost: number,
 ) {
-  return acquisitionCost + reconditioningCost;
+  return acquisitionCost + registrationFees + auctionFees + reconditioningCost;
 }
 
 

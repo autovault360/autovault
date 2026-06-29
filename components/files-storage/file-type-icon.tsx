@@ -17,6 +17,14 @@ const config: Record<RecentUploadFileType, FileIconConfig> = {
     bg: "bg-blue-500/15",
     src: "/image.png",
   },
+  png: {
+    bg: "bg-blue-500/15",
+    src: "/image.png",
+  },
+  webp: {
+    bg: "bg-blue-500/15",
+    src: "/image.png",
+  },
   xlsx: {
     bg: "bg-emerald-500/15",
     src: "/xls.png",

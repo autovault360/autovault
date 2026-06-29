@@ -23,7 +23,7 @@ import { formatMoney } from "@/lib/cpa/payroll-commissions/mock-data";
 import { cn } from "@/lib/utils";
 
 const CHART_CARD_CLASS =
-  "flex h-full min-h-[300px] flex-col rounded-lg border-slate-700/80 bg-[#0b1322]/90 p-4 shadow-none";
+  "flex h-full flex-col rounded-lg border-slate-700/80 bg-card p-4 shadow-none";
 
 const Y_AXIS_TICKS = [0, 20_000, 40_000, 60_000, 80_000, 100_000, 120_000];
 
@@ -159,8 +159,8 @@ function TrendPanel({ data }: { data: CpaPayrollTrendPoint[] }) {
                 dataKey="payroll"
                 stroke="#a855f7"
                 strokeWidth={2}
-                dot={{ fill: "#a855f7", r: 3, strokeWidth: 0 }}
-                activeDot={{ r: 4, fill: "#a855f7", strokeWidth: 0 }}
+                dot={{ fill: "#a855f7", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#a855f7", strokeWidth: 0 }}
                 name="Payroll"
               />
               <Line
@@ -168,8 +168,8 @@ function TrendPanel({ data }: { data: CpaPayrollTrendPoint[] }) {
                 dataKey="commissions"
                 stroke="#3b82f6"
                 strokeWidth={2}
-                dot={{ fill: "#3b82f6", r: 3, strokeWidth: 0 }}
-                activeDot={{ r: 4, fill: "#3b82f6", strokeWidth: 0 }}
+                dot={{ fill: "#3b82f6", r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: "#3b82f6", strokeWidth: 0 }}
                 name="Commissions"
               />
             </LineChart>
@@ -196,8 +196,14 @@ function DepartmentCompensationPanel({
 }: {
   rows: CpaDepartmentCompensation[];
 }) {
-  const maxTotal = Math.max(...rows.map((row) => row.total), 1);
-  const totals = rows.reduce(
+  const kept = rows
+    .filter((r) => ["Sales", "Service", "Management"].includes(r.department))
+    .map((r) => ({
+      ...r,
+      department: r.department === "Sales" ? "Sales Rep" : r.department,
+    }));
+  const maxTotal = Math.max(...kept.map((row) => row.total), 1);
+  const totals = kept.reduce(
     (acc, row) => ({
       payroll: acc.payroll + row.payroll,
       commissions: acc.commissions + row.commissions,
@@ -221,21 +227,50 @@ function DepartmentCompensationPanel({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => {
+            {kept.map((row) => {
               const barWidth = (row.total / maxTotal) * 100;
               const payrollShare =
                 row.total > 0 ? (row.payroll / row.total) * 100 : 0;
               const commissionShare =
                 row.total > 0 ? (row.commissions / row.total) * 100 : 0;
 
-              return (
-                <tr
-                  key={row.id}
-                  className="last:border-0"
-                >
-                  <td className="py-2.5 pr-2 text-slate-300">{row.department}</td>
-                  <td className="w-[38%] min-w-[96px] px-2 py-2.5">
-                    <div className="h-2.5 overflow-hidden rounded-full bg-slate-800/90">
+              return (  
+                <>
+                  <tr
+                    key={row.id}
+                    className="last:border-0"
+                  >
+                    <td className="py-1 pr-2 text-slate-300">{row.department}</td>
+                    <td className="md:hidden" />
+                    <td className="hidden md:table-cell w-full px-2 py-1">
+                      <div className="h-2 overflow-hidden rounded-full bg-slate-800/90">
+                        <div
+                          className="flex h-full overflow-hidden rounded-full"
+                          style={{ width: `${barWidth}%` }}
+                        >
+                          <div
+                            className="h-full bg-purple-500"
+                            style={{ width: `${payrollShare}%` }}
+                          />
+                          <div
+                            className="h-full bg-blue-500"
+                            style={{ width: `${commissionShare}%` }}
+                          /> 
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-2.5 pl-2 text-right tabular-nums text-slate-300">
+                      {formatMoney(row.payroll)}
+                    </td>
+                    <td className="py-2.5 text-right tabular-nums text-slate-300">
+                      {formatMoney(row.commissions)}
+                    </td>
+                    <td className="py-2.5 text-right font-medium tabular-nums text-white">
+                      {formatMoney(row.total)}
+                    </td>
+                  </tr>
+                  <tr className="md:hidden w-full mt-1">
+                    <td colSpan={5} className="h-2 overflow-hidden rounded-full bg-slate-800/90">
                       <div
                         className="flex h-full overflow-hidden rounded-full"
                         style={{ width: `${barWidth}%` }}
@@ -249,18 +284,9 @@ function DepartmentCompensationPanel({
                           style={{ width: `${commissionShare}%` }}
                         />
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-2.5 pl-2 text-right tabular-nums text-slate-300">
-                    {formatMoney(row.payroll)}
-                  </td>
-                  <td className="py-2.5 text-right tabular-nums text-slate-300">
-                    {formatMoney(row.commissions)}
-                  </td>
-                  <td className="py-2.5 text-right font-medium tabular-nums text-white">
-                    {formatMoney(row.total)}
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                </>
               );
             })}
           </tbody>
@@ -299,11 +325,11 @@ export default function CpaPayrollCommissionsChartsRow({
   return (
     <div
       className={cn(
-        "mb-4 grid grid-cols-1 gap-3 lg:grid-cols-3 lg:items-stretch",
+        "mb-4",
       )}
     >
-      <PayrollBreakdownPanel segments={payrollBreakdown} total={payrollBreakdownTotal} />
-      <TrendPanel data={trend} />
+      {/* <PayrollBreakdownPanel segments={payrollBreakdown} total={payrollBreakdownTotal} />
+      <TrendPanel data={trend} /> */}
       <DepartmentCompensationPanel rows={departmentCompensation} />
     </div>
   );

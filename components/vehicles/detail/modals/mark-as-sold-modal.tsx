@@ -49,7 +49,7 @@ export default function MarkAsSoldModal({
     useMarkAsSoldForm(vehicle, open, () => onOpenChange(false));
 
   return (
-    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="lg">
+    <VehicleActionDialog open={open} onOpenChange={onOpenChange} size="lg" theme="dark">
       <ModalHeader
         icon={<CheckCircle2 className="h-4 w-4 text-white" />}
         iconClassName="bg-emerald-600"
@@ -61,7 +61,7 @@ export default function MarkAsSoldModal({
       <Form {...form}>
         <form onSubmit={onSubmit}>
           <ModalBody shake={shake}>
-            <FormSection title="Customer Information">
+            <FormSection theme="dark" title="Customer Information">
               <FormGrid cols={2}>
                 <FormField
                   control={form.control}
@@ -73,11 +73,11 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger aria-invalid={!!fieldState.error}>
+                        <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                           <SelectValue placeholder="Select..." />
                         </SelectTrigger>
-                        <SelectContent>
-                           <SelectOptions options={CUSTOMER_TYPES} label="Customer Type" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={CUSTOMER_TYPES} label="Customer Type" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -93,7 +93,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -113,7 +113,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           value={field.value}
                           onChange={(e) => handlePhoneChange(e.target.value)}
                           onBlur={field.onBlur}
@@ -134,7 +134,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           type="email"
                           aria-invalid={!!fieldState.error}
@@ -155,7 +155,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -173,7 +173,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -193,7 +193,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -211,11 +211,11 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger aria-invalid={!!fieldState.error}>
+                        <SelectTrigger theme="dark" aria-invalid={!!fieldState.error}>
                           <SelectValue placeholder="Select state..." />
                         </SelectTrigger>
-                        <SelectContent>
-                           <SelectOptions options={US_STATES} label="State" />
+                        <SelectContent theme="dark">
+                           <SelectOptions theme="dark" options={US_STATES} label="State" />
                          </SelectContent>
                        </Select>
                      </FormItem>
@@ -231,7 +231,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -242,7 +242,7 @@ export default function MarkAsSoldModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Sale Information">
+            <FormSection theme="dark" title="Sale Information">
               <FormGrid cols={3}>
                 <FormField
                   control={form.control}
@@ -254,7 +254,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           mode="date"
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value)}
@@ -274,7 +274,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input mode="currency"
+                        <Input theme="dark" mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
@@ -293,7 +293,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input mode="currency"
+                        <Input theme="dark" mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
@@ -314,7 +314,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input mode="currency"
+                        <Input theme="dark" mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
@@ -333,7 +333,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input mode="currency"
+                        <Input theme="dark" mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
@@ -352,7 +352,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input mode="currency"
+                        <Input theme="dark" mode="currency"
                           value={field.value}
                           onValueChange={field.onChange}
                           aria-invalid={!!fieldState.error}
@@ -368,7 +368,7 @@ export default function MarkAsSoldModal({
                   <AutoCalculatedCaption />
                 </div>
                 <FormControl>
-                  <Input
+                  <Input theme="dark"
                     mode="currency"
                     value={derived.totalCollected}
                     onValueChange={() => {}}
@@ -378,7 +378,7 @@ export default function MarkAsSoldModal({
               </div>
             </FormSection>
 
-            <FormSection title="Tax & Document Information">
+            <FormSection theme="dark" title="Tax & Document Information">
               <FormGrid cols={2}>
                 <FormField
                   control={form.control}
@@ -390,7 +390,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -408,7 +408,7 @@ export default function MarkAsSoldModal({
                         <FormMessage />
                       </div>
                       <FormControl>
-                        <Input
+                        <Input theme="dark"
                           {...field}
                           aria-invalid={!!fieldState.error}
                         />
@@ -423,7 +423,7 @@ export default function MarkAsSoldModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="ID & Documents Upload">
+            <FormSection theme="dark" title="ID & Documents Upload">
               <UploadSectionHint
                 left="Upload clear images of IDs and supporting documents."
                 right="JPG only, max 5MB per file"
@@ -497,7 +497,7 @@ export default function MarkAsSoldModal({
               </FormGrid>
             </FormSection>
 
-            <FormSection title="Additional Notes (Optional)">
+            <FormSection theme="dark" title="Additional Notes (Optional)">
               <FormField
                 control={form.control}
                 name="notes"
@@ -508,7 +508,7 @@ export default function MarkAsSoldModal({
                       <FormMessage />
                     </div>
                     <FormControl>
-                      <Textarea
+                      <Textarea theme="dark"
                         showCount
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value)}
@@ -534,7 +534,7 @@ export default function MarkAsSoldModal({
             submitLabel="Mark as Sold & Save"
             submitClassName="bg-emerald-600 hover:bg-emerald-500"
             isSubmitting={isSubmitting}
-            className="sticky bottom-0 bg-white"
+            className="sticky bottom-0"
           />
         </form>
       </Form>

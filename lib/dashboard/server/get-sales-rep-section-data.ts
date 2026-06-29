@@ -12,19 +12,13 @@ import {
 } from "../admin/map-admin-dashboard-data";
 import type { KPICardData } from "@/components/ui/kpi-card";
 import type { AdminSalesRepTableRow } from "../admin/types";
+import { getPeriodRange } from "./period-utils";
 
-function monthRange(monthsAgo: number = 0): { from: string; to: string } {
-  const d = new Date();
-  d.setDate(1);
-  d.setMonth(d.getMonth() - monthsAgo);
-  const from = d.toISOString().slice(0, 7) + "-01";
-  const to = new Date(d.getFullYear(), d.getMonth() + 1, 0)
-    .toISOString()
-    .slice(0, 10);
-  return { from, to };
-}
-
-export async function getSalesRepSectionData(): Promise<{
+export async function getSalesRepSectionData(
+  viewMode?: "monthly" | "yearly",
+  month?: number,
+  year?: number,
+): Promise<{
   periodLabel: string;
   kpiCards: KPICardData[];
   tableRows: AdminSalesRepTableRow[];
@@ -34,10 +28,15 @@ export async function getSalesRepSectionData(): Promise<{
     return { periodLabel: "", kpiCards: [], tableRows: [] };
   }
 
-  const { from: periodFrom, to: periodTo } = monthRange(0);
+  const now = new Date();
+  const currentMonth = month ?? now.getMonth() + 1;
+  const currentYear = year ?? now.getFullYear();
+  const mode = viewMode ?? "monthly";
+
+  const { from: periodFrom, to: periodTo } = getPeriodRange(mode, currentMonth, currentYear);
 
   const [salesRepData, jackets] = await Promise.all([
-    getSalesRepsDashboard("this_month"),
+    getSalesRepsDashboard(mode === "yearly" ? "ytd" : "this_month"),
     fetchJacketsInRangeExtended(auth.dealershipId, periodFrom, periodTo),
   ]);
 

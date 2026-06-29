@@ -4,6 +4,7 @@ export function totalVehicleCost(costs: VehicleCosts): number {
   return (
     costs.acquisition +
     costs.auction +
+    (costs.registration ?? 0) +
     costs.transport +
     costs.recon +
     costs.storage +
