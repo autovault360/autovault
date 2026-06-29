@@ -212,10 +212,16 @@ export default function AddFlooringRateModal({
 
   useEffect(() => {
     if (!open) return;
-    getFlooringVehicleOptions().then((options) => {
-      setVehicleOptions(options);
-      setSelectedVehicleIds(options.map((o) => o.id));
-    });
+    getFlooringVehicleOptions()
+      .then((options) => {
+        setVehicleOptions(options);
+        setSelectedVehicleIds(options.map((o) => o.id));
+      })
+      .catch(() => {
+        toast.error("Failed to load vehicle options");
+        setVehicleOptions([]);
+        setSelectedVehicleIds([]);
+      });
   }, [open]);
 
   const rateIncreaseSummary = useMemo(() => {
