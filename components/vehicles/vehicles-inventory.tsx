@@ -488,8 +488,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
           </InputGroup>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 justify-between w-full">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 xl:ml-auto">
             <Select value={make} onValueChange={(v: any) => { setMake(v); setModel("all"); }}>
               <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
                 <SelectValue placeholder="All Makes" />
@@ -565,7 +564,6 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
                 Clear Filters
               </Button>
             )}
-          </div>
           <Button
             variant="outline"
             theme="dark"
