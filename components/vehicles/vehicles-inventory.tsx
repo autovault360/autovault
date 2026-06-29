@@ -48,6 +48,8 @@ import EditVehicleModal from "@/components/vehicles/detail/edit-vehicle-modal";
 import type { VehicleDetail } from "@/lib/vehicles/detail-types";
 import EntityActionModal from "@/components/shared/entity-action-modal";
 import { updateVehicleStatus } from "@/lib/vehicles/server/update-vehicle-status";
+import AddFlooringRateButton from "@/components/vehicles/flooring/add-flooring-rate-button";
+import AddFlooringRateModal from "@/components/vehicles/flooring/add-flooring-rate-modal";
 
 type VehiclesInventoryProps = {
   vehicles: Vehicle[];
@@ -68,6 +70,7 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   const [editLoading, setEditLoading] = useState(false);
   const [statusVehicleId, setStatusVehicleId] = useState<string | null>(null);
   const [statusSubmitting, setStatusSubmitting] = useState(false);
+  const [flooringModalOpen, setFlooringModalOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -454,6 +457,10 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
 
   const filterKey = `${make}-${model}-${status}-${location}-${search}`;
   const hasActiveFilters = make !== "all" || model !== "all" || status !== "all" || location !== "all" || search.trim() !== "";
+  const activeInventoryCount = useMemo(
+    () => vehicles.filter((vehicle) => vehicle.status !== "Marked Sold").length,
+    [vehicles],
+  );
   const clearFilters = () => {
     setSearch("");
     setMake("all");
@@ -464,7 +471,9 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
 
   return (
     <div className="p-3.5 text-slate-200 shadow-none">
-      <div className="mb-3.5 flex flex-col gap-2.5 xl:flex-row xl:items-center xl:justify-between">
+      <div className="mb-3.5 flex flex-col gap-2.5 xl:flex-row xl:items-center xl:gap-3">
+        <AddFlooringRateButton onClick={() => setFlooringModalOpen(true)} />
+
         <div className="relative w-full xl:max-w-sm">
           <InputGroup theme="dark">
             <InputGroupAddon>
@@ -655,6 +664,12 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
             setStatusSubmitting(false);
           }
         }}
+      />
+
+      <AddFlooringRateModal
+        open={flooringModalOpen}
+        onOpenChange={setFlooringModalOpen}
+        activeInventoryCount={activeInventoryCount}
       />
     </div>
   );

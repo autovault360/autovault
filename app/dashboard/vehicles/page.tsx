@@ -1,6 +1,8 @@
 import AddVehicleTrigger from "@/components/vehicles/add/add-vehicle-trigger";
 import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
 import VehiclesInventory from "@/components/vehicles/vehicles-inventory";
+import FlooringCostBanner from "@/components/vehicles/flooring/flooring-cost-banner";
+import { getFlooringSummary } from "@/lib/vehicles/server/get-flooring-summary";
 import {
   computeVehicleStats,
   type Vehicle,
@@ -96,6 +98,7 @@ export default async function VehiclesPage({
   }
 
   const stats = computeVehicleStats(vehicles);
+  const flooringSummary = auth.ok ? await getFlooringSummary() : null;
 
   return (
     <div>
@@ -110,6 +113,8 @@ export default async function VehiclesPage({
       </section>
 
       <VehicleStatsCards stats={stats} />
+
+      {flooringSummary ? <FlooringCostBanner summary={flooringSummary} /> : null}
 
       <VehiclesInventory vehicles={vehicles} defaultEditId={defaultEditId} />
     </div>

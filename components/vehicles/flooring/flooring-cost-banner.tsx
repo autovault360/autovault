@@ -16,7 +16,7 @@ export default function FlooringCostBanner({
         </p>
         {summary.planName ? (
           <p className="mt-0.5 text-[11px] text-red-200/70">
-            Active plan: {summary.planName} · {summary.vehicleCount} vehicle
+            Active plan: {summary.planName} {'\u00B7'} {summary.vehicleCount} vehicle
             {summary.vehicleCount === 1 ? "" : "s"}
           </p>
         ) : (
