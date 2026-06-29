@@ -85,15 +85,21 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
     NProgress.start();
     setEditLoading(true);
     fetch(`/api/vehicles/${editingId}`)
-      .then((r) => r.json())
+      .then(async (r) => {
+        if (!r.ok) return null;
+        const text = await r.text();
+        if (!text) return null;
+        return JSON.parse(text) as VehicleDetail;
+      })
       .then((data) => {
-        setEditingVehicle(data);
+        if (data) setEditingVehicle(data);
         setEditLoading(false);
         NProgress.done();
       })
       .catch(() => {
         setEditLoading(false);
         NProgress.done();
+        toast.error("Failed to load vehicle details");
       });
   }, [editingId]);
 
