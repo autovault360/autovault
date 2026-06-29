@@ -9,6 +9,12 @@ import { formatField, type VehicleStatus } from "./types";
 import { mapDbVehicleStatus } from "./map-db-status";
 import { authenticateUser } from "./server/utils";
 import { mapDbTitleReceived } from "./title-received";
+import {
+  calculateFlooringCost,
+  planRowToConfig,
+  resolveFlooringStartDate,
+} from "@/services/flooring.service";
+import type { FlooringPlanRow } from "@/lib/vehicles/flooring/types";
 
 function mapStatus(dbStatus: string): VehicleStatus {
   return mapDbVehicleStatus(dbStatus);
@@ -70,6 +76,8 @@ type DbVehicleRow = {
   registration_fees: number | null;
   auction_fees: number | null;
   flooring_fees: number | null;
+  flooring_plan_id: string | null;
+  flooring_start_date: string | null;
   asking_price: number | null;
   market_value: number | null;
   title_status: string | null;
@@ -179,7 +187,42 @@ export async function getVehicleDetail(id: string): Promise<VehicleDetail | null
     const acquisitionCost = Number(row.acquisition_cost ?? 0);
     const registrationFees = Number(row.registration_fees ?? 0);
     const auctionFees = Number(row.auction_fees ?? 0);
-    const flooringFees = Number(row.flooring_fees ?? 0);
+    let flooringFees = Number(row.flooring_fees ?? 0);
+
+    if (row.flooring_plan_id) {
+      const { data: planRow } = await supabase
+        .from("flooring_plans")
+        .select("*")
+        .eq("id", row.flooring_plan_id)
+        .eq("dealership_id", dealershipId)
+        .is("deleted_at", null)
+        .maybeSingle();
+
+      if (planRow) {
+        const config = planRowToConfig(planRow as FlooringPlanRow);
+        const startDate =
+          row.flooring_start_date ??
+          resolveFlooringStartDate(row.acquisition_date, config.effectiveDate);
+        const breakdown = calculateFlooringCost({
+          plan: config,
+          purchasePrice: acquisitionCost,
+          flooringStartDate: startDate,
+        });
+        flooringFees = breakdown.totalCost;
+
+        if (Math.abs(flooringFees - Number(row.flooring_fees ?? 0)) > 0.01) {
+          await supabase
+            .from("vehicles")
+            .update({
+              flooring_fees: flooringFees,
+              flooring_start_date: startDate,
+            })
+            .eq("id", id);
+          await supabase.rpc("update_vehicle_financials", { p_vehicle_id: id });
+        }
+      }
+    }
+
     const marketValue = Number(row.market_value ?? 0);
     const sumOfExpenses = (row.expenses ?? []).reduce(
       (sum, e) => sum + Number(e.total_cost),
