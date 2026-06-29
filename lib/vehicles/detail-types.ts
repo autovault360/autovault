@@ -51,6 +51,8 @@ export type VehicleDetailExtras = {
   acquisitionCost: number;
   registrationFees: number;
   auctionFees: number;
+  flooringFees: number;
+  totalInvested: number;
   titleReceived: boolean;
   titleStatus: string;
   licensePlate: string;

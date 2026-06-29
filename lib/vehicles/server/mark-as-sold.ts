@@ -8,9 +8,14 @@ import { createDealJacket } from "@/services/deal-jacket.service";
 import type { DealJacketDocumentInput } from "@/lib/deal-jackets/server/db-types";
 import { revalidatePath } from "next/cache";
 
+const payoutItemSchema = z.object({
+  description: z.string().min(1),
+  amount: z.coerce.number().positive(),
+  frequency: z.enum(["one_time", "weekly", "monthly", "per_deal"]),
+});
+
 const schema = z.object({
   vehicleId: z.string().uuid(),
-  customerType: z.string(),
   customerName: z.string().min(1),
   phoneNumber: z
     .string()
@@ -18,19 +23,27 @@ const schema = z.object({
     .regex(phoneRegex, "Enter a valid phone number: (XXX) XXX-XXXX"),
   email: z.string().email().optional().or(z.literal("")),
   address: z.string().min(1),
-  address2: z.string().optional(),
   city: z.string().min(1),
   state: z.string().min(1),
   zipCode: z.string().regex(zipRegex, "Enter a valid ZIP code"),
   saleDate: z.string().min(1),
-  totalPriceOtd: z.coerce.number().positive(),
+  soldPriceBeforeTax: z.coerce.number().positive(),
   salesTaxAmount: z.coerce.number().default(0),
   licenseRegistrationFees: z.coerce.number().default(0),
-  dmvDocFees: z.coerce.number().default(0),
-  otherFees: z.coerce.number().default(0),
-  totalCollected: z.coerce.number().positive(),
+  totalPriceWithTaxAndFees: z.coerce.number().positive(),
   rosNumber: z.string().optional(),
   zipCodeOfSale: z.string().optional(),
+  salesRepId: z.string().uuid().nullable().optional(),
+  commissionType: z.enum(["percentage", "manual"]),
+  commissionRate: z.coerce.number().default(0),
+  manualCommissionAmount: z.coerce.number().default(0),
+  commissionAmount: z.coerce.number().default(0),
+  dealerPayoutsEnabled: z.boolean().default(false),
+  payoutItems: z.array(payoutItemSchema).default([]),
+  otherPayoutsTotal: z.coerce.number().default(0),
+  netProfit: z.coerce.number().default(0),
+  roiPercent: z.coerce.number().default(0),
+  totalInvestment: z.coerce.number().default(0),
   notes: z.string().optional(),
 });
 
@@ -75,7 +88,6 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
           name: data.customerName,
           email: data.email || null,
           address: data.address,
-          address2: data.address2 || null,
           city: data.city,
           state: data.state,
           zip: data.zipCode,
@@ -87,12 +99,11 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
         .from("customers")
         .insert({
           dealership_id: dealershipId,
-          type: data.customerType,
+          type: "individual",
           name: data.customerName,
           phone: data.phoneNumber,
           email: data.email || null,
           address: data.address,
-          address2: data.address2 || null,
           city: data.city,
           state: data.state,
           zip: data.zipCode,
@@ -106,54 +117,48 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
       customerId = newCustomer.id;
     }
 
-    const buyerIdFront = formData.get("buyerIdFront") as File | null;
-    const buyerIdBack = formData.get("buyerIdBack") as File | null;
-    const driversLicense = formData.get("driversLicense") as File | null;
-    const otherDoc = formData.get("otherDocument") as File | null;
-
     const docBase = `${dealershipId}/${data.vehicleId}/docs`;
+    const documentFiles: File[] = [];
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("document_") && value instanceof File) {
+        documentFiles.push(value);
+      }
+    }
 
-    let buyerIdFrontPath: string | null = null;
-    let buyerIdBackPath: string | null = null;
-    let driversLicensePath: string | null = null;
-    let otherDocPath: string | null = null;
+    if (documentFiles.length === 0) {
+      return { success: false, error: "At least one document is required" };
+    }
 
-    if (buyerIdFront) {
-      buyerIdFrontPath = `${docBase}/buyer-id-front`;
-      await uploadFile("vehicle-documents", buyerIdFrontPath, buyerIdFront);
-      uploadedPaths.push(buyerIdFrontPath);
-      await trackFile(buyerIdFront, "vehicle-documents", buyerIdFrontPath, dealershipId, userId, {
+    const docPaths: { path: string; name: string }[] = [];
+    const docLabels = [
+      "Buyer ID (Front)",
+      "Buyer ID (Back)",
+      "Driver's License",
+      "Bill of Sale",
+      "Proof of Insurance",
+      "Other Document",
+    ];
+
+    for (let i = 0; i < documentFiles.length; i++) {
+      const file = documentFiles[i];
+      const slug = `sale-doc-${i + 1}`;
+      const path = `${docBase}/${slug}`;
+      await uploadFile("vehicle-documents", path, file);
+      uploadedPaths.push(path);
+      await trackFile(file, "vehicle-documents", path, dealershipId, userId, {
         sourceEntity: "deal",
         sourceEntityId: data.vehicleId,
       });
-    }
-    if (buyerIdBack) {
-      buyerIdBackPath = `${docBase}/buyer-id-back`;
-      await uploadFile("vehicle-documents", buyerIdBackPath, buyerIdBack);
-      uploadedPaths.push(buyerIdBackPath);
-      await trackFile(buyerIdBack, "vehicle-documents", buyerIdBackPath, dealershipId, userId, {
-        sourceEntity: "deal",
-        sourceEntityId: data.vehicleId,
+      docPaths.push({
+        path,
+        name: docLabels[i] ?? `Document ${i + 1}`,
       });
     }
-    if (driversLicense) {
-      driversLicensePath = `${docBase}/drivers-license`;
-      await uploadFile("vehicle-documents", driversLicensePath, driversLicense);
-      uploadedPaths.push(driversLicensePath);
-      await trackFile(driversLicense, "vehicle-documents", driversLicensePath, dealershipId, userId, {
-        sourceEntity: "deal",
-        sourceEntityId: data.vehicleId,
-      });
-    }
-    if (otherDoc) {
-      otherDocPath = `${docBase}/other`;
-      await uploadFile("vehicle-documents", otherDocPath, otherDoc);
-      uploadedPaths.push(otherDocPath);
-      await trackFile(otherDoc, "vehicle-documents", otherDocPath, dealershipId, userId, {
-        sourceEntity: "deal",
-        sourceEntityId: data.vehicleId,
-      });
-    }
+
+    const buyerIdFrontPath = docPaths[0]?.path ?? null;
+    const buyerIdBackPath = docPaths[1]?.path ?? null;
+    const driversLicensePath = docPaths[2]?.path ?? null;
+    const otherDocPath = docPaths[3]?.path ?? null;
 
     const { data: dealRow, error: dealError } = await supabase
       .from("deals")
@@ -162,14 +167,24 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
         customer_id: customerId,
         dealership_id: dealershipId,
         sale_date: data.saleDate,
-        total_price_otd: data.totalPriceOtd,
+        sold_price_before_tax: data.soldPriceBeforeTax,
+        total_price_otd: data.totalPriceWithTaxAndFees,
         sales_tax_amount: data.salesTaxAmount,
         license_fees: data.licenseRegistrationFees,
-        dmv_fees: data.dmvDocFees,
-        other_fees: data.otherFees,
-        total_collected: data.totalCollected,
+        dmv_fees: 0,
+        other_fees: 0,
+        total_collected: data.totalPriceWithTaxAndFees,
         ros_number: data.rosNumber,
         zip_of_sale: data.zipCodeOfSale,
+        sales_rep_id: data.salesRepId ?? null,
+        commission_type: data.commissionType,
+        commission_rate: data.commissionRate,
+        manual_commission_amount: data.manualCommissionAmount,
+        commission_amount: data.commissionAmount,
+        dealer_payouts_enabled: data.dealerPayoutsEnabled,
+        other_payouts_total: data.otherPayoutsTotal,
+        net_profit: data.netProfit,
+        roi_percent: data.roiPercent,
         buyer_id_front_path: buyerIdFrontPath,
         buyer_id_back_path: buyerIdBackPath,
         drivers_license_path: driversLicensePath,
@@ -182,42 +197,25 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
 
     if (dealError || !dealRow) throw new Error(dealError?.message ?? "Failed to create deal");
 
-    const feeTotal =
-      data.licenseRegistrationFees + data.dmvDocFees + data.otherFees;
-    const soldPrice = Math.max(
-      0,
-      data.totalPriceOtd - data.salesTaxAmount - feeTotal,
-    );
+    if (data.dealerPayoutsEnabled && data.payoutItems.length > 0) {
+      const payoutRows = data.payoutItems.map((item) => ({
+        deal_id: dealRow.id,
+        dealership_id: dealershipId,
+        description: item.description,
+        amount: item.amount,
+        frequency: item.frequency,
+      }));
+      const { error: payoutError } = await supabase
+        .from("deal_rep_payout_items")
+        .insert(payoutRows);
+      if (payoutError) throw new Error(payoutError.message);
+    }
 
-    const jacketDocuments: DealJacketDocumentInput[] = [];
-    if (buyerIdFrontPath) {
-      jacketDocuments.push({
-        storagePath: buyerIdFrontPath,
-        fileType: "image",
-        documentName: "Buyer ID (Front)",
-      });
-    }
-    if (buyerIdBackPath) {
-      jacketDocuments.push({
-        storagePath: buyerIdBackPath,
-        fileType: "image",
-        documentName: "Buyer ID (Back)",
-      });
-    }
-    if (driversLicensePath) {
-      jacketDocuments.push({
-        storagePath: driversLicensePath,
-        fileType: "image",
-        documentName: "Driver License",
-      });
-    }
-    if (otherDocPath) {
-      jacketDocuments.push({
-        storagePath: otherDocPath,
-        fileType: "application/octet-stream",
-        documentName: "Other Document",
-      });
-    }
+    const jacketDocuments: DealJacketDocumentInput[] = docPaths.map((doc) => ({
+      storagePath: doc.path,
+      fileType: "image",
+      documentName: doc.name,
+    }));
 
     const jacketResult = await createDealJacket({
       dealershipId,
@@ -227,19 +225,24 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
         dealId: dealRow.id,
         vehicleId: data.vehicleId,
         customerId,
+        salesRepId: data.salesRepId ?? null,
         saleDate: data.saleDate,
-        soldPrice,
+        soldPrice: data.soldPriceBeforeTax,
         totalTax: data.salesTaxAmount,
         fees: {
           license: data.licenseRegistrationFees,
           registration: 0,
-          dmv: data.dmvDocFees,
+          dmv: 0,
           documentation: 0,
-          other: data.otherFees,
+          other: 0,
         },
-        totalSalePrice: data.totalPriceOtd,
-        downPayment: data.totalCollected,
-        balanceDue: Math.max(0, data.totalPriceOtd - data.totalCollected),
+        totalSalePrice: data.totalPriceWithTaxAndFees,
+        downPayment: data.totalPriceWithTaxAndFees,
+        balanceDue: 0,
+        additionalExpenses: data.otherPayoutsTotal,
+        commissionAmount: data.commissionAmount,
+        commissionRate: data.commissionRate / 100,
+        rosNumber: data.rosNumber,
       },
       documents: jacketDocuments,
     });
@@ -267,7 +270,12 @@ export async function markAsSold(formData: FormData): Promise<ActionResult> {
       entity_type: "vehicles",
       entity_id: data.vehicleId,
       action: "MARKED_SOLD",
-      new_values: { customer_name: data.customerName, sale_price: data.totalPriceOtd, sale_date: data.saleDate },
+      new_values: {
+        customer_name: data.customerName,
+        sale_price: data.soldPriceBeforeTax,
+        sale_date: data.saleDate,
+        net_profit: data.netProfit,
+      },
       changed_by: userId,
     });
     if (auditError) console.error("audit_logs insert failed:", auditError.message);

@@ -41,28 +41,32 @@ export type AddRepairCostPayload = {
 
 export type MarkAsSoldPayload = {
   vehicleId: string;
-  customerType: string;
   customerName: string;
   phoneNumber: string;
   email?: string;
   address: string;
-  address2?: string;
   city: string;
   state: string;
   zipCode: string;
   saleDate: string;
-  totalPriceOtd: number;
+  soldPriceBeforeTax: number;
   salesTaxAmount: number;
   licenseRegistrationFees: number;
-  dmvDocFees: number;
-  otherFees: number;
-  totalCollected: number;
+  totalPriceWithTaxAndFees: number;
   rosNumber: string;
   zipCodeOfSale: string;
-  buyerIdFront: File;
-  buyerIdBack?: File | null;
-  driversLicense?: File | null;
-  otherDocument?: File | null;
+  salesRepId?: string | null;
+  commissionType: "percentage" | "manual";
+  commissionRate: number;
+  manualCommissionAmount: number;
+  commissionAmount: number;
+  dealerPayoutsEnabled: boolean;
+  payoutItems: { description: string; amount: number; frequency: string }[];
+  otherPayoutsTotal: number;
+  netProfit: number;
+  roiPercent: number;
+  totalInvestment: number;
+  documents: File[];
   notes?: string;
 };
 

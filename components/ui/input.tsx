@@ -155,6 +155,102 @@ function CurrencyInput({
   );
 }
 
+function formatPercentInput(value: number): string {
+  if (Number.isNaN(value)) return "";
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function parsePercentInput(value: string): number {
+  const cleaned = value.replace(/[^0-9.-]/g, "");
+  const parsed = parseFloat(cleaned);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function PercentInput({
+  value,
+  onValueChange,
+  disabled,
+  tone = "default",
+  theme = "light",
+  id,
+  "aria-invalid": ariaInvalid,
+  placeholder,
+}: {
+  value: number;
+  onValueChange: (value: number) => void;
+  disabled?: boolean;
+  tone?: InputTone;
+  theme?: "light" | "dark";
+  id?: string;
+  "aria-invalid"?: boolean;
+  placeholder?: string;
+}) {
+  const [display, setDisplay] = React.useState(() => formatPercentInput(value));
+  const isEditing = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!isEditing.current) {
+      setDisplay(formatPercentInput(value));
+    }
+  }, [value]);
+
+  const resolvedTone = disabled ? "readonly" : tone;
+  const shell = theme === "dark" ? darkShellClass[resolvedTone] : toneShellClass[resolvedTone];
+  const suffixBg =
+    theme === "dark"
+      ? "border-slate-600 bg-transparent text-slate-400"
+      : "border-[#E0E0E0] bg-[#FAFAFA] text-gray-500";
+
+  return (
+    <div
+      className={cn(
+        "flex h-8 overflow-hidden rounded-[4px] border transition-colors",
+        shell,
+        !disabled && "focus-within:border-[#2563eb]",
+        ariaInvalid && "border-red-400",
+      )}
+    >
+      <input
+        id={id}
+        type="text"
+        inputMode="decimal"
+        autoComplete="off"
+        disabled={disabled}
+        placeholder={placeholder}
+        aria-invalid={ariaInvalid}
+        className="min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[13px] outline-none disabled:cursor-not-allowed"
+        value={display}
+        onChange={(e) => {
+          if (disabled) return;
+          isEditing.current = true;
+          const sanitized = sanitizeCurrencyDisplayInput(e.target.value);
+          setDisplay(sanitized);
+          onValueChange(parsePercentInput(sanitized));
+        }}
+        onFocus={() => {
+          const formatted = formatPercentInput(value);
+          setDisplay(formatted === "0.00" ? "" : formatted.replace(/\.00$/, ""));
+        }}
+        onBlur={() => {
+          isEditing.current = false;
+          setDisplay(formatPercentInput(value));
+        }}
+      />
+      <span
+        className={cn(
+          "flex shrink-0 items-center border-l px-2.5 text-[13px]",
+          suffixBg,
+        )}
+      >
+        %
+      </span>
+    </div>
+  );
+}
+
 function DateInput({
   value,
   onChange,
@@ -279,6 +375,43 @@ function Input({
         id={id}
         aria-invalid={ariaInvalid as boolean | undefined}
         defaultToToday={defaultToToday}
+      />
+    );
+  }
+
+  if (mode === "percent") {
+    if (disabled || !onValueChange) {
+      const display =
+        typeof props.value === "string"
+          ? props.value
+          : `${formatPercentInput(Number(props.value ?? 0))}%`;
+      const resolvedTone: InputTone = disabled ? "readonly" : tone ?? "default";
+      const shell =
+        theme === "dark" ? darkShellClass[resolvedTone] : toneShellClass[resolvedTone];
+      return (
+        <input
+          id={id}
+          type="text"
+          data-slot="input"
+          disabled={disabled}
+          readOnly
+          aria-invalid={ariaInvalid}
+          className={cn(baseClass, shell, className)}
+          value={display}
+        />
+      );
+    }
+
+    return (
+      <PercentInput
+        value={Number(props.value ?? 0)}
+        onValueChange={onValueChange}
+        disabled={disabled}
+        tone={tone}
+        theme={theme}
+        id={id}
+        aria-invalid={ariaInvalid as boolean | undefined}
+        placeholder={props.placeholder}
       />
     );
   }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Info, X } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { applyFlooringPlan } from "@/lib/vehicles/server/apply-flooring-plan";
+import { getFlooringVehicleOptions } from "@/lib/vehicles/server/get-flooring-summary";
+import type { FlooringVehicleOption } from "@/lib/vehicles/flooring/types";
+import { formatCurrencyDecimal } from "@/lib/vehicles/types";
 
-type FlooringRateType = "monthly" | "daily" | "fixed";
+type FlooringRateType = "monthly" | "daily" | "apr";
 type IncreaseAmountType = "fixed" | "percentage";
 type ApplyTo = "all" | "select";
 
@@ -201,6 +206,17 @@ export default function AddFlooringRateModal({
   const [form, setForm] = useState<FormState>(DEFAULT_FORM);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [vehicleOptions, setVehicleOptions] = useState<FlooringVehicleOption[]>([]);
+  const [selectedVehicleIds, setSelectedVehicleIds] = useState<string[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!open) return;
+    getFlooringVehicleOptions().then((options) => {
+      setVehicleOptions(options);
+      setSelectedVehicleIds(options.map((o) => o.id));
+    });
+  }, [open]);
 
   const rateIncreaseSummary = useMemo(() => {
     if (!form.rateIncreaseEnabled) return null;
@@ -215,6 +231,13 @@ export default function AddFlooringRateModal({
     return `Buy fee is charged once when flooring starts. Late fee of $${form.lateFeeAmount.toFixed(2)} will be charged per day after ${form.lateFeeAfterDays} days (after grace period).`;
   }, [form.lateFeeAmount, form.lateFeeAfterDays]);
 
+  const baseRateLabel =
+    form.rateType === "apr"
+      ? "APR Rate (%)"
+      : form.rateType === "daily"
+        ? "Base Daily Rate"
+        : "Base Monthly Rate";
+
   const updateForm = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
@@ -225,8 +248,18 @@ export default function AddFlooringRateModal({
     setErrors({});
   };
 
+  const toggleVehicle = (id: string) => {
+    setSelectedVehicleIds((prev) =>
+      prev.includes(id) ? prev.filter((v) => v !== id) : [...prev, id],
+    );
+  };
+
   const handleSubmit = async () => {
     const nextErrors = validateForm(form);
+    if (form.applyTo === "select" && selectedVehicleIds.length === 0) {
+      toast.error("Select at least one vehicle.");
+      return;
+    }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
       toast.error("Please fix the highlighted fields.");
@@ -234,10 +267,37 @@ export default function AddFlooringRateModal({
     }
 
     setSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    toast.success("Flooring rate saved (frontend preview only).");
-    setSubmitting(false);
-    handleClose();
+    try {
+      const result = await applyFlooringPlan({
+        planName: "Standard Floor Plan",
+        rateType: form.rateType,
+        baseRate: form.baseMonthlyRate,
+        effectiveDate: form.effectiveDate,
+        rateIncreaseEnabled: form.rateIncreaseEnabled,
+        increaseAfterDays: form.increaseAfterDays,
+        increaseAmountType: form.increaseAmountType,
+        increaseAmount: form.increaseAmount,
+        maxCap: form.maxCap > 0 ? form.maxCap : null,
+        buyFee: form.buyFee,
+        lateFeeAfterDays: form.lateFeeAfterDays,
+        lateFeePerDay: form.lateFeeAmount,
+        gracePeriodDays: form.gracePeriodDays,
+        applyTo: form.applyTo,
+        vehicleIds: form.applyTo === "select" ? selectedVehicleIds : undefined,
+      });
+
+      if (result.success) {
+        toast.success(
+          `Flooring rate applied to ${result.vehiclesUpdated} vehicle${result.vehiclesUpdated === 1 ? "" : "s"}.`,
+        );
+        router.refresh();
+        handleClose();
+      } else {
+        toast.error(result.error ?? "Failed to apply flooring rate.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -294,22 +354,37 @@ export default function AddFlooringRateModal({
                   <SelectItem value="daily" className="text-[12px]">
                     Daily Rate
                   </SelectItem>
-                  <SelectItem value="fixed" className="text-[12px]">
-                    Fixed Rate
+                  <SelectItem value="apr" className="text-[12px]">
+                    APR
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <FieldLabel required>Base Monthly Rate</FieldLabel>
-              <Input
-                mode="currency"
-                theme="dark"
-                value={form.baseMonthlyRate}
-                onValueChange={(value) => updateForm("baseMonthlyRate", value)}
-                aria-invalid={!!errors.baseMonthlyRate}
-              />
+              <FieldLabel required>{baseRateLabel}</FieldLabel>
+              {form.rateType === "apr" ? (
+                <Input
+                  theme="dark"
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  placeholder="9.00"
+                  value={form.baseMonthlyRate}
+                  onChange={(e) =>
+                    updateForm("baseMonthlyRate", Number(e.target.value) || 0)
+                  }
+                  aria-invalid={!!errors.baseMonthlyRate}
+                />
+              ) : (
+                <Input
+                  mode="currency"
+                  theme="dark"
+                  value={form.baseMonthlyRate}
+                  onValueChange={(value) => updateForm("baseMonthlyRate", value)}
+                  aria-invalid={!!errors.baseMonthlyRate}
+                />
+              )}
               {errors.baseMonthlyRate ? (
                 <p className="mt-1 text-[10px] text-red-400">{errors.baseMonthlyRate}</p>
               ) : null}
@@ -359,7 +434,7 @@ export default function AddFlooringRateModal({
                     />
                   </div>
                   <div>
-                    <FieldLabel>Increase Amount</FieldLabel>
+                    <FieldLabel>Increase Amount Type</FieldLabel>
                     <Select
                       value={form.increaseAmountType}
                       onValueChange={(value: IncreaseAmountType) =>
@@ -498,6 +573,37 @@ export default function AddFlooringRateModal({
                 </span>
               </label>
             </RadioGroup>
+
+            {form.applyTo === "select" ? (
+              <div className="max-h-48 space-y-2 overflow-y-auto rounded-md border border-slate-700 bg-slate-900/40 p-3">
+                {vehicleOptions.length === 0 ? (
+                  <p className="text-[11px] text-slate-500">No active inventory vehicles.</p>
+                ) : (
+                  vehicleOptions.map((vehicle) => (
+                    <label
+                      key={vehicle.id}
+                      className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 hover:bg-slate-800/60"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedVehicleIds.includes(vehicle.id)}
+                        onChange={() => toggleVehicle(vehicle.id)}
+                        className="h-3.5 w-3.5 rounded border-slate-600 accent-blue-500"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[12px] text-white">
+                          {vehicle.label}
+                        </span>
+                        <span className="block text-[10px] text-slate-500">
+                          Stock #{vehicle.stockNumber || "—"} ·{" "}
+                          {formatCurrencyDecimal(vehicle.purchasePrice)}
+                        </span>
+                      </span>
+                    </label>
+                  ))
+                )}
+              </div>
+            ) : null}
           </section>
         </div>
 

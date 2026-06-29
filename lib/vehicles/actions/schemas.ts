@@ -65,8 +65,13 @@ export const addRepairCostSchema = addRepairCostBaseSchema
     });
   });
 
+const dealerPayoutItemSchema = z.object({
+  description: z.string().min(1, "Description is required"),
+  amount: currencyField.refine((v) => v > 0, "Amount must be greater than 0"),
+  frequency: z.enum(["one_time", "weekly", "monthly", "per_deal"]),
+});
+
 const markAsSoldBaseSchema = z.object({
-  customerType: z.string().min(1, "Customer type is required"),
   customerName: z.string().min(1, "Customer name is required"),
   phoneNumber: z
     .string()
@@ -78,51 +83,57 @@ const markAsSoldBaseSchema = z.object({
     .optional()
     .or(z.literal("")),
   address: z.string().min(1, "Address is required"),
-  address2: z.string().optional(),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
   zipCode: z
     .string()
     .min(1, "ZIP code is required")
     .regex(zipRegex, "Enter a valid ZIP code"),
-  saleDate: z.string().min(1, "Sale date is required"),
-  totalPriceOtd: currencyField.refine((v) => v > 0, "Total price is required"),
+  saleDate: z.string().min(1, "Sold date is required"),
+  soldPriceBeforeTax: currencyField.refine(
+    (v) => v > 0,
+    "Sold price is required",
+  ),
   salesTaxAmount: currencyField,
   licenseRegistrationFees: currencyField,
-  dmvDocFees: currencyField,
-  otherFees: currencyField,
   rosNumber: z.string().min(1, "ROS number is required"),
   zipCodeOfSale: z
     .string()
-    .min(1, "ZIP code of sale is required")
+    .min(1, "ZIP code is required")
     .regex(zipRegex, "Enter a valid ZIP code"),
-  buyerIdFront: z.custom<File | undefined>().optional(),
-  buyerIdBack: z.instanceof(File).nullable().optional(),
-  driversLicense: z.instanceof(File).nullable().optional(),
-  otherDocument: z.instanceof(File).nullable().optional(),
+  salesRepId: z.string().optional().or(z.literal("")),
+  commissionType: z.enum(["percentage", "manual"]),
+  commissionRate: currencyField,
+  manualCommissionAmount: currencyField,
+  dealerPayoutsEnabled: z.boolean(),
+  payoutItems: z.array(dealerPayoutItemSchema),
+  documents: z.array(z.instanceof(File)).min(1, "At least one document is required"),
   notes: z.string().max(500, "Notes must be 500 characters or less").optional(),
 });
 
 export type MarkAsSoldFormValues = z.infer<typeof markAsSoldBaseSchema>;
+export type DealerPayoutItemValues = z.infer<typeof dealerPayoutItemSchema>;
 
 export const markAsSoldSchema = markAsSoldBaseSchema.superRefine((data, ctx) => {
-  if (!(data.buyerIdFront instanceof File)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Buyer's ID (Front) is required",
-      path: ["buyerIdFront"],
+  data.documents.forEach((file, index) => {
+    const error = validateFile(file, {
+      maxSizeMB: 5,
+      allowedTypes: ["image/jpeg"],
     });
-    return;
-  }
-  const error = validateFile(data.buyerIdFront, {
-    maxSizeMB: 5,
-    allowedTypes: ["image/jpeg"],
+    if (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: error,
+        path: ["documents", index],
+      });
+    }
   });
-  if (error) {
+
+  if (data.dealerPayoutsEnabled && data.payoutItems.length === 0) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Buyer's ID must be a JPG under 5MB",
-      path: ["buyerIdFront"],
+      message: "Add at least one payout item or turn off dealer payouts",
+      path: ["payoutItems"],
     });
   }
 });
