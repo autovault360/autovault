@@ -601,7 +601,7 @@ export default function AddFlooringRateModal({
                           {vehicle.label}
                         </span>
                         <span className="block text-[10px] text-slate-500">
-                          Stock #{vehicle.stockNumber || "—"} ·{" "}
+                          Stock #{vehicle.stockNumber || "???"} ·{" "}
                           {formatCurrencyDecimal(vehicle.purchasePrice)}
                         </span>
                       </span>

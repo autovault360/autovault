@@ -8,6 +8,7 @@ const XL_GRID_COLS: Record<number, string> = {
   6: "xl:grid-cols-6",
   7: "xl:grid-cols-7",
   8: "xl:grid-cols-8",
+  9: "xl:grid-cols-9",
 };
 
 /** Responsive KPI grid �€” matches wholesale Inventory Overview layout. */

@@ -1,15 +1,23 @@
 import { formatCurrencyDecimal } from "@/lib/vehicles/types";
 import type { FlooringSummary } from "@/lib/vehicles/flooring/types";
+import { cn } from "@/lib/utils";
 
 export default function FlooringCostBanner({
   summary,
+  className,
 }: {
   summary: FlooringSummary;
+  className?: string;
 }) {
   if (summary.vehicleCount === 0) return null;
 
   return (
-    <div className="mb-3.5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-500/30 bg-gradient-to-r from-red-950/80 via-red-900/40 to-red-950/60 px-4 py-3">
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-500/40 bg-gradient-to-r from-red-950/80 via-red-900/40 to-red-950/60 px-4 py-3",
+        className,
+      )}
+    >
       <div>
         <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-300/90">
           Flooring Cost

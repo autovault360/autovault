@@ -55,7 +55,7 @@ export default function DealJacketDetailHeader({
     workflowStatus === "approved" || workflowStatus === "rejected";
   const canResubmit = workflowStatus === "changes_requested";
   const showReviewActions = isManager && !isFinal;
-  const vehicleSubtitle = `${detail.vehicle.year} ${detail.vehicle.make} ${detail.vehicle.model}${detail.vehicle.trim ? ` ${detail.vehicle.trim}` : ""} • Stock # ${detail.vehicle.stockNumber} • VIN: ${detail.vehicle.vin}`;
+  const vehicleSubtitle = `${detail.vehicle.year} ${detail.vehicle.make} ${detail.vehicle.model}${detail.vehicle.trim ? ` ${detail.vehicle.trim}` : ""} ??? Stock # ${detail.vehicle.stockNumber} ??? VIN: ${detail.vehicle.vin}`;
 
   const handleResubmit = async () => {
     setResubmitting(true);
