@@ -554,6 +554,7 @@ export default function EditVehicleModal({
                     <FormControl>
                       <Textarea
                         showCount
+                        theme="dark"
                         value={field.value ?? ""}
                         onChange={(e) => field.onChange(e.target.value)}
                         maxLength={500}

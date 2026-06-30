@@ -209,23 +209,65 @@ export default function VehiclesInventoryTable({
     [soldThisMonth],
   );
 
+  const orderedVehicles = useMemo(
+    () => [...soldThisMonth, ...activeInventory],
+    [soldThisMonth, activeInventory],
+  );
+
   type RowEntry =
     | { type: "section"; key: string; label: string; variant: "sold" | "active" }
     | { type: "summary"; key: string; label: string; value: string }
     | { type: "vehicle"; key: string; vehicle: InventoryVehicle; tint?: "sold" };
 
-  const allRows = useMemo(() => {
+  const vehicleCount = orderedVehicles.length;
+  const pageCount = Math.max(1, Math.ceil(vehicleCount / pageSize));
+  const safePageIndex = Math.min(pageIndex, pageCount - 1);
+  const pageStart = safePageIndex * pageSize;
+  const pageEnd = Math.min(pageStart + pageSize, vehicleCount);
+  const paginatedVehicles = orderedVehicles.slice(pageStart, pageEnd);
+
+  const pageRows = useMemo(() => {
     const rows: RowEntry[] = [];
-    if (soldThisMonth.length > 0) {
-      rows.push({
-        type: "section",
-        key: "sold-header",
-        label: `Sold This Month (${soldThisMonth.length})`,
-        variant: "sold",
-      });
-      for (const vehicle of soldThisMonth) {
+    const soldIds = new Set(soldThisMonth.map((vehicle) => vehicle.id));
+    let soldHeaderAdded = false;
+    let activeHeaderAdded = false;
+    let lastSoldGlobalIndex = -1;
+
+    paginatedVehicles.forEach((vehicle, index) => {
+      const globalIndex = pageStart + index;
+      const isSold = soldIds.has(vehicle.id);
+
+      if (isSold) {
+        if (!soldHeaderAdded) {
+          rows.push({
+            type: "section",
+            key: "sold-header",
+            label: `Sold This Month (${soldThisMonth.length})`,
+            variant: "sold",
+          });
+          soldHeaderAdded = true;
+        }
         rows.push({ type: "vehicle", key: vehicle.id, vehicle, tint: "sold" });
+        lastSoldGlobalIndex = globalIndex;
+      } else {
+        if (!activeHeaderAdded) {
+          rows.push({
+            type: "section",
+            key: "active-header",
+            label: `Active Inventory (${activeInventory.length} Vehicles)`,
+            variant: "active",
+          });
+          activeHeaderAdded = true;
+        }
+        rows.push({ type: "vehicle", key: vehicle.id, vehicle });
       }
+    });
+
+    if (
+      soldThisMonth.length > 0 &&
+      lastSoldGlobalIndex >= 0 &&
+      lastSoldGlobalIndex === soldThisMonth.length - 1
+    ) {
       rows.push({
         type: "summary",
         key: "sold-summary",
@@ -233,42 +275,18 @@ export default function VehiclesInventoryTable({
         value: formatCurrency(soldProfit),
       });
     }
-    if (activeInventory.length > 0) {
-      rows.push({
-        type: "section",
-        key: "active-header",
-        label: `Active Inventory (${activeInventory.length} Vehicles)`,
-        variant: "active",
-      });
-      for (const vehicle of activeInventory) {
-        rows.push({ type: "vehicle", key: vehicle.id, vehicle });
-      }
-    }
+
     return rows;
-  }, [soldThisMonth, activeInventory, soldProfit]);
+  }, [
+    paginatedVehicles,
+    pageStart,
+    soldThisMonth,
+    activeInventory,
+    soldProfit,
+  ]);
 
-  const pageCount = Math.max(1, Math.ceil(allRows.length / pageSize));
-  const safePageIndex = Math.min(pageIndex, pageCount - 1);
-  const pageRows = allRows.slice(
-    safePageIndex * pageSize,
-    (safePageIndex + 1) * pageSize,
-  );
-
-  const vehicleCount = vehicles.length;
-  const firstVehicleOnPage = pageRows.find((r) => r.type === "vehicle");
-  const lastVehicleOnPage = [...pageRows].reverse().find((r) => r.type === "vehicle");
-
-  let showingFrom = 0;
-  let showingTo = 0;
-  if (vehicleCount > 0 && firstVehicleOnPage?.type === "vehicle") {
-    const firstIdx = vehicles.findIndex((v) => v.id === firstVehicleOnPage.vehicle.id);
-    const lastIdx =
-      lastVehicleOnPage?.type === "vehicle"
-        ? vehicles.findIndex((v) => v.id === lastVehicleOnPage.vehicle.id)
-        : firstIdx;
-    showingFrom = firstIdx + 1;
-    showingTo = lastIdx + 1;
-  }
+  const showingFrom = vehicleCount > 0 ? pageStart + 1 : 0;
+  const showingTo = pageEnd;
 
   function renderVehicleRow(vehicle: InventoryVehicle, tint?: "sold") {
     const displayStatus = getDisplayStatus(vehicle);
@@ -546,15 +564,16 @@ export default function VehiclesInventoryTable({
       </div>
 
       {vehicles.length > 0 && (
-        <div className="flex w-full flex-col gap-4 border-t border-slate-800 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex w-full flex-col gap-3 border-t border-slate-800 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-[13px] text-slate-500">
             {showingFrom > 0
               ? `Showing ${showingFrom} to ${showingTo} of ${vehicleCount} vehicles`
               : `Showing ${vehicleCount} vehicle${vehicleCount === 1 ? "" : "s"}`}
           </span>
 
-          <div className="flex flex-wrap items-center gap-3 sm:ml-auto">
-            <div className="flex items-center gap-2 text-[12px] text-slate-500">
+          <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
+          <div className="flex items-center gap-2 text-[12px] text-slate-500">
+              <span className="whitespace-nowrap">Rows per page</span>
               <Select
                 value={String(pageSize)}
                 onValueChange={(v) => {
@@ -562,19 +581,23 @@ export default function VehiclesInventoryTable({
                   setPageIndex(0);
                 }}
               >
-                <SelectTrigger theme="dark" className="h-8 w-[88px] text-[12px]">
+                <SelectTrigger theme="dark" className="h-8 w-[72px] text-[12px]">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent theme="dark">
+                <SelectContent theme="dark" align="end">
                   {[6, 10, 20, 50].map((size) => (
-                    <SelectItem key={size} value={String(size)} theme="dark">
-                      {size} per page
+                    <SelectItem
+                      key={size}
+                      value={String(size)}
+                      theme="dark"
+                      className="text-[12px]"
+                    >
+                      {size}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-
             {pageCount > 1 && (
               <Pagination className="justify-end">
                 <PaginationContent>
@@ -634,6 +657,8 @@ export default function VehiclesInventoryTable({
                 </PaginationContent>
               </Pagination>
             )}
+
+            
           </div>
         </div>
       )}
