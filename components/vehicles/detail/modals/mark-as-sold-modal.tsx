@@ -654,7 +654,7 @@ export default function MarkAsSoldModal({
                         </div>
                         <div className="flex items-center gap-3 py-1">
                           <div className="h-px flex-1 bg-slate-700" />
-                          <span className="text-[10px] font-medium text-slate-500">— OR —</span>
+                          <span className="text-[10px] font-medium text-slate-500">??? OR ???</span>
                           <div className="h-px flex-1 bg-slate-700" />
                         </div>
                         <FormField

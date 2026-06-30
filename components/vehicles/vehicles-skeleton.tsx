@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import KpiGridSkeleton from "@/components/ui/kpi-grid-skeleton";
 
-const CARD_COUNT = 5;
+const CARD_COUNT = 9;
 
 function SkeletonBar({ className }: { className?: string }) {
   return (

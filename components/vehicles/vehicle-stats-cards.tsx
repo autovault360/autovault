@@ -1,81 +1,53 @@
 import { KPICard } from "@/components/ui/kpi-card";
-import { formatCurrency, type VehicleStats } from "@/lib/vehicles/types";
+import {
+  buildInventoryKpiCards,
+  computeInventoryStats,
+  type InventoryVehicle,
+} from "@/lib/vehicles/inventory-calculations";
+import {
+  CommissionOverviewKpiCard,
+  SoldThisMonthKpiCard,
+  TitlesKpiCard,
+} from "@/components/vehicles/inventory-kpi-variants";
 import {
   KPI_CARD_DEFAULT_PROPS,
   KPI_CARD_SHELL_CLASS,
   kpiGridClass,
 } from "@/lib/ui/kpi-grid";
 
-const CARD_COUNT = 5;
+const CARD_COUNT = 9;
 
-function buildCards(stats: VehicleStats) {
-  return [
-    {
-      icon: "car" as const,
-      color: "blue",
-      label: "Total Inventory",
-      value: String(stats.totalInventory),
-      unit: "Vehicles",
-      link: "",
-      sparkColor: "#3b82f6",
-      sparkPoints: "",
-    },
-    {
-      icon: "leaf" as const,
-      color: "green",
-      label: "New Arrivals",
-      value: String(stats.newArrivals),
-      unit: "This Month",
-      link: "",
-      sparkColor: "#10b981",
-      sparkPoints: "",
-    },
-    {
-      icon: "bar-chart-3" as const,
-      color: "violet",
-      label: "Aged Units Over 25 Days",
-      value: String(stats.agedUnits),
-      unit: "Units",
-      link: "",
-      sparkColor: "#a855f7",
-      sparkPoints: "",
-    },
-    {
-      icon: "dollar-sign" as const,
-      color: "orange",
-      label: "Total Inventory Value",
-      value: formatCurrency(stats.totalValue),
-      delta: "... 7.6% vs last month",
-      link: "",
-      sparkColor: "#f97316",
-      sparkPoints: "",
-    },
-    {
-      icon: "tag" as const,
-      color: "red",
-      label: "Marked Sold",
-      value: String(stats.markedSold),
-      unit: "This Month",
-      link: "",
-      sparkColor: "#ef4444",
-      sparkPoints: "",
-    },
-  ];
-}
+export default function VehicleStatsCards({
+  vehicles,
+}: {
+  vehicles: InventoryVehicle[];
+}) {
+  const stats = computeInventoryStats(vehicles);
+  const cards = buildInventoryKpiCards(stats);
 
-export default function VehicleStatsCards({ stats }: { stats: VehicleStats }) {
-  const cards = buildCards(stats);
+  const standardIndices = [0, 1, 2, 3, 4, 5];
 
   return (
     <section className={kpiGridClass(CARD_COUNT, "mb-3.5")}>
-      {cards.map((card) => (
+      {standardIndices.map((index) => (
         <KPICard
-          key={card.label}
-          data={card}
+          key={cards[index]!.label}
+          data={cards[index]!}
           {...KPI_CARD_DEFAULT_PROPS}
           className={KPI_CARD_SHELL_CLASS}
+          deltaClassName={index === 0 ? "text-slate-500" : undefined}
         />
       ))}
+      <CommissionOverviewKpiCard
+        avgRate={stats.avgCommissionRate}
+        totalCommissions={cards[6]!.periodMetrics?.[0]?.value ?? "$0"}
+      />
+      <TitlesKpiCard missing={stats.missingTitles} titlesIn={stats.titlesIn} />
+      <SoldThisMonthKpiCard
+        soldCount={stats.soldThisMonthCount}
+        profit={cards[8]!.periodMetrics?.[0]?.value ?? "$0"}
+        roi={cards[8]!.periodMetrics?.[1]?.value ?? "0%"}
+      />
     </section>
   );
 }

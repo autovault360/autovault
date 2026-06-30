@@ -3,31 +3,8 @@ import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
 import VehiclesInventory from "@/components/vehicles/vehicles-inventory";
 import FlooringCostBanner from "@/components/vehicles/flooring/flooring-cost-banner";
 import { getFlooringSummary } from "@/lib/vehicles/server/get-flooring-summary";
-import {
-  computeVehicleStats,
-  type Vehicle,
-  type VehicleStatus,
-} from "@/lib/vehicles/types";
-import { mapDbVehicleStatus } from "@/lib/vehicles/map-db-status";
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/lib/supabase/server";
+import { getInventoryVehicles } from "@/lib/vehicles/server/get-inventory-vehicles";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
-
-function mapStatus(dbStatus: string): VehicleStatus {
-  return mapDbVehicleStatus(dbStatus);
-}
-
-function daysSince(date: string | null | undefined): number {
-  if (!date) return 0;
-  return Math.floor(
-    (Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24),
-  );
-}
-
-function formatISO(date: string | null | undefined): string {
-  if (!date) return "";
-  return date.split("T")[0];
-}
 
 export default async function VehiclesPage({
   searchParams,
@@ -38,83 +15,34 @@ export default async function VehiclesPage({
   const defaultOpen = resolved?.add === "true";
   const defaultEditId = resolved?.edit;
   const auth = await authenticateUser();
-  const vehicles: Vehicle[] = [];
 
-  if (!auth.ok) {
-    console.warn("VehiclesPage: auth failed", auth.error);
-  } else {
-    const { dealershipId } = auth.user;
-    const supabase = await createClient();
-
-    const { data: rows, error } = await supabase
-      .from("vehicles")
-      .select("*, images:vehicle_images(storage_path, is_primary, sort_order)")
-      .eq("dealership_id", dealershipId)
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.warn("VehiclesPage: query error", error.message);
-    } else if (rows) {
-      for (const row of rows) {
-        const r = row as Record<string, unknown>;
-        const images = r.images as { storage_path: string; is_primary: boolean; sort_order: number }[] | undefined;
-        let imageUrl = "";
-        const sortedImages = [...(images ?? [])].sort((a, b) => {
-          if (a.is_primary !== b.is_primary) return Number(b.is_primary) - Number(a.is_primary);
-          return (a.sort_order ?? 0) - (b.sort_order ?? 0);
-        });
-        if (sortedImages[0]) {
-          try {
-            const { data, error: signedError } = await supabase.storage
-              .from("vehicle-images")
-              .createSignedUrl(sortedImages[0].storage_path, 3600);
-            imageUrl = signedError || !data ? "" : data.signedUrl;
-          } catch {
-            imageUrl = "";
-          }
-        }
-
-        vehicles.push({
-          id: r.id as string,
-          image: imageUrl,
-          make: r.make as string,
-          model: r.model as string,
-          trim: (r.trim as string) ?? "",
-          year: r.year as number,
-          stockNumber: (r.stock_number as string) ?? "",
-          vin: r.vin as string,
-          mileage: (r.mileage as number) ?? 0,
-          price: Number(r.asking_price ?? 0),
-          cost: Number(r.acquisition_cost ?? 0),
-          daysInInventory: daysSince(r.acquisition_date as string),
-          status: mapStatus(r.status as string),
-          location: (r.lot_location as string) ?? "",
-          arrivalDate: formatISO(r.acquisition_date as string),
-          titleReceived: r.title_received as boolean | undefined,
-        });
-      }
-    }
-  }
-
-  const stats = computeVehicleStats(vehicles);
+  const vehicles = auth.ok ? await getInventoryVehicles() : [];
   const flooringSummary = auth.ok ? await getFlooringSummary() : null;
 
   return (
     <div>
-      <section className="mb-3.5 flex flex-wrap items-center justify-between gap-3 px-0.5">
-    <div>
-           <h1 className="text-xl font-bold tracking-[0.12em] text-white">VEHICLES INVENTORY</h1>
+      <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 px-0.5">
+        <div className="min-w-[200px] shrink-0">
+          <h1 className="text-xl font-bold tracking-[0.12em] text-white">
+            VEHICLES INVENTORY
+          </h1>
           <p className="mt-0.5 text-[12.5px] text-slate-500">
-            Manage your vehicle inventory, pricing, and status.
+            Manage, track, and analyze your vehicle inventory.
           </p>
         </div>
-        <AddVehicleTrigger defaultOpen={defaultOpen} />
+
+        {flooringSummary ? (
+          <div className="order-3 w-full flex-1 xl:order-none xl:max-w-md xl:mx-auto">
+            <FlooringCostBanner summary={flooringSummary} className="mb-0" />
+          </div>
+        ) : null}
+
+        <div className="shrink-0">
+          <AddVehicleTrigger defaultOpen={defaultOpen} />
+        </div>
       </section>
 
-      <VehicleStatsCards stats={stats} />
-
-      {flooringSummary ? <FlooringCostBanner summary={flooringSummary} /> : null}
+      <VehicleStatsCards vehicles={vehicles} />
 
       <VehiclesInventory vehicles={vehicles} defaultEditId={defaultEditId} />
     </div>
