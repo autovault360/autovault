@@ -63,26 +63,10 @@ export default function CpaPortalHeader() {
       />
       <HeaderMoreMenu
         items={[
-          {
-            label: "Dashboard",
-            href: "/cpa/dashboard",
-            icon: LayoutDashboard,
-          },
-          {
-            label: "Monthly Financials",
-            href: "/cpa/dashboard/monthly-financial",
-            icon: Receipt,
-          },
-          {
-            label: "Deal Jacket Review",
-            href: "/cpa/deal-jackets",
-            icon: Folder,
-          },
-          {
-            label: "Audit Readiness",
-            href: "/cpa/audit",
-            icon: Shield,
-          },
+          { label: "Dashboard", href: "/cpa/dashboard" },
+          { label: "Monthly Financials", href: "/cpa/dashboard/monthly-financial" },
+          { label: "Deal Jacket Review", href: "/cpa/deal-jackets" },
+          { label: "Audit Readiness", href: "/cpa/audit" },
         ]}
       />
     </>

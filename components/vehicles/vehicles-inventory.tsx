@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import NProgress from "nprogress";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Search,
-  SlidersHorizontal,
   Download,
   X,
   Shuffle,
@@ -36,53 +36,43 @@ import AddFlooringRateModal from "@/components/vehicles/flooring/add-flooring-ra
 import VehiclesInventoryTable from "@/components/vehicles/vehicles-inventory-table";
 import {
   filterInventoryVehicles,
-  INVENTORY_STATUS_OPTIONS,
+  sortInventoryVehicles,
   type InventoryVehicle,
+  type SortField,
 } from "@/lib/vehicles/inventory-calculations";
-
+import type { KpiPreference } from "@/lib/vehicles/server/kpi-preferences";
+import { updateInventoryCell } from "@/lib/vehicles/server/update-inventory-cell";
 type VehiclesInventoryProps = {
   vehicles: InventoryVehicle[];
   defaultEditId?: string;
+  initialKpiPreferences: KpiPreference[];
 };
 
-export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesInventoryProps) {
+export default function VehiclesInventory({
+  vehicles,
+  defaultEditId,
+  initialKpiPreferences,
+}: VehiclesInventoryProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [make, setMake] = useState("all");
-  const [model, setModel] = useState("all");
-  const [status, setStatus] = useState("all");
-  const [location, setLocation] = useState("all");
-  const [titleFilter, setTitleFilter] = useState("all");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [salesRep, setSalesRep] = useState("all");
+  const [sortBy, setSortBy] = useState<SortField>("");
+  const [gridLines, setGridLines] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<VehicleDetail | null>(null);
   const [statusVehicleId, setStatusVehicleId] = useState<string | null>(null);
   const [statusSubmitting, setStatusSubmitting] = useState(false);
   const [flooringModalOpen, setFlooringModalOpen] = useState(false);
+  const [liveVehicles, setLiveVehicles] = useState(vehicles);
+
+  useEffect(() => {
+    setLiveVehicles(vehicles);
+  }, [vehicles]);
 
   useEffect(() => {
     if (defaultEditId) setEditingId(defaultEditId);
   }, [defaultEditId]);
-
-  useEffect(() => {
-    if (!filtersOpen) return;
-    const handler = (e: MouseEvent) => {
-      const target = e.target as Node;
-      const panel = document.getElementById("inventory-filters-panel");
-      const button = document.getElementById("inventory-filters-button");
-      if (
-        panel &&
-        !panel.contains(target) &&
-        button &&
-        !button.contains(target)
-      ) {
-        setFiltersOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [filtersOpen]);
 
   useEffect(() => {
     if (!editingId) {
@@ -107,39 +97,18 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
       });
   }, [editingId]);
 
-  const makes = useMemo(
-    () => [...new Set(vehicles.map((v) => v.make).filter(Boolean))].sort(),
-    [vehicles],
-  );
-
-  const models = useMemo(() => {
-    const source =
-      make === "all" ? vehicles : vehicles.filter((v) => v.make === make);
-    return [...new Set(source.map((v) => v.model).filter(Boolean))].sort();
-  }, [vehicles, make]);
-
-  const locations = useMemo(
-    () => [...new Set(vehicles.map((v) => v.location).filter(Boolean))].sort(),
-    [vehicles],
+  const salesRepNames = useMemo(
+    () => [...new Set(liveVehicles.map((v) => v.salesRepName).filter(Boolean))].sort(),
+    [liveVehicles],
   );
 
   const filtered = useMemo(() => {
-    let result = filterInventoryVehicles(vehicles, {
+    let result = filterInventoryVehicles(liveVehicles, {
       search,
-      make,
-      model,
-      status,
-      location,
+      salesRep,
     });
-
-    if (titleFilter === "in") {
-      result = result.filter((v) => v.titleReceived);
-    } else if (titleFilter === "missing") {
-      result = result.filter((v) => !v.titleReceived);
-    }
-
-    return result;
-  }, [vehicles, search, make, model, status, location, titleFilter]);
+    return sortBy ? sortInventoryVehicles(result, sortBy) : result;
+  }, [liveVehicles, search, salesRep, sortBy]);
 
   const exportToCSV = () => {
     const headers = [
@@ -220,40 +189,47 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
   };
 
   const hasActiveFilters =
-    make !== "all" ||
-    model !== "all" ||
-    status !== "all" ||
-    location !== "all" ||
-    titleFilter !== "all" ||
+    salesRep !== "all" ||
+    sortBy !== "" ||
     search.trim() !== "";
 
   const activeInventoryCount = useMemo(
-    () => vehicles.filter((vehicle) => vehicle.dbStatus !== "sold" && vehicle.dbStatus !== "loss").length,
-    [vehicles],
+    () =>
+      liveVehicles.filter(
+        (vehicle) => vehicle.dbStatus !== "sold" && vehicle.dbStatus !== "loss",
+      ).length,
+    [liveVehicles],
+  );
+
+  const columnColorMap = useMemo(
+    () =>
+      initialKpiPreferences.reduce<Record<string, string>>((acc, preference) => {
+        if (preference.columnKey) acc[preference.columnKey] = preference.colorHex;
+        return acc;
+      }, {}),
+    [initialKpiPreferences],
   );
 
   const clearFilters = () => {
     setSearch("");
-    setMake("all");
-    setModel("all");
-    setStatus("all");
-    setLocation("all");
-    setTitleFilter("all");
-    setFiltersOpen(false);
+    setSalesRep("all");
+    setSortBy("");
   };
 
   return (
     <div className="p-3.5 text-slate-200 shadow-none">
+      {/* Action row: Add Flooring Rate */}
       <div className="mb-3.5 flex flex-col gap-2.5 xl:flex-row xl:items-center xl:gap-3">
         <AddFlooringRateButton onClick={() => setFlooringModalOpen(true)} />
 
+        {/* Search */}
         <div className="relative w-full xl:max-w-sm">
           <InputGroup theme="dark">
             <InputGroupAddon>
               <Search className="h-3.5 w-3.5" />
             </InputGroupAddon>
             <InputGroupInput
-              placeholder="Search by Make, Model, Stock #, or VIN..."
+              placeholder="Filter by vehicle, VIN, or sales rep..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               theme="dark"
@@ -262,23 +238,18 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
         </div>
 
         <div className="flex flex-wrap items-center gap-2 xl:ml-auto">
-          <Select
-            value={make}
-            onValueChange={(v) => {
-              setMake(v);
-              setModel("all");
-            }}
-          >
+          {/* Sales Rep */}
+          <Select value={salesRep} onValueChange={setSalesRep}>
             <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
-              <SelectValue placeholder="All Makes" />
+              <SelectValue placeholder="All Sales Reps" />
             </SelectTrigger>
             <SelectContent theme="dark" className="text-slate-300">
               <SelectGroup>
-                <SelectLabel>Make</SelectLabel>
+                <SelectLabel>Sales Rep</SelectLabel>
                 <SelectItem value="all" theme="dark" className="text-[11.5px]">
-                  All Makes
+                  All Sales Reps
                 </SelectItem>
-                {makes.map((opt) => (
+                {salesRepNames.map((opt) => (
                   <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">
                     {opt}
                   </SelectItem>
@@ -287,101 +258,59 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
             </SelectContent>
           </Select>
 
-          <Select value={model} onValueChange={setModel}>
-            <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
-              <SelectValue placeholder="All Models" />
+          {/* Sort */}
+          <Select value={sortBy} onValueChange={(v: SortField) => setSortBy(v)}>
+            <SelectTrigger theme="dark" className="w-auto min-w-[140px]">
+              <SelectValue placeholder="Sort: Default" />
             </SelectTrigger>
             <SelectContent theme="dark" className="text-slate-300">
               <SelectGroup>
-                <SelectLabel>Model</SelectLabel>
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">
-                  All Models
+                <SelectLabel>Sort By</SelectLabel>
+                <SelectItem value="" theme="dark" className="text-[11.5px]">
+                  Sort: Default
                 </SelectItem>
-                {models.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">
-                    {opt}
-                  </SelectItem>
-                ))}
+                <SelectItem value="profit_desc" theme="dark" className="text-[11.5px]">
+                  Net Profit (high → low)
+                </SelectItem>
+                <SelectItem value="roi_desc" theme="dark" className="text-[11.5px]">
+                  ROI (high → low)
+                </SelectItem>
+                <SelectItem value="days_desc" theme="dark" className="text-[11.5px]">
+                  Days in Inventory (high → low)
+                </SelectItem>
+                <SelectItem value="flooring_desc" theme="dark" className="text-[11.5px]">
+                  Flooring Cost (high → low)
+                </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
 
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent theme="dark" className="text-slate-300">
-              <SelectGroup>
-                <SelectLabel>Status</SelectLabel>
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">
-                  All Statuses
-                </SelectItem>
-                {INVENTORY_STATUS_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">
-                    {opt}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <Select value={location} onValueChange={setLocation}>
-            <SelectTrigger theme="dark" className="w-auto min-w-[130px]">
-              <SelectValue placeholder="All Locations" />
-            </SelectTrigger>
-            <SelectContent theme="dark" className="text-slate-300">
-              <SelectGroup>
-                <SelectLabel>Location</SelectLabel>
-                <SelectItem value="all" theme="dark" className="text-[11.5px]">
-                  All Locations
-                </SelectItem>
-                {locations.map((opt) => (
-                  <SelectItem key={opt} value={opt} theme="dark" className="text-[11.5px]">
-                    {opt}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <div className="relative">
-            <Button
-              id="inventory-filters-button"
-              variant="outline"
-              theme="dark"
-              className="shrink-0"
-              onClick={() => setFiltersOpen((open) => !open)}
-            >
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Filters
-            </Button>
-            {filtersOpen && (
-              <div
-                id="inventory-filters-panel"
-                className="absolute right-0 top-full z-50 mt-1 w-56 rounded-lg border border-slate-700 bg-slate-900 p-3 shadow-xl"
-              >
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                  Title Status
-                </p>
-                <Select value={titleFilter} onValueChange={setTitleFilter}>
-                  <SelectTrigger theme="dark" className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent theme="dark">
-                    <SelectItem value="all" theme="dark">
-                      All Titles
-                    </SelectItem>
-                    <SelectItem value="in" theme="dark">
-                      Title In
-                    </SelectItem>
-                    <SelectItem value="missing" theme="dark">
-                      Missing Title
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          {/* Grid Lines Toggle */}
+          <button
+            type="button"
+            onClick={() => setGridLines((g) => !g)}
+            className={cn(
+              "grid-toggle-btn flex items-center gap-1.5 rounded-lg border px-3 py-[7px] text-[11.5px] font-semibold transition-all select-none",
+              gridLines
+                ? "border-blue-500 text-blue-500 bg-blue-500/10"
+                : "border-slate-700 text-slate-400 hover:border-blue-500 hover:text-blue-500",
             )}
-          </div>
+          >
+            <span
+              className={cn(
+                "h-[7px] w-[7px] rounded-full transition-colors",
+                gridLines ? "bg-blue-500" : "bg-slate-600",
+              )}
+            />
+            {gridLines ? "Grid Lines ON" : "Add Grid Lines"}
+          </button>
+
+          {/* Tag */}
+          <span className="text-[11px] text-slate-500">
+            {hasActiveFilters
+              ? `Showing ${filtered.length} vehicle${filtered.length === 1 ? "" : "s"}`
+              : "Showing all vehicles"}
+          </span>
 
           {hasActiveFilters && (
             <Button variant="ghost" theme="dark" onClick={clearFilters} className="text-[11.5px]">
@@ -399,11 +328,39 @@ export default function VehiclesInventory({ vehicles, defaultEditId }: VehiclesI
 
       <VehiclesInventoryTable
         vehicles={filtered}
+        columnColorMap={columnColorMap}
+        gridLines={gridLines}
         onEdit={(id) => {
           setEditingId(id);
           window.history.replaceState(null, "", `?edit=${id}`);
         }}
         onChangeStatus={setStatusVehicleId}
+        onSaveField={async (vehicleId, field, value) => {
+          const result = await updateInventoryCell({ vehicleId, field, value });
+          if (!result.success) {
+            toast.error(result.error || "Failed to save field");
+            return;
+          }
+          setLiveVehicles((prev) =>
+            prev.map((vehicle) =>
+              vehicle.id === vehicleId
+                ? {
+                    ...vehicle,
+                    purchasePrice:
+                      field === "acquisition_cost" ? value : vehicle.purchasePrice,
+                    cost: field === "acquisition_cost" ? value : vehicle.cost,
+                    auctionFees: field === "auction_fees" ? value : vehicle.auctionFees,
+                    repairs:
+                      field === "reconditioning_cost" ? value : vehicle.repairs,
+                    flooringCost: field === "flooring_fees" ? value : vehicle.flooringCost,
+                    registrationFees:
+                      field === "registration_fees" ? value : vehicle.registrationFees,
+                  }
+                : vehicle,
+            ),
+          );
+          toast.success("Field updated");
+        }}
       />
 
       {editingVehicle && (

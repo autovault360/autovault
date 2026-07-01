@@ -164,6 +164,8 @@ export async function getInventoryVehicles(): Promise<InventoryVehicle[]> {
       model: row.model,
       trim: row.trim ?? "",
       year: row.year,
+      addOnRevenue: 0,
+      addOnItems: [],
       stockNumber: row.stock_number ?? "",
       vin: row.vin,
       mileage: row.mileage ?? 0,

@@ -1,4 +1,3 @@
-import type { KPICardData } from "@/components/ui/kpi-card";
 import {
   formatCurrency,
   type Vehicle,
@@ -22,10 +21,13 @@ export type InventoryVehicle = Vehicle & {
   salesRepImage: string;
   soldDate?: string;
   soldThisMonth: boolean;
+  addOnRevenue: number;
+  addOnItems?: { desc: string; type: string; price: number }[];
 };
 
 export type InventoryStats = {
   totalInventory: number;
+  activeInventoryCount: number;
   soldThisMonthCount: number;
   totalPurchaseCost: number;
   totalFees: number;
@@ -51,6 +53,15 @@ export type InventoryTableTotals = {
   totalVehicleCost: number;
   commission: number;
   netProfit: number;
+};
+
+export type InventoryKpiCard = {
+  kpiKey: string;
+  columnKey?: string;
+  defaultColorHex: string;
+  label: string;
+  value: string;
+  footer: string;
 };
 
 function getCurrentMonthRange(): { start: string; end: string } {
@@ -109,6 +120,7 @@ export function filterInventoryVehicles(
     model?: string;
     status?: string;
     location?: string;
+    salesRep?: string;
   },
 ): InventoryVehicle[] {
   const query = filters.search?.trim().toLowerCase() ?? "";
@@ -131,6 +143,13 @@ export function filterInventoryVehicles(
     ) {
       return false;
     }
+    if (
+      filters.salesRep &&
+      filters.salesRep !== "all" &&
+      vehicle.salesRepName !== filters.salesRep
+    ) {
+      return false;
+    }
     if (!query) return true;
     return (
       vehicle.make.toLowerCase().includes(query) ||
@@ -140,6 +159,36 @@ export function filterInventoryVehicles(
       `${vehicle.year} ${vehicle.make} ${vehicle.model}`.toLowerCase().includes(query)
     );
   });
+}
+
+export type SortField =
+  | "profit_desc"
+  | "roi_desc"
+  | "days_desc"
+  | "flooring_desc"
+  | "";
+
+export function sortInventoryVehicles(
+  vehicles: InventoryVehicle[],
+  sort: SortField,
+): InventoryVehicle[] {
+  if (!sort) return vehicles;
+  const sorted = [...vehicles];
+  switch (sort) {
+    case "profit_desc":
+      sorted.sort((a, b) => b.netProfit - a.netProfit);
+      break;
+    case "roi_desc":
+      sorted.sort((a, b) => b.roiPercent - a.roiPercent);
+      break;
+    case "days_desc":
+      sorted.sort((a, b) => b.daysInInventory - a.daysInInventory);
+      break;
+    case "flooring_desc":
+      sorted.sort((a, b) => b.flooringCost - a.flooringCost);
+      break;
+  }
+  return sorted;
 }
 
 export function computeInventoryStats(vehicles: InventoryVehicle[]): InventoryStats {
@@ -166,6 +215,9 @@ export function computeInventoryStats(vehicles: InventoryVehicle[]): InventorySt
 
   return {
     totalInventory: vehicles.length,
+    activeInventoryCount: vehicles.filter(
+      (v) => v.dbStatus !== "sold" && v.dbStatus !== "loss",
+    ).length,
     soldThisMonthCount: soldThisMonth.length,
     totalPurchaseCost: vehicles.reduce((sum, v) => sum + (v.purchasePrice ?? v.cost), 0),
     totalFees: vehicles.reduce((sum, v) => sum + v.auctionFees, 0),
@@ -216,106 +268,79 @@ export function splitInventorySections(vehicles: InventoryVehicle[]) {
   return { soldThisMonth, activeInventory };
 }
 
-export function buildInventoryKpiCards(stats: InventoryStats): KPICardData[] {
+export function buildInventoryKpiCards(stats: InventoryStats): InventoryKpiCard[] {
   return [
     {
-      icon: "car",
-      color: "blue",
+      kpiKey: "total_inventory",
+      columnKey: "vehicle",
+      defaultColorHex: "#3aa0ff",
       label: "Total Inventory",
-      value: String(stats.totalInventory),
-      unit: "Vehicles",
-      delta:
-        stats.soldThisMonthCount > 0
-          ? `(${stats.soldThisMonthCount} sold this month)`
-          : undefined,
-      link: "",
-      sparkColor: "#3b82f6",
-      sparkPoints: "",
+      value: String(stats.activeInventoryCount),
+      footer: "vehicles on lot",
     },
     {
-      icon: "dollar-sign",
-      color: "green",
-      label: "Total Purchase Cost",
+      kpiKey: "total_purchase_cost",
+      columnKey: "purchase_price",
+      defaultColorHex: "#ff9f43",
+      label: "Purchase Cost",
       value: formatCurrency(stats.totalPurchaseCost),
-      unit: "Sum of all purchase prices",
-      link: "",
-      sparkColor: "#10b981",
-      sparkPoints: "",
+      footer: "acquisition spend",
     },
     {
-      icon: "wallet",
-      color: "orange",
+      kpiKey: "total_fees",
+      columnKey: "fees",
+      defaultColorHex: "#a07bff",
       label: "Total Fees",
       value: formatCurrency(stats.totalFees),
-      unit: "Sum of all fees",
-      link: "",
-      sparkColor: "#f97316",
-      sparkPoints: "",
+      footer: "title / admin / doc",
     },
     {
-      icon: "bar-chart-3",
-      color: "violet",
+      kpiKey: "total_repairs",
+      columnKey: "repairs",
+      defaultColorHex: "#ff5470",
       label: "Total Repairs",
       value: formatCurrency(stats.totalRepairs),
-      unit: "Sum of all repairs",
-      link: "",
-      sparkColor: "#a855f7",
-      sparkPoints: "",
+      footer: "recon + parts",
     },
     {
-      icon: "dollar-sign",
-      color: "green",
-      label: "Total Vehicles Cost",
+      kpiKey: "total_vehicles_cost",
+      columnKey: "total_vehicle_cost",
+      defaultColorHex: "#23d18b",
+      label: "Total Vehicle Cost",
       value: formatCurrency(stats.totalVehiclesCost),
-      unit: "Purchase + Fees + Repairs + Flooring",
-      link: "",
-      sparkColor: "#22c55e",
-      sparkPoints: "",
+      footer: "all-in, incl. flooring",
     },
     {
-      icon: "percent",
-      color: "orange",
-      label: "Total Sales Tax",
+      kpiKey: "total_sales_tax",
+      columnKey: "sales_tax",
+      defaultColorHex: "#3aa0ff",
+      label: "Sales Tax",
       value: formatCurrency(stats.totalSalesTax),
-      unit: "On sold vehicles",
-      link: "",
-      sparkColor: "#f97316",
-      sparkPoints: "",
+      footer: "paid at acquisition",
     },
     {
-      icon: "users",
-      color: "violet",
-      label: "Commission Overview",
-      value: `Avg. ${stats.avgCommissionRate.toFixed(1)}%`,
-      link: "",
-      sparkColor: "#a855f7",
-      sparkPoints: "",
-      periodMetrics: [
-        { value: formatCurrency(stats.totalCommissions), label: "Total Commissions" },
-      ],
+      kpiKey: "commission_overview",
+      columnKey: "commission",
+      defaultColorHex: "#a07bff",
+      label: "Commission",
+      value: formatCurrency(stats.totalCommissions),
+      footer: "owed to reps",
     },
     {
-      icon: "badge-check",
-      color: "green",
+      kpiKey: "titles",
+      columnKey: "title",
+      defaultColorHex: "#ff9f43",
       label: "Titles",
-      value: `Missing: ${stats.missingTitles}`,
-      link: "",
-      sparkColor: "#10b981",
-      sparkPoints: "",
-      periodMetrics: [{ value: String(stats.titlesIn), label: "Titles In" }],
+      value: `${stats.titlesIn}/${stats.totalInventory}`,
+      footer: "in-hand / pending",
     },
     {
-      icon: "shopping-cart",
-      color: "blue",
-      label: "Vehicles Sold This Month",
-      value: `Sold: ${stats.soldThisMonthCount}`,
-      link: "",
-      sparkColor: "#3b82f6",
-      sparkPoints: "",
-      periodMetrics: [
-        { value: formatCurrency(stats.soldThisMonthProfit), label: "Profit (Gross)" },
-        { value: `${stats.soldThisMonthRoi.toFixed(1)}%`, label: "ROI" },
-      ],
+      kpiKey: "vehicles_sold_this_month",
+      columnKey: "net_vehicle_profit",
+      defaultColorHex: "#23d18b",
+      label: "Sold This Month",
+      value: String(stats.soldThisMonthCount),
+      footer: "units moved",
     },
   ];
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import {
   BadgeCheck,
   BarChart3,
@@ -352,6 +353,8 @@ export function KPICard({
   layout = "default",
   valueClassName,
   className,
+  valueStyle,
+  iconStyle,
 }: {
   data: KPICardData;
   showSparkline?: boolean;
@@ -361,6 +364,8 @@ export function KPICard({
   layout?: KPICardLayout;
   valueClassName?: string;
   className?: string;
+  valueStyle?: CSSProperties;
+  iconStyle?: CSSProperties;
 }) {
   if (layout === "period") {
     return <PeriodKPICard data={data} className={className} />;
@@ -385,6 +390,7 @@ export function KPICard({
             "grid h-10 w-10 place-items-center rounded-full",
             iconBg[data.color],
           )}
+          style={iconStyle}
         >
           <Icon className="h-6 w-6" />
         </div>
@@ -397,6 +403,7 @@ export function KPICard({
               "text-[18px] font-bold text-white tabular-nums",
               valueClassName,
             )}
+            style={valueStyle}
           >
             {data.value}
           </div>

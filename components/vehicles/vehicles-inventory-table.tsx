@@ -10,8 +10,13 @@ import {
   Shuffle,
   CheckCircle,
   AlertCircle,
+  Circle,
 } from "lucide-react";
 import { toast } from "sonner";
+import FlooringDetailModal from "@/components/vehicles/flooring/flooring-detail-modal";
+import RegistrationFeesNotice from "@/components/vehicles/registration-fees-notice";
+import AddOnModal from "@/components/vehicles/add-on-modal";
+import type { AddOnItem } from "@/components/vehicles/add-on-modal";
 import { cn } from "@/lib/utils";
 import {
   formatCurrency,
@@ -79,7 +84,7 @@ function formatShortDate(date: string | undefined): string {
 
 function TotalsRow({ totals }: { totals: InventoryTableTotals }) {
   return (
-    <tr className="border-b border-slate-700/80 bg-slate-900/60">
+    <tr className="bg-slate-900/60">
       <td className="px-3 py-2.5 font-semibold text-white">Totals</td>
       <td colSpan={2} />
       <td className="px-3 py-2.5 font-semibold text-slate-300 tabular-nums">
@@ -129,7 +134,6 @@ function SectionHeader({
   return (
     <tr
       className={cn(
-        "border-b border-slate-800/80",
         variant === "sold"
           ? "bg-emerald-950/50"
           : "bg-blue-950/40",
@@ -156,7 +160,7 @@ function SectionSummary({
   value: string;
 }) {
   return (
-    <tr className="border-b border-emerald-900/30 bg-emerald-950/20">
+    <tr className="bg-emerald-950/20">
       <td colSpan={COLUMN_COUNT} className="px-3 py-2 text-right">
         <span className="text-[11.5px] font-semibold text-emerald-400">
           {label}:{" "}
@@ -171,16 +175,73 @@ type VehiclesInventoryTableProps = {
   vehicles: InventoryVehicle[];
   onEdit: (id: string) => void;
   onChangeStatus: (id: string) => void;
+  onSaveField: (
+    vehicleId: string,
+    field:
+      | "acquisition_cost"
+      | "auction_fees"
+      | "reconditioning_cost"
+      | "flooring_fees"
+      | "registration_fees",
+    value: number,
+  ) => Promise<void>;
+  columnColorMap: Record<string, string>;
+  gridLines?: boolean;
 };
 
 export default function VehiclesInventoryTable({
   vehicles,
   onEdit,
   onChangeStatus,
+  onSaveField,
+  columnColorMap,
+  gridLines = false,
 }: VehiclesInventoryTableProps) {
+  useEffect(() => {
+    const styleId = "grid-lines-style";
+    const existing = document.getElementById(styleId) as HTMLStyleElement | null;
+    if (gridLines) {
+      if (!existing) {
+        const style = document.createElement("style");
+        style.id = styleId;
+        style.textContent = ".show-grid tbody td { border-bottom: 1px solid rgba(255,255,255,0.05) !important; } .show-grid tbody tr { border-bottom: none !important; }";
+        document.head.appendChild(style);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+    return () => {
+      const el = document.getElementById(styleId);
+      if (el) el.remove();
+    };
+  }, [gridLines]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [activePopover, setActivePopover] = useState<string | null>(null);
+  const [editingCell, setEditingCell] = useState<{
+    vehicleId: string;
+    field:
+      | "acquisition_cost"
+      | "auction_fees"
+      | "reconditioning_cost"
+      | "registration_fees";
+    value: string;
+  } | null>(null);
+  const [flooringDetailVehicle, setFlooringDetailVehicle] = useState<{
+    id: string;
+    year: number;
+    make: string;
+    model: string;
+    purchasePrice: number;
+    acquisitionDate: string;
+    flooringCost: number;
+  } | null>(null);
+  const [regFeesNoticeOpen, setRegFeesNoticeOpen] = useState(false);
+  const [addOnModalState, setAddOnModalState] = useState<{
+    vehicleId: string;
+    vehicleName: string;
+    items: AddOnItem[];
+  } | null>(null);
   const popoverRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -292,11 +353,79 @@ export default function VehiclesInventoryTable({
     const displayStatus = getDisplayStatus(vehicle);
     const received = vehicle.titleReceived ?? false;
 
+    const textStyle = (columnKey: string) =>
+      columnColorMap[columnKey] ? { color: columnColorMap[columnKey] } : undefined;
+
+    const renderEditable = (
+      field: "acquisition_cost" | "auction_fees" | "reconditioning_cost" | "registration_fees",
+      columnKey: string,
+      value: number,
+    ) => {
+      const isEditing =
+        editingCell?.vehicleId === vehicle.id && editingCell?.field === field;
+      if (!isEditing) {
+        return (
+          <button
+            type="button"
+            className="cursor-pointer border-b border-dashed border-slate-600/60 text-left transition hover:border-slate-400"
+            style={textStyle(columnKey)}
+            onClick={() =>
+              setEditingCell({
+                vehicleId: vehicle.id,
+                field,
+                value: String(value ?? 0),
+              })
+            }
+          >
+            {formatCurrency(value)}
+          </button>
+        );
+      }
+
+      return (
+        <input
+          autoFocus
+          value={editingCell.value}
+          onChange={(event) =>
+            setEditingCell((current) =>
+              current
+                ? {
+                    ...current,
+                    value: event.currentTarget.value,
+                  }
+                : current,
+            )
+          }
+          onKeyDown={async (event) => {
+            if (event.key === "Escape") {
+              setEditingCell(null);
+              return;
+            }
+            if (event.key === "Enter") {
+              const next = Number(editingCell.value);
+              if (Number.isFinite(next) && next >= 0) {
+                await onSaveField(vehicle.id, field, next);
+              }
+              setEditingCell(null);
+            }
+          }}
+          onBlur={async () => {
+            const next = Number(editingCell.value);
+            if (Number.isFinite(next) && next >= 0) {
+              await onSaveField(vehicle.id, field, next);
+            }
+            setEditingCell(null);
+          }}
+          className="h-7 w-[110px] rounded border border-slate-600 bg-slate-900 px-2 text-[11px] text-white outline-none"
+        />
+      );
+    };
+
     return (
       <tr
         key={vehicle.id}
         className={cn(
-          "border-b border-slate-800/60 transition last:border-0 hover:bg-slate-800/20",
+          "transition hover:bg-slate-800/20",
           tint === "sold" && "bg-emerald-950/15",
         )}
       >
@@ -343,23 +472,50 @@ export default function VehiclesInventoryTable({
             <Copy className="h-3 w-3 text-slate-500" />
           </span>
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-slate-300 tabular-nums">
-          {formatCurrency(vehicle.purchasePrice ?? vehicle.cost)}
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
+          {renderEditable(
+            "acquisition_cost",
+            "purchase_price",
+            vehicle.purchasePrice ?? vehicle.cost,
+          )}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-slate-400 tabular-nums">
-          {formatCurrency(vehicle.auctionFees)}
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
+          {renderEditable("auction_fees", "fees", vehicle.auctionFees)}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-slate-400 tabular-nums">
-          {formatCurrency(vehicle.repairs)}
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
+          {renderEditable("reconditioning_cost", "repairs", vehicle.repairs)}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-red-400 tabular-nums">
-          {formatCurrency(vehicle.flooringCost)}
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
+          <button
+            type="button"
+            onClick={() =>
+              setFlooringDetailVehicle({
+                id: vehicle.id,
+                year: vehicle.year,
+                make: vehicle.make,
+                model: vehicle.model,
+                purchasePrice: vehicle.purchasePrice ?? vehicle.cost,
+                acquisitionDate: vehicle.arrivalDate ?? "",
+                flooringCost: vehicle.flooringCost,
+              })
+            }
+            className="border-b border-dashed border-red-400/70 text-red-400 transition hover:text-red-300"
+            style={textStyle("flooring_cost")}
+          >
+            {vehicle.flooringCost > 0 ? formatCurrency(vehicle.flooringCost) : <span className="text-[11px] text-slate-500">Set flooring</span>}
+          </button>
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-slate-400 tabular-nums">
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums" style={textStyle("sales_tax")}>
           {vehicle.salesTax > 0 ? formatCurrency(vehicle.salesTax) : "?"}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-slate-400 tabular-nums">
-          {formatCurrency(vehicle.registrationFees ?? 0)}
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
+          <span onClick={() => setRegFeesNoticeOpen(true)}>
+            {renderEditable(
+              "registration_fees",
+              "reg_fees",
+              vehicle.registrationFees ?? 0,
+            )}
+          </span>
         </td>
         <td className="px-3 py-2.5 whitespace-nowrap font-medium text-sky-400 tabular-nums">
           {formatCurrency(vehicle.totalInvestment)}
@@ -370,7 +526,7 @@ export default function VehiclesInventoryTable({
         <td className="px-3 py-2.5 whitespace-nowrap text-slate-300 tabular-nums">
           {formatCurrency(vehicle.totalVehicleCost)}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap text-red-400 tabular-nums">
+        <td className="px-3 py-2.5 whitespace-nowrap tabular-nums" style={textStyle("commission")}>
           {vehicle.commissionAmount > 0 ? (
             <>
               {formatCurrency(vehicle.commissionAmount)}
@@ -384,7 +540,10 @@ export default function VehiclesInventoryTable({
             "?"
           )}
         </td>
-        <td className="px-3 py-2.5 whitespace-nowrap font-medium text-amber-400 tabular-nums">
+        <td
+          className="px-3 py-2.5 whitespace-nowrap font-medium tabular-nums"
+          style={textStyle("net_vehicle_profit")}
+        >
           {vehicle.netProfit !== 0 ? formatCurrency(vehicle.netProfit) : "?"}
         </td>
         <td className="px-3 py-2.5 whitespace-nowrap font-medium text-amber-400 tabular-nums">
@@ -448,7 +607,7 @@ export default function VehiclesInventoryTable({
                 onClick={() =>
                   setActivePopover(activePopover === vehicle.id ? null : vehicle.id)
                 }
-                className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-card text-slate-400 transition-colors hover:border-slate-600 hover:bg-slate-800/80 hover:text-slate-200"
+                className="grid h-7 w-7 place-items-center rounded-md border border-slate-700 bg-slate-900 text-slate-400 transition-colors hover:border-slate-500 hover:bg-slate-800/80 hover:text-slate-200"
                 aria-label="More actions"
               >
                 <MoreHorizontal className="h-3.5 w-3.5" />
@@ -456,7 +615,7 @@ export default function VehiclesInventoryTable({
               {activePopover === vehicle.id && (
                 <div
                   ref={popoverRef}
-                  className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 py-1 shadow-xl"
+                  className="absolute right-0 top-full z-50 mt-1 w-40 overflow-hidden rounded-lg border border-slate-700 bg-[#0e1624] py-1 shadow-xl"
                 >
                   <Link
                     href={`/dashboard/vehicles/${vehicle.id}`}
@@ -480,6 +639,21 @@ export default function VehiclesInventoryTable({
                   <button
                     type="button"
                     onClick={() => {
+                      setAddOnModalState({
+                        vehicleId: vehicle.id,
+                        vehicleName: getVehicleName(vehicle),
+                        items: vehicle.addOnItems ?? [],
+                      });
+                      setActivePopover(null);
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-300 transition hover:bg-slate-800"
+                  >
+                    <Circle className="h-3.5 w-3.5 text-blue-400" />
+                    Add-Ons
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
                       onChangeStatus(vehicle.id);
                       setActivePopover(null);
                     }}
@@ -498,25 +672,25 @@ export default function VehiclesInventoryTable({
   }
 
   return (
-    <div className="w-full overflow-hidden rounded-sm border border-slate-800 bg-card">
+    <div className="w-full overflow-hidden rounded-[14px] border border-slate-800/90 bg-[#101826]">
       <div className="overflow-x-auto">
-        <table className="min-w-[1800px] w-full text-[11.5px]">
-          <thead className="bg-background/5 text-[11px] tracking-[0.06em] text-slate-400">
+        <table className={cn("min-w-[1800px] w-full text-[11.5px]", gridLines && "show-grid")}>
+          <thead className="bg-slate-950/40 text-[10px] uppercase tracking-widest text-slate-400">
             <tr className="border-b border-slate-800">
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Purchase Date</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Vehicle</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">VIN</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Purchase Price</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Fees</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Repairs</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Flooring Cost</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Sales Tax</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Reg. Fees</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.purchase_price ? { color: columnColorMap.purchase_price } : undefined}>Purchase Price</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.fees ? { color: columnColorMap.fees } : undefined}>Fees</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.repairs ? { color: columnColorMap.repairs } : undefined}>Repairs</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.flooring_cost ? { color: columnColorMap.flooring_cost } : undefined}>Flooring Cost</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.sales_tax ? { color: columnColorMap.sales_tax } : undefined}>Sales Tax</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.reg_fees ? { color: columnColorMap.reg_fees } : undefined}>Reg. Fees</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Total Investment</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Flooring Age (Days)</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Total Vehicle Cost</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Commission</th>
-              <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Net Vehicle Profit</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.commission ? { color: columnColorMap.commission } : undefined}>Commission</th>
+              <th className="px-3 py-3 text-left font-medium whitespace-nowrap" style={columnColorMap.net_vehicle_profit ? { color: columnColorMap.net_vehicle_profit } : undefined}>Net Vehicle Profit</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">ROI</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Sales Rep</th>
               <th className="px-3 py-3 text-left font-medium whitespace-nowrap">Days in Inventory</th>
@@ -662,6 +836,30 @@ export default function VehiclesInventoryTable({
           </div>
         </div>
       )}
+      <FlooringDetailModal
+        open={!!flooringDetailVehicle}
+        onOpenChange={(open) => { if (!open) setFlooringDetailVehicle(null); }}
+        vehicle={flooringDetailVehicle}
+        onSave={async (vehicleId, cost) => {
+          await onSaveField(vehicleId, "flooring_fees", cost);
+          setFlooringDetailVehicle(null);
+        }}
+      />
+      <AddOnModal
+        open={!!addOnModalState}
+        onOpenChange={(open) => { if (!open) setAddOnModalState(null); }}
+        vehicleName={addOnModalState?.vehicleName ?? ""}
+        items={addOnModalState?.items ?? []}
+        onSave={async (items, total) => {
+          if (addOnModalState) {
+            setAddOnModalState(null);
+          }
+        }}
+      />
+      <RegistrationFeesNotice
+        open={regFeesNoticeOpen}
+        onOpenChange={setRegFeesNoticeOpen}
+      />
     </div>
   );
 }

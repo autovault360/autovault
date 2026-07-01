@@ -25,20 +25,23 @@ export async function getFlooringSummary(): Promise<FlooringSummary> {
     const supabase = await createClient();
     const { dealershipId } = auth.user;
 
-    const { data: vehicles, error } = await supabase
+    const { data: allVehicles, error } = await supabase
       .from("vehicles")
       .select("flooring_fees, flooring_plan_id")
       .eq("dealership_id", dealershipId)
       .is("deleted_at", null)
-      .in("status", ACTIVE_STATUSES)
-      .not("flooring_plan_id", "is", null);
+      .in("status", ACTIVE_STATUSES);
 
     if (error) {
       console.warn("getFlooringSummary: query error", error.message);
       return EMPTY_SUMMARY;
     }
 
-    const totalFlooringCost = (vehicles ?? []).reduce(
+    const vehicles = (allVehicles ?? []).filter(
+      (v) => Number(v.flooring_fees ?? 0) > 0 || v.flooring_plan_id,
+    );
+
+    const totalFlooringCost = (allVehicles ?? []).reduce(
       (sum, v) => sum + Number(v.flooring_fees ?? 0),
       0,
     );

@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Bell, ChevronDown, LogOut, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LogOut, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type PortalHeaderProfile = {
@@ -33,7 +31,7 @@ export function PortalHeaderShell({
   actions,
   mobileActions,
   profile,
-  notificationCount = 0,
+  notificationCount: _notificationCount,
   extraRight,
   className,
 }: PortalHeaderShellProps) {
@@ -51,29 +49,47 @@ export function PortalHeaderShell({
     return () => document.removeEventListener("mousedown", handler);
   }, [profileOpen]);
 
-  const actionStrip = actions ? (
-    <>
-      <div className="hidden shrink-0 items-start justify-center gap-0.5 lg:flex">
-        {actions}
-      </div>
-      {mobileActions ? (
-        <div className="flex shrink-0 items-start justify-center gap-0.5 overflow-x-auto lg:hidden">
-          {mobileActions}
-        </div>
-      ) : null}
-    </>
-  ) : null;
+  const handleMenuToggle = () => {
+    const sidebarBtn = document.querySelector<HTMLButtonElement>(
+      '[class*="fixed"][class*="left-3"][class*="top-3"]',
+    );
+    if (sidebarBtn) sidebarBtn.click();
+  };
 
   return (
     <header
       className={cn(
-        "mb-3.5 flex flex-col gap-3 border-b border-slate-800 pb-3.5 lg:flex-row lg:items-center lg:justify-between lg:gap-4",
+        "border-b border-slate-800 px-1 pb-3 pt-2",
+        "flex flex-wrap items-center gap-3 gap-y-3",
+        "lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-5",
         className,
       )}
     >
-      <div className="flex min-w-0 flex-1 items-stretch overflow-hidden rounded-lg border border-slate-800 bg-[#0e1626] max-w-100 w-full">
+      {/* Left: menu + search */}
+      <div className="flex w-full min-w-0 items-center gap-3 lg:col-start-1 lg:w-auto lg:max-w-[480px] lg:justify-self-start">
+        <button
+          type="button"
+          onClick={handleMenuToggle}
+          className="flex shrink-0 items-center justify-center rounded-lg border border-slate-700 bg-[#10151f] text-slate-200 lg:hidden"
+          style={{ width: 38, height: 38 }}
+          aria-label="Toggle sidebar"
+        >
+          <Menu className="h-[18px] w-[18px]" />
+        </button>
+
         <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+          <svg
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
           <input
             type="search"
             placeholder={searchPlaceholder}
@@ -84,81 +100,63 @@ export function PortalHeaderShell({
                 : undefined
             }
             readOnly={!onSearchChange}
-            className="h-10 w-full bg-transparent pl-10 pr-3 text-[12.5px] text-slate-200 outline-none placeholder:text-slate-500"
+            className="w-full rounded-[10px] border border-slate-700 bg-[#10151f] py-2.5 pl-[38px] pr-3.5 text-[13.5px] text-slate-200 outline-none transition-colors placeholder:text-slate-500 focus:border-blue-500"
           />
         </div>
       </div>
 
-      {actionStrip}
+      {/* Center: quick actions */}
+      <div className="flex w-full flex-wrap items-center justify-center gap-2 lg:col-start-2 lg:w-auto lg:justify-self-center">
+        {actions}
+      </div>
 
-      <div className="flex shrink-0 items-center justify-end gap-3">
-        {extraRight}
-
-        <button
-          type="button"
-          className="relative p-1.5 text-slate-400 transition hover:text-slate-200"
-          aria-label="Notifications"
+      {/* Right: profile */}
+      <div
+        ref={profileRef}
+        className="relative ml-auto flex shrink-0 items-center gap-2.5 border-l border-slate-700 pl-3.5 lg:col-start-3 lg:ml-0 lg:justify-self-end"
+      >
+        <div
+          className="flex cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-blue-500 text-[13px] font-bold text-[#03121c]"
+          onClick={() => setProfileOpen((prev) => !prev)}
+          style={{ width: 34, height: 34 }}
         >
-          <Bell className="h-5 w-5" />
-          {notificationCount > 0 && (
-            <Badge className="absolute -right-1.5 -top-1 h-4 min-w-[18px] rounded-full bg-red-500 px-1 text-[10px] text-white">
-              {notificationCount > 99 ? "99+" : notificationCount}
-            </Badge>
-          )}
-        </button>
-
-        <div ref={profileRef} className="relative">
-          <button
-            type="button"
-            onClick={() => setProfileOpen((prev) => !prev)}
-            aria-expanded={profileOpen}
-            aria-haspopup="menu"
-            className="flex items-center gap-2"
-          >
-            <div className="hidden text-right sm:block">
-              <div className="text-[13px] font-semibold text-white">
-                {profile.name}
-              </div>
-              {profile.subtitle ? (
-                <div className="text-[12px] text-slate-500">{profile.subtitle}</div>
-              ) : null}
-            </div>
-            <Avatar className="h-9 w-9 ring-2 ring-slate-700">
-              {profile.imageUrl ? (
-                <AvatarImage src={profile.imageUrl} alt={profile.name} />
-              ) : null}
-              <AvatarFallback className="bg-blue-600 text-xs text-white">
-                {profile.initials}
-              </AvatarFallback>
-            </Avatar>
-            <ChevronDown
-              className={cn(
-                "hidden h-4 w-4 text-slate-500 transition sm:block",
-                profileOpen && "rotate-180",
-              )}
-            />
-          </button>
-
-          {profileOpen && (
-            <div
-              role="menu"
-              className="absolute right-0 top-[calc(100%+8px)] z-50 w-[200px] overflow-hidden rounded-lg border border-slate-700/90 bg-[#0c1424] py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
-            >
-              <button
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  setProfileOpen(false);
-                  void profile.onLogout();
-                }}
-                className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] text-red-400 transition-colors hover:bg-[#152238]"
-              >
-                <LogOut className="h-4 w-4" />
-                Log Out
-              </button>
+          {profile.initials}
+        </div>
+        <div
+          className="hidden cursor-pointer sm:block"
+          onClick={() => setProfileOpen((prev) => !prev)}
+        >
+          <div className="text-[13px] font-semibold leading-tight text-slate-200">
+            {profile.name}
+          </div>
+          {profile.subtitle && (
+            <div className="text-[11px] text-slate-500">
+              {profile.subtitle}
             </div>
           )}
         </div>
+
+        {extraRight}
+
+        {profileOpen && (
+          <div
+            role="menu"
+            className="absolute right-0 top-[calc(100%+8px)] z-50 w-[200px] overflow-hidden rounded-lg border border-slate-700/90 bg-[#0c1424] py-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setProfileOpen(false);
+                void profile.onLogout();
+              }}
+              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-[13px] text-red-400 transition-colors hover:bg-[#152238]"
+            >
+              <LogOut className="h-4 w-4" />
+              Log Out
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

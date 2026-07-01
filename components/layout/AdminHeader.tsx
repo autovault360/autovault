@@ -10,6 +10,7 @@ import {
   Users,
   Receipt,
   LayoutDashboard,
+  MoreHorizontal,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import AddExpenseDropdown from "@/components/layout/add-expense-dropdown";
@@ -83,22 +84,18 @@ export default function AdminHeader({
           {
             label: "Dashboard",
             href: "/dashboard",
-            icon: LayoutDashboard,
           },
           {
             label: "Deal Jackets",
             href: "/dashboard/deal-jackets",
-            icon: Folder,
           },
           {
             label: "Customers",
             href: "/dashboard/customers",
-            icon: Users,
           },
           {
             label: "Expenses",
             href: "/dashboard/expenses",
-            icon: Receipt,
           },
         ]}
       />

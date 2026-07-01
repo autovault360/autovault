@@ -84,31 +84,11 @@ export default function SalesRepHeader({
       />
       <HeaderMoreMenu
         items={[
-          {
-            label: "Dashboard",
-            href: "/sales-rep/dashboard",
-            icon: LayoutDashboard,
-          },
-          {
-            label: "My Sold Vehicles",
-            href: "/sales-rep/dashboard/my-sold-vehicles",
-            icon: CheckCircle,
-          },
-          {
-            label: "My Deal Jackets",
-            href: "/sales-rep/deal-jackets",
-            icon: FolderPlus,
-          },
-          {
-            label: "Commissions",
-            href: "/sales-rep/commissions",
-            icon: DollarSign,
-          },
-          {
-            label: "Payroll & Earnings",
-            href: "/sales-rep/dashboard/payroll-earnings",
-            icon: Wallet,
-          },
+          { label: "Dashboard", href: "/sales-rep/dashboard" },
+          { label: "My Sold Vehicles", href: "/sales-rep/dashboard/my-sold-vehicles" },
+          { label: "My Deal Jackets", href: "/sales-rep/deal-jackets" },
+          { label: "Commissions", href: "/sales-rep/commissions" },
+          { label: "Payroll & Earnings", href: "/sales-rep/dashboard/payroll-earnings" },
         ]}
       />
     </>
