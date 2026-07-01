@@ -97,46 +97,14 @@ export default function DealerHeader({
       />
       <HeaderMoreMenu
         items={[
-          {
-            label: "Add Expense",
-            onClick: handleAddExpense,
-            icon: Receipt,
-          },
-          {
-            label: "Add Vehicle Expense",
-            href: DEALER_ROUTES.addVehicleExpense,
-            icon: Car,
-          },
-          {
-            label: "Missing Titles",
-            href: "/dealer/dashboard/missing-titles",
-            icon: FileWarning,
-          },
-          {
-            label: "Arbitration",
-            href: DEALER_ROUTES.arbitration,
-            icon: Scale,
-          },
-          {
-            label: "Sold Vehicles",
-            href: DEALER_ROUTES.soldVehicles,
-            icon: Tag,
-          },
-          {
-            label: "Transactions",
-            href: DEALER_ROUTES.transactions,
-            icon: Handshake,
-          },
-          {
-            label: "Profit & Loss",
-            href: "/dealer/dashboard/profit-loss",
-            icon: BarChart3,
-          },
-          {
-            label: "Dashboard",
-            href: DEALER_ROUTES.dashboard,
-            icon: Package,
-          },
+          { label: "Add Expense", onClick: handleAddExpense },
+          { label: "Add Vehicle Expense", href: DEALER_ROUTES.addVehicleExpense },
+          { label: "Missing Titles", href: "/dealer/dashboard/missing-titles" },
+          { label: "Arbitration", href: DEALER_ROUTES.arbitration },
+          { label: "Sold Vehicles", href: DEALER_ROUTES.soldVehicles },
+          { label: "Transactions", href: DEALER_ROUTES.transactions },
+          { label: "Profit & Loss", href: "/dealer/dashboard/profit-loss" },
+          { label: "Dashboard", href: DEALER_ROUTES.dashboard },
         ]}
       />
     </>

@@ -15,7 +15,7 @@ export type HeaderMoreMenuItem = {
 
 export function HeaderMoreMenu({
   items,
-  label = "More",
+  label = "\u22EF More",
 }: {
   items: HeaderMoreMenuItem[];
   label?: string;

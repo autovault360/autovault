@@ -73,19 +73,32 @@ export function CommissionOverviewKpiCard({
   avgRate,
   totalCommissions,
   className,
+  accentHex,
+  onAccentColorChange,
 }: {
   avgRate: number;
   totalCommissions: string;
   className?: string;
+  accentHex: string;
+  onAccentColorChange: (colorHex: string) => void;
 }) {
   return (
-    <Card className={cn(SHELL_CLASS, className)}>
+    <Card className={cn(SHELL_CLASS, className)} style={{ borderColor: `${accentHex}66` }}>
       <KpiHeader
         title="Commission Overview"
         iconWrapClassName="bg-violet-500/15 text-violet-300 shadow-violet-500/30"
         icon={<UserRound className="h-5 w-5" strokeWidth={2} />}
       />
       <div className="mt-2 flex flex-1 flex-col justify-center gap-2">
+        <label className="inline-flex items-center gap-1 self-end rounded border border-slate-700 bg-slate-900/90 px-1.5 py-1 text-[10px] text-slate-300">
+          Color
+          <input
+            type="color"
+            value={accentHex}
+            onChange={(event) => onAccentColorChange(event.currentTarget.value)}
+            className="h-4 w-4 cursor-pointer rounded border-0 bg-transparent p-0"
+          />
+        </label>
         <MetricBlock
           label="Avg. Commission Rate"
           value={`${avgRate.toFixed(1)}%`}
@@ -106,19 +119,32 @@ export function TitlesKpiCard({
   missing,
   titlesIn,
   className,
+  accentHex,
+  onAccentColorChange,
 }: {
   missing: number;
   titlesIn: number;
   className?: string;
+  accentHex: string;
+  onAccentColorChange: (colorHex: string) => void;
 }) {
   return (
-    <Card className={cn(SHELL_CLASS, className)}>
+    <Card className={cn(SHELL_CLASS, className)} style={{ borderColor: `${accentHex}66` }}>
       <KpiHeader
         title="Titles"
         iconWrapClassName="bg-emerald-500/15 text-emerald-400 shadow-emerald-500/30"
         icon={<FileText className="h-5 w-5" strokeWidth={2} />}
       />
       <div className="relative mt-2 grid grid-cols-2 border-t border-slate-800/70 pt-2.5">
+        <label className="absolute right-0 top-[-28px] inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-900/90 px-1.5 py-1 text-[10px] text-slate-300">
+          Color
+          <input
+            type="color"
+            value={accentHex}
+            onChange={(event) => onAccentColorChange(event.currentTarget.value)}
+            className="h-4 w-4 cursor-pointer rounded border-0 bg-transparent p-0"
+          />
+        </label>
         <div className="absolute inset-y-2 left-1/2 w-px -translate-x-1/2 bg-slate-800/80" />
         <MetricBlock
           label="Missing"
@@ -142,20 +168,33 @@ export function SoldThisMonthKpiCard({
   profit,
   roi,
   className,
+  accentHex,
+  onAccentColorChange,
 }: {
   soldCount: number;
   profit: string;
   roi: string;
   className?: string;
+  accentHex: string;
+  onAccentColorChange: (colorHex: string) => void;
 }) {
   return (
-    <Card className={cn(SHELL_CLASS, className)}>
+    <Card className={cn(SHELL_CLASS, className)} style={{ borderColor: `${accentHex}66` }}>
       <KpiHeader
         title="Vehicles Sold This Month"
         iconWrapClassName="bg-blue-500/15 text-blue-400 shadow-blue-500/30"
         icon={<ShoppingCart className="h-5 w-5" strokeWidth={2} />}
       />
       <div className="relative mt-2 grid grid-cols-3 border-t border-slate-800/70 pt-2.5">
+        <label className="absolute right-0 top-[-28px] inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-900/90 px-1.5 py-1 text-[10px] text-slate-300">
+          Color
+          <input
+            type="color"
+            value={accentHex}
+            onChange={(event) => onAccentColorChange(event.currentTarget.value)}
+            className="h-4 w-4 cursor-pointer rounded border-0 bg-transparent p-0"
+          />
+        </label>
         <div className="absolute inset-y-2 left-1/3 w-px bg-slate-800/80" />
         <div className="absolute inset-y-2 left-2/3 w-px bg-slate-800/80" />
         <MetricBlock

@@ -1,10 +1,9 @@
 import AddVehicleTrigger from "@/components/vehicles/add/add-vehicle-trigger";
-import VehicleStatsCards from "@/components/vehicles/vehicle-stats-cards";
-import VehiclesInventory from "@/components/vehicles/vehicles-inventory";
-import FlooringCostBanner from "@/components/vehicles/flooring/flooring-cost-banner";
+import VehiclesInventoryShell from "@/components/vehicles/vehicles-inventory-shell";
 import { getFlooringSummary } from "@/lib/vehicles/server/get-flooring-summary";
 import { getInventoryVehicles } from "@/lib/vehicles/server/get-inventory-vehicles";
 import { authenticateUser } from "@/lib/vehicles/server/utils";
+import { getInventoryKpiPreferences } from "@/lib/vehicles/server/kpi-preferences";
 
 export default async function VehiclesPage({
   searchParams,
@@ -18,33 +17,31 @@ export default async function VehiclesPage({
 
   const vehicles = auth.ok ? await getInventoryVehicles() : [];
   const flooringSummary = auth.ok ? await getFlooringSummary() : null;
+  const kpiPreferences = auth.ok ? await getInventoryKpiPreferences() : [];
 
   return (
     <div>
-      <section className="mb-3.5 flex flex-wrap items-start justify-between gap-3 px-0.5">
-        <div className="min-w-[200px] shrink-0">
-          <h1 className="text-xl font-bold tracking-[0.12em] text-white">
-            VEHICLES INVENTORY
-          </h1>
-          <p className="mt-0.5 text-[12.5px] text-slate-500">
-            Manage, track, and analyze your vehicle inventory.
+      <div className="mb-[18px] flex flex-wrap items-end justify-between gap-3.5 px-0.5">
+        <div>
+          <div className="text-[13px] font-bold tracking-[3px] text-slate-500">
+            INVENTORY <b className="mt-1 block text-[26px] font-extrabold tracking-[1px] text-slate-200">VEHICLES INVENTORY</b>
+          </div>
+          <p className="text-[12.5px] text-slate-500">
+            — {vehicles.length} vehicles in active inventory
           </p>
         </div>
-
-        {flooringSummary ? (
-          <div className="order-3 w-full flex-1 xl:order-none xl:max-w-md xl:mx-auto">
-            <FlooringCostBanner summary={flooringSummary} className="mb-0" />
-          </div>
-        ) : null}
 
         <div className="shrink-0">
           <AddVehicleTrigger defaultOpen={defaultOpen} />
         </div>
-      </section>
+      </div>
 
-      <VehicleStatsCards vehicles={vehicles} />
-
-      <VehiclesInventory vehicles={vehicles} defaultEditId={defaultEditId} />
+      <VehiclesInventoryShell
+        vehicles={vehicles}
+        defaultEditId={defaultEditId}
+        initialKpiPreferences={kpiPreferences}
+        flooringSummary={flooringSummary}
+      />
     </div>
   );
 }

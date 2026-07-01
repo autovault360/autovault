@@ -1,3 +1,4 @@
+import { Layers } from "lucide-react";
 import { formatCurrencyDecimal } from "@/lib/vehicles/types";
 import type { FlooringSummary } from "@/lib/vehicles/flooring/types";
 import { cn } from "@/lib/utils";
@@ -9,39 +10,37 @@ export default function FlooringCostBanner({
   summary: FlooringSummary;
   className?: string;
 }) {
-  if (summary.vehicleCount === 0) return null;
-
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-500/40 bg-gradient-to-r from-red-950/80 via-red-900/40 to-red-950/60 px-4 py-3",
+        "relative flex flex-wrap items-center justify-center gap-[34px] overflow-hidden rounded-xl border border-slate-700/80 bg-[#101826] px-[26px] py-[18px]",
+        "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-blue-500",
         className,
       )}
     >
-      <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-300/90">
+      <div className="flex items-center gap-2.5">
+        <Layers className="h-[18px] w-[18px] shrink-0 text-blue-500" />
+        <span className="text-[10px] font-bold uppercase tracking-[1.2px] text-slate-400">
           Flooring Cost
-        </p>
-        {summary.planName ? (
-          <p className="mt-0.5 text-[11px] text-red-200/70">
-            Active plan: {summary.planName} {'\u00B7'} {summary.vehicleCount} vehicle
-            {summary.vehicleCount === 1 ? "" : "s"}
-          </p>
-        ) : (
-          <p className="mt-0.5 text-[11px] text-red-200/70">
-            {summary.vehicleCount} financed vehicle
-            {summary.vehicleCount === 1 ? "" : "s"} in inventory
-          </p>
-        )}
+        </span>
       </div>
-      <div className="text-right">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-red-300/80">
+
+      <div className="h-[38px] w-px bg-slate-700" />
+
+      <div className="text-center">
+        <div className="cursor-pointer font-mono text-[26px] font-extrabold tabular-nums text-blue-500 transition-opacity hover:opacity-80">
+          {formatCurrencyDecimal(summary.totalFlooringCost)}
+        </div>
+        <div className="mt-[3px] text-[10px] uppercase tracking-[1px] text-slate-400">
           Total Flooring Cost
-        </p>
-        <p className="text-[22px] font-bold tabular-nums text-red-400">
-          -{formatCurrencyDecimal(summary.totalFlooringCost)}
-        </p>
+        </div>
       </div>
+
+      <div className="h-[38px] w-px bg-slate-700" />
+
+      <p className="max-w-[260px] text-[11.5px] leading-relaxed text-slate-400">
+        Floor-plan interest accrues daily per vehicle and is deducted from net profit. Treated as a cost.
+      </p>
     </div>
   );
 }

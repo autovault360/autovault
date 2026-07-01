@@ -18,7 +18,7 @@ export default function AppLayout({
   return (
     <div className="flex min-h-screen w-full bg-[#010d19]">
       {sidebar}
-      <main className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden p-3 pb-8 pt-16 sm:p-5 lg:pt-5">
+      <main className="flex flex-1 flex-col gap-[18px] overflow-y-auto overflow-x-hidden px-3 pb-8 pt-0 sm:px-5">
         {header}
         <div className="flex-1">{children}</div>
         {footer}
