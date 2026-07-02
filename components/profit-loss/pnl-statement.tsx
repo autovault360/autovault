@@ -13,7 +13,7 @@ export default function PnlStatement({ rows, asOf }: Props) {
   if (rows.length === 0) {
     return (
       <div
-        className="rounded-[14px] border px-6 py-12 text-center text-[13px]"
+        className="rounded-[14px] border bg-card text-card-foreground px-6 py-12 text-center text-[13px]"
         style={{ backgroundColor: AV.panel, borderColor: AV.border, color: AV.muted }}
       >
         No data for this period.
@@ -23,7 +23,7 @@ export default function PnlStatement({ rows, asOf }: Props) {
 
   return (
     <div
-      className="rounded-[14px] border"
+      className="rounded-[14px] border bg-card text-card-foreground"
       style={{
         backgroundColor: AV.panel,
         borderColor: AV.border,
