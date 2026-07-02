@@ -2,6 +2,7 @@
 
 import { AV } from "@/lib/ui/autovault-design-tokens";
 import { formatCurrency } from "@/lib/profit-loss/types";
+import { cn } from "@/lib/utils";
 
 type Props = {
   totalRevenue: number;
@@ -16,10 +17,9 @@ export default function PnlNetExplain({
   totalExpenses,
   netProfit,
 }: Props) {
-  const isPositive = netProfit >= 0;
-
   return (
     <div
+      className="rounded-[14px] border bg-card text-card-foreground"
       style={{
         backgroundColor: AV.panel,
         border: `1px solid ${AV.border}`,
@@ -55,7 +55,7 @@ export default function PnlNetExplain({
           paddingTop: "11px",
           fontWeight: 800,
           fontSize: "15px",
-          color: isPositive ? AV.green : AV.red,
+          color: AV.text,
         }}
       >
         <span>Net Profit</span>
@@ -70,16 +70,9 @@ export default function PnlNetExplain({
       </div>
 
       <div
-        style={{
-          fontSize: "11.5px",
-          color: AV.muted,
-          lineHeight: 1.6,
-          marginTop: "12px",
-          paddingTop: "12px",
-          borderTop: `1px solid ${AV.border}`,
-        }}
+        className={`text-[11.5px] text-gray-400 line-height-[1.6] mt-3 pt-3 border-t border-border color-[${AV.muted}] border-t-gray-700`}
       >
-        Net profit is total revenue minus COGS, commissions, and overhead expenses.
+        Gross profit is what's left after the <span className="text-white font-semibold">cost of the vehicles</span> (COGS). From there we subtract the <span className="text-white font-semibold">commissions </span> paid to your sales reps and all <span className="text-white font-semibold">dealership overhead</span> (rent, utilities, marketing, etc.). What remains is your true bottom-line <span className="text-white font-semibold">net profit</span>.
       </div>
     </div>
   );
