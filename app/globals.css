@@ -49,11 +49,12 @@
 }
 
 :root {
-  --bg-primary: #0a0e14;
+  --bg: #0a0e16;
+  --bg-primary: #0a0e16;
   --bg-secondary: #121820;
   --bg-tertiary: #1a2332;
   --bg-elevated: #1e2a3a;
-  --text-primary: #e8edf5;
+  --text-primary: #e7ecf3;
   --text-secondary: #8899b4;
   --text-muted: #5a6d85;
   --border-subtle: #1e2a3a;
@@ -64,7 +65,7 @@
   --accent-red: #f87171;
   --accent-orange: #fbbf24;
   --accent-purple: #a78bfa;
-  --scrollbar-track: #0a0e14;
+  --scrollbar-track: #0a0e16;
   --scrollbar-thumb: #2a3a4e;
   --scrollbar-thumb-hover: #3a4e66;
 }
@@ -94,9 +95,9 @@
 
 
 :root {
-  --background: #010d19;
+  --background: ##0A0E16;
   --foreground: oklch(0.145 0 0);
-  --card: #051322;
+  --card: ##10151F;
   --card-foreground: #e8edf5;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(1 0 0);
@@ -131,7 +132,7 @@
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: #051322;
+  --card: #10151f;
   --card-foreground: #e8edf5;
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
@@ -168,7 +169,7 @@
     font-family: "SF Pro Display", "Roboto", sans-serif;
   }
   body {
-    background: var(--scrollbar-track);
+    background: radial-gradient(1200px 800px at 10% -10%, #121a2a 0%, var(--scrollbar-track) 45%), var(--scrollbar-track);
     color: var(--foreground);
   }
   html {

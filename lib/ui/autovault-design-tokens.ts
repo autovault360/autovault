@@ -1,5 +1,6 @@
 /** Pixel values from autovault-dashboard_76.html :root and module CSS */
 export const AV = {
+  bg: "#0a0e16",
   panel: "#10151f",
   panel2: "#141b27",
   border: "#1f2733",
