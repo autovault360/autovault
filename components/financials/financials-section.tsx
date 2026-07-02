@@ -15,8 +15,8 @@ const modules = [
     iconColor: "text-violet-400",
   },
   {
-    title: "Vehicle Profit Report",
-    description: "All vehicles sold at a profit with detailed analytics.",
+    title: "Vehicles by Profit",
+    description: "Sold vehicles that closed profitable — ranked highest net profit first.",
     icon: TrendingUp,
     href: "/dashboard/financials/profit-vehicles-report",
     gradient: "from-emerald-600/20 to-emerald-900/10",
@@ -25,8 +25,9 @@ const modules = [
     iconColor: "text-emerald-400",
   },
   {
-    title: "Vehicle Loss Report",
-    description: "Vehicles sold at a loss, returned to auction, or with negative profit.",
+    title: "Vehicles by Loss",
+    description:
+      "Vehicles closing below cost — ranked by biggest loss first.",
     icon: TrendingDown,
     href: "/dashboard/financials/vehicle-losses-report",
     gradient: "from-red-600/20 to-red-900/10",

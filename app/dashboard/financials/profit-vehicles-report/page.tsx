@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
 import { getAuthContext } from "@/lib/dashboard/server/auth-context";
-import { fetchCpaProfitVehiclesReport } from "@/lib/cpa/server/profit-vehicles-report/get-profit-vehicles-report";
-import ProfitVehiclesReportPage from "@/components/financials/profit-vehicles-report-page";
+import { buildVehiclesByProfitReport } from "@/lib/financials/vehicles-report/build-vehicles-report";
+import VehiclesByProfitPageContent from "@/components/financials/vehicles-report/vehicles-by-profit-page-content";
 
 export const metadata: Metadata = {
-  title: "Profit Vehicles Report | Admin Dashboard",
-  description: "Profitable vehicle sales analytics.",
+  title: "Vehicles by Profit | Admin Dashboard",
+  description: "Sold vehicles that closed profitable — ranked highest net profit first.",
 };
 
 export default async function AdminProfitVehiclesReportPage() {
@@ -20,11 +19,11 @@ export default async function AdminProfitVehiclesReportPage() {
   }
 
   const now = new Date();
-  const data = await fetchCpaProfitVehiclesReport(auth.dealershipId, {
+  const data = await buildVehiclesByProfitReport(auth.dealershipId, {
     view: "monthly",
     month: now.getMonth() + 1,
     year: now.getFullYear(),
   });
 
-  return <ProfitVehiclesReportPage data={data} />;
+  return <VehiclesByProfitPageContent initialData={data} />;
 }

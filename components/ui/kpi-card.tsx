@@ -1,6 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { AV, AV_ACCENT } from "@/lib/ui/autovault-design-tokens";
 import {
   BadgeCheck,
   BarChart3,
@@ -108,7 +109,35 @@ export type KPICardData = {
   periodMetrics?: KPIPeriodMetric[];
 };
 
-export type KPICardLayout = "default" | "period" | "accent-top";
+export type KPICardLayout =
+  | "default"
+  | "period"
+  | "accent-top"
+  | "stat"
+  | "top-performer";
+
+export type KPICardVariant = KPICardLayout;
+
+export type StatKpiData = {
+  accent: "green" | "blue" | "orange" | "purple" | "red";
+  icon?: React.ReactNode;
+  label: string;
+  value: string;
+  foot: string;
+};
+
+export type TopPerformerKpiRow = {
+  label: string;
+  value: string;
+  emphasis?: "profit" | "loss" | "default";
+};
+
+export type TopPerformerKpiData = {
+  categoryName: string;
+  accentColor: string;
+  rows: TopPerformerKpiRow[];
+  empty?: boolean;
+};
 
 function Sparkline({
   color,
@@ -238,10 +267,10 @@ export default function PeriodKPICard({
                 value={periodMetrics[0]!.value}
                 label={periodMetrics[0]!.label}
               />
-              
+
               {/* Sharp Center Border Splitter Segment */}
               <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-slate-800/80" />
-              
+
               {/* Right Column Metric */}
               <PeriodFooterMetric
                 value={periodMetrics[1]!.value}
@@ -269,6 +298,122 @@ const accentTopBorder: Record<string, string> = {
   red: "border-t-red-500",
   amber: "border-t-amber-500",
 };
+
+function StatKPICard({
+  data,
+  className,
+}: {
+  data: StatKpiData;
+  className?: string;
+}) {
+  const accent = AV_ACCENT[data.accent] ?? AV.blue;
+
+  return (
+    <div
+      className={cn(
+        "group relative min-w-[140px] flex-1 cursor-default overflow-hidden rounded-xl border px-5 py-[18px] transition-[background,border-color] duration-[180ms] hover:border-white/10 hover:bg-white/[0.025]",
+        className,
+      )}
+      style={{
+        backgroundColor: AV.panel,
+        borderColor: AV.border,
+      }}
+    >
+      <div
+        className="absolute bottom-0 left-5 right-5 h-0.5 origin-left scale-x-0 rounded-sm transition-transform duration-[220ms] ease-out group-hover:scale-x-100"
+        style={{ backgroundColor: accent }}
+      />
+      {data.icon ? (
+        <div className="mb-2 text-[15px]" style={{ color: accent }}>
+          {data.icon}
+        </div>
+      ) : null}
+      <div
+        className="text-[10px] font-bold uppercase tracking-[1.2px] whitespace-nowrap"
+        style={{ color: AV.muted }}
+      >
+        {data.label}
+      </div>
+      <div
+        className="mt-[5px] font-mono text-[19px] font-extrabold leading-[1.1]"
+        style={{ color: accent }}
+      >
+        {data.value}
+      </div>
+      <div className="mt-[3px] text-[10.5px]" style={{ color: AV.muted }}>
+        {data.foot}
+      </div>
+    </div>
+  );
+}
+
+function TopPerformerKPICard({
+  data,
+  className,
+}: {
+  data: TopPerformerKpiData;
+  className?: string;
+}) {
+  const accent = data.accentColor;
+
+  return (
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-[14px] border px-[18px] py-4",
+        data.empty && "opacity-45",
+        className,
+      )}
+      style={{
+        backgroundColor: AV.panel,
+        borderColor: AV.border,
+      }}
+    >
+      <div
+        className="absolute left-0 top-0 h-[3px] w-full"
+        style={{ backgroundColor: accent }}
+      />
+      <div className="cat-head mb-3 flex items-center gap-2.5">
+        <div
+          className="cat-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] text-[15px]"
+          style={{
+            backgroundColor: `color-mix(in srgb, ${accent} 16%, transparent)`,
+            color: accent,
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="9" rx="1.5" />
+            <rect x="14" y="3" width="7" height="5" rx="1.5" />
+            <rect x="14" y="12" width="7" height="9" rx="1.5" />
+            <rect x="3" y="16" width="7" height="5" rx="1.5" />
+          </svg>
+        </div>
+        <div className="cat-name text-sm font-extrabold text-[#e7ecf3]">{data.categoryName}</div>
+      </div>
+      {data.rows.map((row) => (
+        <div
+          key={row.label}
+          className="cat-row flex justify-between border-t border-dashed py-[5px] text-xs first:border-t-0"
+          style={{ borderColor: AV.border, color: AV.muted }}
+        >
+          <span>{row.label}</span>
+          <b
+            className="font-mono text-[12.5px] font-bold"
+            style={{
+              color:
+                row.emphasis === "profit"
+                  ? AV.green
+                  : row.emphasis === "loss"
+                    ? AV.red
+                    : accent,
+            }}
+          >
+            {row.value}
+          </b>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function AccentTopKPICard({
   data,
@@ -346,32 +491,52 @@ function AccentTopKPICard({
 
 export function KPICard({
   data,
+  statData,
+  topPerformerData,
   showSparkline = true,
   showLink = true,
   deltaColor = "green",
   deltaClassName,
   layout = "default",
+  variant,
   valueClassName,
   className,
   valueStyle,
   iconStyle,
 }: {
-  data: KPICardData;
+  data?: KPICardData;
+  statData?: StatKpiData;
+  topPerformerData?: TopPerformerKpiData;
   showSparkline?: boolean;
   showLink?: boolean;
   deltaColor?: "green" | "red";
   deltaClassName?: string;
   layout?: KPICardLayout;
+  variant?: KPICardVariant;
   valueClassName?: string;
   className?: string;
   valueStyle?: CSSProperties;
   iconStyle?: CSSProperties;
 }) {
-  if (layout === "period") {
+  const resolvedVariant = variant ?? layout;
+
+  if (resolvedVariant === "stat" && statData) {
+    return <StatKPICard data={statData} className={className} />;
+  }
+
+  if (resolvedVariant === "top-performer" && topPerformerData) {
+    return <TopPerformerKPICard data={topPerformerData} className={className} />;
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  if (resolvedVariant === "period") {
     return <PeriodKPICard data={data} className={className} />;
   }
 
-  if (layout === "accent-top") {
+  if (resolvedVariant === "accent-top") {
     return <AccentTopKPICard data={data} className={className} />;
   }
 
@@ -417,7 +582,7 @@ export function KPICard({
               className={cn(
                 "text-[13px]",
                 deltaClassName ??
-                  (deltaColor === "red" ? "text-red-400" : "text-emerald-400"),
+                (deltaColor === "red" ? "text-red-400" : "text-emerald-400"),
               )}
             >
               {data.delta}

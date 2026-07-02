@@ -1,131 +1,158 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState, useTransition } from "react";
-import { applyPlFilters } from "@/lib/profit-loss/filter-pl-data";
-import { fetchProfitLossReportAction } from "@/lib/profit-loss/server/actions";
-import type { PlFilterOptions, PlFilters, PlTab, ProfitLossReport } from "@/lib/profit-loss/types";
-import { DEFAULT_PL_FILTERS } from "@/lib/profit-loss/types";
-import ProfitLossBreakdownTable from "./profit-loss-breakdown-table";
-import ProfitLossCharts from "./profit-loss-charts";
-import ProfitLossFilters from "./profit-loss-filters";
-import { ProfitLossHeader } from "./profit-loss-header";
-import ProfitLossKPICards from "./profit-loss-kpi-cards";
-import ProfitLossSummary from "./profit-loss-summary";
-import ProfitLossTabs from "./profit-loss-tabs";
-import RevenueBreakdownPanel, {
-  ExpenseBreakdownPanel,
-} from "./revenue-breakdown-panel";
-import TrendsPanel from "./trends-panel";
+import { Download } from "lucide-react";
+import StatKpiCard from "@/components/ui/stat-kpi-card";
+import AutovaultPageHead from "@/components/layout/autovault-page-head";
+import FinPeriodCalendar from "@/components/ui/fin-period-calendar";
+import SectionHeading from "@/components/ui/section-heading";
+import PnlStatement from "./pnl-statement";
+import RevenueAllocation from "./revenue-allocation";
+import PnlNetExplain from "./pnl-net-explain";
+import { useProfitLossReport } from "./use-profit-loss-report";
+import type { ProfitLossReport } from "@/lib/profit-loss/types";
+import { AV } from "@/lib/ui/autovault-design-tokens";
 
 type Props = {
   initialReport: ProfitLossReport;
-  filterOptions: PlFilterOptions;
 };
-
-function filtersNeedRefetch(prev: PlFilters, next: PlFilters): boolean {
-  return (
-    prev.dateRange !== next.dateRange ||
-    prev.compareTo !== next.compareTo ||
-    prev.groupBy !== next.groupBy ||
-    prev.salesRep !== next.salesRep ||
-    prev.location !== next.location ||
-    prev.dealType !== next.dealType
-  );
-}
 
 export default function ProfitLossPageContent({
   initialReport,
-  filterOptions,
 }: Props) {
-  const [filters, setFilters] = useState<PlFilters>(DEFAULT_PL_FILTERS);
-  const [baseReport, setBaseReport] = useState<ProfitLossReport>(initialReport);
-  const [activeTab, setActiveTab] = useState<PlTab>("statement");
-  const [chartPeriod, setChartPeriod] = useState("this_month");
-  const [isPending, startTransition] = useTransition();
+  const { report, loading, month, year, mode, setMonth, setYear, setMode } =
+    useProfitLossReport({ initialReport });
 
-  const prevFiltersRef = useRef(filters);
+  const kpiRevenue = report.kpis.find((k) => k.id === "total_revenue");
+  const kpiGross = report.kpis.find((k) => k.id === "gross_profit");
+  const kpiExpenses = report.kpis.find((k) => k.id === "total_expenses");
+  const kpiNet = report.kpis.find((k) => k.id === "net_profit");
 
-  const handleFiltersChange = useCallback((next: PlFilters) => {
-    const prev = prevFiltersRef.current;
-    prevFiltersRef.current = next;
-    setFilters(next);
-    if (filtersNeedRefetch(prev, next)) {
-      startTransition(async () => {
-        const report = await fetchProfitLossReportAction(next);
-        setBaseReport(report);
-      });
-    }
-  }, []);
+  const totalRevenue = kpiRevenue?.value ?? 0;
+  const totalCogs = report.kpis.find((k) => k.id === "total_cogs")?.value ?? 0;
+  const totalExpenses = kpiExpenses?.value ?? 0;
+  const netProfit = kpiNet?.value ?? 0;
 
-  const report = useMemo(
-    () => applyPlFilters(filters, baseReport),
-    [filters, baseReport],
-  );
+  const grossMargin =
+    totalRevenue > 0
+      ? `${((netProfit / totalRevenue) * 100).toFixed(1)}% net margin`
+      : "—";
 
-  const trendData = useMemo(() => {
-    if (chartPeriod === "last_month" && report.comparisonDailyTrend.length > 0) {
-      return report.comparisonDailyTrend;
-    }
-    return report.dailyTrend;
-  }, [chartPeriod, report.comparisonDailyTrend, report.dailyTrend]);
+  const statementAsOf = report.meta?.generatedAt
+    ? `As of ${report.meta.generatedAt}`
+    : "";
 
   return (
-    <div className="profit-loss-page relative print:bg-white">
-      {isPending && (
+    <div className="profit-loss-page relative">
+      {loading && (
         <div className="pointer-events-none fixed inset-x-0 top-0 z-50 h-0.5 bg-blue-500/80 animate-pulse" />
       )}
 
-      <ProfitLossHeader report={report} />
-
-      <ProfitLossFilters
-        filters={filters}
-        filterOptions={filterOptions}
-        onChange={handleFiltersChange}
+      <AutovaultPageHead
+        eyebrow="FINANCIALS"
+        title="PROFIT & LOSS"
+        subtitle="Consolidated income statement — vehicle sales, cost of goods, commissions, and dealership overhead."
+        actions={
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-lg border px-[14px] py-[7px] text-[12.5px] font-bold transition-colors hover:bg-white/5"
+            style={{
+              backgroundColor: "transparent",
+              borderColor: AV.border,
+              color: AV.muted,
+            }}
+          >
+            <Download className="h-3.5 w-3.5" />
+            Print / Export
+          </button>
+        }
       />
 
-      <ProfitLossKPICards kpis={report.kpis} />
+      <FinPeriodCalendar
+        year={year}
+        month={month}
+        mode={mode}
+        onYearChange={setYear}
+        onMonthChange={setMonth}
+        onModeChange={setMode}
+      />
 
-      <ProfitLossTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* KPI Grid */}
+      <section className="mb-[22px] grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2.5">
+        <StatKpiCard
+          kpiKey="total_revenue"
+          accent={AV.blue}
+          defaultAccent={AV.blue}
+          label="Total Revenue"
+          value={kpiRevenue?.valueFormatted ?? "$0"}
+          footer="vehicle sales + add-ons"
+        />
+        <StatKpiCard
+          kpiKey="gross_profit"
+          accent={AV.green}
+          defaultAccent={AV.green}
+          label="Gross Profit"
+          value={kpiGross?.valueFormatted ?? "$0"}
+          footer={grossMargin}
+        />
+        <StatKpiCard
+          kpiKey="total_expenses"
+          accent={AV.orange}
+          defaultAccent={AV.orange}
+          label="Total Expenses"
+          value={kpiExpenses?.valueFormatted ?? "$0"}
+          footer="COGS + commissions + overhead"
+        />
+        <StatKpiCard
+          kpiKey="net_profit"
+          accent={AV.purple}
+          defaultAccent={AV.purple}
+          label="Net Profit"
+          value={kpiNet?.valueFormatted ?? "$0"}
+          footer={grossMargin}
+        />
+      </section>
 
-      {activeTab === "statement" && (
-        <div className="grid gap-3.5 xl:grid-cols-[1fr_380px]">
-          <ProfitLossBreakdownTable report={report} search={filters.search} />
-          <div className="space-y-3.5">
-            <ProfitLossCharts
-              data={trendData}
-              periodValue={chartPeriod}
-              onPeriodChange={setChartPeriod}
-            />
-            <ProfitLossSummary
-              insights={report.insights}
-              meta={report.meta}
-              periodEnd={report.period.end}
-            />
-          </div>
+      <style>{`
+        @media (max-width: 1100px) {
+          .pnl-body { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+      <div className="pnl-body" style={{ display: "grid", gridTemplateColumns: "1.35fr 1fr", gap: "26px", alignItems: "start" }}>
+        {/* Left column */}
+        <div className="pnl-left">
+          <SectionHeading
+            title="Profit & Loss Statement"
+            subtitle="Full income statement"
+          />
+          <PnlStatement
+            rows={report.statementRows}
+            asOf={statementAsOf}
+          />
         </div>
-      )}
 
-      {activeTab === "revenue" && (
-        <RevenueBreakdownPanel
-          items={report.revenueBreakdown}
-          title="Revenue Breakdown"
-        />
-      )}
-
-      {activeTab === "expense" && (
-        <ExpenseBreakdownPanel
-          items={report.expenseBreakdown}
-          title="Expense Breakdown"
-        />
-      )}
-
-      {activeTab === "trends" && (
-        <TrendsPanel
-          data={trendData}
-          chartPeriod={chartPeriod}
-          onChartPeriodChange={setChartPeriod}
-        />
-      )}
+        {/* Right column */}
+        <div className="pnl-right">
+          <SectionHeading
+            title="Revenue Allocation"
+            subtitle="Where every dollar goes"
+          />
+          <RevenueAllocation
+            revenueBreakdown={report.revenueBreakdown}
+            expenseBreakdown={report.expenseBreakdown}
+            netProfit={netProfit}
+            totalRevenue={totalRevenue}
+          />
+          <PnlNetExplain
+            totalRevenue={totalRevenue}
+            totalCogs={totalCogs}
+            totalExpenses={totalExpenses}
+            netProfit={netProfit}
+          />
+        </div>
+      </div>
     </div>
   );
 }
+
+

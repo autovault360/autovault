@@ -27,12 +27,14 @@ export type JacketRow = {
   sales_rep_id: string | null;
   vehicle: {
     acquisition_cost: number | null;
+    acquisition_date?: string | null;
     year: number;
     make: string;
     model: string;
     stock_number: string | null;
     vin: string;
     purchase_type: string | null;
+    body_style?: string | null;
   } | null;
 };
 
@@ -505,7 +507,7 @@ export async function fetchJacketsInRangeExtended(
       amount_financed,
       balance_due,
       sales_rep_id,
-      vehicle:vehicles(acquisition_cost, year, make, model, stock_number, vin, purchase_type),
+      vehicle:vehicles(acquisition_cost, acquisition_date, year, make, model, stock_number, vin, purchase_type, body_style),
       customer:customers(name),
       sales_rep:users!deal_jackets_sales_rep_id_fkey(full_name)
     `,

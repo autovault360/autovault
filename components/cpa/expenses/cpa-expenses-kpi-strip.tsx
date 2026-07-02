@@ -1,61 +1,33 @@
 "use client";
 
-import { KPICard, type KPICardData } from "@/components/ui/kpi-card";
-import {
-  KPI_CARD_DEFAULT_PROPS,
-  KPI_CARD_SHELL_CLASS,
-  kpiGridClass,
-} from "@/lib/ui/kpi-grid";
+import StatKpiCard from "@/components/ui/stat-kpi-card";
 import type { CpaExpensesKpi } from "@/lib/cpa/expenses/types";
 
-const SPARK_POINTS =
-  "0,40 25,34 50,30 75,28 100,24 125,20 150,18 175,14 200,12 220,8";
-
-const deltaColorClass: Record<
-  NonNullable<CpaExpensesKpi["deltaColor"]>,
-  string
-> = {
-  green: "text-emerald-400",
-  red: "text-red-400",
-  blue: "text-blue-400",
-  orange: "text-orange-400",
-  teal: "text-teal-400",
-  violet: "text-violet-400",
-  neutral: "text-slate-500",
+const COLOR_MAP: Record<string, string> = {
+  blue: "#3b82f6",
+  green: "#22c55e",
+  emerald: "#10b981",
+  purple: "#a07bff",
+  orange: "#ff9f43",
+  red: "#ef4444",
+  violet: "#a07bff",
+  teal: "#14b8a6",
 };
-
-function toKpiCardData(kpi: CpaExpensesKpi): KPICardData {
-  return {
-    icon: kpi.icon,
-    color: kpi.color,
-    label: kpi.label,
-    value: kpi.value,
-    delta: kpi.delta,
-    link: "",
-    sparkColor: "#3b82f6",
-    sparkPoints: SPARK_POINTS,
-  };
-}
 
 export default function CpaExpensesKpiStrip({ kpis }: { kpis: CpaExpensesKpi[] }) {
   return (
-    <div className={kpiGridClass(kpis.length, "mb-4")}>
+    <section className="mb-5 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-2.5">
       {kpis.map((kpi) => (
-        <KPICard
+        <StatKpiCard
           key={kpi.id}
-          data={toKpiCardData(kpi)}
-          {...KPI_CARD_DEFAULT_PROPS}
-          className={KPI_CARD_SHELL_CLASS}
-          valueClassName={
-            kpi.id === "highest-category" || kpi.id === "lowest-category"
-              ? "text-[15px] leading-tight"
-              : undefined
-          }
-          deltaClassName={
-            kpi.deltaColor ? deltaColorClass[kpi.deltaColor] : undefined
-          }
+          kpiKey={kpi.id}
+          accent={COLOR_MAP[kpi.color] ?? "#3b82f6"}
+          defaultAccent={COLOR_MAP[kpi.color] ?? "#3b82f6"}
+          label={kpi.label}
+          value={kpi.value}
+          footer={kpi.delta ?? ""}
         />
       ))}
-    </div>
+    </section>
   );
 }
