@@ -1,5 +1,6 @@
 import { monthEnd, monthStart } from "@/lib/sales-reps/server/date-ranges";
-import type { PlCompareTo, PlDateRange } from "../types";
+import type { PlCompareTo, PlDateRange, PlFilters } from "../types";
+import { DEFAULT_PL_FILTERS } from "../types";
 
 export type ResolvedPlPeriod = {
   start: string;
@@ -127,6 +128,45 @@ export function resolveComparisonPeriod(
     end: formatDate(end),
     label: `vs ${label}`,
     columnLabel: label,
+  };
+}
+
+export function resolvePeriodForMonthYear(
+  month: number,
+  year: number,
+  view: "monthly" | "yearly",
+): ResolvedPlPeriod {
+  const ref = new Date(year, month - 1, 1);
+  let start: Date;
+  let end: Date;
+
+  if (view === "yearly") {
+    start = new Date(year, 0, 1);
+    end = new Date(year, 11, 31, 23, 59, 59, 999);
+  } else {
+    start = monthStart(ref);
+    end = monthEnd(ref);
+  }
+
+  const label = formatPeriodLabel(start, end);
+  return {
+    start: formatDate(start),
+    end: formatDate(end),
+    label,
+    columnLabel: label,
+  };
+}
+
+export function filtersForCalendarMonth(
+  month: number,
+  year: number,
+  view: "monthly" | "yearly",
+  overrides?: Partial<PlFilters>,
+): PlFilters {
+  return {
+    ...DEFAULT_PL_FILTERS,
+    ...overrides,
+    dateRange: "this_month" as PlDateRange,
   };
 }
 

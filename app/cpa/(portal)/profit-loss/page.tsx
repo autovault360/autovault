@@ -1,20 +1,15 @@
 import ProfitLossPageContent from "@/components/profit-loss/profit-loss-page-content";
-import {
-  getProfitLossFilterOptions,
-  getProfitLossReport,
-} from "@/lib/profit-loss/server/get-profit-loss-report";
+import { getProfitLossReport } from "@/lib/profit-loss/server/get-profit-loss-report";
 import { DEFAULT_PL_FILTERS } from "@/lib/profit-loss/types";
 
-export default async function CpaProfitLossPage() {
-  const [filterOptions, initialReport] = await Promise.all([
-    getProfitLossFilterOptions(),
-    getProfitLossReport(DEFAULT_PL_FILTERS),
-  ]);
+const now = new Date();
 
-  return (
-    <ProfitLossPageContent
-      initialReport={initialReport}
-      filterOptions={filterOptions}
-    />
-  );
+export default async function CpaProfitLossPage() {
+  const initialReport = await getProfitLossReport(DEFAULT_PL_FILTERS, {
+    month: now.getMonth() + 1,
+    year: now.getFullYear(),
+    view: "monthly",
+  });
+
+  return <ProfitLossPageContent initialReport={initialReport} />;
 }

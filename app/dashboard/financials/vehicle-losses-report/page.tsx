@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { getAuthContext } from "@/lib/dashboard/server/auth-context";
-import { fetchCpaVehicleLossesReport } from "@/lib/cpa/server/vehicle-losses-report/get-vehicle-losses-report";
-import VehicleLossesReportPage from "@/components/financials/vehicle-losses-report-page";
+import { buildVehiclesByLossReport } from "@/lib/financials/vehicles-report/build-vehicles-report";
+import VehiclesByLossPageContent from "@/components/financials/vehicles-report/vehicles-by-loss-page-content";
 
 export const metadata: Metadata = {
-  title: "Vehicle Losses Report | Admin Dashboard",
-  description: "Vehicle loss analytics for administrative review.",
+  title: "Vehicles by Loss | Admin Dashboard",
+  description:
+    "Vehicles closing below cost — ranked by biggest loss first.",
 };
 
 export default async function AdminVehicleLossesReportPage() {
@@ -19,11 +20,11 @@ export default async function AdminVehicleLossesReportPage() {
   }
 
   const now = new Date();
-  const data = await fetchCpaVehicleLossesReport(auth.dealershipId, {
+  const data = await buildVehiclesByLossReport(auth.dealershipId, {
     view: "monthly",
     month: now.getMonth() + 1,
     year: now.getFullYear(),
   });
 
-  return <VehicleLossesReportPage data={data} />;
+  return <VehiclesByLossPageContent initialData={data} />;
 }

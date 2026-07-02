@@ -21,6 +21,7 @@ import {
   buildDateRangeOptions,
   resolveComparisonPeriod,
   resolveCurrentPeriod,
+  resolvePeriodForMonthYear,
 } from "./pl-period-utils";
 
 type JacketRow = {
@@ -204,6 +205,7 @@ async function aggregateForPeriod(
 
 export async function getProfitLossReport(
   filters: PlFilters = DEFAULT_PL_FILTERS,
+  periodOverride?: { month: number; year: number; view: "monthly" | "yearly" },
 ): Promise<ProfitLossReport> {
   const auth = await authenticateUser();
   if (!auth.ok) {
@@ -211,12 +213,24 @@ export async function getProfitLossReport(
   }
 
   const { dealershipId } = auth.user;
-  const period = resolveCurrentPeriod(filters.dateRange);
-  const comparisonPeriod = resolveComparisonPeriod(
-    period,
-    filters.compareTo,
-    filters.dateRange,
-  );
+  const period = periodOverride
+    ? resolvePeriodForMonthYear(
+        periodOverride.month,
+        periodOverride.year,
+        periodOverride.view,
+      )
+    : resolveCurrentPeriod(filters.dateRange);
+  const comparisonPeriod = periodOverride
+    ? resolvePeriodForMonthYear(
+        periodOverride.month,
+        periodOverride.year,
+        periodOverride.view,
+      )
+    : resolveComparisonPeriod(
+        period,
+        filters.compareTo,
+        filters.dateRange,
+      );
 
   const [current, previous] = await Promise.all([
     aggregateForPeriod(dealershipId, period.start, period.end, filters),

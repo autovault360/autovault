@@ -73,6 +73,8 @@ interface DataTableProps<T> {
   totalRowLabel?: string;
   totalColumnClassNames?: Partial<Record<number, string>>;
   className?: string;
+  /** HTML dashboard table styling from autovault-dashboard spec */
+  variant?: "default" | "autovault";
 }
 
 function getPaginationRange(
@@ -113,6 +115,7 @@ export default function DataTable<T extends Record<string, unknown>>({
   totalRowLabel = "Total",
   totalColumnClassNames = {},
   className,
+  variant = "default",
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{
     key: string;
@@ -231,17 +234,44 @@ export default function DataTable<T extends Record<string, unknown>>({
   const showTotalRow =
     Total && sortedData.length > 0 && !loading && totalColumnSet.size > 0;
 
+  const isAutovault = variant === "autovault";
+
   return (
-    <div className={
-      cn(
-        "w-full border border-slate-800 bg-card rounded-sm",
+    <div
+      className={cn(
+        "w-full border bg-card",
+        isAutovault
+          ? "overflow-hidden rounded-[14px]"
+          : "rounded-sm border-slate-800",
         className,
-      )
-    }>
+      )}
+      style={
+        isAutovault
+          ? { backgroundColor: "#10151f", borderColor: "#1f2733" }
+          : undefined
+      }
+    >
       <div className="overflow-x-auto">
-        <table className="min-w-[960px] w-full text-[11.5px]">
-          <thead className="text-slate-400 text-[12px] bg-background/5 tracking-[0.08em]">
-            <tr className="border-b border-slate-800">
+        <table
+          className={cn(
+            "w-full",
+            isAutovault
+              ? "min-w-[1040px] border-collapse text-[12.5px]"
+              : "min-w-[960px] text-[11.5px]",
+          )}
+        >
+          <thead
+            className={cn(
+              !isAutovault && "bg-background/5 text-[12px] tracking-[0.08em] text-slate-400",
+            )}
+          >
+            <tr
+              className={cn(
+                "border-b",
+                isAutovault ? "" : "border-slate-800",
+              )}
+              style={isAutovault ? { borderColor: "#1f2733" } : undefined}
+            >
               {enableSelection && (
                 <th className="w-10 px-3 py-3 text-left">
                   <input
@@ -262,9 +292,16 @@ export default function DataTable<T extends Record<string, unknown>>({
                   key={col.key}
                   className={cn(
                     "px-3 py-3 text-left font-medium whitespace-nowrap",
+                    isAutovault &&
+                      "sticky top-0 px-[14px] py-3 text-[10.5px] font-bold uppercase tracking-[0.6px] text-[#7c8aa0]",
                     col.sortable && "cursor-pointer select-none",
                     col.headerClassName,
                   )}
+                  style={
+                    isAutovault
+                      ? { backgroundColor: "#141b27", borderColor: "#1f2733" }
+                      : undefined
+                  }
                   onClick={() => col.sortable && handleSort(col.key)}
                 >
                   <span className="inline-flex items-center gap-1">
@@ -307,7 +344,8 @@ export default function DataTable<T extends Record<string, unknown>>({
               <tr>
                 <td
                   colSpan={colSpan}
-                  className="px-3 py-12 text-center text-slate-400 text-[12px]"
+                  className="px-3 py-12 text-center text-[12px]"
+                  style={{ color: "#7c8aa0" }}
                 >
                   {emptyMessage}
                 </td>
@@ -317,16 +355,19 @@ export default function DataTable<T extends Record<string, unknown>>({
                 const key = row[rowKey] as string | number;
                 const isActive = activeRowKey != null && activeRowKey === key;
                 return (
-                  <tr
+                    <tr
                     key={key}
                     onClick={() => onRowClick?.(row as T)}
                     className={cn(
-                      "border-b border-slate-800/60 bg-card transition last:border-0",
+                      "whitespace-nowrap transition",
+                      isAutovault
+                        ? "px-[14px] py-3 font-mono hover:bg-[rgba(58,160,255,0.04)]"
+                        : "border-b border-slate-800/60 bg-card px-3 py-3 last:border-0",
                       onRowClick && "cursor-pointer",
                       isActive
                         ? "bg-blue-500/10 hover:bg-blue-500/10"
-                        : "hover:bg-slate-800/20",
-                      selectedKeys.has(key) && !isActive && "bg-slate-800/30",
+                        : !isAutovault && "hover:bg-slate-800/20",
+                      selectedKeys.has(key) && !isActive && !isAutovault && "bg-slate-800/30",
                     )}
                   >
                     {enableSelection && (
@@ -344,6 +385,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                         key={col.key}
                         className={cn(
                           "px-3 py-3 whitespace-nowrap",
+                          isAutovault && "font-mono",
                           col.cellClassName,
                         )}
                       >
