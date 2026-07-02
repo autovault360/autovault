@@ -1,15 +1,31 @@
 import type { ExpenseDetail, ExpenseStats } from "./types";
 
-type ExpenseDetailSeed = Omit<ExpenseDetail, "expenseKind" | "expenseSubcategory">;
+type ExpenseDetailSeed = Omit<
+  ExpenseDetail,
+  | "expenseKind"
+  | "expenseSubcategory"
+  | "displayName"
+  | "dueDate"
+  | "isRecurring"
+  | "frequency"
+  | "paymentStatus"
+  | "vehicleVin"
+>;
 
 function withExpenseKind(row: ExpenseDetailSeed): ExpenseDetail {
+  const isVehicle = row.category === "vehicle";
+  const displayName = row.expenseName ?? row.title;
   return {
     ...row,
-    expenseKind: row.category === "vehicle" ? "vehicle" : "dealership",
+    expenseKind: isVehicle ? "vehicle" : "dealership",
     expenseSubcategory:
-      row.category === "vehicle"
-        ? (row.title.split(" - ")[0] ?? "Other")
-        : null,
+      isVehicle ? (row.title.split(" - ")[0] ?? "Other") : null,
+    displayName,
+    dueDate: row.date,
+    isRecurring: row.category === "recurring",
+    frequency: row.category === "recurring" ? "monthly" : "one_time",
+    paymentStatus: "paid",
+    vehicleVin: row.vehicleId ? "MOCKVIN0000000001" : null,
   };
 }
 
