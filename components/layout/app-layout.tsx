@@ -16,7 +16,7 @@ export default function AppLayout({
   footer,
 }: AppLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full bg-[#010d19]">
+    <div className="flex min-h-screen w-full bg-background">
       {sidebar}
       <main className="flex flex-1 flex-col gap-[18px] overflow-y-auto overflow-x-hidden px-3 pb-8 pt-0 sm:px-5">
         {header}
