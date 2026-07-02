@@ -1,7 +1,7 @@
 "use client";
 
 import { AV } from "@/lib/ui/autovault-design-tokens";
-import { formatCurrency } from "@/lib/profit-loss/types";
+import { formatCurrencyRound } from "@/lib/profit-loss/types";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import type { CategoryAmount } from "@/lib/profit-loss/types";
 
@@ -56,7 +56,7 @@ export default function RevenueAllocation({
   if (items.length === 0) {
     return (
       <div
-        className="rounded-[14px] border px-[26px] py-[22px]"
+        className="rounded-[14px] border bg-card text-card-foreground px-[26px] py-[22px]"
         style={{ backgroundColor: AV.panel, borderColor: AV.border }}
       >
         <div className="py-12 text-center text-[13px]" style={{ color: AV.muted }}>
@@ -68,10 +68,11 @@ export default function RevenueAllocation({
 
   return (
     <div
-      className="rounded-[14px] border"
+      className="rounded-[14px] border bg-card text-card-foreground"
       style={{
         backgroundColor: AV.panel,
         borderColor: AV.border,
+        marginBottom: "22px",
         padding: "22px 26px",
         position: "relative",
         overflow: "hidden",
@@ -141,7 +142,7 @@ export default function RevenueAllocation({
               lineHeight: 1,
             }}
           >
-            {formatCurrency(netProfit)}
+            {formatCurrencyRound(netProfit)}
           </div>
           <div
             style={{
@@ -210,7 +211,7 @@ export default function RevenueAllocation({
                   color: AV.text,
                 }}
               >
-                {formatCurrency(item.value)}
+                {formatCurrencyRound(item.value)}
               </span>
               <span
                 style={{
