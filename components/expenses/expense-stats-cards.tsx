@@ -1,75 +1,65 @@
-import { KPICard } from "@/components/ui/kpi-card";
-import { formatCurrency, type ExpenseStats } from "@/lib/expenses/types";
-import {
-  KPI_CARD_DEFAULT_PROPS,
-  KPI_CARD_SHELL_CLASS,
-  kpiGridClass,
-} from "@/lib/ui/kpi-grid";
+import { formatKpiCurrency, type ExpensePageKpis } from "@/lib/expenses/expense-page-calculations";
 
-const CARD_COUNT = 4;
+const KPI_ITEMS = [
+  {
+    key: "totalThisMonth" as const,
+    label: "Total This Month",
+    accent: "#3aa0ff",
+    foot: (kpis: ExpensePageKpis) =>
+      `${formatKpiCurrency(kpis.totalPaidThisMonth)} paid so far`,
+  },
+  {
+    key: "recurringMonthly" as const,
+    label: "Recurring / Month",
+    accent: "#a07bff",
+    foot: (kpis: ExpensePageKpis) =>
+      `${kpis.recurringCount} recurring item${kpis.recurringCount === 1 ? "" : "s"}`,
+  },
+  {
+    key: "vehicleTotal" as const,
+    label: "Vehicle Expenses",
+    accent: "#ff9f43",
+    foot: (kpis: ExpensePageKpis) =>
+      `across ${kpis.vehicleCount} vehicle${kpis.vehicleCount === 1 ? "" : "s"} · feeds P&L`,
+  },
+  {
+    key: "payrollTotal" as const,
+    label: "Payroll & Commissions",
+    accent: "#23d18b",
+    foot: () => "wages + commissions",
+  },
+  {
+    key: "upcomingTotal" as const,
+    label: "Upcoming Payments",
+    accent: "#ff5470",
+    foot: (kpis: ExpensePageKpis) =>
+      `${kpis.upcomingCount} unpaid due`,
+  },
+];
 
-function buildCards(stats: ExpenseStats) {
-  return [
-    {
-      icon: "dollar-sign" as const,
-      color: "red",
-      label: "Total Expenses (MTD)",
-      value: formatCurrency(stats.totalExpensesMtd),
-      delta: stats.totalExpensesMtdDelta,
-      deltaColor: stats.totalExpensesMtdDeltaColor,
-      link: "View Expenses",
-      sparkColor: "#ef4444",
-      sparkPoints: "0,40 55,32 110,28 165,20 220,12",
-    },
-    {
-      icon: "landmark" as const,
-      color: "orange",
-      label: "Total Expenses (YTD)",
-      value: formatCurrency(stats.totalExpensesYtd),
-      delta: stats.totalExpensesYtdDelta,
-      deltaColor: stats.totalExpensesYtdDeltaColor,
-      link: "View YTD",
-      sparkColor: "#f97316",
-      sparkPoints: "0,38 55,30 110,32 165,22 220,14",
-    },
-    {
-      icon: "users" as const,
-      color: "blue",
-      label: "Average Daily Expense",
-      value: formatCurrency(stats.averageDailyExpense),
-      delta: stats.averageDailyExpenseDelta,
-      deltaColor: stats.averageDailyExpenseDeltaColor,
-      link: "View Daily",
-      sparkColor: "#3b82f6",
-      sparkPoints: "0,36 55,28 110,24 165,18 220,10",
-    },
-    {
-      icon: "percent" as const,
-      color: "green",
-      label: "% of Revenue (MTD)",
-      value: `${stats.revenuePercentMtd}%`,
-      delta: stats.revenuePercentMtdDelta,
-      deltaColor: stats.revenuePercentMtdDeltaColor,
-      link: "View Revenue",
-      sparkColor: "#10b981",
-      sparkPoints: "0,20 55,28 110,24 165,32 220,36",
-    },
-  ];
-}
-
-export default function ExpenseStatsCards({ stats }: { stats: ExpenseStats }) {
-  const cards = buildCards(stats);
-
+export default function ExpenseStatsCards({ kpis }: { kpis: ExpensePageKpis }) {
   return (
-    <section className={kpiGridClass(CARD_COUNT, "mb-3.5")}>
-      {cards.map((card) => (
-        <KPICard
-          key={card.label}
-          data={card}
-          {...KPI_CARD_DEFAULT_PROPS}
-          deltaColor={card.deltaColor}
-          className={KPI_CARD_SHELL_CLASS}
-        />
+    <section className="mb-[22px] grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-5">
+      {KPI_ITEMS.map((item) => (
+        <div
+          key={item.key}
+          className="relative overflow-hidden rounded-xl border border-slate-800 bg-card px-5 py-[18px] transition hover:border-slate-700 hover:bg-white/[0.025]"
+        >
+          <div
+            className="absolute inset-x-5 bottom-0 h-0.5 rounded-sm"
+            style={{ backgroundColor: item.accent }}
+          />
+          <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+            {item.label}
+          </div>
+          <div
+            className="mt-[5px] font-mono text-[19px] font-extrabold leading-none tabular-nums"
+            style={{ color: item.accent }}
+          >
+            {formatKpiCurrency(kpis[item.key])}
+          </div>
+          <div className="mt-[3px] text-[10.5px] text-slate-500">{item.foot(kpis)}</div>
+        </div>
       ))}
     </section>
   );

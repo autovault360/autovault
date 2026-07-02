@@ -22,14 +22,29 @@ export type ExpenseListItem = {
   amount: number;
 };
 
+export type ExpenseFrequency =
+  | "one_time"
+  | "weekly"
+  | "monthly"
+  | "quarterly"
+  | "yearly";
+
+export type ExpensePaymentStatus = "paid" | "unpaid" | "partial";
+
 export type ExpenseDetail = ExpenseListItem & {
   expenseKind: "dealership" | "vehicle";
   vendor: string;
   expenseName?: string | null;
+  displayName: string;
+  dueDate: string;
+  isRecurring: boolean;
+  frequency: ExpenseFrequency;
+  paymentStatus: ExpensePaymentStatus;
   vehicleNotesAmount?: number;
   linkedVehicle: string | null;
   stockNumber: string | null;
   vehicleId: string | null;
+  vehicleVin: string | null;
   expenseSubcategory: string | null;
   transactionId: string;
   receiptUploadedAt: string | null;

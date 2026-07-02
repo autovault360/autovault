@@ -110,7 +110,7 @@ export function useEditExpenseForm(
       payload.vehicleNotesAmount = expense.vehicleNotesAmount ?? 0;
       payload.referenceNumber = v.reference?.trim() || undefined;
       payload.paymentMethod = v.paymentMethod as PaymentMethod;
-      payload.notes = v.addNote ? v.notes?.trim() || undefined : undefined;
+      payload.notes = v.notes?.trim() || undefined;
       payload.saveMerchant = v.saveMerchant;
     } else {
       const d = values as DealershipExpenseFormValues;
@@ -123,7 +123,7 @@ export function useEditExpenseForm(
       payload.paymentMethod = d.paymentMethod || undefined;
       payload.taxDeductible = d.taxDeductible === "yes";
       payload.isRecurring = d.markRecurring;
-      payload.notes = d.addNote ? d.notes?.trim() || undefined : undefined;
+      payload.notes = d.notes?.trim() || undefined;
       payload.saveMerchant = d.saveMerchant;
     }
 

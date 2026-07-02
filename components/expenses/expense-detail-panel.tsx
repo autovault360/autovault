@@ -31,10 +31,12 @@ export default function ExpenseDetailPanel({
   expense,
   onClose,
   onDeleted,
+  onEdit,
 }: {
   expense: ExpenseDetail;
   onClose: () => void;
   onDeleted?: () => void;
+  onEdit?: () => void;
 }) {
   const router = useRouter();
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -192,7 +194,13 @@ export default function ExpenseDetailPanel({
           <Button
             type="button"
             className="flex-1 bg-blue-600 hover:bg-blue-500"
-            onClick={() => setEditModalOpen(true)}
+            onClick={() => {
+              if (onEdit) {
+                onEdit();
+                return;
+              }
+              setEditModalOpen(true);
+            }}
           >
             Edit Expense
           </Button>
@@ -210,11 +218,13 @@ export default function ExpenseDetailPanel({
         </div>
       </aside>
 
-      <EditExpenseModal
-        expense={expense}
-        open={editModalOpen}
-        onOpenChange={handleEditOpenChange}
-      />
+      {!onEdit && (
+        <EditExpenseModal
+          expense={expense}
+          open={editModalOpen}
+          onOpenChange={handleEditOpenChange}
+        />
+      )}
     </>
   );
 }

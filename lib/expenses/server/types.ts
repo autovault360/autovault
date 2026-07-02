@@ -45,6 +45,37 @@ export type DbDealershipExpense = {
   users?: { full_name: string | null } | null;
 };
 
+function mapRecurrenceFrequency(
+  value: string | null | undefined,
+  isRecurring: boolean,
+): ExpenseDetail["frequency"] {
+  if (!isRecurring) return "one_time";
+  switch (value) {
+    case "weekly":
+      return "weekly";
+    case "quarterly":
+      return "quarterly";
+    case "yearly":
+      return "yearly";
+    case "monthly":
+    default:
+      return "monthly";
+  }
+}
+
+function mapDealershipPaymentStatus(
+  row: DbDealershipExpense,
+): ExpenseDetail["paymentStatus"] {
+  if (
+    row.is_recurring &&
+    row.recurrence_next_due_date &&
+    row.recurrence_next_due_date > new Date().toISOString().split("T")[0]
+  ) {
+    return "unpaid";
+  }
+  return "paid";
+}
+
 export type DbVehicleExpense = {
   id: string;
   vehicle_id: string;
@@ -59,6 +90,7 @@ export type DbVehicleExpense = {
   total_cost: number;
   vehicle_notes_amount: number;
   payment_method: string | null;
+  payment_status: string | null;
   invoice_number: string | null;
   receipt_storage_path: string | null;
   notes: string | null;
@@ -141,22 +173,33 @@ export function mapDealershipExpense(
   addedByName: string,
 ): ExpenseDetail {
   const category = mapDealershipCategory(row.category, row.is_recurring);
+  const isRecurring = row.is_recurring;
+  const frequency = mapRecurrenceFrequency(row.recurrence_frequency, isRecurring);
+  const dueDate = row.recurrence_next_due_date ?? row.expense_date;
+  const displayName = row.description.trim() || row.vendor;
+
   return {
     id: row.id,
     expenseKind: "dealership",
     date: row.expense_date,
     category,
-    title: row.description.slice(0, 80),
+    title: displayName.slice(0, 80),
     subtitle: row.vendor,
     hasReceipt: !!row.receipt_storage_path,
     paymentMethod: formatPaymentMethod(row.payment_method),
     amount: Number(row.amount),
     vendor: row.vendor,
-    expenseName: null,
+    expenseName: displayName,
+    displayName,
+    dueDate,
+    isRecurring,
+    frequency,
+    paymentStatus: mapDealershipPaymentStatus(row),
     vehicleNotesAmount: 0,
     linkedVehicle: null,
     stockNumber: null,
     vehicleId: null,
+    vehicleVin: null,
     expenseSubcategory: null,
     transactionId: row.reference_number ?? row.id.slice(0, 8).toUpperCase(),
     receiptUploadedAt: row.receipt_storage_path ? row.created_at : null,
@@ -179,25 +222,36 @@ export function mapVehicleExpense(
   const vehicleLabel = vehicle
     ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`
     : null;
+  const displayName =
+    row.expense_name?.trim() ||
+    (vehicle ? `${subLabel} - Stock #${vehicle.stock_number ?? "..."}` : subLabel);
+  const paymentStatus =
+    row.payment_status === "unpaid" || row.payment_status === "partial"
+      ? row.payment_status
+      : "paid";
 
   return {
     id: row.id,
     expenseKind: "vehicle",
     date: row.repair_date,
     category: "vehicle",
-    title:
-      row.expense_name ||
-      (vehicle ? `${subLabel} - Stock #${vehicle.stock_number ?? "..."}` : subLabel),
+    title: displayName,
     subtitle: row.shop_vendor ?? "...",
     hasReceipt: !!row.receipt_storage_path,
     paymentMethod: formatPaymentMethod(row.payment_method),
     amount: Number(row.total_cost),
     vendor: row.shop_vendor ?? "...",
     expenseName: row.expense_name,
+    displayName,
+    dueDate: row.repair_date,
+    isRecurring: false,
+    frequency: "one_time",
+    paymentStatus,
     vehicleNotesAmount: Number(row.vehicle_notes_amount ?? 0),
     linkedVehicle: vehicleLabel,
     stockNumber: vehicle?.stock_number ?? null,
     vehicleId: row.vehicle_id,
+    vehicleVin: vehicle?.vin ?? null,
     expenseSubcategory: subLabel,
     transactionId: row.invoice_number ?? row.id.slice(0, 8).toUpperCase(),
     receiptUploadedAt: row.receipt_storage_path ? row.created_at : null,

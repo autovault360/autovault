@@ -63,7 +63,7 @@ export function useAddDealershipExpenseForm(
       paymentMethod: values.paymentMethod || undefined,
       taxDeductible: values.taxDeductible === "yes",
       isRecurring: values.markRecurring || expenseType === "recurring",
-      notes: values.addNote ? values.notes?.trim() || undefined : undefined,
+      notes: values.notes?.trim() || undefined,
       saveMerchant: values.saveMerchant,
     };
 
