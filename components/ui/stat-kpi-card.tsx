@@ -93,7 +93,7 @@ export default function StatKpiCard({
   }
 
   return (
-    <article className="group relative min-w-[140px] overflow-hidden rounded-xl border border-slate-700/80 bg-[#101826] px-5 py-[18px] transition hover:border-white/10 hover:bg-white/2.5">
+    <article className="group relative min-w-[140px] overflow-hidden rounded-xl border bg-[#10151F] text-card-foreground border-slate-700/80 px-5 py-[18px] transition hover:border-white/10 hover:bg-white/2.5">
       <div
         className="pointer-events-none absolute bottom-0 left-5 right-5 h-0.5 origin-left scale-x-0 rounded-sm transition-transform duration-200 group-hover:scale-x-100"
         style={{ backgroundColor: currentAccent }}

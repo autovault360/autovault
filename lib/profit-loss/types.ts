@@ -1,5 +1,12 @@
 export { formatCurrency, formatDisplayDate } from "@/lib/expenses/types";
 
+/** Rounds to whole dollars (no cents) for P&L display */
+export function formatCurrencyRound(value: number): string {
+  const abs = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  return `${sign}$${abs.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+}
+
 export type PlDateRange = "this_month" | "last_month" | "prior_month";
 export type PlCompareTo = "last_month" | "last_year" | "none";
 export type PlGroupBy = "none" | "sales_rep" | "location" | "deal_type";
